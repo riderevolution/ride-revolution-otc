@@ -128,6 +128,12 @@
                             </div>
                             <div class="form_group">
                                 <div class="form_check">
+                                    <input type="checkbox" id="featured" name="featured" class="action_check">
+                                    <label for="featured">Add to featured classes</label>
+                                </div>
+                            </div>
+                            <div class="form_group">
+                                <div class="form_check">
                                     <input type="checkbox" id="repeat" name="repeat" class="action_check" @change="isRepeat ^= true">
                                     <label for="repeat">Repeat</label>
                                 </div>

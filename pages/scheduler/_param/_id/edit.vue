@@ -128,7 +128,13 @@
                             </div>
                             <div class="form_group">
                                 <div class="form_check">
-                                    <input type="checkbox" id="repeat" name="repeat" class="action_check" @change="isRepeat ^= true" :checked="isRepeat">
+                                    <input type="checkbox" id="featured" name="featured" class="action_check" :checked="res.featured">
+                                    <label for="featured">Add to featured classes</label>
+                                </div>
+                            </div>
+                            <div class="form_group">
+                                <div class="form_check">
+                                    <input type="checkbox" id="repeat" name="repeat" class="action_check" @change="toggleRepeat()" :checked="isRepeat">
                                     <label for="repeat">Repeat</label>
                                 </div>
                             </div>
@@ -239,6 +245,11 @@
             }
         },
         methods: {
+            toggleRepeat () {
+                const me = this
+                me.isRepeat ^= true
+                me.prompt = (me.isRepeat) ? true : false
+            },
             toggleSelectAll (event) {
                 const me = this
                 if (me.checkData) {
