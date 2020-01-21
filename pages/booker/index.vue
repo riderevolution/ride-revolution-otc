@@ -385,6 +385,7 @@
                     formData.append('user_id', me.$store.state.customerID)
                     me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
                         if (res.data.result == 0) {
+                            formData.append('studio_id', me.studioID)
                             me.loader(true)
                             me.$axios.post('api/waitlists', formData).then(res => {
                                 if (res.data) {
