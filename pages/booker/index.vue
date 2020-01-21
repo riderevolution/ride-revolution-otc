@@ -201,7 +201,7 @@
                             <div class="booker_waitlist">
                                 <div class="footer_header">
                                     <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
-                                    <a href="javascript:void(0)" :class="`action_success_btn ${($store.state.customerID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
+                                    <a href="javascript:void(0)" :class="`action_success_btn ${($store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
                                 </div>
                                 <table class="cms_waitlist">
                                     <thead>
