@@ -575,10 +575,8 @@
                 let target = e.target
                 let element = document.getElementById(`legend_toggler`)
                 if (element !== target) {
-                    if (element.nextElementSibling.length > 0) {
-                        if (element.nextElementSibling.classList.contains('active')) {
-                            element.nextElementSibling.classList.remove('active')
-                        }
+                    if (element.nextElementSibling.classList.contains('active')) {
+                        element.nextElementSibling.classList.remove('active')
                     }
                 }
             },
