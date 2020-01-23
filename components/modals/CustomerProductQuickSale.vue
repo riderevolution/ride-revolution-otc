@@ -640,6 +640,9 @@
                                     if (me.$route.params.slug == 'transactions') {
                                         document.getElementById('transactions').click()
                                     }
+                                    if (me.$route.name == 'customers-param-slug') {
+                                        document.getElementById('packages').click()
+                                    }
                                 } else {
                                     me.$store.state.errorList.push('Sorry, Something went wrong')
                                     me.$store.state.errorStatus = true
