@@ -184,7 +184,7 @@
                 <div class="form_wrapper">
                     <div class="form_header_wrapper">
                         <h2 class="form_title">Customer Overview</h2>
-                        <div class="form_check toggler" @click="isActivated ^= true">
+                        <div class="form_check toggler" @click="toggledPrompt()">
                             <input type="hidden" id="is_promo" name="is_promo" class="action_check" :value="(isActivated) ? 1 : 0">
                             <div :class="`toggle ${(isActivated) ? 'active' : ''}`"></div>
                             <label for="is_promo">{{ (isActivated) ? 'Activated' : 'Deactivated' }}</label>
@@ -321,14 +321,19 @@
         <transition name="fade">
             <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
         </transition>
+        <transition name="fade">
+            <customer-prompt :status="promptMessage" v-if="$store.state.customerPromptStatus" />
+        </transition>
     </div>
 </template>
 
 <script>
+    import CustomerPrompt from '../components/modals/CustomerPrompt'
     import CustomerPendingQuickSale from '../components/modals/CustomerPendingQuickSale'
     import Pagination from '../components/Pagination'
     export default {
         components: {
+            CustomerPrompt,
             CustomerPendingQuickSale,
             Pagination
         },
@@ -343,6 +348,7 @@
         },
         data () {
             return {
+                promptMessage: '',
                 isActivated: true,
                 loaded: false,
                 violator: {
@@ -358,6 +364,19 @@
             }
         },
         methods: {
+            toggledPrompt () {
+                const me = this
+                let status = 0
+                me.isActivated ^= true
+                if (me.isActivated) {
+                    status = 1
+                    me.promptMessage = 'Activate'
+                } else {
+                    me.promptMessage = 'Deactivate'
+                }
+                me.$store.state.customerPromptStatus = true
+                document.body.classList.add('no_scroll')
+            },
             toggleGuest (event) {
                 const me = this
                 let element = event.target
