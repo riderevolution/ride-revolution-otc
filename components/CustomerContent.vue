@@ -10,7 +10,7 @@
                     <h2 class="package_title">
                         {{ data.class_package.name }}
                         <span class="warning" v-if="checkWarning(data)">{{ violator.warning }} Days Left</span>
-                        <!-- <span class="shared">Shared with Sheena Villeta</span> -->
+                        <span class="shared">Shared with Sheena Villeta</span>
                     </h2>
                     <div class="package_details">
                         <div class="package_status">
@@ -34,8 +34,7 @@
                             </div>
                             <div class="date margin">
                                 <p>{{ formatDate(data.class_package.computed_expiration_date, false) }}</p>
-                                <!-- <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label> -->
-                                <label>Expiry date</label>
+                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
                             </div>
                         </div>
                         <div class="package_action">
@@ -56,6 +55,70 @@
                     No Package(s) Found.
                 </div>
             </div>
+        </div>
+        <div v-if="type == 'class-history' && loaded">
+            <div class="actions">
+                <div class="total">Total: 4</div>
+                <div class="cms_table_toggler">
+                    <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory(1)">All</div>
+                    <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory(2)">Completed</div>
+                    <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">No Show</div>
+                    <div :class="`status ${(classesHistoryStatus == 4) ? 'active' : ''}`" @click="toggleClassesHistory(4)">Cancelled</div>
+                </div>
+            </div>
+            <table class="cms_table">
+                <thead>
+                    <tr>
+                        <th>Date &amp; time</th>
+                        <th>Bike No.</th>
+                        <th>Class</th>
+                        <th>Studio</th>
+                        <th>instructor</th>
+                        <th>Guests</th>
+                        <th>Status</th>
+                        <th>Series ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(n, key) in 3"  :key="key">
+                        <td>{{ formatClassDate('January 01, 2020 12:00', true) }}</td>
+                        <td>5</td>
+                        <td>Ride Rev</td>
+                        <td>Greenbelt 5</td>
+                        <td class="thumb">
+                            <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
+                            <div class="table_image_default">
+                                CR
+                            </div>
+                            <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
+                        </td>
+                        <td>
+                            <div class="table_select" v-if="key != 1">
+                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">3 Guests</div>
+                                <div class="overlay">
+                                    <ul>
+                                        <li v-line-clamp="1">16 - Sample Name</li>
+                                        <li v-line-clamp="1">4 - Jennifer Castillo</li>
+                                        <li v-line-clamp="1">1 - Edcel Games</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Completed</td>
+                        <td>
+                            <p>Singe Class Package</p>
+                            <p>854585961462367501</p>
+                        </td>
+                    </tr>
+
+                </tbody>
+                <!-- <tbody class="no_results" v-else>
+                    <tr>
+                        <td :colspan="rowCount">No Result(s) Found.</td>
+                    </tr>
+                </tbody> -->
+            </table>
+            <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
         </div>
         <div v-if="type == 'transactions' && loaded">
             <div class="cms_table_accordion alt">
@@ -116,6 +179,145 @@
             <pagination :apiRoute="`api/customers/${$route.params.param}/${$route.params.slug}`" :current="res.current_page" :last="res.last_page" :total="res.total" />
             <button type="button" class="hidden" id="transactions" @click="populateTransactions()"></button>
         </div>
+        <div v-if="type == 'details' && loaded">
+            <div id="default_form">
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Customer Overview</h2>
+                        <div class="form_check toggler" @click="isActivated ^= true">
+                            <input type="hidden" id="is_promo" name="is_promo" class="action_check" :value="(isActivated) ? 1 : 0">
+                            <div :class="`toggle ${(isActivated) ? 'active' : ''}`"></div>
+                            <label for="is_promo">{{ (isActivated) ? 'Activated' : 'Deactivated' }}</label>
+                        </div>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>Name</label>
+                            <p>{{ value.first_name }} {{ value.last_name }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Email</label>
+                            <p>{{ value.email }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Password</label>
+                            <p>*******</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Phone Number</label>
+                            <p>{{ value.customer_details.co_contact_number }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Birthdate</label>
+                            <p>{{ formatClassDate(value.customer_details.co_birthdate, false) }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Gender</label>
+                            <p>{{ value.customer_details.co_sex }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Occupation</label>
+                            <p>{{ value.customer_details.occupation_id }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Customer Type</label>
+                            <p>{{ value.type }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Rewards Membership</label>
+                            <p>Black</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Personal Address</h2>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>Address</label>
+                            <p>{{ value.customer_details.pa_address_1 }}, {{ value.customer_details.pa_address_2 }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>City</label>
+                            <p>{{ value.customer_details.pa_city }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Billing Address</h2>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>Address</label>
+                            <p>{{ value.customer_details.ba_address_1 }}, {{ value.customer_details.ba_address_2 }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>City</label>
+                            <p>{{ value.customer_details.ba_city }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Top 5 Instructors</h2>
+                    </div>
+                    <div class="form_overview_instructor">
+                        <div class="left">
+                            <div class="image">
+                                <div class="instructor_image"></div>
+                                <div class="sequence"><span>1</span></div>
+                            </div>
+                            <h2>Bruce Lee</h2>
+                            <p>Total Rides: 10</p>
+                        </div>
+                        <div class="right">
+                            <div class="wrapper">
+                                <div class="image">
+                                    <div class="instructor_image"></div>
+                                    <div class="sequence"><span>2</span></div>
+                                </div>
+                                <div class="info">
+                                    <h2>Bruce Lee</h2>
+                                    <p>Total Rides: 10</p>
+                                </div>
+                            </div>
+                            <div class="wrapper">
+                                <div class="image">
+                                    <div class="instructor_image"></div>
+                                    <div class="sequence"><span>3</span></div>
+                                </div>
+                                <div class="info">
+                                    <h2>Bruce Lee</h2>
+                                    <p>Total Rides: 10</p>
+                                </div>
+                            </div>
+                            <div class="wrapper">
+                                <div class="image">
+                                    <div class="instructor_image"></div>
+                                    <div class="sequence"><span>4</span></div>
+                                </div>
+                                <div class="info">
+                                    <h2>Bruce Lee</h2>
+                                    <p>Total Rides: 10</p>
+                                </div>
+                            </div>
+                            <div class="wrapper">
+                                <div class="image">
+                                    <div class="instructor_image"></div>
+                                    <div class="sequence"><span>5</span></div>
+                                </div>
+                                <div class="info">
+                                    <h2>Bruce Lee</h2>
+                                    <p>Total Rides: 10</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <transition name="fade">
             <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
         </transition>
@@ -141,6 +343,7 @@
         },
         data () {
             return {
+                isActivated: true,
                 loaded: false,
                 violator: {
                     warning: 0,
@@ -149,11 +352,21 @@
                     freeze: 0,
                 },
                 packageStatus: 1,
+                classesHistoryStatus: 1,
                 res: [],
                 transaction: []
             }
         },
         methods: {
+            toggleGuest (event) {
+                const me = this
+                let element = event.target
+                if (element.nextElementSibling.classList.contains('active')) {
+                    element.nextElementSibling.classList.remove('active')
+                } else {
+                    element.nextElementSibling.classList.add('active')
+                }
+            },
             populateTransactions () {
                 const me = this
                 me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}`).then(res => {
@@ -220,11 +433,20 @@
                     }
                 }
             },
+            formatClassDate (value, withTime) {
+                if (value) {
+                    if (withTime) {
+                        return this.$moment(value).format('M/D/YY (ddd) h:mm A')
+                    } else {
+                        return this.$moment(value).format('MMMM DD, YYYY')
+                    }
+                }
+            },
             checkWarning (data) {
                 const me = this
                 let expiry = me.$moment(data.class_package.computed_expiration_date)
                 let current = me.$moment()
-                if (parseInt(expiry.diff(current, 'days')) <= 10) {
+                if (parseInt(expiry.diff(current, 'days')) <= 15) {
                     me.violator.warning = expiry.diff(current, 'days')
                     return true
                 } else {
@@ -255,10 +477,24 @@
                         }
                     })
                 }
+                if (me.$route.params.slug == 'class-history') {
+                    for (let i = 0; i <= 2; i++) {
+                        let element = document.getElementById(`table_select_${i}`)
+                        if (element !== target) {
+                            if (element.nextElementSibling.classList.contains('active')) {
+                                element.nextElementSibling.classList.remove('active')
+                            }
+                        }
+                    }
+                }
             },
             togglePackages (status) {
                 const me = this
                 return me.packageStatus = status
+            },
+            toggleClassesHistory (status) {
+                const me = this
+                return me.classesHistoryStatus = status
             },
         },
         mounted () {

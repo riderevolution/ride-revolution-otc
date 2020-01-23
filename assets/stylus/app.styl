@@ -15,6 +15,7 @@ $black_alternate = #777
 $black_alternate2 = #5f6466
 $gray = #91939B
 $gray_alternate = #ABADB9
+$yellow = #FFC917
 $border = #DEDEDE
 $border_alt = #EDEEF0
 $border_alt2 = #9C9EAA
@@ -1330,7 +1331,108 @@ input::placeholder
                                     .table_action_edit,
                                     .table_action_cancel
                                         padding: 10px 20px
-
+        .form_overview
+            padding: 40px 50px 50px
+            .wrapper
+                display: flex
+                flex-flow: row wrap
+                align-items: center
+                justify-content: space-between
+                margin-bottom: 25px
+                &:last-child
+                    margin-bottom: 0
+                label
+                    sf_pro_regular(18px)
+                    color: $border_alt2
+                p
+                    sf_pro_regular(15px)
+                    color: $black
+        .form_overview_instructor
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            padding: 20px
+            .sequence
+                position: absolute
+                bottom: 0
+                right: 0
+                width: 30px
+                height: 30px
+                background-color: $yellow
+                border-radius: 50%
+                sf_pro_bold(19px)
+                span
+                    position: absolute
+                    top: 50%
+                    left: 0
+                    right: 0
+                    margin: 0 auto
+                    text-align: center
+                    color: $white
+                    transform: translateY(-50%)
+            .left
+                flex: 0 0 calc(20% + 25px)
+                padding: 20px 15px
+                border: 1px solid $border
+                border-radius: 5px
+                text-align: center
+                margin-right: 30px
+                .image
+                    position: relative
+                    .sequence
+                        right: calc(0% + 15px)
+                    .instructor_image
+                        margin: 0 auto
+                        background-color: $black
+                        width: 100px
+                        height: 100px
+                        border-radius: 50%
+                        border: 5px solid $yellow
+                h2
+                    sf_pro_regular(22px)
+                    color: $black
+                    margin: 15px 0 5px
+                p
+                    sf_pro_regular(15px)
+                    color: $gray_alternate
+            .right
+                flex: 1 0 50%
+                display: flex
+                flex-flow: row wrap
+                align-items: center
+                .wrapper
+                    flex: 0 0 50%
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    margin-bottom: 40px
+                    &:nth-child(3),
+                    &:nth-child(4)
+                        margin-bottom: 0
+                    .image
+                        position: relative
+                        .sequence
+                            width: 23px
+                            height: 23px
+                            bottom: calc(0% - 5px)
+                            right: calc(0% - 5px)
+                            background-color: $green
+                            sf_pro_bold(14px)
+                        .instructor_image
+                            background-color: $black
+                            width: 50px
+                            height: 50px
+                            border-radius: 50%
+                    .info
+                        flex: 1 0 50%
+                        margin-left: 20px
+                        h2
+                            sf_pro_regular(18px)
+                            color: $black
+                            margin-bottom: 5px
+                        p
+                            sf_pro_regular(15px)
+                            color: $gray_alternate
     .form_footer_wrapper
         margin-bottom: 60px
         .form_check
@@ -2185,6 +2287,19 @@ input::placeholder
                 &:last-child
                     margin-bottom: 0
 
+.actions
+    display: flex
+    flex-flow: row wrap
+    align-items: center
+    justify-content: flex-end
+    margin-bottom: 40px
+    .total
+        sf_pro_medium(22px)
+        color: $black
+        padding: 0 25px 0 40px
+    .cms_table_toggler
+        margin-bottom: 0
+
 .cms_table_toggler
     display: flex
     flex-flow: row wrap
@@ -2508,6 +2623,44 @@ input::placeholder
                 sf_pro_regular(16px)
                 color: $black
                 padding: 20px 30px
+                .table_select
+                    position: relative
+                    .table_select_label
+                        position: relative
+                        &::before
+                            content: ''
+                            position: absolute
+                            top: 50%
+                            right: 0
+                            border-left: 6px solid transparent
+                            border-right: 6px solid transparent
+                            border-top: 8px solid $green
+                            transform: translateY(-50%)
+                            cursor: pointer
+                    .overlay
+                        position: absolute
+                        top: calc(100% + 30px)
+                        left: 0
+                        z-index: 3
+                        width: 170px
+                        background-color: $white
+                        padding: 20px 20px 10px
+                        border-radius: 3px
+                        box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.16)
+                        opacity: 0
+                        visibility: hidden
+                        transition: .3s ease-in-out
+                        ul
+                            list-style: none
+                            margin: 0
+                            padding: 0
+                            li
+                                margin-bottom: 10px
+                        &.active
+                            top: calc(100% + 10px)
+                            opacity: 1
+                            visibility: visible
+                            transition: .3s ease-in-out
                 span
                     sf_pro_bold(16px)
                     &.green
@@ -4905,7 +5058,14 @@ input::placeholder
     &.user
         &.alt
             #content
-                margin-bottom: 80px
+                max-width: 90%
+        &.alt_2
+            #content
+                #default_form
+                    max-width: 65%
+        &.alt_3
+            #content
+                margin-bottom: 175px
         #top_content
             position: relative
             align-items: flex-start
@@ -5015,7 +5175,7 @@ input::placeholder
             max-width: 75%
             margin: 0 auto
             padding: 80px 40px
-            margin-bottom: 175px
+            margin-bottom: 80px
             .cms_table_package
                 background-color: $white
                 border-radius: 5px
