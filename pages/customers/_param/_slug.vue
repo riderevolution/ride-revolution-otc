@@ -96,14 +96,7 @@
                 me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}`).then(res => {
                     if (res.data) {
                         me.customer = res.data.customer
-                        if (me.customer.payments) {
-                            me.pendingPayment = 0
-                            me.customer.payments.data.forEach((payment, index) => {
-                                if (payment.status == 'pending') {
-                                    me.pendingPayment += parseFloat(payment.total)
-                                }
-                            })
-                        }
+                        me.pendingPayment = me.customer.totalPendingPayments
                         me.loaded = true
                     }
                 }).catch(err => {

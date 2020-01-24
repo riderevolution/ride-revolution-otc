@@ -132,7 +132,7 @@
                                         <td class="item_name" width="35%">({{ data.quantity }}) {{ (data.item.product) ? (data.item.product.product ? `${data.item.product.product.name} - ${data.item.name}` : data.item.name) : data.item.name }}</td>
                                         <td width="15%">
                                             <div class="form_flex_input" :data-vv-scope="`breakdown_${key}`">
-                                                <input type="text" name="quantity" :id="`quantity_${key}`" :class="`disabled ${(data.type == 'gift-card' || data.type == 'custom-gift-card') ? 'disabled' : ''} default_text number`" maxlength="1" autocomplete="off" :data-vv-name="`breakdown_${key}.quantity`" v-model="data.quantity" v-validate="`numeric|min_value:1|${(data.type != 'custom-gift-card') ? (data.item.product.product_quantities ? `max_value:${data.item.product.product_quantities[0].quantity}` : '') : '' }`">
+                                                <input type="text" name="quantity" :id="`quantity_${key}`" :class="`disabled ${(data.type == 'gift-card' || data.type == 'custom-gift-card') ? 'disabled' : ''} default_text number`" maxlength="2" autocomplete="off" :data-vv-name="`breakdown_${key}.quantity`" v-model="data.quantity" v-validate="`numeric|min_value:1|${(data.type != 'custom-gift-card') ? (data.item.product.product_quantities ? `max_value:${data.item.product.product_quantities[0].quantity}` : '') : '' }`">
                                             </div>
                                         </td>
                                         <td class="item_price" width="25%">PHP {{ totalCount(data.item.origPrice) }}</td>
@@ -357,16 +357,16 @@
 
                                 } else {
                                     me.$store.state.errorList.push('Sorry, Something went wrong')
-                                    me.$store.state.errorStatus = true
+                                    me.$store.state.errorQuickSaleStatus = true
                                 }
                             }, 500)
                         }).catch(err => {
                             me.$store.state.errorList = err.response.data.errors
-                            me.$store.state.errorStatus = true
+                            me.$store.state.errorQuickSaleStatus = true
                         }).then(() => {
                             setTimeout( () => {
                                 me.loader(false)
-                                if (!me.$store.state.errorStatus) {
+                                if (!me.$store.state.errorQuickSaleStatus) {
                                     me.$store.state.customerPendingQuickSaleStatus = false
                                 }
                                 if (me.$store.state.pendingCustomerID != 0) {
@@ -384,6 +384,7 @@
             },
             takePayment (step) {
                 const me = this
+                let ctr = 0
                 switch (step) {
                     case 1:
                         me.$store.state.customerPendingQuickSaleStatus = false
@@ -393,20 +394,22 @@
                         if (me.totalPrice.length > 0) {
                             me.totalPrice.forEach((data, index) => {
                                 if (data.type == "store-credit") {
-                                    me.hasStoreCredits = false
-                                    return false
-                                } else {
-                                    me.hasStoreCredits = true
+                                    ctr++
                                 }
                             })
                             me.nextStep = 2
                             document.getElementById('step2').classList.add('slide_in')
-                            document.getElementById('step1').classList.remove('slide_in')
+                            // document.getElementById('step1').classList.remove('slide_in')
                         } else {
                             me.message = 'Please select a product before taking payment.'
                             me.$store.state.promptStatus = true
                         }
                         break
+                }
+                if (ctr > 0) {
+                    me.hasStoreCredits = false
+                } else {
+                    me.hasStoreCredits = true
                 }
             },
             checkPayment (type) {
@@ -443,6 +446,7 @@
         mounted () {
             const me = this
             me.totalPrice = me.parser(me.value.for_later)
+            me.takePayment(2)
             me.form.id = me.randomString()
         }
     }

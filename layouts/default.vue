@@ -21,6 +21,9 @@
             <error-status v-if="$store.state.errorStatus" />
         </transition>
         <transition name="fade">
+            <error-quick-sale v-if="$store.state.errorQuickSaleStatus" />
+        </transition>
+        <transition name="fade">
             <password-sent v-if="$store.state.resetStatus" />
         </transition>
         <transition name="fade">
@@ -52,6 +55,7 @@
     import Loading from '../components/Loading'
     import HeaderNav from '../components/HeaderNav'
     import ErrorStatus from '../components/modals/Error'
+    import ErrorQuickSale from '../components/modals/ErrorQuickSale'
     import PasswordSent from '../components/modals/PasswordSent'
     import ResetSuccessful from '../components/modals/ResetSuccessful'
     import QuickSale from '../components/modals/QuickSale'
@@ -66,6 +70,7 @@
             Loading,
             HeaderNav,
             ErrorStatus,
+            ErrorQuickSale,
             PasswordSent,
             ResetSuccessful,
             CustomerCreditQuickSale,

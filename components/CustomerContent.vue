@@ -256,9 +256,9 @@
                 <div class="form_wrapper">
                     <div class="form_header_wrapper">
                         <h2 class="form_title">Customer Overview</h2>
-                        <div class="form_check toggler" @click="toggledPrompt()">
+                        <div class="form_check toggler">
                             <input type="hidden" id="is_promo" name="is_promo" class="action_check" :value="(isActivated) ? 1 : 0">
-                            <div :class="`toggle ${(isActivated) ? 'active' : ''}`"></div>
+                            <div :class="`toggle ${(isActivated) ? 'active' : ''}`" @click="toggledPrompt()"></div>
                             <label for="is_promo">{{ (isActivated) ? 'Activated' : 'Deactivated' }}</label>
                         </div>
                     </div>
@@ -445,10 +445,8 @@
             },
             toggledPrompt () {
                 const me = this
-                let status = 0
                 me.isActivated ^= true
                 if (me.isActivated) {
-                    status = 1
                     me.promptMessage = 'Activate'
                 } else {
                     me.promptMessage = 'Deactivate'
