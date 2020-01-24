@@ -312,6 +312,8 @@
                 let element = event.target
                 if (element.files[0]) {
                     me.previewImage = true
+                } else {
+                    me.previewImage = false
                 }
                 if (element.files && element.files[0]) {
                     let reader = new FileReader()
@@ -320,6 +322,9 @@
                         image.src = reader.result
                     }
                     reader.readAsDataURL(element.files[0])
+                } else {
+                    let image = document.getElementById('preview_image')
+                    image.src = ''
                 }
             },
             toggleMedical (key, status) {
