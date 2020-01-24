@@ -16,7 +16,7 @@
                         <div class="form_header_wrapper">
                             <h2 class="form_title">Customer Overview</h2>
                             <div class="form_photo">
-                                <input type="file" id="image" name="image[]" class="action_photo" @change="getFile($event)" v-validate="'image|dimensions:600,600'">
+                                <input type="file" id="image" name="image[]" class="action_photo" @change="getFile($event)" v-validate="'image'">
                                 <label for="image" :class="`${(previewImage) ? 'active' : ''}`"><span>Upload Photo</span></label>
                                 <img id="preview_image" src="/" v-if="previewImage" />
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('image[]')">{{ errors.first('image[]') }}</span></transition>
