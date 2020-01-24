@@ -125,12 +125,14 @@
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_1')">{{ errors.first('pa_address_1') }}</span></transition>
                             </div>
                             <div class="form_group">
-                                <label for="pa_address_2">Address Line 2</label>
-                                <input type="text" name="pa_address_2" autocomplete="off" class="default_text" v-model="form.pa_address_2">
+                                <label for="pa_address_2">Address Line 2 <span>*</span></label>
+                                <input type="text" name="pa_address_2" autocomplete="off" class="default_text" v-validate="'required'" v-model="form.pa_address_2">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_1')">{{ errors.first('pa_address_1') }}</span></transition>
                             </div>
                             <div class="form_group">
-                                <label for="pa_city">City</label>
-                                <input type="text" name="pa_city" autocomplete="off" class="default_text" v-model="form.pa_city">
+                                <label for="pa_city">City <span>*</span></label>
+                                <input type="text" name="pa_city" autocomplete="off" class="default_text" v-validate="'required'" v-model="form.pa_city">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_1')">{{ errors.first('pa_address_1') }}</span></transition>
                             </div>
                         </div>
                     </div>
