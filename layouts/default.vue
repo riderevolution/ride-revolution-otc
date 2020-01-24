@@ -78,6 +78,7 @@
         watch:{
             $route (to, from){
                 const me = this
+                me.$store.state.upcomingClassesLayoutStatus = false
                 me.$store.state.assignWaitlistBookerUI = false
                 me.$store.state.disableBookerUI = false
                 me.$store.state.classPackageID = 0

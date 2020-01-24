@@ -33,6 +33,7 @@
                     me.$store.state.customerPromptStatus = false
                     document.body.classList.remove('no_scroll')
                 }
+                me.$parent.toggled = false
             }
         }
     }

@@ -56,6 +56,78 @@
                 </div>
             </div>
         </div>
+        <div v-if="type == 'badges'">
+            <div class="cms_col_five">
+                <div class="cms_col" v-for="n in 10">
+                    <div class="wrapper">
+                        <div class="badge"><img src="/sample-badge.svg" /></div>
+                        <div class="info">
+                            <h2>Ride to Batangas</h2>
+                            <p>Earned on: Apr 23, 2020</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="type == 'upcoming-classes' && loaded">
+            <table class="cms_table">
+                <thead>
+                    <tr>
+                        <th>Date &amp; time</th>
+                        <th>Bike No.</th>
+                        <th>Class</th>
+                        <th>Studio</th>
+                        <th>instructor</th>
+                        <th>Guests</th>
+                        <th>Status</th>
+                        <th>Series ID</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(n, key) in 3" :key="key">
+                        <td><div class="table_data_link link" @click="toggleLayout(n, 21550)">{{ formatClassDate('January 01, 2020 12:00', true) }}</div></td>
+                        <td>5</td>
+                        <td>Ride Rev</td>
+                        <td>Greenbelt 5</td>
+                        <td class="thumb">
+                            <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
+                            <div class="table_image_default">
+                                CR
+                            </div>
+                            <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
+                        </td>
+                        <td>
+                            <div class="table_select" v-if="key != 1">
+                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">3 Guests</div>
+                                <div class="overlay">
+                                    <ul>
+                                        <li v-line-clamp="1">16 - Sample Name</li>
+                                        <li v-line-clamp="1">4 - Jennifer Castillo</li>
+                                        <li v-line-clamp="1">1 - Edcel Games</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Completed</td>
+                        <td>
+                            <p>Singe Class Package</p>
+                            <p class="id">854585961462367501</p>
+                        </td>
+                        <td class="table_actions full">
+                            <div class="table_action_success link" @click="getCurrentCustomer()">Sign In</div>
+                        </td>
+                    </tr>
+
+                </tbody>
+                <!-- <tbody class="no_results" v-else>
+                    <tr>
+                        <td :colspan="rowCount">No Result(s) Found.</td>
+                    </tr>
+                </tbody> -->
+            </table>
+            <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
+        </div>
         <div v-if="type == 'class-history' && loaded">
             <div class="actions">
                 <div class="total">Total: 4</div>
@@ -107,7 +179,7 @@
                         <td>Completed</td>
                         <td>
                             <p>Singe Class Package</p>
-                            <p>854585961462367501</p>
+                            <p class="id">854585961462367501</p>
                         </td>
                     </tr>
 
@@ -364,6 +436,13 @@
             }
         },
         methods: {
+            toggleLayout (studioId, scheduledDateID) {
+                const me = this
+                me.loader(true)
+                me.$parent.layout.studio = studioId
+                me.$parent.layout.schedule = scheduledDateID
+                me.$store.state.upcomingClassesLayoutStatus = true
+            },
             toggledPrompt () {
                 const me = this
                 let status = 0

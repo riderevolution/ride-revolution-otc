@@ -596,6 +596,175 @@ table
 
 /**
  * Default Modal **/
+.upcoming_classes_layout
+    position: absolute
+    top: 0
+    left: 0
+    z-index: 1
+    width: 100%
+    height: 100%
+    padding-left: 70px
+    padding-top: 79px
+    .background
+        position: absolute
+        z-index: 0
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        background-color: #F8F8FB
+    .action_back_btn
+        margin: 40px 60px 20px
+    .class_layout
+        position: relative
+        z-index: 1
+        margin: 20px 60px
+        background-color: $white
+        border-radius: 5px
+        box-shadow: 5px 5px 40px rgba(0, 0, 0, 0.05)
+        .layout_header
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            justify-content: space-between
+            padding: 15px 30px 15px 40px
+            border-bottom: 1px solid $border
+            h2
+                sf_pro_semibold(22px)
+                color: $blackl
+        .layout_content
+            position: relative
+            width: 100%
+            &.layout_1
+                height: 575px
+                max-height: 575px
+            &.layout_2
+                height: 485px
+                max-height: 485px
+            &.layout_3
+                height: 550px
+                max-height: 550px
+            .seats
+                position: absolute
+                top: 0
+                left: 0
+                right: 0
+                bottom: 0
+                padding: 15px 30px 15px 40px
+                .seat_header
+                    position: absolute
+                    top: calc(0% + 75px)
+                    left: 50%
+                    text-align: center
+                    transform: translateX(-50%)
+                    .header_image
+                        margin: 0 auto
+                        width: 100px
+                        height: 100px
+                        background-color: $green
+                        border-radius: 50%
+                    h3
+                        sf_pro_regular(15px)
+                        color: $black
+                        margin-top: 20px
+                .seat_boxes
+                    position: absolute
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    .seat_position
+                        position: relative
+                        border-radius: 4px
+                        text-align: center
+                        cursor: pointer
+                        margin: 7px
+                        padding: 31px 21px
+                        background-color: $white
+                        border: 1px solid $black
+                        transition: .3s ease-in-out
+                        &.comp
+                            background-color: rgba(240, 241, 242, 0.3)
+                            background-image: url('/icons/blocked-seat.svg')
+                            background-repeat: no-repeat
+                            background-position: center
+                            background-size: cover
+                            border: 1px solid $gray_alternate
+                            .seat_number
+                                color: $gray_alternate
+                        &.highlight
+                            background-color: $light_green
+                            border: 1px solid $light_green
+                            .seat_number
+                                color: $green
+                        &.sign_in
+                            background-color: #EDEDED
+                            border: 1px solid #EDEDED
+                            .seat_number
+                                color: rgba(132, 143, 159, 0.21)
+                        .seat_number
+                            position: absolute
+                            top: 0
+                            left: 0
+                            right: 0
+                            text-align: center
+                            sf_pro_bold(25px)
+                            color: rgba(56, 61, 64, 0.5)
+                            padding: 16px 10px
+                    &.layout_1
+                        &.bottom
+                            bottom: calc(0% + 220px)
+                        &.bottom_alt
+                            bottom: calc(0% + 130px)
+                            left: calc(0% - 50px)
+                        &.bottom_alt_2
+                            bottom: calc(0% + 40px)
+                    &.layout_2
+                        &.bottom
+                            bottom: calc(0% + 130px)
+                        &.bottom_alt
+                            bottom: calc(0% + 40px)
+                            left: calc(0% - 50px)
+                    &.layout_3
+                        &.bottom
+                            bottom: calc(0% + 220px)
+                        &.bottom_alt
+                            bottom: calc(0% + 130px)
+                            left: calc(0% - 50px)
+                        &.bottom_alt_2
+                            bottom: calc(0% + 40px)
+                            justify-content: center
+                    &.left
+                        align-items: flex-start
+                        top: calc(0% + 40px)
+                        left: calc(15% + 65px)
+                        .seat_position
+                            flex: 0 0 calc(50% - 52.5px)
+                            &:nth-child(2)
+                                top: calc(0px + 60px)
+                            &:last-child
+                                top: calc(0px + 60px)
+                    &.right
+                        align-items: flex-start
+                        justify-content: flex-end
+                        top: calc(0% + 40px)
+                        right: calc(20% + 31px)
+                        .seat_position
+                            flex: 0 0 calc(50% - 52.5px)
+                            &:first-child
+                                top: calc(0px + 60px)
+                            &:nth-child(3)
+                                top: calc(0px + 60px)
+                    &.bottom,
+                    &.bottom_alt,
+                    &.bottom_alt_2
+                        left: 0
+                        right: 0
+                        justify-content: center
+                        width: 100%
+                        .seat_position
+                            flex: 0 0 calc(10% - 6.33%)
+                            margin: 10px 20px
+
 .default_modal
     position: fixed
     top: 0
@@ -1622,6 +1791,8 @@ input::placeholder
     &.toggler
         flex: 0 0 auto
         justify-content: flex-end
+        &.active
+            pointer-events: none
         label
             sf_pro_regular(18px)
             margin-bottom: 0
@@ -2590,6 +2761,7 @@ input::placeholder
             th
                 background-color: $green
                 position: sticky
+                z-index: 1
                 top: calc(0% + 80px)
                 color: $white
                 transition: .3s ease-in-out
@@ -2623,6 +2795,9 @@ input::placeholder
                 sf_pro_regular(16px)
                 color: $black
                 padding: 20px 30px
+                .id
+                    color: $border_alt2
+                    sf_pro_regular(15px)
                 .table_select
                     position: relative
                     .table_select_label
@@ -2727,7 +2902,8 @@ input::placeholder
                         text-transform: uppercase
                 &.table_actions
                     &.full
-                        a
+                        a,
+                        .link
                             flex: 0 0 100%
                     display: flex
                     flex-flow: row wrap
@@ -2738,7 +2914,8 @@ input::placeholder
                             color: $green
                         &.red
                             color: $red
-                    a
+                    a,
+                    .link
                         flex: 0 0 47%
                         text-align: center
                         text-decoration: none
@@ -3495,6 +3672,38 @@ input::placeholder
             flex: 0 0 100%
             .wrapper
                 flex: 0 0 23%
+.cms_col_five
+    display: flex
+    flex-flow: row wrap
+    align-items: center
+    margin-bottom: 30px
+    .cms_col
+        flex: 0 0 20%
+        padding: 15px
+        .wrapper
+            display: block
+            text-align: center
+            background-color: $white
+            border-radius: 5px
+            box-shadow: 15px 25px 40px transparent
+            text-decoration: none
+            transition: .3s ease-in-out
+            .badge
+                padding: 20px 30px
+                border-bottom: 1px solid $border_alt
+                img
+                    width: 100%
+            .info
+                padding: 15px 20px
+                h2
+                    sf_pro_regular(15px)
+                    color: $black
+                p
+                    sf_pro_regular(15px)
+                    color: $border_alt2
+            &:hover
+                box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.09)
+                transition: .3s ease-in-out
 
 .cms_taxonomy
     display: flex
@@ -5061,6 +5270,7 @@ input::placeholder
                 max-width: 90%
         &.alt_2
             #content
+                margin-bottom: 30px
                 #default_form
                     max-width: 65%
         &.alt_3
@@ -5640,6 +5850,7 @@ input::placeholder
                     display: flex
                     flex-flow: row wrap
                     align-items: center
+                    margin-bottom: 0
                     .action_btn
                         display: flex
                         flex-flow: row wrap

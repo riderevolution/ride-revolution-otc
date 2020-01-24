@@ -1,8 +1,8 @@
 <template>
     <div class="content">
-        <div id="admin" :class="`cms_dashboard user ${($route.params.slug == 'transactions' || $route.params.slug == 'class-history') ? 'alt' : ($route.params.slug == 'details' ? 'alt_2' : ($route.params.slug == 'packages' ? 'alt_3' : ''))}`" v-if="loaded">
+        <div id="admin" :class="`cms_dashboard user ${($route.params.slug == 'transactions' || $route.params.slug == 'class-history' || $route.params.slug == 'upcoming-classes') ? 'alt' : ($route.params.slug == 'details' || $route.params.slug == 'badges' ? 'alt_2' : ($route.params.slug == 'packages' ? 'alt_3' : ''))}`" v-if="loaded">
             <section id="top_content">
-                <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ lastRoute }}</span></nuxt-link>
+                <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
                 <div class="user_info">
                     <img :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images.length > 0" />
                     <div class="user_image_default" v-else>
@@ -33,6 +33,9 @@
                 <customer-content :value="customer" :type="$route.params.slug" />
                 <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
             </section>
+            <transition name="fade">
+                <upcoming-classes-layout :studio="layout.studio" :schedule="layout.schedule" v-if="$store.state.upcomingClassesLayoutStatus" />
+            </transition>
         </div>
         <foot v-if="$store.state.isAuth" />
     </div>
@@ -40,14 +43,20 @@
 
 <script>
     import CustomerContent from '../../../components/CustomerContent'
+    import UpcomingClassesLayout from '../../../components/modals/UpcomingClassesLayout'
     import Foot from '../../../components/Foot'
     export default {
         components: {
+            UpcomingClassesLayout,
             CustomerContent,
             Foot
         },
         data () {
             return {
+                layout:{
+                    studio: null,
+                    schedule: null
+                },
                 loaded: false,
                 lastRoute: '',
                 customer: [],

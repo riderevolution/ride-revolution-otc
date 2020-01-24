@@ -26,8 +26,8 @@
 
             </ul>
 
-            <div class="seat_available" @click="toggleSwitchSeat(seat.id)" v-if="$store.state.disableBookerUI && seat.bookings.length <= 0"></div>
-            <div class="seat_available" @click="signIn('open', seat)" v-if="$store.state.assignWaitlistBookerUI && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
+            <div class="seat_available" @click="toggleSwitchSeat(seat.id)" v-if="seat.status == 'open' && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
+            <div class="seat_available" @click="signIn('open', seat)" v-if="seat.status == 'open' && $store.state.assignWaitlistBookerUI && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
             <div class="seat_number" @click="signIn(seat.status, seat)">{{ seat.number }}</div>
             <div class="seat_pending" @click.self="checkPending((seat.bookings.length > 0) ? seat.bookings[0].user_id : null)" v-if="!$store.state.disableBookerUI && seat.userPendingPayments > 0 && seat.status != 'no-show'"></div>
             <div class="seat_action" @click.self="toggleAction(seat.status, (seat.bookings.length > 0) ? seat.bookings[0].id : null)"></div>
@@ -163,10 +163,11 @@
                         document.body.classList.add('no_scroll')
                     }
                 } else {
-                    me.$parent.message = 'Sorry, this class is over.'
-                    me.$parent.$parent.$parent.findCustomer = false
-                    me.$store.state.promptBookerStatus = true
-                    document.body.classList.add('no_scroll')
+                    if (status == 'open' && seat.past == 1) {
+                        me.$parent.message = 'Sorry, this class is over.'
+                        me.$store.state.promptBookerStatus = true
+                        document.body.classList.add('no_scroll')
+                    }
                 }
                 me.$store.state.seatID = seat.id
             },
