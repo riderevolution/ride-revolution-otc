@@ -66,7 +66,7 @@
                                 <div class="footer_form_group">
                                     <label for="name">Shipping Cost:</label>
                                     <div class="footer_input">
-                                        <input type="text" name="shipping" class="default_text" autocomplete="off" v-validate="'required|numeric'" v-model="form.total_shipping">
+                                        <input type="text" name="shipping" class="default_text" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}" v-model="form.total_shipping">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has(`shipping`)">{{ errors.first('shipping') }}</span></transition>
                                     </div>
                                 </div>
