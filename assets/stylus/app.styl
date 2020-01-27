@@ -5372,9 +5372,16 @@ input::placeholder
                             display: block
                             color: $white
                             sf_pro_regular(16px)
+                            background-position: left center
+                            background-repeat: no-repeat
                             &.number
+                                background-image: url('/icons/user-mobile-icon.svg')
+                                padding-left: 15px
                                 text-decoration: none
                             &.email
+                                background-image: url('/icons/user-email-icon.svg')
+                                background-position: left calc(50% + 2px)
+                                padding-left: 30px
                                 color: $blue
                                 margin-left: 20px
                     .user_summary
