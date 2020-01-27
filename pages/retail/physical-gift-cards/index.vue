@@ -47,9 +47,11 @@
                             <td>{{ data.card_code }}</td>
                             <td>PHP {{ totalCount(data.class_package.package_price) }} - {{ data.class_package.name }}</td>
                             <td>{{ formatDate(data.created_at) }}</td>
-                            <td class="table_actions">
-                                <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                            <td>
+                                <div class="table_actions">
+                                    <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
+                                    <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -122,11 +124,11 @@
                 const me = this
                 me.$store.state.confirmStatus = true
                 setTimeout( () => {
-                    me.$refs.enabled.confirm.table_name = 'products'
+                    me.$refs.enabled.confirm.table_name = 'gift_cards'
                     me.$refs.enabled.confirm.id = id
                     me.$refs.enabled.confirm.enabled = enabled
                     me.$refs.enabled.confirm.status = status
-                    me.$refs.enabled.confirm.type = 'product'
+                    me.$refs.enabled.confirm.type = 'gift card'
                 }, 100)
                 document.body.classList.remove('no_scroll')
             },

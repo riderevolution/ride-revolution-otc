@@ -71,10 +71,12 @@
                                         <td class="padding_left">{{ staff.user.email }}</td>
                                         <td>{{ staff.user.first_name }}</td>
                                         <td>{{ staff.user.last_name }}</td>
-                                        <td class="table_actions">
-                                            <a class="table_action_edit" href="javascript:void(0)" @click="toggleForm(staff.user.id, 1, 'user')">Edit User</a>
-                                            <a class="table_action_cancel" @click.self="toggleUserStatus(staff.user.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate User</a>
-                                            <a class="table_action_success" @click.self="toggleUserStatus(staff.user.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate User</a>
+                                        <td>
+                                            <div class="table_actions">
+                                                <a class="table_action_edit" href="javascript:void(0)" @click="toggleForm(staff.user.id, 1, 'user')">Edit User</a>
+                                                <a class="table_action_cancel" @click.self="toggleUserStatus(staff.user.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate User</a>
+                                                <a class="table_action_success" @click.self="toggleUserStatus(staff.user.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate User</a>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -105,9 +107,11 @@
                             <td>{{ role.display_name }}</td>
                             <td>{{ role.staff_details.length }}</td>
                             <td>{{ countPermissions(parser(role.permissions)) }}</td>
-                            <td class="table_actions">
-                                <a class="table_action_edit" href="javascript:void(0)" @click="toggleForm(role.id, 1, 'role')">Edit Role</a>
-                                <a class="table_action_success" @click.self="toggleStatus(role.id, 1, 'Activated')" href="javascript:void(0)">Activate Role</a>
+                            <td>
+                                <div class="table_actions">
+                                    <a class="table_action_edit" href="javascript:void(0)" @click="toggleForm(role.id, 1, 'role')">Edit Role</a>
+                                    <a class="table_action_success" @click.self="toggleStatus(role.id, 1, 'Activated')" href="javascript:void(0)">Activate Role</a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -132,9 +136,11 @@
                             <td>{{ staff.email }}</td>
                             <td>{{ staff.first_name }}</td>
                             <td>{{ staff.last_name }}</td>
-                            <td class="table_actions">
-                                <a class="table_action_edit" href="javascript:void(0)" @click="toggleForm(staff.id, 1, 'user')">Edit User</a>
-                                <a class="table_action_success" @click.self="toggleUserStatus(staff.id, 1, 'Activated')" href="javascript:void(0)">Activate User</a>
+                            <td>
+                                <div class="table_actions">
+                                    <a class="table_action_edit" href="javascript:void(0)" @click="toggleForm(staff.id, 1, 'user')">Edit User</a>
+                                    <a class="table_action_success" @click.self="toggleUserStatus(staff.id, 1, 'Activated')" href="javascript:void(0)">Activate User</a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

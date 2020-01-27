@@ -28,9 +28,11 @@
                             <td>{{ data.title }}</td>
                             <td>{{ formatDate(data.created_at) }}</td>
                             <td>{{ formatDate(data.updated_at) }}</td>
-                            <td class="table_actions">
-                                <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
-                                <a class="table_action_cancel" href="javascript:void(0)" @click="toggleDelete(data.id)">Delete</a>
+                            <td>
+                                <div class="table_actions">
+                                    <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
+                                    <a class="table_action_cancel" href="javascript:void(0)" @click="toggleDelete(data.id)">Delete</a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

@@ -44,10 +44,12 @@
                             <td>{{ data.promo_code }}</td>
                             <td>{{ formatDate(data.start_date) }}</td>
                             <td>{{ formatDate(data.end_date) }}</td>
-                            <td class="table_actions">
-                                <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
-                                <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                            <td>
+                                <div class="table_actions">
+                                    <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
+                                    <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
+                                    <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -114,11 +116,11 @@
                 const me = this
                 me.$store.state.confirmStatus = true
                 setTimeout( () => {
-                    me.$refs.enabled.confirm.table_name = 'products'
+                    me.$refs.enabled.confirm.table_name = 'promos'
                     me.$refs.enabled.confirm.id = id
                     me.$refs.enabled.confirm.enabled = enabled
                     me.$refs.enabled.confirm.status = status
-                    me.$refs.enabled.confirm.type = 'product'
+                    me.$refs.enabled.confirm.type = 'promo'
                 }, 100)
                 document.body.classList.remove('no_scroll')
             },

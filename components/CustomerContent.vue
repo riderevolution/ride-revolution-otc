@@ -420,6 +420,7 @@
         },
         data () {
             return {
+                rowCount: 0,
                 promptMessage: '',
                 isActivated: true,
                 loaded: false,
@@ -598,6 +599,7 @@
             if (me.$route.params.slug == 'transactions') {
                 me.res = me.value.payments
             }
+            me.rowCount = document.getElementsByTagName('th').length
             me.loaded = true
         },
         beforeMount () {

@@ -30,10 +30,12 @@
                         <tr v-for="(data, key) in res.packageTypes.data" :key="key">
                             <td>{{ data.name }}</td>
                             <td width="50%"><div v-line-clamp="1">{{ data.description }}</div></td>
-                            <td class="table_actions">
-                                <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
-                                <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                            <td>
+                                <div class="table_actions">
+                                    <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
+                                    <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
+                                    <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
