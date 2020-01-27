@@ -72,7 +72,11 @@
             submissionSuccess () {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/studios/${me.studio}`).then(res => {
+                me.$axios.get(`api/studios/${me.studio}`, {
+                    headers: {
+                        Authorization: `Bearer ${me.$store.state.token}`
+                    }
+                }).then(res => {
                     if (res.data) {
                         let formData = new FormData()
                         me.selectedStudio = res.data.studio
@@ -105,7 +109,11 @@
         },
         mounted () {
             const me = this
-            me.$axios.get(`api/studios/${me.$store.state.user.current_studio_id}`).then(res => {
+            me.$axios.get(`api/studios/${me.$store.state.user.current_studio_id}`, {
+                headers: {
+                    Authorization: `Bearer ${me.$store.state.token}`
+                }
+            }).then(res => {
                 if (res.data) {
                     me.currentStudio = res.data.studio
                 }

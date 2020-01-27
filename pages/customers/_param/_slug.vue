@@ -1,6 +1,6 @@
 <template>
     <div class="content">
-        <div id="admin" :class="`cms_dashboard user ${($route.params.slug == 'transactions' || $route.params.slug == 'class-history' || $route.params.slug == 'upcoming-classes') ? 'alt' : ($route.params.slug == 'details' || $route.params.slug == 'badges' ? 'alt_2' : ($route.params.slug == 'packages' ? 'alt_3' : ''))}`" v-if="loaded">
+        <div id="admin" :class="`cms_dashboard user ${($route.params.slug == 'transactions' || $route.params.slug == 'class-history' || $route.params.slug == 'upcoming-classes') ? 'alt' : ($route.params.slug == 'details' ? 'alt_2' : ($route.params.slug == 'packages' ? 'alt_3' : ($route.params.slug == 'badges') ? 'alt_4' : ''))}`" v-if="loaded">
             <section id="top_content">
                 <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
                 <div class="user_info">

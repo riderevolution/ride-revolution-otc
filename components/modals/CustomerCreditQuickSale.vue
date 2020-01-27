@@ -221,7 +221,7 @@
             </div>
         </div>
         <transition name="fade">
-            <prompt v-if="$store.state.promptStatus" :message="message" />
+            <prompt-quick-sale v-if="$store.state.promptQuickSaleStatus" :message="message" />
         </transition>
         <transition name="fade">
             <prompt-promo v-if="$store.state.promptPromoStatus" :message="message" />
@@ -232,12 +232,12 @@
 <script>
     import CustomerCreditQuickSaleTabContent from './CustomerCreditQuickSaleTabContent'
     import PromptPromo from './PromptPromo'
-    import Prompt from './Prompt'
+    import PromptQuickSale from './PromptQuickSale'
     export default {
         components: {
             CustomerCreditQuickSaleTabContent,
             PromptPromo,
-            Prompt
+            PromptQuickSale
         },
         data () {
             return {
@@ -378,7 +378,7 @@
                                 me.totalPrice = res.data.items
                             } else {
                                 me.promoApplied = false
-                                me.$store.state.promptStatus = true
+                                me.$store.state.promptQuickSaleStatus = true
                                 me.message = 'This promo code is not available anymore.'
                             }
                         }).catch(err => {
@@ -391,7 +391,7 @@
                     }
                 } else {
                     me.promoApplied = false
-                    me.$store.state.promptStatus = true
+                    me.$store.state.promptQuickSaleStatus = true
                     me.message = 'Please enter a promo code.'
                 }
             },
@@ -464,7 +464,7 @@
                     })
                 } else {
                     me.message = 'Please select a product before placing your order'
-                    me.$store.state.promptStatus = true
+                    me.$store.state.promptQuickSaleStatus = true
                 }
             },
             takePayment (step) {
@@ -482,7 +482,7 @@
                             document.getElementById('step1').classList.remove('slide_in')
                         } else {
                             me.message = 'Please select a product before taking payment.'
-                            me.$store.state.promptStatus = true
+                            me.$store.state.promptQuickSaleStatus = true
                         }
                         break
                 }
