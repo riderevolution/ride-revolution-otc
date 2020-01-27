@@ -1616,6 +1616,10 @@ input::placeholder
     flex-flow: row wrap
     align-items: center
     justify-content: flex-start
+    height: 100%
+    max-height: 300px
+    overflow-y: auto
+    overflow-x: hidden
     label
         flex: 0 0 100%
         user-select: none
@@ -1629,7 +1633,7 @@ input::placeholder
             color: $green
     .flex_button
         flex: 0 0 calc(33.33% - 40px)
-        margin: 0 20px
+        margin: 0 20px 20px
         cursor: pointer
         text-align: center
         sf_pro_medium(18px)

@@ -74,10 +74,20 @@
                 me.loader(true)
                 me.$axios.get(`api/studios/${me.studio}`).then(res => {
                     if (res.data) {
+                        let formData = new FormData()
                         me.selectedStudio = res.data.studio
-                        setTimeout( () => {
-                            me.$store.state.user.current_studio_id = me.selectedStudio.id
-                        }, 10)
+                        formData.append('current_studio_id', me.selectedStudio.id)
+                        me.$axios.post('api/extras/change-current-user-studio', formData, {
+                            headers: {
+                                Authorization: `Bearer ${me.$store.state.token}`
+                            }
+                        }).then(res => {
+                            if (res.data) {
+                                setTimeout( () => {
+                                    me.$store.state.user = res.data.user
+                                }, 10)
+                            }
+                        })
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
