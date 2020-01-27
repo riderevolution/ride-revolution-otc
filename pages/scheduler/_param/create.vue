@@ -51,15 +51,15 @@
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="class_type_id">Class Type <span>*</span></label>
-                                    <select class="default_select alternate" name="class_type_id" v-validate="'required'">
+                                    <select class="default_select alternate" name="class_type_id" v-validate="'required'" @change="getClassLength($event)">
                                         <option value="" selected disabled>Select a Class Type</option>
                                         <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key">{{ classType.name }}</option>
                                     </select>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('class_type_id')">{{ errors.first('class_type_id') }}</span></transition>
                                 </div>
                                 <div class="form_group">
-                                    <label for="class_length">Class Length</label>
-                                    <input type="text" name="class_length" autocomplete="off" class="default_text disabled" value="50 mins.">
+                                    <label for="temp_class_length">Class Length</label>
+                                    <input type="text" name="temp_class_length" autocomplete="off" class="default_text disabled" v-model="form.classLengthTemp">
                                 </div>
                             </div>
                             <div class="form_group">
@@ -122,7 +122,7 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="class_credits">Class Credits <span>*</span></label>
-                                    <input type="text" name="class_credits" autocomplete="off" class="default_text" v-validate="'required'">
+                                    <input type="text" name="class_credits" autocomplete="off" class="default_text" v-validate="'required|numeric'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ errors.first('class_credits') }}</span></transition>
                                 </div>
                             </div>
@@ -195,10 +195,12 @@
                 studios: [],
                 form: {
                     start: {
-                        hour: '00',
-                        mins: '00',
+                        hour: '-',
+                        mins: '-',
                         convention: 'AM'
                     },
+                    classLengthTemp: '',
+                    classLength: '',
                     instructor_id: ''
                 }
             }
@@ -238,6 +240,16 @@
             }
         },
         methods: {
+            getClassLength (event) {
+                const me = this
+                let target = event.target.value
+                me.$axios.get(`api/packages/class-types/${target}`).then(res => {
+                    if (res.data) {
+                        me.form.classLength = res.data.classType.class_length
+                        me.form.classLengthTemp = `${res.data.classType.class_length.split('+')[1].split(':')[0]} hrs. ${res.data.classType.class_length.split('+')[1].split(':')[1]} mins.`
+                    }
+                })
+            },
             toggleSelectAll (event) {
                 const me = this
                 if (me.checkData) {
@@ -285,6 +297,7 @@
                         formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
                         formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
                         formData.append('studios', JSON.stringify(me.studios))
+                        formData.append('class_length', me.form.classLength)
                         me.loader(true)
                         me.$axios.post('api/schedules', formData).then(res => {
                             setTimeout( () => {

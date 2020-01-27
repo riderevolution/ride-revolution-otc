@@ -51,7 +51,7 @@
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="class_type_id">Class Type <span>*</span></label>
-                                    <select class="default_select alternate" name="class_type_id" v-validate="'required'">
+                                    <select class="default_select alternate" name="class_type_id" v-validate="'required'" @change="getClassLength($event)">
                                         <option value="" selected disabled>Select a Class Type</option>
                                         <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key" :selected="res.class_type_id == classType.id">{{ classType.name }}</option>
                                     </select>
@@ -122,7 +122,7 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="class_credits">Class Credits <span>*</span></label>
-                                    <input type="text" name="class_credits" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.class_credits">
+                                    <input type="text" name="class_credits" autocomplete="off" class="default_text" v-validate="'required|numeric'" v-model="res.class_credits">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ errors.first('class_credits') }}</span></transition>
                                 </div>
                             </div>
@@ -202,10 +202,12 @@
                 prompt: false,
                 form: {
                     start: {
-                        hour: '00',
-                        mins: '00',
+                        hour: '-',
+                        mins: '-',
                         convention: 'AM'
                     },
+                    classLengthTemp: '',
+                    classLength: '',
                     instructor_id: ''
                 }
             }
@@ -245,6 +247,16 @@
             }
         },
         methods: {
+            getClassLength (event) {
+                const me = this
+                let target = event.target.value
+                me.$axios.get(`api/packages/class-types/${target}`).then(res => {
+                    if (res.data) {
+                        me.form.classLength = res.data.classType.class_length
+                        me.form.classLengthTemp = `${res.data.classType.class_length.split('+')[1].split(':')[0]} hrs. ${res.data.classType.class_length.split('+')[1].split(':')[1]} mins.`
+                    }
+                })
+            },
             toggleRepeat () {
                 const me = this
                 me.isRepeat ^= true
