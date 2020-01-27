@@ -146,7 +146,7 @@
                                 <div class="form_group flex">
                                     <label for="package_price">Package Price <span>*</span></label>
                                     <div class="form_flex_input full">
-                                        <input type="text" name="package_price" class="default_text number" autocomplete="off"v-validate="'required|numeric|decimal:2'">
+                                        <input type="text" name="package_price" class="default_text number" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}">
                                         <div class="placeholder">PHP</div>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('package_price')">{{ errors.first('package_price') }}</span></transition>
                                     </div>

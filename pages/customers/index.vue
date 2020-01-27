@@ -66,6 +66,9 @@
                                     <div class="table_action_text red">Php {{ totalCount(data.totalPendingPayments) }}</div>
                                     <div class="link table_action_success" @click="togglePendingTransactions(data.id)">Pay Now</div>
                                 </div>
+                                <div v-else>
+                                    N/A
+                                </div>
                             </td>
                         </tr>
                     </tbody>

@@ -18,11 +18,11 @@
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.reorder_point[]`)">The reorder point field is required</span></transition>
             </div>
             <div class="input_content">
-                <input type="text" name="unit_price[]" autocomplete="off" class="default_text" v-validate="'required|decimal:2'" :data-vv-name="`variant_form_${unique}.unit_price[]`">
+                <input type="text" name="unit_price[]" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}" :data-vv-name="`variant_form_${unique}.unit_price[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.unit_price[]`)">The unit price field is required</span></transition>
             </div>
             <div class="input_content">
-                <input type="text" name="sale_price[]" autocomplete="off" class="default_text" v-validate="'required|decimal:2'" :data-vv-name="`variant_form_${unique}.sale_price[]`">
+                <input type="text" name="sale_price[]" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}" :data-vv-name="`variant_form_${unique}.sale_price[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sale_price[]`)">The sale price field is required</span></transition>
             </div>
             <div class="input_content image_upload" v-if="$parent.showClose">
@@ -35,27 +35,27 @@
         </div>
         <div class="input_wrapper" v-show="show" v-else>
             <div class="input_content">
-                <input type="text" name="variant[]" autocomplete="off" class="default_text" v-model="value.variant" v-validate="'required'">
+                <input type="text" name="variant[]" autocomplete="off" class="default_text" v-model="value.variant" v-validate="'required'" :data-vv-name="`variant_form_${unique}.variant[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.variant[]`)">The variant field is required</span></transition>
             </div>
             <div class="input_content">
-                <input type="text" name="sku_id[]" autocomplete="off" class="default_text" v-model="value.sku_id" v-validate="'required'">
+                <input type="text" name="sku_id[]" autocomplete="off" class="default_text" v-model="value.sku_id" v-validate="'required'" :data-vv-name="`variant_form_${unique}.sku_id[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sku_id[]`)">The sku id field is required</span></transition>
             </div>
             <div class="input_content">
-                <input type="text" name="quantity[]" autocomplete="off" class="default_text disabled" value="0" v-validate="'required|numeric'">
+                <input type="text" name="quantity[]" autocomplete="off" class="default_text disabled" value="0" v-validate="'required|numeric'" :data-vv-name="`variant_form_${unique}.quantity[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.quantity[]`)">The quantity field is required</span></transition>
             </div>
             <div class="input_content">
-                <input type="text" name="reorder_point[]" autocomplete="off" class="default_text" v-model="value.reorder_point" v-validate="'required|numeric'">
+                <input type="text" name="reorder_point[]" autocomplete="off" class="default_text" v-model="value.reorder_point" v-validate="'required|numeric'" :data-vv-name="`variant_form_${unique}.reorder_point[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.reorder_point[]`)">The reorder point field is required</span></transition>
             </div>
             <div class="input_content">
-                <input type="text" name="unit_price[]" autocomplete="off" class="default_text" v-model="value.unit_price" v-validate="'required|decimal:2'">
+                <input type="text" name="unit_price[]" autocomplete="off" class="default_text" v-model="value.unit_price" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}" :data-vv-name="`variant_form_${unique}.unit_price[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.unit_price[]`)">The unit price field is required</span></transition>
             </div>
             <div class="input_content">
-                <input type="text" name="sale_price[]" autocomplete="off" class="default_text" v-model="value.sale_price" v-validate="'required|decimal:2'">
+                <input type="text" name="sale_price[]" autocomplete="off" class="default_text" v-model="value.sale_price" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}" :data-vv-name="`variant_form_${unique}.sale_price[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sale_price[]`)">The sale price field is required</span></transition>
             </div>
             <div class="input_content image_upload" v-if="$parent.showClose">
