@@ -15,7 +15,12 @@
                     <div class="form_wrapper">
                         <div class="form_header_wrapper">
                             <h2 class="form_title">Instructor Overview</h2>
-                            <div class="form_photo">
+                            <div class="form_photo" @mouseover="tooltip = true" @mouseout="tooltip = false">
+                                <transition name="slide">
+                                    <div class="tooltip" v-if="tooltip">
+                                        Max dimension: 600x600
+                                    </div>
+                                </transition>
                                 <input type="file" id="image" name="image[]" class="action_photo" @change="getFile($event)" v-validate="'image|dimensions:600,600'">
                                 <label for="image" :class="`${(previewImage) ? 'active' : ''}`"><span>Upload Photo</span></label>
                                 <img id="preview_image" src="/" v-if="previewImage" />
@@ -264,6 +269,7 @@
         },
         data () {
             return {
+                tooltip: false,
                 error: false,
                 previewImage: false,
                 genderStatus: false,
