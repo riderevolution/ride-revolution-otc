@@ -47,21 +47,25 @@
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">
                         <tr v-for="(data, key) in res.customers.data" :key="key">
-                            <td class="thumb">
-                                <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" />
-                                <div class="table_image_default" v-else>
-                                    {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                            <td>
+                                <div class="thumb">
+                                    <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" />
+                                    <div class="table_image_default" v-else>
+                                        {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                    </div>
+                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.last_name }}</nuxt-link>
                                 </div>
-                                <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.last_name }}</nuxt-link>
                             </td>
                             <td><nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.first_name }}</nuxt-link></td>
                             <td>First Timer</td>
                             <td>Teal</td>
                             <td>{{ data.email }}</td>
                             <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
-                            <td class="table_actions">
-                                <div class="table_action_text red">Php 120.00</div>
-                                <a class="table_action_success" href="javascript:void(0)">Pay Now</a>
+                            <td>
+                                <div class="table_actions">
+                                    <div class="table_action_text red">Php 0.00</div>
+                                    <div class="link table_action_success" @click="togglePendingTransactions(data.id)">Pay Now</div>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -77,6 +81,12 @@
         <transition name="fade">
             <confirm-status v-if="$store.state.confirmStatus" ref="enabled" :status="status" />
         </transition>
+        <transition name="fade">
+            <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
+        </transition>
+        <transition name="fade">
+            <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
@@ -86,6 +96,8 @@
     import UserForm from '../../components/modals/UserForm'
     import RoleForm from '../../components/modals/RoleForm'
     import ConfirmStatus from '../../components/modals/ConfirmStatus'
+    import PendingTransactions from '../../components/modals/PendingTransactions'
+    import CustomerPendingQuickSale from '../../components/modals/CustomerPendingQuickSale'
     import Pagination from '../../components/Pagination'
     export default {
         components: {
@@ -93,6 +105,8 @@
             UserForm,
             RoleForm,
             ConfirmStatus,
+            PendingTransactions,
+            CustomerPendingQuickSale,
             Pagination
         },
         data () {
@@ -103,10 +117,17 @@
                 rowCount: 0,
                 status: 1,
                 res: [],
-                types: []
+                types: [],
+                transaction: []
             }
         },
         methods: {
+            togglePendingTransactions (id) {
+                const me = this
+                me.$store.state.pendingCustomerID = id
+                me.$store.state.pendingTransactionsStatus = true
+                document.body.classList.add('no_scroll')
+            },
             submissionSuccess () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
