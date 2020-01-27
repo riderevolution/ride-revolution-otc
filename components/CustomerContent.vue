@@ -90,12 +90,14 @@
                         <td>5</td>
                         <td>Ride Rev</td>
                         <td>Greenbelt 5</td>
-                        <td class="thumb">
-                            <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
-                            <div class="table_image_default">
-                                CR
+                        <td>
+                            <div class="thumb">
+                                <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
+                                <div class="table_image_default">
+                                    CR
+                                </div>
+                                <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
                             </div>
-                            <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
                         </td>
                         <td>
                             <div class="table_select" v-if="key != 1">
@@ -157,12 +159,14 @@
                         <td>5</td>
                         <td>Ride Rev</td>
                         <td>Greenbelt 5</td>
-                        <td class="thumb">
-                            <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
-                            <div class="table_image_default">
-                                CR
+                        <td>
+                            <div class="thumb">
+                                <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
+                                <div class="table_image_default">
+                                    CR
+                                </div>
+                                <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
                             </div>
-                            <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
                         </td>
                         <td>
                             <div class="table_select" v-if="key != 1">
