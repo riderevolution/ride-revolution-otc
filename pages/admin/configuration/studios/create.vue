@@ -14,10 +14,17 @@
                             <h2 class="form_title">Studio Details</h2>
                         </div>
                         <div class="form_main_group">
-                            <div class="form_group">
-                                <label for="name">Studio Name <span>*</span></label>
-                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') }}</span></transition>
+                            <div class="form_flex">
+                                <div class="form_group">
+                                    <label for="name">Studio Name <span>*</span></label>
+                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') }}</span></transition>
+                                </div>
+                                <div class="form_group">
+                                    <label for="color_code">Color Code <span>*</span></label>
+                                    <input type="text" name="color_code" autocomplete="off" class="default_text" v-validate="'required'" placeholder="#000000">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('color_code')">{{ errors.first('color_code') }}</span></transition>
+                                </div>
                             </div>
                             <div class="form_group">
                                 <label for="address_line_1">Address Line 1 <span>*</span></label>

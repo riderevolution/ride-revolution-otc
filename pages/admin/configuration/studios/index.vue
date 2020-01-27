@@ -21,6 +21,7 @@
                 <table class="cms_table" v-if="loaded">
                     <thead>
                         <tr>
+                            <th>Color</th>
                             <th>Studio</th>
                             <th>Purchases Email Sender</th>
                             <th>Reservations Email Sender</th>
@@ -29,6 +30,9 @@
                     </thead>
                     <tbody v-if="res.length > 0">
                         <tr v-for="(data, key) in res" :key="key">
+                            <td>
+                                <div class="table_color_code" :style="`background-color: ${data.color_code}`"></div>
+                            </td>
                             <td>{{ data.name }}</td>
                             <td>{{ data.purchase_email }}</td>
                             <td>{{ data.reservations_email }}</td>

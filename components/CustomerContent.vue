@@ -3,7 +3,10 @@
         <div v-if="type == 'packages' && loaded">
             <div class="cms_table_toggler">
                 <div :class="`status ${(packageStatus == 1) ? 'active' : ''}`" @click="togglePackages(1)">Owned</div>
-                <div :class="`status ${(packageStatus == 2) ? 'active' : ''}`" @click="togglePackages(2)">Shared</div>
+                <div :class="`status ${(packageStatus == 2) ? 'active' : ''}`" @click="togglePackages(2)">Transferred</div>
+                <div :class="`status ${(packageStatus == 3) ? 'active' : ''}`" @click="togglePackages(3)">Shared</div>
+                <div :class="`status ${(packageStatus == 4) ? 'active' : ''}`" @click="togglePackages(4)">Frozen</div>
+                <div :class="`status ${(packageStatus == 5) ? 'active' : ''}`" @click="togglePackages(5)">Expired</div>
             </div>
             <div class="cms_table_package">
                 <div class="table_package" v-for="(data, key) in value.user_package_counts" :key="key" v-if="value.user_package_counts.length > 0">
