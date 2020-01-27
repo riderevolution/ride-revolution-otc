@@ -15,7 +15,10 @@
                     <div class="form_wrapper">
                         <div class="form_header_wrapper">
                             <h2 class="form_title">Customer Overview</h2>
-                            <div class="form_photo">
+                            <div class="form_photo" @mouseover="tooltip = true">
+                                <div class="tooltip">
+                                    Maximum dimension: 600x600
+                                </div>
                                 <input type="file" id="image" name="image[]" class="action_photo" @change="getFile($event)" v-validate="'image'">
                                 <label for="image" :class="`${(previewImage) ? 'active' : ''}`"><span>Upload Photo</span></label>
                                 <img id="preview_image" src="/" v-if="previewImage" />
@@ -127,12 +130,12 @@
                             <div class="form_group">
                                 <label for="pa_address_2">Address Line 2 <span>*</span></label>
                                 <input type="text" name="pa_address_2" autocomplete="off" class="default_text" v-validate="'required'" v-model="form.pa_address_2">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_1')">{{ errors.first('pa_address_1') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_2')">{{ errors.first('pa_address_2') }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="pa_city">City <span>*</span></label>
                                 <input type="text" name="pa_city" autocomplete="off" class="default_text" v-validate="'required'" v-model="form.pa_city">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_1')">{{ errors.first('pa_address_1') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_city')">{{ errors.first('pa_city') }}</span></transition>
                             </div>
                         </div>
                     </div>
