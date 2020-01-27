@@ -253,7 +253,7 @@
                 me.$axios.get(`api/packages/class-types/${target}`).then(res => {
                     if (res.data) {
                         me.form.classLength = res.data.classType.class_length
-                        me.form.classLengthTemp = `${res.data.classType.class_length.split('+')[1].split(':')[0]} hrs. ${res.data.classType.class_length.split('+')[1].split(':')[1]} mins.`
+                        me.form.classLengthTemp = `${res.data.classType.class_length.split('+')[1].split(':')[0]} hrs, ${res.data.classType.class_length.split('+')[1].split(':')[1]} mins`
                     }
                 })
             },

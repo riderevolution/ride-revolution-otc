@@ -80,7 +80,7 @@
             formatToLength (value) {
                 const me = this
                 value = value.split('+')[1].split(':')
-                return `${value[0]} hours, ${value[1]} mins`
+                return `${value[0]} hrs, ${value[1]} mins`
             },
             async toggleStatus (id, enabled, status) {
                 const me = this

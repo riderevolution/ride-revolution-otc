@@ -110,7 +110,7 @@
                                             </div>
                                         </div>
                                         <div class="class_text">
-                                            {{ data.schedule.instructor_schedules[0].user.first_name }} (50 mins)
+                                            {{ data.schedule.instructor_schedules[0].user.first_name }} ({{ data.schedule.class_length_formatted }})
                                         </div>
                                         <div class="class_text alternate">
                                             <span>Signed-in: 3</span>

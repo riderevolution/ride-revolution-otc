@@ -157,16 +157,16 @@
                 prevRoute: '',
                 form: {
                     booking: {
-                        hour: 0,
-                        mins: 0
+                        hour: '-',
+                        mins: '-'
                     },
                     cancel: {
-                        hour: 0,
-                        mins: 0
+                        hour: '-',
+                        mins: '-'
                     },
                     noShow: {
-                        hour: 0,
-                        mins: 0
+                        hour: '-',
+                        mins: '-'
                     },
                 }
             }

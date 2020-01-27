@@ -103,8 +103,8 @@
                 studios: [],
                 form: {
                     classLength: {
-                        hour: 0,
-                        mins: 0
+                        hour: '-',
+                        mins: '-'
                     }
                 },
             }
