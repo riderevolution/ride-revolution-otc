@@ -24,9 +24,8 @@
                 </div>
             </section>
             <section id="content">
-                asdasdasdasd
-                <!-- <customer-content :value="customer" :type="$route.params.slug" /> -->
-                <!-- <button type="button" class="hidden" id="packages" @click="fetchData()"></button> -->
+                <customer-content :value="customer" :type="$route.params.slug" />
+                <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
             </section>
         </div>
         <foot v-if="$store.state.isAuth" />
@@ -34,9 +33,11 @@
 </template>
 
 <script>
+    import CustomerContent from '../../../components/CustomerContent'
     import Foot from '../../../components/Foot'
     export default {
         components: {
+            CustomerContent,
             Foot
         },
         data () {

@@ -12,7 +12,7 @@
                     <input type="text" name="quantity[]" :id="`quantity_${unique}`" class="default_text number" maxlength="2" autocomplete="off" v-model="quantity" v-validate="`numeric|min_value:1|${(value.product_quantities) ? `max_value:${value.product_quantities[0].quantity}` : '' }`" @input="recomputeTotal(value.id, unique, (value.isProductShow) ? value.sale_price : (value.isGiftShow ? value.class_package.package_price : value.amount ))">
                     <div class="up" @click="addCount(value.id, unique, (value.isProductShow) ? value.sale_price : (value.isGiftShow ? value.class_package.package_price : value.amount ))"></div>
                     <div class="down" @click="subtractCount(value.id, unique, (value.isProductShow) ? value.sale_price : (value.isGiftShow ? value.class_package.package_price : value.amount ))"></div>
-                    <transition name="slide"><span class="validation_errors" v-if="errors.has('quantity[]')">{{ errors.first('quantity[]') }}</span></transition>
+                    <transition name="slide"><span class="validation_errors" v-if="errors.has('quantity[]')">{{ errors.first('quantity[]') | properFormat }}</span></transition>
                 </div>
             </div>
         </div>
@@ -36,6 +36,12 @@
             return {
                 quantity: 1,
                 isSearched: true
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                value = value.toString()
+                console.log(value.split('The ')[1].split(' field'));
             }
         },
         methods: {

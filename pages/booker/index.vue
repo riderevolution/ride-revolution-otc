@@ -400,7 +400,9 @@
                                 me.$store.state.errorStatus = true
                             }).then(() => {
                                 setTimeout( () => {
+                                    console.log(me.$store.state.scheduleID);
                                     me.fetchWaitlist(me.$store.state.scheduleID)
+                                    console.log(me.$store.state.scheduleID);
                                     me.loader(false)
                                 }, 500)
                             })

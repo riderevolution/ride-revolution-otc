@@ -58,8 +58,8 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('class_type_id')">{{ errors.first('class_type_id') }}</span></transition>
                                 </div>
                                 <div class="form_group">
-                                    <label for="class_length">Class Length</label>
-                                    <input type="text" name="class_length" autocomplete="off" class="default_text disabled" value="50 mins.">
+                                    <label for="class_length_temp">Class Length</label>
+                                    <input type="text" name="class_length_temp" autocomplete="off" class="default_text disabled" v-model="form.classLengthTemp">
                                 </div>
                             </div>
                             <div class="form_group">
@@ -311,6 +311,7 @@
                             formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
                             formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
                             formData.append('studios', JSON.stringify(me.studios))
+                            formData.append('class_length', me.form.classLength)
                             me.loader(true)
                             me.$axios.post(`api/schedules/${me.$route.params.id}`, formData).then(res => {
                                 setTimeout( () => {
@@ -357,6 +358,7 @@
             me.$axios.get(`api/schedules/${me.$route.params.id}`).then(res => {
                 if (res.data) {
                     me.res = res.data.schedule
+                    me.form.classLengthTemp = me.res.class_length_unformatted
                     me.form.start.hour = me.res.start_time.split(':')[0]
                     me.form.start.mins = me.res.start_time.split(':')[1].split(' ')[0]
                     me.form.start.convention = me.res.start_time.split(':')[1].split(' ')[1]
