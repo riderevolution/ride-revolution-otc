@@ -5,7 +5,7 @@
                 <div class="action_wrapper">
                     <h1 class="header_title">Booker</h1>
                     <div class="actions">
-                        <form :class="`customer_filter_flex ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" id="filter" @submit.prevent>
+                        <form :class="`customer_filter_flex ${($store.state.disableBookerUI) ? 'disable_booker' : ''} ${(past) ? 'disabled_past' : ''}`" id="filter" @submit.prevent>
                             <div class="form_group customer">
                                 <label for="studio_id">Studio</label>
                                 <select :class="`default_select alternate ${(!selectStudio) ? 'highlighted' : ''}`" name="studio_id" @change="getStudio($event)">
@@ -14,7 +14,7 @@
                                 </select>
                                 <transition name="slide"><span class="validation_errors alt" v-if="!selectStudio">Select Studio</span></transition>
                             </div>
-                            <div class="form_group margin" v-click-outside="closeMe">
+                            <div class="form_group selection margin" v-click-outside="closeMe">
                                 <label for="q">Find a Customer</label>
                                 <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @click="toggleCustomers ^= true" @input="searchCustomer($event)">
                                 <transition name="slide"><span class="validation_errors alt" v-if="!findCustomer && customer == ''">Select Customer</span></transition>
@@ -201,7 +201,7 @@
                             <div class="booker_waitlist">
                                 <div class="footer_header">
                                     <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
-                                    <a href="javascript:void(0)" :class="`action_success_btn ${($store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
+                                    <a href="javascript:void(0)" :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
                                 </div>
                                 <table class="cms_waitlist">
                                     <thead>
@@ -307,6 +307,8 @@
         },
         data () {
             return {
+                inWaitlist: false,
+                past: false,
                 waitlistID: 0,
                 transaction: [],
                 actionMessage: '',
@@ -551,6 +553,17 @@
                     })
                 }
                 me.schedule = data
+                if (me.selectStudio) {
+                    let scheduleTime = me.$moment(`${me.schedule.date} ${me.schedule.schedule.start_time}`)
+                    let currentTime = me.$moment()
+                    if (scheduleTime.diff(currentTime) < 0) {
+                        me.past = true
+                        me.removeCustomer()
+                    } else {
+                        me.past = false
+                    }
+                }
+                console.log(me.$refs.plan.seats);
                 me.$store.state.scheduleID = data.id
                 me.fetchWaitlist(data.id)
 

@@ -34,7 +34,7 @@
                             <div class="total_items" v-if="toCompare.giftCard != 2">{{ totalItems(total) }} <span>items</span></div>
                         </div>
                         <div class="modal_tab_content">
-                            <form id="product_form" v-show="isProduct">
+                            <form id="product_form" data-vv-scope="product_form" v-show="isProduct">
                                 <customer-product-quick-sale-tab-content ref="quickSale" :value="value" :unique="index" v-for="(value, index) in showProducts" :key="`${unique}_${value.id}`" />
                             </form>
                             <div class="no_results" v-if="total == 0">
@@ -481,30 +481,38 @@
                 formData.append('user_id', me.$store.state.customerID)
                 formData.append('payLater', 1)
                 if (me.totalPrice.length > 0) {
-                    me.loader(true)
-                    me.$axios.post('api/quick-sale', formData).then(res => {
-                        setTimeout( () => {
-                            if (res.data) {
-                                me.$store.state.successfulLaterStatus = true
-                                if (me.$route.params.slug == 'transactions') {
-                                    document.getElementById('transactions').click()
+                    if (document.querySelector('#product_form .validation_errors') == null) {
+                        me.loader(true)
+                        me.$axios.post('api/quick-sale', formData).then(res => {
+                            setTimeout( () => {
+                                if (res.data) {
+                                    me.$store.state.successfulLaterStatus = true
+                                    if (me.$route.params.slug == 'transactions') {
+                                        document.getElementById('transactions').click()
+                                    }
+                                } else {
+                                    me.$store.state.errorList.push('Sorry, Something went wrong')
+                                    me.$store.state.errorQuickSaleStatus = true
                                 }
-                            } else {
-                                me.$store.state.errorList.push('Sorry, Something went wrong')
-                                me.$store.state.errorQuickSaleStatus = true
-                            }
-                        }, 200)
-                    }).catch(err => {
-                        me.$store.state.errorList = err.response.data.errors
-                        me.$store.state.errorQuickSaleStatus = true
-                    }).then(() => {
-                        setTimeout( () => {
-                            me.loader(false)
-                            if (!me.$store.state.errorQuickSaleStatus) {
-                                me.$store.state.customerProductQuickSaleStatus = false
-                            }
-                        }, 200)
-                    })
+                            }, 200)
+                        }).catch(err => {
+                            me.$store.state.errorList = err.response.data.errors
+                            me.$store.state.errorQuickSaleStatus = true
+                        }).then(() => {
+                            setTimeout( () => {
+                                me.loader(false)
+                                if (!me.$store.state.errorQuickSaleStatus) {
+                                    me.$store.state.customerProductQuickSaleStatus = false
+                                }
+                            }, 200)
+                        })
+                    } else {
+                       me.message = 'Please check products before taking payment.'
+                       me.$store.state.promptQuickSaleStatus = true
+                       setTimeout( () => {
+                           document.querySelector('.validation_errors').scrollIntoView({block: 'center', behavior: 'smooth'})
+                       }, 10)
+                    }
                 } else {
                     me.message = 'Please select a product before paying later.'
                     me.$store.state.promptQuickSaleStatus = true
@@ -677,14 +685,22 @@
                         break
                     case 2:
                         if (me.totalPrice.length > 0) {
-                            me.totalPrice.forEach((data, index) => {
-                                if (data.type == "store-credit") {
-                                    ctr++
-                                }
-                            })
-                            me.nextStep = 2
-                            document.getElementById('step2').classList.add('slide_in')
-                            document.getElementById('step1').classList.remove('slide_in')
+                            if (document.querySelector('#product_form .validation_errors') == null) {
+                                me.totalPrice.forEach((data, index) => {
+                                    if (data.type == "store-credit") {
+                                        ctr++
+                                    }
+                                })
+                                me.nextStep = 2
+                                document.getElementById('step2').classList.add('slide_in')
+                                document.getElementById('step1').classList.remove('slide_in')
+                            } else {
+                               me.message = 'Please check products before taking payment.'
+                               me.$store.state.promptQuickSaleStatus = true
+                               setTimeout( () => {
+                                   document.querySelector('.validation_errors').scrollIntoView({block: 'center', behavior: 'smooth'})
+                               }, 10)
+                            }
                         } else {
                             me.message = 'Please select a product before taking payment.'
                             me.$store.state.promptQuickSaleStatus = true

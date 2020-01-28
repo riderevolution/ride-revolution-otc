@@ -521,6 +521,7 @@
                 me.$axios.get(`api/customers/${me.$route.params.param}`).then(res => {
                     if (res.data) {
                         me.$store.state.customer = res.data.user
+                        me.$store.state.customerID = res.data.user.id
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors

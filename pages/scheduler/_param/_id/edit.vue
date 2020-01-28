@@ -121,7 +121,7 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('no_of_riders')">{{ errors.first('no_of_riders') }}</span></transition>
                                 </div>
                                 <div class="form_group">
-                                    <label for="class_credits">Class Credits <span>*</span></label>
+                                    <label for="class_credits">Credits to Deduct <span>*</span></label>
                                     <input type="text" name="class_credits" autocomplete="off" class="default_text" v-validate="'required|numeric'" v-model="res.class_credits">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ errors.first('class_credits') }}</span></transition>
                                 </div>
@@ -359,6 +359,7 @@
                 if (res.data) {
                     me.res = res.data.schedule
                     me.form.classLengthTemp = me.res.class_length_unformatted
+                    me.form.classLength = me.res.class_length_unformatted
                     me.form.start.hour = me.res.start_time.split(':')[0]
                     me.form.start.mins = me.res.start_time.split(':')[1].split(' ')[0]
                     me.form.start.convention = me.res.start_time.split(':')[1].split(' ')[1]

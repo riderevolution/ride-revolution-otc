@@ -147,16 +147,16 @@
                         me.$store.state.errorStatus = true
                     }).then(() => {
                         me.$store.state.customerPackageStatus = false
+                        if (me.$store.state.waitlistID != 0) {
+                            me.$axios.delete(`api/waitlists/${me.$store.state.waitlistID}`).then(res => {
+                                if (res.data) {
+                                    setTimeout( () => {
+                                        me.$parent.fetchWaitlist(me.$store.state.scheduleID)
+                                    }, 500)
+                                }
+                            })
+                        }
                         setTimeout( () => {
-                            if (me.$store.state.waitlistID != 0) {
-                                me.$axios.delete(`api/waitlists/${me.$store.state.waitlistID}`).then(res => {
-                                    if (res.data) {
-                                        setTimeout( () => {
-                                            me.$parent.fetchWaitlist(me.$store.state.waitlistID)
-                                        }, 500)
-                                    }
-                                })
-                            }
                             me.$parent.getSeats()
                             me.$store.state.bookingID = 0
                             me.$store.state.classPackageID = 0

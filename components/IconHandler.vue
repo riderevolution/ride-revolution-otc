@@ -1,9 +1,9 @@
 <template>
     <div v-if="enabled">
         <div class="form_group">
-            <input type="file" class="action_image" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`image${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`" :required="item.path == null">
+            <input type="file" class="action_image" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`required|image|ext:jpeg,jpg,png|${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`" :required="item.path == null">
             <label class="action_image_label default_text" :for="`image${unique}`">Choose File</label>
-            <transition name="slide"><span class="validation_errors" v-if="errors.has('image')">{{ errors.first('image') }}</span></transition>
+            <transition name="slide"><span class="validation_errors" v-if="errors.has('image[]')">{{ errors.first('image[]') | properFormat }}</span></transition>
         </div>
         <div class="form_tags_group" v-if="showTags">
             <div class="preview_group">
@@ -58,6 +58,18 @@
                     title: '',
                     alt: ''
                 }
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                } else {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         methods: {

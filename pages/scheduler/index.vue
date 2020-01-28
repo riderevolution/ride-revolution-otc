@@ -461,11 +461,17 @@
                     }
 
                     if (classNode != null) {
-                        if (classNode.querySelector('.class_wrapper')) {
-                            classNode.querySelector('.class_wrapper').addEventListener('click', function(e) {
-                                e.preventDefault()
-                                me.$router.push(this.getAttribute('href'))
+                        if (classNode.querySelectorAll('.class_wrapper').length > 0) {
+                            classNode.querySelectorAll('.class_wrapper').forEach((element, index) => {
+                                element.addEventListener('click', function(e) {
+                                    e.preventDefault()
+                                    me.$router.push(this.getAttribute('href'))
+                                })
                             })
+                            // classNode.querySelector('.class_wrapper').addEventListener('click', function(e) {
+                            //     e.preventDefault()
+                            //     me.$router.push(this.getAttribute('href'))
+                            // })
                         }
                         if (classNode.querySelectorAll('.class_wrapper').length <= 0) {
                             classNode.parentNode.classList.add('disabled_menu')

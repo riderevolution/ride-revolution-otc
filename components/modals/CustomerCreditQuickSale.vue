@@ -33,7 +33,7 @@
                             <div class="total_items" v-if="toCompare.package != 2">{{ totalItems(total) }} <span>items</span></div>
                         </div>
                         <div class="modal_tab_content">
-                            <form id="product_form" v-show="isProduct">
+                            <form id="product_form" data-vv-scope="product_form" v-show="isProduct">
                                 <customer-credit-quick-sale-tab-content ref="quickSale" :value="value" :unique="index" v-for="(value, index) in showProducts" :key="`${unique}_${value.id}`" />
                             </form>
                             <div class="no_results" v-if="total == 0">
@@ -476,10 +476,18 @@
                         document.getElementById('step2').classList.remove('slide_in')
                         break
                     case 2:
-                        if (document.querySelector('.validation_errors') === null && me.totalPrice.length > 0) {
-                            me.nextStep = 2
-                            document.getElementById('step2').classList.add('slide_in')
-                            document.getElementById('step1').classList.remove('slide_in')
+                        if (me.totalPrice.length > 0) {
+                            if (document.querySelector('#product_form .validation_errors') == null) {
+                                me.nextStep = 2
+                                document.getElementById('step2').classList.add('slide_in')
+                                document.getElementById('step1').classList.remove('slide_in')
+                            } else {
+                               me.message = 'Please check products before taking payment.'
+                               me.$store.state.promptQuickSaleStatus = true
+                               setTimeout( () => {
+                                   document.querySelector('.validation_errors').scrollIntoView({block: 'center', behavior: 'smooth'})
+                               }, 10)
+                            }
                         } else {
                             me.message = 'Please select a product before taking payment.'
                             me.$store.state.promptQuickSaleStatus = true
