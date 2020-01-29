@@ -1,7 +1,7 @@
 <template>
     <div v-if="enabled">
         <div class="form_group">
-            <input type="file" class="action_image" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`required|image|ext:jpeg,jpg,png|${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`" :required="item.path == null">
+            <input type="file" class="action_image" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`required|size:1000|image|ext:jpeg,jpg,png|${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`" :required="item.path == null">
             <label class="action_image_label default_text" :for="`image${unique}`">Choose File</label>
             <transition name="slide"><span class="validation_errors" v-if="errors.has('image[]')">{{ errors.first('image[]') | properFormat }}</span></transition>
         </div>
@@ -73,7 +73,12 @@
                         newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
                     }
                 }
-                let message = value.split('The ')[1].split(' field')[1]
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                } else {
+                    message = message[0].split('image[]')[1]
+                }
                 return `The ${newValue} field${message}`
             }
         },
