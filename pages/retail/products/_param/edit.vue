@@ -14,7 +14,7 @@
                             <div class="form_main_group">
                                 <div class="form_group">
                                     <label for="name">Product Name <span>*</span></label>
-                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'" v-model="form.title = res.name">
+                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'" v-model="form.title = res.name">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') }}</span></transition>
                                 </div>
                                 <div class="form_group">
@@ -39,7 +39,7 @@
                                 </div>
                                 <div class="form_group" v-if="$route.query.c">
                                     <label for="product_category_name">Category <span>*</span></label>
-                                    <input type="text" name="product_category_name" autocomplete="off" class="default_text disabled" v-validate="'required'" v-model="form.category.name">
+                                    <input type="text" name="product_category_name" autocomplete="off" class="default_text disabled" v-validate="'required|max:50'" v-model="form.category.name">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_name')">{{ errors.first('product_category_name') }}</span></transition>
                                     <input type="hidden" name="product_category_id" v-model="form.category.id">
                                 </div>
@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="form_group" v-if="$route.query.s">
                                     <label for="supplier_name">Supplier <span>*</span></label>
-                                    <input type="text" name="supplier_name" autocomplete="off" class="default_text disabled" v-validate="'required'" v-model="form.supplier.name">
+                                    <input type="text" name="supplier_name" autocomplete="off" class="default_text disabled" v-validate="'required|max:50'" v-model="form.supplier.name">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_name')">{{ errors.first('supplier_name') }}</span></transition>
                                     <input type="hidden" name="supplier_id" v-model="form.supplier.id">
                                 </div>
@@ -164,6 +164,30 @@
                 suppliers: [],
                 variants: [],
                 hasStudio: true
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            if (newValue[i] != 'id') {
+                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            }
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         computed: {

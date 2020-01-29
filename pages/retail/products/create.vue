@@ -14,12 +14,12 @@
                             <div class="form_main_group">
                                 <div class="form_group">
                                     <label for="name">Product Name <span>*</span></label>
-                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'" v-model="form.title">
+                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'" v-model="form.title">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="description">Description <span>*</span></label>
-                                    <textarea name="description" rows="10" class="default_text" @input="getCount($event)" maxlength="1000" v-validate="'required|max:1000'"></textarea>
+                                    <textarea name="description" rows="10" class="default_text" @input="getCount($event)" v-validate="'required|max:500'"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                                     <div class="limit">
                                         <span class="field_limit">1000</span> <span class="field_label">Characters</span>
@@ -39,7 +39,7 @@
                                 </div>
                                 <div class="form_group" v-if="$route.query.c">
                                     <label for="product_category_name">Category <span>*</span></label>
-                                    <input type="text" name="product_category_name" autocomplete="off" class="default_text disabled" v-validate="'required'" v-model="form.category.name">
+                                    <input type="text" name="product_category_name" autocomplete="off" class="default_text disabled" v-validate="'required|max:50'" v-model="form.category.name">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_name')">{{ errors.first('product_category_name') | properFormat }}</span></transition>
                                     <input type="hidden" name="product_category_id" v-model="form.category.id">
                                 </div>
@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="form_group" v-if="$route.query.s">
                                     <label for="supplier_name">Supplier <span>*</span></label>
-                                    <input type="text" name="supplier_name" autocomplete="off" class="default_text disabled" v-validate="'required'" v-model="form.supplier.name">
+                                    <input type="text" name="supplier_name" autocomplete="off" class="default_text disabled" v-validate="'required|max:50'" v-model="form.supplier.name">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_name')">{{ errors.first('supplier_name') | properFormat }}</span></transition>
                                     <input type="hidden" name="supplier_id" v-model="form.supplier.id">
                                 </div>
@@ -289,7 +289,6 @@
                             ctr++
                         }
                     })
-                    console.log(ctr);
                     me.hasStudio = (ctr > 0) ? false : true
                     if (valid && me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
