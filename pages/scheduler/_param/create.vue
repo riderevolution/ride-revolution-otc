@@ -64,13 +64,13 @@
                             </div>
                             <div class="form_group">
                                 <label for="description">Description <span>*</span></label>
-                                <input type="text" name="description" autocomplete="off" class="default_text" v-validate="'required'">
+                                <input type="text" name="description" autocomplete="off" class="default_text" v-validate="'required|max:200'">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                             </div>
                             <transition name="fade">
                                 <div class="form_group" v-if="isPrivate">
                                     <label for="occassion">Occassion <span>*</span></label>
-                                    <input type="text" name="occassion" autocomplete="off" class="default_text" v-validate="'required'">
+                                    <input type="text" name="occassion" autocomplete="off" class="default_text" v-validate="'required|max:70'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('occassion')">{{ errors.first('occassion') | properFormat }}</span></transition>
                                 </div>
                             </transition>
@@ -119,12 +119,12 @@
                             <div class="form_flex">
                                 <div class="form_group" v-if="isPrivate">
                                     <label for="no_of_riders">No. of Riders <span>*</span></label>
-                                    <input type="text" name="no_of_riders" autocomplete="off" class="default_text" v-validate="'required'">
+                                    <input type="text" name="no_of_riders" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:99'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('no_of_riders')">{{ errors.first('no_of_riders') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="class_credits">Credits to Deduct <span>*</span></label>
-                                    <input type="text" name="class_credits" autocomplete="off" class="default_text" v-validate="'required|numeric'">
+                                    <input type="text" name="class_credits" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:99'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ errors.first('class_credits') | properFormat }}</span></transition>
                                 </div>
                             </div>

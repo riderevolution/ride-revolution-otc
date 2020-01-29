@@ -8,7 +8,7 @@
                 <div class="modal_main_group alternate">
                     <div class="form_group">
                         <label for="display_name">Role Name <span>*</span></label>
-                        <input type="text" name="display_name" autocomplete="off" autofocus class="default_text" v-validate="'required'">
+                        <input type="text" name="display_name" autocomplete="off" autofocus class="default_text" v-validate="'required|max:100'">
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex select_all">
@@ -44,7 +44,7 @@
                 <div class="modal_main_group">
                     <div class="form_group">
                         <label for="display_name">Role Name <span>*</span></label>
-                        <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.display_name">
+                        <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required|max:100'" v-model="res.display_name">
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex select_all">

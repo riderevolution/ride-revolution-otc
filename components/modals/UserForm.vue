@@ -36,18 +36,18 @@
                     <div class="form_flex">
                         <div class="form_group">
                             <label for="first_name">First Name <span>*</span></label>
-                            <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required'">
+                            <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
                             <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') | properFormat }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="last_name">Last Name <span>*</span></label>
-                            <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required'">
+                            <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
                             <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') | properFormat }}</span></transition>
                         </div>
                     </div>
                     <div class="form_group">
                         <label for="email">Email Address <span>*</span></label>
-                        <input type="text" name="email" autocomplete="off" class="default_text" v-validate="'required|email'">
+                        <input type="text" name="email" autocomplete="off" class="default_text" v-validate="'required|email|max:70'">
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex">
@@ -111,18 +111,18 @@
                     <div class="form_flex">
                         <div class="form_group">
                             <label for="first_name">First Name <span>*</span></label>
-                            <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.first_name">
+                            <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required|max:100'" v-model="res.first_name">
                             <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') | properFormat }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="last_name">Last Name <span>*</span></label>
-                            <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.last_name">
+                            <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required|max:100'" v-model="res.last_name">
                             <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') | properFormat }}</span></transition>
                         </div>
                     </div>
                     <div class="form_group">
                         <label for="email">Email Address <span>*</span></label>
-                        <input type="text" name="email" autocomplete="off" class="default_text" v-validate="'required|email'" v-model="res.email">
+                        <input type="text" name="email" autocomplete="off" class="default_text" v-validate="'required|email|max:70'" v-model="res.email">
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex">
