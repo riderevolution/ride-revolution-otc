@@ -18,12 +18,12 @@
                                 <div class="form_group">
                                     <label for="title">Title <span>*</span></label>
                                     <input type="text" name="title" autocomplete="off" class="default_text" autofocus v-validate="'required'" v-model="res.title">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('title')">{{ errors.first('title') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('title')">{{ errors.first('title') | properFormat}}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="sequence">Sequence <span>*</span></label>
                                     <input type="text" name="sequence" autocomplete="off" class="default_text" v-validate="'required|numeric'" v-model="res.sequence">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('sequence')">{{ errors.first('sequence') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('sequence')">{{ errors.first('sequence') | properFormat}}</span></transition>
                                 </div>
                             </div>
                         </div>
@@ -52,6 +52,28 @@
                 res: [],
                 lastRoute: '',
                 prevRoute: ''
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         methods: {

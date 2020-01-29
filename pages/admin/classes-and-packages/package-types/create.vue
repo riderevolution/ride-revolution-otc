@@ -20,12 +20,12 @@
                             <div class="form_group">
                                 <label for="name">Package Type Name <span>*</span></label>
                                 <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="description">Description <span>*</span></label>
                                 <textarea name="description" rows="8" class="default_text" v-validate="'required'"></textarea>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex select_all">
                                 <label class="flex_label alternate">Restrict class to: <span>*</span></label>
@@ -36,6 +36,7 @@
                                     <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checked" class="action_check">
                                     <label :for="`studio_${key}`">{{ studio.name }}</label>
                                 </div>
+                                <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
                             </div>
                         </div>
                     </div>
@@ -66,9 +67,32 @@
         },
         data () {
             return {
+                hasStudio: false,
                 lastRoute: '',
                 prevRoute: '',
                 studios: []
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         computed: {
@@ -95,10 +119,12 @@
                 if (me.checkData) {
                     me.studios.forEach((data, index) => {
                         data.checked = false
+                        me.hasStudio = true
                     })
                 } else {
                     me.studios.forEach((data, index) => {
                         data.checked = true
+                        me.hasStudio = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {
@@ -109,8 +135,15 @@
             },
             submissionSuccess () {
                 const me = this
+                let ctr = 0
                 me.$validator.validateAll().then(valid => {
-                    if (valid) {
+                    me.studios.forEach((data, index) => {
+                        if (data.checked) {
+                            ctr++
+                        }
+                    })
+                    me.hasStudio = (ctr > 0) ? false : true
+                    if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('studio_access', JSON.stringify(me.studios))
                         me.loader(true)

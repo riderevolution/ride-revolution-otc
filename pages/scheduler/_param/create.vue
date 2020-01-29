@@ -24,18 +24,18 @@
                                     <label>Start Time<span>*</span></label>
                                     <div class="form_flex_input">
                                         <input type="text" name="start_time_hour" class="default_text" autocomplete="off" v-model="form.start.hour" maxlength="2" v-validate="'required|numeric|max_value:12|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_hour')">{{ errors.first('start_time_hour') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_hour')">{{ errors.first('start_time_hour') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_flex_separator">:</div>
                                     <div class="form_flex_input">
                                         <input type="text" name="start_time_minutes" class="default_text" autocomplete="off" v-model="form.start.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_minutes')">{{ errors.first('start_time_minutes') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_minutes')">{{ errors.first('start_time_minutes') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_flex_input">
                                         <input type="text" name="start_convention" class="default_text number no_click" autocomplete="off" v-model="form.start.convention" v-validate="'required'">
                                         <div class="up" @click="changeConvention()"></div>
                                         <div class="down" @click="changeConvention()"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_convention')">{{ errors.first('start_convention') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_convention')">{{ errors.first('start_convention') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_group">
@@ -45,7 +45,7 @@
                                         <option value="peak">Peak</option>
                                         <option value="non-peak">Non-Peak</option>
                                     </select>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('peak_type')">{{ errors.first('peak_type') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('peak_type')">{{ errors.first('peak_type') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_flex">
@@ -55,7 +55,7 @@
                                         <option value="" selected disabled>Select a Class Type</option>
                                         <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key">{{ classType.name }}</option>
                                     </select>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('class_type_id')">{{ errors.first('class_type_id') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('class_type_id')">{{ errors.first('class_type_id') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="temp_class_length">Class Length</label>
@@ -65,13 +65,13 @@
                             <div class="form_group">
                                 <label for="description">Description <span>*</span></label>
                                 <input type="text" name="description" autocomplete="off" class="default_text" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                             </div>
                             <transition name="fade">
                                 <div class="form_group" v-if="isPrivate">
                                     <label for="occassion">Occassion <span>*</span></label>
                                     <input type="text" name="occassion" autocomplete="off" class="default_text" v-validate="'required'">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('occassion')">{{ errors.first('occassion') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('occassion')">{{ errors.first('occassion') | properFormat }}</span></transition>
                                 </div>
                             </transition>
                             <div class="form_flex select_all">
@@ -83,6 +83,7 @@
                                     <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checked" class="action_check">
                                     <label :for="`studio_${key}`">{{ studio.name }}</label>
                                 </div>
+                                <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
                             </div>
                             <transition name="fade">
                                 <div class="form_flex select_all" v-if="!isPrivate">
@@ -94,6 +95,7 @@
                                         <input type="checkbox" :id="`data_${key}`" name="customer_type_restriction" class="action_check" v-model="customerType.checked">
                                         <label :for="`data_${key}`">{{ customerType.name }}</label>
                                     </div>
+                                    <transition name="slide"><span class="validation_errors" v-if="hasCustomerTypes">The Type field is required</span></transition>
                                 </div>
                             </transition>
                             <div class="form_flex">
@@ -103,7 +105,7 @@
                                         <option value="" selected disabled>Select an Instructor</option>
                                         <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                     </select>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('instructor_id')">{{ errors.first('instructor_id') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('instructor_id')">{{ errors.first('instructor_id') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="substitute_instructor_id">Substitute Instructor <span>*</span></label>
@@ -111,19 +113,19 @@
                                         <option value="" selected disabled>Select an Instructor</option>
                                         <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                     </select>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('substitute_instructor_id')">{{ errors.first('substitute_instructor_id') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('substitute_instructor_id')">{{ errors.first('substitute_instructor_id') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group" v-if="isPrivate">
                                     <label for="no_of_riders">No. of Riders <span>*</span></label>
                                     <input type="text" name="no_of_riders" autocomplete="off" class="default_text" v-validate="'required'">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('no_of_riders')">{{ errors.first('no_of_riders') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('no_of_riders')">{{ errors.first('no_of_riders') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="class_credits">Credits to Deduct <span>*</span></label>
                                     <input type="text" name="class_credits" autocomplete="off" class="default_text" v-validate="'required|numeric'">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ errors.first('class_credits') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ errors.first('class_credits') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_group">
@@ -148,12 +150,12 @@
                                             <option value="every-week">Every Week</option>
                                             <option value="every-month">Every Month</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('repetition')">{{ errors.first('repetition') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('repetition')">{{ errors.first('repetition') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="end_date">End Date <span>*</span></label>
                                         <input type="date" name="end_date" autocomplete="off" class="default_text date" :min="$moment().add(1, 'd').format('YYYY-MM-DD')" v-validate="'required'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                             </transition>
@@ -186,6 +188,8 @@
         },
         data () {
             return {
+                hasStudio: false,
+                hasCustomerTypes: false,
                 isRepeat: false,
                 isPrivate: false,
                 lastRoute: '',
@@ -203,6 +207,28 @@
                     classLength: '',
                     instructor_id: ''
                 }
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         computed: {
@@ -255,10 +281,12 @@
                 if (me.checkData) {
                     me.customerTypes.forEach((data, index) => {
                         data.checked = false
+                        me.hasCustomerTypes = true
                     })
                 } else {
                     me.customerTypes.forEach((data, index) => {
                         data.checked = true
+                        me.hasCustomerTypes = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {
@@ -272,10 +300,12 @@
                 if (me.checkStudio) {
                     me.studios.forEach((data, index) => {
                         data.checked = false
+                        me.studio = true
                     })
                 } else {
                     me.studios.forEach((data, index) => {
                         data.checked = true
+                        me.studio = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {
@@ -290,8 +320,23 @@
             },
             submissionSuccess () {
                 const me = this
+                let ctr = 0
+                let ctr2 = 0
                 me.$validator.validateAll().then(valid => {
-                    if (valid) {
+                    me.studios.forEach((data, index) => {
+                        if (data.checked) {
+                            ctr++
+                        }
+                    })
+                    me.hasStudio = (ctr > 0) ? false : true
+                    me.customerTypes.forEach((data, index) => {
+                        if (data.checked) {
+                            ctr2++
+                        }
+                    })
+                    me.hasStudio = (ctr > 0) ? false : true
+                    me.hasCustomerTypes = (ctr2 > 0) ? false : true
+                    if (valid && !me.hasStudio && !me.hasCustomerTypes) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
                         formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))

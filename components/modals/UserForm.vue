@@ -12,7 +12,7 @@
                             <option value="0" selected disabled>Choose a Role</option>
                             <option :value="role.id" v-for="(role, index) in roles">{{ role.display_name }}</option>
                         </select>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex select_all" v-if="form.role != 2">
                         <label class="flex_label alternate">Restrict class to studios: <span>*</span></label>
@@ -23,6 +23,7 @@
                             <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checked" class="action_check">
                             <label :for="`studio_${key}`">{{ studio.name }}</label>
                         </div>
+                        <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
                     </div>
                     <div class="form_flex_radio select_all" v-if="form.role == 2">
                         <label class="radio_label">Restrict class to studios: <span>*</span></label>
@@ -30,34 +31,35 @@
                             <input type="radio" :id="`studio_${key}`" name="studios" :value="studio.id" class="action_radio">
                             <label :for="`studio_${key}`">{{ studio.name }}</label>
                         </div>
+                        <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
                     </div>
                     <div class="form_flex">
                         <div class="form_group">
                             <label for="first_name">First Name <span>*</span></label>
                             <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') | properFormat }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="last_name">Last Name <span>*</span></label>
                             <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') | properFormat }}</span></transition>
                         </div>
                     </div>
                     <div class="form_group">
                         <label for="email">Email Address <span>*</span></label>
                         <input type="text" name="email" autocomplete="off" class="default_text" v-validate="'required|email'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex">
                         <div class="form_group">
                             <label for="password">Password <span>*</span></label>
                             <input type="password" name="password" autocomplete="off" class="default_text" ref="password" v-validate="'required|min:8'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') | properFormat }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="password_confirmation">Password Confirmation <span>*</span></label>
                             <input type="password" name="password_confirmation" autocomplete="off" class="default_text" v-validate="'required|confirmed:password'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ errors.first('password_confirmation') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ errors.first('password_confirmation') | properFormat }}</span></transition>
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
@@ -86,7 +88,7 @@
                             <option value="" disabled>Choose a Role</option>
                             <option :value="role.id" v-for="(role, index) in roles" :selected="form.role == role.id">{{ role.display_name }}</option>
                         </select>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex select_all" v-if="form.role != 2">
                         <label class="flex_label alternate">Restrict class to studios: <span>*</span></label>
@@ -97,6 +99,7 @@
                             <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checkedForReal" class="action_check">
                             <label :for="`studio_${key}`">{{ studio.name }}</label>
                         </div>
+                        <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
                     </div>
                     <div class="form_flex_radio select_all" v-if="form.role == 2">
                         <label class="radio_label">Restrict class to studios: <span>*</span></label>
@@ -109,29 +112,29 @@
                         <div class="form_group">
                             <label for="first_name">First Name <span>*</span></label>
                             <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.first_name">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') | properFormat }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="last_name">Last Name <span>*</span></label>
                             <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.last_name">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') | properFormat }}</span></transition>
                         </div>
                     </div>
                     <div class="form_group">
                         <label for="email">Email Address <span>*</span></label>
                         <input type="text" name="email" autocomplete="off" class="default_text" v-validate="'required|email'" v-model="res.email">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex">
                         <div class="form_group">
                             <label for="password">Password</label>
                             <input type="password" name="password" autocomplete="off" class="default_text" ref="password" v-validate="'min:8'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') | properFormat }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="password_confirmation">Password Confirmation</label>
                             <input type="password" name="password_confirmation" autocomplete="off" class="default_text" v-validate="'confirmed:password'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ errors.first('password_confirmation') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ errors.first('password_confirmation') | properFormat }}</span></transition>
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
@@ -170,6 +173,7 @@
         },
         data () {
             return {
+                hasStudio: false,
                 loaded: false,
                 res: {
                     staff_details: {
@@ -187,6 +191,28 @@
                 roles: [],
                 studios: [],
                 studioLength: 0
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         computed: {
@@ -223,6 +249,7 @@
                         } else {
                             data.checkedForReal = false
                         }
+                        me.hasStudio = true
                     })
                 } else {
                     me.studios.forEach((data, index) => {
@@ -231,6 +258,7 @@
                         } else {
                             data.checkedForReal = true
                         }
+                        me.hasStudio = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {
@@ -246,8 +274,15 @@
             },
             submissionAddSuccess () {
                 const me = this
+                let ctr = 0
                 me.$validator.validateAll().then(valid => {
-                    if (valid) {
+                    me.studios.forEach((data, index) => {
+                        if (data.checked) {
+                            ctr++
+                        }
+                    })
+                    me.hasStudio = (ctr > 0) ? false : true
+                    if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         if (me.form.role != 2) {
                             formData.append('studios', JSON.stringify(me.studios))
@@ -285,8 +320,15 @@
             },
             submissionUpdateSuccess () {
                 const me = this
+                let ctr = 0
                 me.$validator.validateAll().then(valid => {
-                    if (valid) {
+                    me.studios.forEach((data, index) => {
+                        if (data.checkedForReal) {
+                            ctr++
+                        }
+                    })
+                    me.hasStudio = (ctr > 0) ? false : true
+                    if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         if (formData.get('password').length <= 0) {
                             formData.delete('password')

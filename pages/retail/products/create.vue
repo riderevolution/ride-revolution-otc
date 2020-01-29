@@ -15,12 +15,12 @@
                                 <div class="form_group">
                                     <label for="name">Product Name <span>*</span></label>
                                     <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'" v-model="form.title">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="description">Description <span>*</span></label>
                                     <textarea name="description" rows="10" class="default_text" @input="getCount($event)" maxlength="1000" v-validate="'required|max:1000'"></textarea>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                                     <div class="limit">
                                         <span class="field_limit">1000</span> <span class="field_label">Characters</span>
                                     </div>
@@ -35,12 +35,12 @@
                                         <option value="" selected disabled>Choose a Category</option>
                                         <option :value="category.id" v-for="(category, key) in categories">{{ category.name }}</option>
                                     </select>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_id')">{{ errors.first('product_category_id') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_id')">{{ errors.first('product_category_id') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group" v-if="$route.query.c">
                                     <label for="product_category_name">Category <span>*</span></label>
                                     <input type="text" name="product_category_name" autocomplete="off" class="default_text disabled" v-validate="'required'" v-model="form.category.name">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_name')">{{ errors.first('product_category_name') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_name')">{{ errors.first('product_category_name') | properFormat }}</span></transition>
                                     <input type="hidden" name="product_category_id" v-model="form.category.id">
                                 </div>
                                 <div class="form_group" v-if="!$route.query.s">
@@ -49,12 +49,12 @@
                                         <option value="" selected>Choose a Supplier</option>
                                         <option :value="supplier.id" v-for="(supplier, key) in suppliers">{{ supplier.name }}</option>
                                     </select>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_id')">{{ errors.first('supplier_id') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_id')">{{ errors.first('supplier_id') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group" v-if="$route.query.s">
                                     <label for="supplier_name">Supplier <span>*</span></label>
                                     <input type="text" name="supplier_name" autocomplete="off" class="default_text disabled" v-validate="'required'" v-model="form.supplier.name">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_name')">{{ errors.first('supplier_name') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_name')">{{ errors.first('supplier_name') | properFormat }}</span></transition>
                                     <input type="hidden" name="supplier_id" v-model="form.supplier.id">
                                 </div>
                                 <div class="form_group">
@@ -71,7 +71,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <transition name="slide"><span class="validation_errors" v-if="!hasStudio">The studios field is required</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
                                 </div>
                                 <div class="form_flex_radio_alternate">
                                     <label>Is this sellable? <span>*</span></label>
@@ -151,6 +151,7 @@
         },
         data () {
             return {
+                hasStudio: false,
                 loaded: false,
                 showClose: false,
                 toggleCheckboxes: false,
@@ -167,8 +168,31 @@
                 studios: [],
                 categories: [],
                 suppliers: [],
-                variants: [0],
-                hasStudio: true
+                variants: [0]
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            if (newValue[i] != 'id') {
+                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            }
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         computed: {
@@ -211,11 +235,13 @@
                 if (me.checkStudio) {
                     me.studios.forEach((data, index) => {
                         data.checked = false
+                        me.hasStudio = true
                         me.studioLabel = 'Select Studios'
                     })
                 } else {
                     me.studios.forEach((data, index) => {
                         data.checked = true
+                        me.hasStudio = false
                         me.studioLabel = 'All Studios Selected'
                     })
                 }
@@ -263,7 +289,8 @@
                             ctr++
                         }
                     })
-                    me.hasStudio = (ctr > 0) ? true : false
+                    console.log(ctr);
+                    me.hasStudio = (ctr > 0) ? false : true
                     if (valid && me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('studios', JSON.stringify(me.studios))

@@ -17,7 +17,7 @@
                             <div class="form_group">
                                 <label for="name">Promo Name <span>*</span></label>
                                 <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'" v-model="res.name">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
                                 <div class="form_flex_radio">
@@ -32,44 +32,44 @@
                                     </div>
                                 </div>
                                 <div class="form_group" v-if="isDiscount">
-                                    <label for="discount">Percent Discount <span>*</span></label>
+                                    <label for="discount_percent">Percent Discount <span>*</span></label>
                                     <div class="violator">%</div>
                                     <input type="text" name="discount_percent" autocomplete="off" class="default_text" v-validate="'required|numeric'" v-model="res.discount_percent">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('discount')">{{ errors.first('discount') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('discount_percent')">{{ errors.first('discount_percent') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group" v-else>
-                                    <label for="discount">Flat Rate Discount <span>*</span></label>
+                                    <label for="discount_flat_rate">Flat Rate Discount <span>*</span></label>
                                     <input type="text" name="discount_flat_rate" autocomplete="off" class="default_text" v-validate="'required|numeric'" v-model="res.discount_flat_rate">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('discount')">{{ errors.first('discount') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('discount_flat_rate')">{{ errors.first('discount_flat_rate') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_group">
                                 <label for="promo_code">Promo Code <span>*</span></label>
                                 <input type="text" name="promo_code" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.promo_code">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_code')">{{ errors.first('promo_code') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_code')">{{ errors.first('promo_code') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="start_date">Start Date <span>*</span></label>
                                     <input type="date" name="start_date" autocomplete="off" class="default_text date" v-validate="'required'" v-model="res.start_date">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group flex alternate">
                                     <label>Start Time<span>*</span></label>
                                     <div class="form_flex_input">
                                         <input type="text" name="start_time_hour" class="default_text" autocomplete="off" v-model="form.start.hour" maxlength="2" v-validate="'required|numeric|max_value:12|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_hour')">{{ errors.first('start_time_hour') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_hour')">{{ errors.first('start_time_hour') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_flex_separator">:</div>
                                     <div class="form_flex_input">
                                         <input type="text" name="start_time_minutes" class="default_text" autocomplete="off" v-model="form.start.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_minutes')">{{ errors.first('start_time_minutes') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_minutes')">{{ errors.first('start_time_minutes') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_flex_input">
                                         <input type="text" name="start_convention" class="default_text number no_click" autocomplete="off" v-model="form.start.convention" v-validate="'required'">
                                         <div class="up" @click="changeConvention('start')"></div>
                                         <div class="down" @click="changeConvention('start')"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_convention')">{{ errors.first('start_convention') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_convention')">{{ errors.first('start_convention') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -77,24 +77,24 @@
                                 <div class="form_group">
                                     <label for="end_date">End Date <span>*</span></label>
                                     <input type="date" name="end_date" autocomplete="off" class="default_text date" v-validate="'required'" v-model="res.end_date">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group flex alternate">
                                     <label>End Time<span>*</span></label>
                                     <div class="form_flex_input">
                                         <input type="text" name="end_time_hour" class="default_text" autocomplete="off" v-model="form.end.hour" maxlength="2" v-validate="'required|numeric|max_value:12|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_time_hour')">{{ errors.first('end_time_hour') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_time_hour')">{{ errors.first('end_time_hour') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_flex_separator">:</div>
                                     <div class="form_flex_input">
                                         <input type="text" name="end_time_minutes" class="default_text" autocomplete="off" v-model="form.end.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_time_minutes')">{{ errors.first('end_time_minutes') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_time_minutes')">{{ errors.first('end_time_minutes') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_flex_input">
                                         <input type="text" name="end_convention" class="default_text number no_click" autocomplete="off" v-model="form.end.convention" v-validate="'required'">
                                         <div class="up" @click="changeConvention('end')"></div>
                                         <div class="down" @click="changeConvention('end')"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_convention')">{{ errors.first('end_convention') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_convention')">{{ errors.first('end_convention') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -102,12 +102,12 @@
                                 <div class="form_group">
                                     <label for="redemption_limit">Redemption Limit <span>*</span></label>
                                     <input type="text" name="redemption_limit" autocomplete="off" class="default_text" v-validate="'required|numeric'" v-model="res.redemption_limit">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('redemption_limit')">{{ errors.first('redemption_limit') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('redemption_limit')">{{ errors.first('redemption_limit') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="per_customer_limit">Per Customer Limit <span>*</span></label>
                                     <input type="text" name="per_customer_limit" autocomplete="off" class="default_text" v-validate="'required|numeric'" v-model="res.per_customer_limit">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('per_customer_limit')">{{ errors.first('per_customer_limit') }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('per_customer_limit')">{{ errors.first('per_customer_limit') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_check">
@@ -129,7 +129,7 @@
                                     <input type="radio" id="products" value="products" name="affected_type" :checked="(res.affected_type == 'products') ? true : false" class="action_radio" v-validate="'required'" @change="getFilter('products')">
                                     <label for="products">Products</label>
                                 </div>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('affected_type')">{{ errors.first('affected_type') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('affected_type')">{{ errors.first('affected_type') | properFormat }}</span></transition>
                             </div>
                         </div>
                         <transition name="fade">
@@ -150,7 +150,7 @@
                                         <button type="button" name="button" class="action_btn alternate" @click="submitFilter(filterType)">Filter</button>
                                     </div>
                                 </div>
-                                <div class="form_flex scrollable" v-if="filterData.length > 0">
+                                <div class="form_flex select_all scrollable" v-if="filterData.length > 0">
                                     <label class="flex_label">Select {{ (filterType == 'class_packages') ? 'Class Packages' : 'Products' }}</label>
                                     <div class="form_check select_all">
                                         <div :class="`custom_action_check ${(checkData) ? 'checked' : ''}`" @click.prevent="toggleSelectAll($event)">Select All</div>
@@ -159,6 +159,7 @@
                                         <input type="checkbox" :id="`data_${key}`" name="filter_data" class="action_check" v-model="data.checked">
                                         <label :for="`data_${key}`">{{ data.name }}</label>
                                     </div>
+                                    <transition name="slide"><span class="validation_errors" v-if="hasProduct">The Product field is required</span></transition>
                                 </div>
                                 <div class="no_results" v-else>
                                     No Result(s) Found. Search another {{ (filterType == 'class_packages') ? 'Class Packages' : 'Products' }}
@@ -193,6 +194,7 @@
         },
         data () {
             return {
+                hasProduct: false,
                 isFilter: false,
                 isDiscount: true,
                 lastRoute: '',
@@ -236,16 +238,40 @@
                 return result
             }
         },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
+            }
+        },
         methods: {
             toggleSelectAll (event) {
                 const me = this
                 if (me.checkData) {
                     me.filterData.forEach((data, index) => {
                         data.checked = false
+                        me.hasProduct = true
                     })
                 } else {
                     me.filterData.forEach((data, index) => {
                         data.checked = true
+                        me.hasProduct = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {
@@ -321,8 +347,15 @@
             },
             submissionSuccess () {
                 const me = this
+                let ctr = 0
                 me.$validator.validateAll().then(valid => {
-                    if (valid) {
+                    me.filterData.forEach((data, index) => {
+                        if (data.checked) {
+                            ctr++
+                        }
+                    })
+                    me.hasProduct = (ctr > 0) ? false : true
+                    if (valid && !me.hasProduct) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
                         formData.append('affecteds', JSON.stringify(me.filterData))

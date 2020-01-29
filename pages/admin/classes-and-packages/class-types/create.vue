@@ -17,12 +17,12 @@
                             <div class="form_group">
                                 <label for="name">Class Name <span>*</span></label>
                                 <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="description">Description <span>*</span></label>
                                 <textarea name="description" rows="8" class="default_text" v-validate="'required'"></textarea>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group flex">
@@ -32,14 +32,14 @@
                                         <div class="placeholder">hours</div>
                                         <div class="up" @click="addCount('classLength', 'hour')"></div>
                                         <div class="down" @click="subtractCount('classLength', 'hour')"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_hours')">{{ errors.first('class_length_hours') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_hours')">{{ errors.first('class_length_hours') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_flex_input">
                                         <input type="text" name="class_length_minutes" class="default_text number" autocomplete="off" v-model="form.classLength.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
                                         <div class="placeholder">mins.</div>
                                         <div class="up" @click="addCount('classLength', 'mins')"></div>
                                         <div class="down" @click="subtractCount('classLength', 'mins')"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_minutes')">{{ errors.first('class_length_minutes') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_minutes')">{{ errors.first('class_length_minutes') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_group">
@@ -62,9 +62,10 @@
                                     <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
                                 </div>
                                 <div class="form_check" v-for="(studio, key) in studios" :key="key">
-                                    <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checked" class="action_check">
+                                    <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checked" class="action_check" @change="hasStudio = true">
                                     <label :for="`studio_${key}`">{{ studio.name }}</label>
                                 </div>
+                                <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
                             </div>
                         </div>
                     </div>
@@ -95,6 +96,7 @@
         },
         data () {
             return {
+                hasStudio: false,
                 lastRoute: '',
                 prevRoute: '',
                 studios: [],
@@ -105,6 +107,28 @@
                         mins: '-'
                     }
                 },
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         computed: {
@@ -131,10 +155,12 @@
                 if (me.checkStudio) {
                     me.studios.forEach((data, index) => {
                         data.checked = false
+                        me.hasStudio = true
                     })
                 } else {
                     me.studios.forEach((data, index) => {
                         data.checked = true
+                        me.hasStudio = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {
@@ -223,8 +249,15 @@
             },
             submissionSuccess () {
                 const me = this
+                let ctr = 0
                 me.$validator.validateAll().then(valid => {
-                    if (valid) {
+                    me.studios.forEach((data, index) => {
+                        if (data.checked) {
+                            ctr++
+                        }
+                    })
+                    me.hasStudio = (ctr > 0) ? false : true
+                    if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('class_length', `${(me.form.classLength.hour * 3600) + (me.form.classLength.mins * 60) + (0 * 1)}+${me.form.classLength.hour}:${me.form.classLength.mins}`)
                         formData.append('studios', JSON.stringify(me.studios))

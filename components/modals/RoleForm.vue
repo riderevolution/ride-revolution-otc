@@ -9,7 +9,7 @@
                     <div class="form_group">
                         <label for="display_name">Role Name <span>*</span></label>
                         <input type="text" name="display_name" autocomplete="off" autofocus class="default_text" v-validate="'required'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex select_all">
                         <label class="flex_label alternate">Select permissions under this role <span>*</span></label>
@@ -20,6 +20,7 @@
                             <input type="checkbox" :id="`permission_${key}`" name="permissions" :class="`action_check ${permission.class}`" v-model="permission.checked">
                             <label :for="`permission_${key}`">{{ permission.name }}</label>
                         </div>
+                        <transition name="slide"><span class="validation_errors" v-if="hasPermissions">The Permissions field is required</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="form_flex">
@@ -44,7 +45,7 @@
                     <div class="form_group">
                         <label for="display_name">Role Name <span>*</span></label>
                         <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.display_name">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex select_all">
                         <label class="flex_label alternate">Select permissions under this role <span>*</span></label>
@@ -55,6 +56,7 @@
                             <input type="checkbox" :id="`permission_${key}`" name="permissions" :class="`action_check ${permission.class}`" v-model="permission.checked" :checked="permission.checked">
                             <label :for="`permission_${key}`">{{ permission.name }}</label>
                         </div>
+                        <transition name="slide"><span class="validation_errors" v-if="hasPermissions">The Permissions field is required</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="form_flex">
@@ -91,6 +93,7 @@
         },
         data () {
             return {
+                hasPermissions: false,
                 res: [],
                 permissions: [
                     {
@@ -176,6 +179,28 @@
                 ]
             }
         },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
+            }
+        },
         computed: {
             checkPermissions () {
                 const me = this
@@ -200,10 +225,12 @@
                 if (me.checkPermissions) {
                     me.permissions.forEach((data, index) => {
                         data.checked = false
+                        me.hasPermissions = true
                     })
                 } else {
                     me.permissions.forEach((data, index) => {
                         data.checked = true
+                        me.hasPermissions = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {
@@ -219,8 +246,15 @@
             },
             submissionAddSuccess () {
                 const me = this
+                let ctr = 0
                 me.$validator.validateAll().then(valid => {
-                    if (valid) {
+                    me.permissions.forEach((data, index) => {
+                        if (data.checked) {
+                            ctr++
+                        }
+                    })
+                    me.hasPermissions = (ctr > 0) ? false : true
+                    if (valid && !me.hasPermissions) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('permissions', JSON.stringify(me.permissions))
                         me.loader(true)
@@ -256,8 +290,15 @@
             },
             submissionUpdateSuccess () {
                 const me = this
+                let ctr = 0
                 me.$validator.validateAll().then(valid => {
-                    if (valid) {
+                    me.permissions.forEach((data, index) => {
+                        if (data.checked) {
+                            ctr++
+                        }
+                    })
+                    me.hasPermissions = (ctr > 0) ? false : true
+                    if (valid && !me.hasPermissions) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('permissions', JSON.stringify(me.permissions))
                         formData.append('_method', 'PATCH')

@@ -50,22 +50,22 @@
                                     <div class="form_group">
                                         <label for="promo_start_date">Start Date <span>*</span></label>
                                         <input type="date" name="promo_start_date" autocomplete="off" class="default_text date" v-validate="'required'" v-model="res.promo_start_date">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_start_date')">{{ errors.first('promo_start_date') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_start_date')">{{ errors.first('promo_start_date') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="promo_end_date">End Date <span>*</span></label>
                                         <input type="date" name="promo_end_date" autocomplete="off" class="default_text date" v-validate="'required'" v-model="res.promo_end_date">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_end_date')">{{ errors.first('promo_end_date') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_end_date')">{{ errors.first('promo_end_date') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group flex">
                                         <label>Purchase Limit <span>*</span></label>
                                         <div class="form_flex_input full">
-                                            <input type="text" name="por_purchase_limit" class="default_text number" autocomplete="off" v-model="form.purchaseLimit" v-validate="'numeric|min_value:0|max_value:9999999999'">
+                                            <input type="text" name="por_purchase_limit" class="default_text number" autocomplete="off" v-model="form.purchaseLimit" v-validate="'numeric|min_value:0|max_value:99999'">
                                             <div class="up" @click="addCount('purchaseLimit')"></div>
                                             <div class="down" @click="subtractCount('purchaseLimit')"></div>
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('por_purchase_limit')">{{ errors.first('por_purchase_limit') }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('por_purchase_limit')">{{ errors.first('por_purchase_limit') | properFormat }}</span></transition>
                                         </div>
                                     </div>
                                     <div class="form_group flex check">
@@ -113,26 +113,26 @@
                                     <option value="" selected disabled>Choose a Type</option>
                                     <option :value="type.id" v-for="(type, index) in types" :selected="res.package_type_id == type.id">{{ type.name }}</option>
                                 </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('package_type_id')">{{ errors.first('package_type_id') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('package_type_id')">{{ errors.first('package_type_id') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="name">Package Name <span>*</span></label>
-                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'" v-model="res.name">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') }}</span></transition>
+                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'" v-model="res.name">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="description">Description <span>*</span></label>
-                                <textarea name="description" rows="8" class="default_text" v-validate="'required'" v-model="res.description"></textarea>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') }}</span></transition>
+                                <textarea name="description" rows="8" class="default_text" v-validate="'required|max:500'" v-model="res.description"></textarea>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group flex">
                                     <label>Class Count <span>*</span></label>
                                     <div :class="`form_flex_input ${(isUnlimited) ? 'not_active' : 'active'}`">
-                                        <input type="text" name="class_count" class="default_text number" autocomplete="off" v-model="form.classCount" v-validate="'required|numeric|min_value:0|max_value:9999999999'">
+                                        <input type="text" name="class_count" class="default_text number" autocomplete="off" v-model="form.classCount" v-validate="'required|numeric|min_value:0|max_value:99999'">
                                         <div class="up" @click="addCount('classCount')"></div>
                                         <div class="down" @click="subtractCount('classCount')"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('class_count')">{{ errors.first('class_count') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('class_count')">{{ errors.first('class_count') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_flex_input">
                                         <div class="form_check">
@@ -144,9 +144,9 @@
                                 <div class="form_group flex">
                                     <label for="package_price">Package Price <span>*</span></label>
                                     <div class="form_flex_input full">
-                                        <input type="text" name="package_price" class="default_text number" v-model="res.package_price" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}">
+                                        <input type="text" name="package_price" class="default_text number" v-model="res.package_price" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}">
                                         <div class="placeholder">PHP</div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('package_price')">{{ errors.first('package_price') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('package_price')">{{ errors.first('package_price') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -154,17 +154,17 @@
                                 <div class="form_group flex">
                                     <label for="purchase_limit_per_customer">Purchase Limit per Customer <span>*</span></label>
                                     <div class="form_flex_input full">
-                                        <input type="text" name="purchase_limit_per_customer" class="default_text number" v-model="res.purchase_limit_per_customer" autocomplete="off" v-validate="'required|numeric'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ errors.first('purchase_limit_per_customer') }}</span></transition>
+                                        <input type="text" name="purchase_limit_per_customer" class="default_text number" v-model="res.purchase_limit_per_customer" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99999'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ errors.first('purchase_limit_per_customer') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_group flex">
                                     <label>Expire In <span>*</span></label>
                                     <div class="form_flex_input">
-                                        <input type="text" name="expires_in" class="default_text number" autocomplete="off" v-model="form.expiryIn = res.expires_in" v-validate="'required|numeric|min_value:0|max_value:9999999999'">
+                                        <input type="text" name="expires_in" class="default_text number" autocomplete="off" v-model="form.expiryIn = res.expires_in" v-validate="'required|numeric|min_value:0|max_value:99999'">
                                         <div class="up" @click="addCount('expiryIn')"></div>
                                         <div class="down" @click="subtractCount('expiryIn')"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('expires_in')">{{ errors.first('expires_in') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('expires_in')">{{ errors.first('expires_in') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_flex_input">
                                         <select class="default_select alternate" name="expiry_type">
@@ -172,7 +172,7 @@
                                             <option value="day" :selected="res.expiry_type == 'day' || (!isUnlimited) ? true : false" :disabled="(isUnlimited || res.expiry_type == 'month') ? true : false">Days</option>
                                             <option value="month" :selected="(res.expiry_type == 'month' || isUnlimited) ? true : false">Months</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('expiry_type')">{{ errors.first('expiry_type') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('expiry_type')">{{ errors.first('expiry_type') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -203,10 +203,10 @@
                                 <div class="form_group flex">
                                     <label>Days/months to expire if not activated:</label>
                                     <div :class="`form_flex_input ${(!isNotActivated) ? 'not_active' : 'active'}`">
-                                        <input type="text" name="ao_expiry_if_not_activated" class="default_text number" autocomplete="off" v-model="form.notActivated" v-validate="'numeric|min_value:0|max_value:9999999999'">
+                                        <input type="text" name="ao_expiry_if_not_activated" class="default_text number" autocomplete="off" v-model="form.notActivated" v-validate="'numeric|min_value:0|max_value:99999'">
                                         <div class="up" @click="addCount('notActivated')"></div>
                                         <div class="down" @click="subtractCount('notActivated')"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ao_expiry_if_not_activated')">{{ errors.first('ao_expiry_if_not_activated') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ao_expiry_if_not_activated')">{{ errors.first('ao_expiry_if_not_activated') | properFormat }}</span></transition>
                                     </div>
                                     <div :class="`form_flex_input ${(!isNotActivated) ? 'not_active' : 'active'}`">
                                         <select class="default_select alternate" name="ao_expiry_if_not_activated_type">
@@ -267,6 +267,28 @@
                     purchaseLimit: 0,
                     ao_fixed_activation_date: null
                 }
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         methods: {

@@ -65,8 +65,13 @@
                 let newValue = value.split('The ')[1].split(' field')[0].split('[]')
                 if (newValue.length > 1) {
                     newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                } else {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1) + ' ' + newValue[1].charAt(0).toUpperCase() + newValue[1].slice(1)
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
                 }
                 let message = value.split('The ')[1].split(' field')[1]
                 return `The ${newValue} field${message}`
