@@ -16,7 +16,7 @@
                         <div class="form_main_group">
                             <div class="form_group">
                                 <label for="name">Promo Name <span>*</span></label>
-                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'">
+                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
@@ -34,18 +34,18 @@
                                 <div class="form_group" v-if="isDiscount">
                                     <label for="discount_percent">Percent Discount <span>*</span></label>
                                     <div class="violator">%</div>
-                                    <input type="text" name="discount_percent" autocomplete="off" class="default_text" v-validate="'required|numeric'">
+                                    <input type="text" name="discount_percent" key="discount_percent" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:100'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('discount_percent')">{{ errors.first('discount_percent') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group" v-else>
                                     <label for="discount_flat_rate">Flat Rate Discount <span>*</span></label>
-                                    <input type="text" name="discount_flat_rate" autocomplete="off" class="default_text" v-validate="'required|numeric'">
+                                    <input type="text" name="discount_flat_rate" key="discount_flat_rate" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('discount_flat_rate')">{{ errors.first('discount_flat_rate') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_group">
                                 <label for="promo_code">Promo Code <span>*</span></label>
-                                <input type="text" name="promo_code" autocomplete="off" class="default_text" v-validate="'required'">
+                                <input type="text" name="promo_code" autocomplete="off" class="default_text" v-validate="'required|max:25'">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_code')">{{ errors.first('promo_code') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
@@ -101,12 +101,12 @@
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="redemption_limit">Redemption Limit <span>*</span></label>
-                                    <input type="text" name="redemption_limit" autocomplete="off" class="default_text" v-validate="'required|numeric'">
+                                    <input type="text" name="redemption_limit" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:99'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('redemption_limit')">{{ errors.first('redemption_limit') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="per_customer_limit">Per Customer Limit <span>*</span></label>
-                                    <input type="text" name="per_customer_limit" autocomplete="off" class="default_text" v-validate="'required|numeric'">
+                                    <input type="text" name="per_customer_limit" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:99'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('per_customer_limit')">{{ errors.first('per_customer_limit') | properFormat }}</span></transition>
                                 </div>
                             </div>
