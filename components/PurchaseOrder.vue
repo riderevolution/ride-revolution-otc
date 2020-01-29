@@ -13,8 +13,8 @@
             <div class="input_content">{{ value.product.category.name }}</div>
             <div class="input_content">{{ value.product_quantities[0].quantity }}</div>
             <div class="input_content">
-                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric'" :data-vv-name="`purchase_order_form_${unique}.quantity[]`" v-model="quantity" @change="isQuantity = true">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">The quantity field is required</span></transition>
+                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" :data-vv-name="`purchase_order_form_${unique}.quantity[]`" v-model="quantity" @change="isQuantity = true">
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">The Quantity field is required</span></transition>
             </div>
             <div class="input_content">PHP {{ value.unit_price }}</div>
             <!-- <div class="input_content">
@@ -57,8 +57,8 @@
             <div class="input_content">{{ value.product_variant.product.category.name }}</div>
             <div class="input_content">{{ value.product_variant.product_quantities.quantity }}</div>
             <div class="input_content">
-                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">The quantity field is required</span></transition>
+                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">The Quantity field is required</span></transition>
             </div>
             <div class="input_content">PHP {{ totalCount(value.product_variant.unit_price) }}</div>
             <!-- <div class="input_content">
@@ -87,8 +87,8 @@
             <div class="input_content">{{ value.product_variant.product.category.name }}</div>
             <div class="input_content">{{ value.product_variant.product_quantities.quantity }}</div>
             <div class="input_content">
-                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">The quantity field is required</span></transition>
+                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">The Quantity field is required</span></transition>
             </div>
             <div class="input_content">PHP {{ totalCount(value.product_variant.unit_price) }}</div>
             <!-- <div class="input_content">
@@ -139,6 +139,28 @@
                 shipping: 0,
                 additional: 0,
                 total: 0
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         computed: {

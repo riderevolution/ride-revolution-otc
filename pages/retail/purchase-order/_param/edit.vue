@@ -46,8 +46,8 @@
                             <div class="footer_form_group">
                                 <label for="name">Shipping Cost:</label>
                                 <div class="footer_input">
-                                    <input type="text" name="shipping" class="default_text" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}" v-model="form.total_shipping">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has(`shipping`)">{{ errors.first('shipping') }}</span></transition>
+                                    <input type="text" name="shipping" class="default_text" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" v-model="form.total_shipping">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has(`shipping`)">{{ errors.first('shipping') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <!-- <div class="footer_cost">Total Additional Cost: PHP {{ computeAdditional }}</div> -->
@@ -99,6 +99,28 @@
                     total_shipping: 0,
                     total_cost: 0
                 }
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         computed: {
