@@ -16,7 +16,7 @@
                         <div class="form_main_group">
                             <div class="form_group">
                                 <label for="name">Name <span>*</span></label>
-                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'">
+                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                             </div>
                             <icon-handler-container ref="handler"></icon-handler-container>

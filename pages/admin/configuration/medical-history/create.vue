@@ -17,12 +17,12 @@
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="title">Title <span>*</span></label>
-                                    <input type="text" name="title" autocomplete="off" class="default_text" autofocus v-validate="'required'">
+                                    <input type="text" name="title" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('title')">{{ errors.first('title') | properFormat}}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="sequence">Sequence <span>*</span></label>
-                                    <input type="text" name="sequence" autocomplete="off" class="default_text" v-validate="'required|numeric'">
+                                    <input type="text" name="sequence" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:0|max_value:99999'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('sequence')">{{ errors.first('sequence') | properFormat}}</span></transition>
                                 </div>
                             </div>
