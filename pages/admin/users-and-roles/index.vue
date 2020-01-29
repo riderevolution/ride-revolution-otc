@@ -303,7 +303,7 @@
              * @param  {[string]}  status
              * @return {boolean}
              */
-            async toggleStatus (id, enabled, status) {
+            toggleStatus (id, enabled, status) {
                 const me = this
                 me.isUser = 1
                 me.$store.state.confirmStatus = true
@@ -316,7 +316,7 @@
                 }, 100)
                 document.body.classList.add('no_scroll')
             },
-            async toggleUserStatus (id, enabled, status) {
+            toggleUserStatus (id, enabled, status) {
                 const me = this
                 me.isUser = 0
                 me.$store.state.confirmStatus = true

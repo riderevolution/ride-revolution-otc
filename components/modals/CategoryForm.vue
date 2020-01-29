@@ -8,7 +8,7 @@
                 <div class="modal_main_group">
                     <div class="form_group">
                         <label for="name">Category Name <span>*</span></label>
-                        <input type="text" name="name" autocomplete="off" autofocus class="default_text" v-validate="'required'">
+                        <input type="text" name="name" autocomplete="off" autofocus class="default_text" v-validate="'required|max:100'">
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
@@ -27,7 +27,7 @@
                 <div class="modal_main_group">
                     <div class="form_group">
                         <label for="name">Category Name <span>*</span></label>
-                        <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'" v-model="res.name">
+                        <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'" v-model="res.name">
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">

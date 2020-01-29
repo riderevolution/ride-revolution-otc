@@ -31,24 +31,24 @@
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="first_name">First Name <span>*</span></label>
-                                    <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required'">
+                                    <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="last_name">Last Name <span>*</span></label>
-                                    <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required'">
+                                    <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="email">Email Address <span>*</span></label>
-                                    <input type="email" name="email" autocomplete="off" class="default_text" v-validate="'required|email'">
+                                    <input type="email" name="email" autocomplete="off" class="default_text" v-validate="'required|email|max:70'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="co_contact_number">Contact Number <span>*</span></label>
-                                    <input type="text" name="co_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric'">
+                                    <input type="text" name="co_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:15'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('co_contact_number')">{{ errors.first('co_contact_number') | properFormat }}</span></transition>
                                 </div>
                             </div>
@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="co_weight">Weight (in kilograms)</label>
-                                    <input type="text" name="co_weight" autocomplete="off" class="default_text" v-validate="'numeric'">
+                                    <input type="text" name="co_weight" autocomplete="off" class="default_text" v-validate="'numeric|min_value:1|max_value:200'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('co_weight')">{{ errors.first('co_weight') | properFormat }}</span></transition>
                                 </div>
                             </div>
@@ -90,7 +90,7 @@
                                 <transition name="fade">
                                     <div class="form_group">
                                         <label for="co_shoe_size">Shoe Size <span>*</span></label>
-                                        <select class="default_select alternate" name="co_shoe_size" v-validate="'required'">
+                                        <select class="default_select alternate" name="co_shoe_size" v-validate="'required|max:20'">
                                             <option value="" selected disabled>Choose Shoe Size</option>
                                             <option :value="size" v-for="(size, index) in sizes">{{ size }}</option>
                                         </select>
@@ -216,25 +216,25 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="ec_full_name">Full Name</label>
-                                        <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-validate="'required'">
+                                        <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_full_name')">{{ errors.first('ec_full_name') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="ec_contact_number">Contact Number</label>
-                                        <input type="text" name="ec_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric'">
+                                        <input type="text" name="ec_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:15'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_contact_number')">{{ errors.first('ec_contact_number') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="ec_relationship">Relationship</label>
-                                        <input type="text" name="ec_relationship" autocomplete="off" class="default_text" v-validate="'required'">
+                                        <input type="text" name="ec_relationship" autocomplete="off" class="default_text" v-validate="'required|max:50'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_relationship')">{{ errors.first('ec_relationship') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_group">
                                     <label for="signature">Signature <span>*</span></label>
-                                    <input type="text" name="signature" autocomplete="off" placeholder="Enter your full name" class="default_text" v-validate="'required'">
+                                    <input type="text" name="signature" autocomplete="off" placeholder="Enter your full name" class="default_text" v-validate="'required|max:100'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('signature')">{{ errors.first('signature') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_check">
@@ -322,18 +322,28 @@
                 }else {
                     newValue = value.split('The ')[1].split(' field')[0].split('_')
                     if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let firstValue = ''
                         let lastValue = ''
+                        if (newValue[0] != 'co') {
+                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
                         for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            if (newValue[i] != 'co') {
+                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            }
                         }
                         newValue = firstValue + ' ' + lastValue
                     } else {
                         newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
                     }
                 }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                    return `The ${newValue} field${message}`
+                } else {
+                    return `The ${newValue}`
+                }
             }
         },
         methods: {
