@@ -16,7 +16,7 @@
                         <div class="form_main_group">
                             <div class="form_group">
                                 <label for="name">Supplier Name <span>*</span></label>
-                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'">
+                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
@@ -27,12 +27,12 @@
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="email">Email Address <span>*</span></label>
-                                    <input type="email" name="email" autocomplete="off" class="default_text" autofocus v-validate="'required|email'">
+                                    <input type="email" name="email" autocomplete="off" class="default_text" autofocus v-validate="'required|email|max:70'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="contact_number">Contact Number <span>*</span></label>
-                                    <input type="text" name="contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric'">
+                                    <input type="text" name="contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:15'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('contact_number')">{{ errors.first('contact_number') | properFormat }}</span></transition>
                                 </div>
                             </div>
