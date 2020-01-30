@@ -21,38 +21,40 @@
                         <transition name="fade">
                             <div class="form_main_group alternate" v-if="isPromo">
                                 <div class="form_flex_radio_alternate">
-                                    <label>Restrict to New Customers</label>
+                                    <label>Restrict to New Customers <span>*</span></label>
                                     <div class="radio_wrapper">
                                         <div class="form_radio">
-                                            <input type="radio" id="por_restrict_yes" value="Yes" name="por_restrict_to_new_customers" class="action_radio">
+                                            <input type="radio" id="por_restrict_yes" value="Yes" name="por_restrict_to_new_customers" v-validate="'required'" class="action_radio">
                                             <label for="por_restrict_yes">Yes</label>
                                         </div>
                                         <div class="form_radio">
-                                            <input type="radio" id="por_restrict_no" value="No" name="por_restrict_to_new_customers" class="action_radio">
+                                            <input type="radio" id="por_restrict_no" value="No" name="por_restrict_to_new_customers" v-validate="'required'" class="action_radio">
                                             <label for="por_restrict_no">No</label>
                                         </div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('por_restrict_to_new_customers')">{{ errors.first('por_restrict_to_new_customers') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex_radio_alternate">
-                                    <label>Allow sharing of package?</label>
+                                    <label>Allow sharing of package? <span>*</span></label>
                                     <div class="radio_wrapper">
                                         <div class="form_radio">
-                                            <input type="radio" id="por_allow_yes" value="Yes" name="por_allow_sharing_of_package" class="action_radio">
+                                            <input type="radio" id="por_allow_yes" value="Yes" name="por_allow_sharing_of_package" v-validate="'required'" class="action_radio">
                                             <label for="por_allow_yes">Yes</label>
                                         </div>
                                         <div class="form_radio">
-                                            <input type="radio" id="por_allow_no" value="No" name="por_allow_sharing_of_package" class="action_radio">
+                                            <input type="radio" id="por_allow_no" value="No" name="por_allow_sharing_of_package" v-validate="'required'" class="action_radio">
                                             <label for="por_allow_no">No</label>
                                         </div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('por_allow_sharing_of_package')">{{ errors.first('por_allow_sharing_of_package') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
-                                    <div class="form_group">
+                                    <div class="form_group new_alt">
                                         <label for="promo_start_date">Start Date <span>*</span></label>
                                         <input type="date" name="promo_start_date" class="default_text date" v-validate="'required'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_start_date')">{{ errors.first('promo_start_date') | properFormat }}</span></transition>
                                     </div>
-                                    <div class="form_group">
+                                    <div class="form_group new_alt">
                                         <label for="promo_end_date">End Date <span>*</span></label>
                                         <input type="date" name="promo_end_date" class="default_text date" v-validate="'required'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_end_date')">{{ errors.first('promo_end_date') | properFormat }}</span></transition>
@@ -82,18 +84,17 @@
                                 </transition>
                                 <transition name="fade">
                                     <div class="form_flex" v-if="isComplimentary">
-                                        <div class="form_group">
+                                        <div class="form_group new_alt">
                                             <label for="por_complimentary_package_mode">Mode</label>
-                                            <select class="default_select alternate" name="por_complimentary_package_mode">
+                                            <select class="default_select alternate" key="por_complimentary_package_mode" name="por_complimentary_package_mode">
                                                 <option value="" selected disabled>Choose a Mode</option>
                                                 <option value="1" selected>Purchase Mode</option>
                                                 <option value="2">Usage Mode</option>
                                             </select>
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('por_complimentary_package_mode')">{{ errors.first('por_complimentary_package_mode') | properFormat }}</span></transition>
                                         </div>
-                                        <div class="form_group">
+                                        <div class="form_group new_alt">
                                             <label for="por_complimentary_id">Complimentary Package</label>
-                                            <select class="default_select alternate" name="por_complimentary_id">
+                                            <select class="default_select alternate" key="por_complimentary_id" name="por_complimentary_id" v-validate="'required'">
                                                 <option value="" selected disabled>Choose a Package</option>
                                                 <optgroup label="Packages">
                                                     <option :value="`${classPackage.id}|||package`" v-for="(classPackage, key) in classPackages" :key="key">{{ classPackage.name }}</option>
@@ -279,18 +280,28 @@
                 }else {
                     newValue = value.split('The ')[1].split(' field')[0].split('_')
                     if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let firstValue = ''
                         let lastValue = ''
+                        if (newValue[0] != 'ao' && newValue[0] != 'por') {
+                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
                         for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            if (newValue[i] != 'id') {
+                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            }
                         }
                         newValue = firstValue + ' ' + lastValue
                     } else {
                         newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
                     }
                 }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                    return `The ${newValue} field${message}`
+                } else {
+                    return `The ${newValue}`
+                }
             }
         },
         methods: {

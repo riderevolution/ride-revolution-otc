@@ -341,7 +341,6 @@
                     if (newValue.length > 1) {
                         let firstValue = ''
                         let lastValue = ''
-                        console.log(newValue[0])
                         if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
                             firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
