@@ -517,7 +517,7 @@
         },
         mounted () {
             const me = this
-            me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 1]
+            me.lastRoute = me.$route.path.split('/')[1]
             me.fetchData()
         },
         beforeMount () {
