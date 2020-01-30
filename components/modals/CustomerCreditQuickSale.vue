@@ -145,7 +145,7 @@
                         <div class="form_main_group" v-if="form.paymentType == 4">
                             <div class="form_group">
                                 <label for="cash_tendered">Cash Tendered (PHP)<span>*</span></label>
-                                <input type="text" name="cash_tendered" class="default_text" v-validate="`{required: true, min_value:${form.total}, regex: '^[0-9]+(\.[0-9]{1,2})?$'}`"  v-model="form.change">
+                                <input type="text" name="cash_tendered" class="default_text" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', min_value: form.total, max_value: 9999999}"  v-model="form.change">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.cash_tendered')">{{ errors.first('checkout_form.cash_tendered') }}</span></transition>
                             </div>
                             <div class="form_group">
