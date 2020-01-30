@@ -572,8 +572,10 @@
                 }
                 me.$store.state.scheduleID = data.id
                 me.fetchWaitlist(data.id)
-                me.selectCustomer = true
-                me.findCustomer = false
+                if (me.selectStudio) {
+                    me.findCustomer = false
+                    me.selectCustomer = true
+                }
             },
             fetchWaitlist (schedule_id) {
                 const me = this
