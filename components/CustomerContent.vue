@@ -19,13 +19,13 @@
                         <div class="package_status">
                             <div class="box">
                                 <div class="overlay">
-                                    <p>{{ parseInt(data.class_package.class_count) - parseInt(data.count) }}</p>
+                                    <p>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</p>
                                     <label>Used</label>
                                 </div>
                             </div>
                             <div class="box margin">
                                 <div class="overlay">
-                                    <p>{{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : (parseInt(data.count) == data.class_package.class_count) ? parseInt(data.class_package.class_count) : parseInt(data.count) }}</p>
+                                    <p>{{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : (parseInt(data.count) == data.original_package_count) ? parseInt(data.original_package_count) : parseInt(data.count) }}</p>
                                     <label>Available</label>
                                 </div>
                             </div>
