@@ -360,26 +360,27 @@
                             formData.append('studios', JSON.stringify(me.studios))
                             formData.append('class_length', me.form.classLength)
                             formData.append('scheduled_date_id', me.$route.query.i)
-                            me.loader(true)
+                            // me.loader(true)
                             me.$axios.post(`api/schedules/${me.$route.params.id}`, formData).then(res => {
-                                setTimeout( () => {
-                                    if (res.data) {
-                                        me.notify('Content has been Updated')
-                                    } else {
-                                        me.$store.state.errorList.push('Sorry, Something went wrong')
-                                        me.$store.state.errorStatus = true
-                                    }
-                                }, 500)
+                                console.log(res.data);
+                                // setTimeout( () => {
+                                //     if (res.data) {
+                                //         me.notify('Content has been Updated')
+                                //     } else {
+                                //         me.$store.state.errorList.push('Sorry, Something went wrong')
+                                //         me.$store.state.errorStatus = true
+                                //     }
+                                // }, 500)
                             }).catch(err => {
                                 me.$store.state.errorList = err.response.data.errors
                                 me.$store.state.errorStatus = true
-                            }).then(() => {
-                                setTimeout( () => {
-                                    if (!me.$store.state.errorStatus) {
-                                        me.$router.push(`/${me.lastRoute}`)
-                                    }
-                                    me.loader(false)
-                                }, 500)
+                            // }).then(() => {
+                            //     setTimeout( () => {
+                            //         if (!me.$store.state.errorStatus) {
+                            //             me.$router.push(`/${me.lastRoute}`)
+                            //         }
+                            //         me.loader(false)
+                            //     }, 500)
                             })
                         } else {
                             me.$store.state.promptStatus = true
@@ -396,26 +397,27 @@
                                 formData.append('studios', JSON.stringify(me.studios))
                                 formData.append('class_length', me.form.classLength)
                                 formData.append('scheduled_date_id', me.$route.query.i)
-                                me.loader(true)
+                                // me.loader(true)
                                 me.$axios.post(`api/schedules/${me.$route.params.id}`, formData).then(res => {
-                                    setTimeout( () => {
-                                        if (res.data) {
-                                            me.notify('Content has been Updated')
-                                        } else {
-                                            me.$store.state.errorList.push('Sorry, Something went wrong')
-                                            me.$store.state.errorStatus = true
-                                        }
-                                    }, 500)
+                                    console.log(res.data);
+                                    // setTimeout( () => {
+                                    //     if (res.data) {
+                                    //         me.notify('Content has been Updated')
+                                    //     } else {
+                                    //         me.$store.state.errorList.push('Sorry, Something went wrong')
+                                    //         me.$store.state.errorStatus = true
+                                    //     }
+                                    // }, 500)
                                 }).catch(err => {
                                     me.$store.state.errorList = err.response.data.errors
                                     me.$store.state.errorStatus = true
-                                }).then(() => {
-                                    setTimeout( () => {
-                                        if (!me.$store.state.errorStatus) {
-                                            me.$router.push(`/${me.lastRoute}`)
-                                        }
-                                        me.loader(false)
-                                    }, 500)
+                                // }).then(() => {
+                                //     setTimeout( () => {
+                                //         if (!me.$store.state.errorStatus) {
+                                //             me.$router.push(`/${me.lastRoute}`)
+                                //         }
+                                //         me.loader(false)
+                                //     }, 500)
                                 })
                             } else {
                                 me.$store.state.promptStatus = true

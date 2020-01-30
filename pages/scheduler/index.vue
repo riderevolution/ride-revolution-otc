@@ -298,13 +298,13 @@
                         if (data.schedule.private_class == 1) {
                             if (data.schedule.enabled == 1) {
                                 result += `
-                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=22046" class="class_wrapper private">
+                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper private">
                                         <div class="class_text margin"><img src="/icons/private-class.svg" /><span>${data.schedule.start_time}</span></div>
                                         <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                                     </a>`
                             } else {
                                 result += `
-                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=22046" class="class_wrapper draft private">
+                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft private">
                                         <div class="class_text margin"><img src="/icons/private-class.svg" /><span>${data.schedule.start_time}</span></div>
                                         <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                                     </a>`
@@ -312,13 +312,13 @@
                         } else {
                             if (data.schedule.enabled == 1) {
                                 result += `
-                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=22046" class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
+                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
                                         <div class="class_text margin">${data.schedule.start_time}</div>
                                         <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                                     </a>`
                             } else {
                                 result += `
-                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=22046" class="class_wrapper draft">
+                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft">
                                         <div class="class_text margin">${data.schedule.start_time}</div>
                                         <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                                     </a>`
