@@ -68,11 +68,11 @@
                                 <div class="form_flex_radio">
                                     <label class="radio_label">Sex <span>*</span></label>
                                     <div class="form_radio">
-                                        <input type="radio" id="female" value="F" name="co_sex" class="action_radio">
+                                        <input type="radio" id="female" value="F" name="co_sex" v-validate="'required'" class="action_radio">
                                         <label for="female">Female</label>
                                     </div>
                                     <div class="form_radio">
-                                        <input type="radio" id="male" value="M" name="co_sex" class="action_radio">
+                                        <input type="radio" id="male" value="M" name="co_sex" v-validate="'required'" class="action_radio">
                                         <label for="male">Male</label>
                                     </div>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('co_sex')">{{ errors.first('co_sex') | properFormat }}</span></transition>
@@ -136,7 +136,7 @@
                             </div>
                             <div class="form_group">
                                 <label for="pa_city">City <span>*</span></label>
-                                <input type="text" name="pa_city" autocomplete="off" class="default_text" v-validate="'required'" v-model="form.pa_city">
+                                <input type="text" name="pa_city" autocomplete="off" class="default_text" v-validate="'required|max:30'" v-model="form.pa_city">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_city')">{{ errors.first('pa_city') | properFormat }}</span></transition>
                             </div>
                         </div>
@@ -151,16 +151,19 @@
                         </div>
                         <div class="form_main_group">
                             <div class="form_group">
-                                <label for="ba_address_1">Address Line 1</label>
-                                <input type="text" name="ba_address_1" autocomplete="off" class="default_text" v-model="form.ba_address_1">
+                                <label for="ba_address_1">Address Line 1 <span>*</span></label>
+                                <input type="text" name="ba_address_1" autocomplete="off" class="default_text" v-validate="'required'" v-model="form.ba_address_1">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address_1')">{{ errors.first('ba_address_1') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
-                                <label for="ba_address_2">Address Line 2</label>
-                                <input type="text" name="ba_address_2" autocomplete="off" class="default_text" v-model="form.ba_address_2">
+                                <label for="ba_address_2">Address Line 2 <span>*</span></label>
+                                <input type="text" name="ba_address_2" autocomplete="off" class="default_text" v-validate="'required'" v-model="form.ba_address_2">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address_2')">{{ errors.first('ba_address_2') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
-                                <label for="ba_city">City</label>
-                                <input type="text" name="ba_city" autocomplete="off" class="default_text" v-model="form.ba_city">
+                                <label for="ba_city">City <span>*</span></label>
+                                <input type="text" name="ba_city" autocomplete="off" class="default_text" v-validate="'required|max:30'" v-model="form.ba_city">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_city')">{{ errors.first('ba_city') | properFormat }}</span></transition>
                             </div>
                         </div>
                     </div>
@@ -187,7 +190,21 @@
                             <div class="form_group">
                                 <div class="form_group_header">Terms &amp; Conditions</div>
                                 <div class="form_group_body">
-                                    I acknowledge and fully understand that I will be engaging in activities that involve risk of serious injury, including permanent disability or death, or severe social and economic losses which might result not only from my own actions, inactions or negligence, but action, inaction or negligence of others.<br><br> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.<br><br> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu <br><br> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.<br><br> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu <br><br>
+                                    <b>Functions and Activities</b><br>
+                                    It is my understanding that participating in the programs and recreational and other activities of Ride revolution is a privilege. Prior to my participation in such activities, I acknowledge that there are certain risks associated with the activities, including, by way of example, physical injury due to activity‑related accidents, physical injury due to transportation‑related accidents, illness, or even death. In addition, I acknowledge that there may be other risks inherent in these activities of which I may not be presently aware.
+                                    <br><br>
+                                    <b>Release of Liability</b><br>
+                                    By signing this Permission/Waiver Form, I expressly warrant that the child named above is capable of withstanding both the physical and mental demands of the activities discussed above. I also expressly assume all risks of the child participating in the activities, whether such risks are known or unknown to me at this time. I further release Ride Revolution and its ministers, leaders, employees, volunteers, and agents from any claim that my child may have or that I may have against them as a result of injury or illness incurred during the course of participation in the activities. This release of liability shall exclude any gross claims of negligence. This release of liability is also intended to cover all claims that members of the child's or my family or estate, heirs, representatives, or assigns may have against Ride Revolution or its ministers, leaders, employees, volunteers, or agents.
+                                    <br><br>
+                                    I further agree to indemnify and hold harmless Ride Revolution and its ministers, leaders, employees, volunteers, or agents from any and all claims arising from my participation in its activities and programs, or as a result of injury or illness of my child during such activities.
+                                    <br><br>
+                                    <b>First Aid and Emergency Medical Treatment</b><br>
+                                    I recognize that there may be occasions where the child named above may be in need of first aid or emergency medical treatment as a result of an accident, illness, or other health condition or injury. I do hereby give permission for agents of Ride Revolution to seek and secure any needed medical attention or treatment for the child named above, including hospitalization, if in the agent's opinion such need arises. In doing so I agree to pay all fees and costs arising from this action to obtain medical treatment.
+                                    <br><br>
+                                    I give permission for attending physician(s) and other medical personnel to administer any needed medical treatment, including surgery and, again, I agree to pay for the medical treatment.
+                                    <br><br>
+                                    <b>Special Events and Field Trips</b><br>
+                                    I understand that the child named above may be participating in local service projects and fellowship events during facility youth events. I understand that during this period my child/ward may take part in activities such as: minor yard work, cleaning, painting, and other activities consistent with the purposes of the facility.
                                 </div>
                             </div>
                         </div>
@@ -324,11 +341,12 @@
                     if (newValue.length > 1) {
                         let firstValue = ''
                         let lastValue = ''
-                        if (newValue[0] != 'co') {
+                        console.log(newValue[0])
+                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
                             firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
                         for (let i = 1; i < newValue.length; i++) {
-                            if (newValue[i] != 'co') {
+                            if (newValue[i] != 'id') {
                                 lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
                             }
                         }
