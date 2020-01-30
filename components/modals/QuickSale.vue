@@ -50,7 +50,7 @@
                                                     <option value="" disabled selected>Select a Value</option>
                                                     <option :value="classPackage.sku_id" v-for="(classPackage, key) in classPackages" :key="key">{{ classPackage.name }}</option>
                                                 </select>
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.class_package_sku_id') && showErrors">{{ errors.first('custom_gift_form.class_package_sku_id') }}</span></transition>
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.class_package_sku_id') && showErrors">{{ errors.first('custom_gift_form.class_package_sku_id') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group no_margin">
                                                 <label for="custom_card_code">Card Code <span>*</span></label>
@@ -61,12 +61,12 @@
                                             <div class="form_group">
                                                 <label for="custom_card_from">From <span>*</span></label>
                                                 <input type="text" name="custom_card_from" class="default_text" autocomplete="off" v-model="customGiftCard.customCardFrom" v-validate="'required'">
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_from') && showErrors">{{ errors.first('custom_gift_form.custom_card_from') }}</span></transition>
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_from') && showErrors">{{ errors.first('custom_gift_form.custom_card_from') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group">
                                                 <label for="custom_card_to">To <span>*</span></label>
                                                 <input type="text" name="custom_card_to" class="default_text" autocomplete="off" v-model="customGiftCard.customCardTo" v-validate="'required'">
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_to') && showErrors">{{ errors.first('custom_gift_form.custom_card_to') }}</span></transition>
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_to') && showErrors">{{ errors.first('custom_gift_form.custom_card_to') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group">
                                                 <label for="custom_card_predefined_title">Title</label>
@@ -91,12 +91,12 @@
                                             <div class="form_group">
                                                 <label for="customer_card_recipient_number">Recipient's Mobile Number <span>*</span></label>
                                                 <input type="text" name="customer_card_recipient_number" autocomplete="off" class="default_text" v-model="customGiftCard.customCardRecipientNumber" v-validate="'required|numeric'">
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.customer_card_recipient_number') && showErrors">{{ errors.first('custom_gift_form.customer_card_recipient_number') }}</span></transition>
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.customer_card_recipient_number') && showErrors">{{ errors.first('custom_gift_form.customer_card_recipient_number') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group">
                                                 <label for="custom_card_recipient_email">Recipient's Email <span>*</span></label>
                                                 <input type="email" name="custom_card_recipient_email" autocomplete="off" class="default_text" v-model="customGiftCard.customCardRecipientEmail" v-validate="'required|email'">
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_recipient_email') && showErrors">{{ errors.first('custom_gift_form.custom_card_recipient_email') }}</span></transition>
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_recipient_email') && showErrors">{{ errors.first('custom_gift_form.custom_card_recipient_email') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group_disclaimer">
                                                 <div class="form_disclaimer"><img src="/icons/disclaimer-icon.svg" /> <span>The custom gift card will be sent after payment has been processed.</span></div>
@@ -154,7 +154,7 @@
                                     <option value="psbank">PSBank</option>
                                     <option value="metrobank">MetroBank</option>
                                 </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ errors.first('checkout_form.bank') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ errors.first('checkout_form.bank') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="type_of_card">Type of Card <span>*</span></label>
@@ -167,24 +167,24 @@
                                     <option value="amex">American Express</option>
                                     <option value="others">Others</option>
                                 </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.type_of_card')">{{ errors.first('checkout_form.type_of_card') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.type_of_card')">{{ errors.first('checkout_form.type_of_card') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group" v-if="cardType == 'others'">
                                 <label for="others">Others <span>*</span></label>
                                 <input type="text" name="others" class="default_text" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.others')">{{ errors.first('checkout_form.others') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.others')">{{ errors.first('checkout_form.others') | properFormat }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 1">
                             <div class="form_group">
                                 <label for="bank">Bank <span>*</span></label>
                                 <input type="text" name="bank" class="default_text" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ errors.first('checkout_form.bank') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ errors.first('checkout_form.bank') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="check_number">Check Number <span>*</span></label>
                                 <input type="text" name="check_number" class="default_text" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.check_number')">{{ errors.first('checkout_form.check_number') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.check_number')">{{ errors.first('checkout_form.check_number') | properFormat }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 3">
@@ -195,7 +195,7 @@
                                     <option value="so-sick">So Sick of love song</option>
                                     <option value="other">Other</option>
                                 </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.comp_reason')">{{ errors.first('checkout_form.comp_reason') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.comp_reason')">{{ errors.first('checkout_form.comp_reason') | properFormat }}</span></transition>
                             </div>
                             <transition name="fade">
                                 <div class="form_group" v-if="form.comp == 'other'">
@@ -206,14 +206,14 @@
                             <div class="form_group">
                                 <label for="note">Note <span>*</span></label>
                                 <input type="text" name="note" class="default_text" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ errors.first('checkout_form.note') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ errors.first('checkout_form.note') | properFormat }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 4">
                             <div class="form_group">
                                 <label for="cash_tendered">Cash Tendered (PHP) <span>*</span></label>
                                 <input type="text" name="cash_tendered" class="default_text" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', min_value: form.total, max_value: 9999999}" v-model="form.change">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.cash_tendered')">{{ errors.first('checkout_form.cash_tendered') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.cash_tendered')">{{ errors.first('checkout_form.cash_tendered') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="change">Change (PHP)</label>
@@ -355,6 +355,28 @@
                 toCheckout: [],
                 cardType: '',
                 promoApplied: false
+            }
+        },
+        filters: {
+            properFormat: function (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                }else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let lastValue = ''
+                        for (let i = 1; i < newValue.length; i++) {
+                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')[1]
+                return `The ${newValue} field${message}`
             }
         },
         computed: {
