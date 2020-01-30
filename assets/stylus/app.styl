@@ -5453,12 +5453,21 @@ input::placeholder
                     height: 90px
                     border-radius: 90%
                 .user_image_default
+                    position: relative
                     sf_pro_bold(24px)
                     text-transform: uppercase
                     background-image: linear-gradient(137deg, $red, $orange)
                     border-radius: 50%
                     padding: 30px
                     color: #fff
+                    .overlay
+                        position: absolute
+                        top: 50%
+                        left: 0
+                        right: 0
+                        margin: 0 auto
+                        text-align: center
+                        transform: translateY(-50%)
                 .user_details
                     flex: 1 0 40%
                     padding-left: 20px

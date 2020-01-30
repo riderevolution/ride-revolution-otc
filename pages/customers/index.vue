@@ -39,7 +39,6 @@
                             <th>Last Name</th>
                             <th>First Name</th>
                             <th>Type</th>
-                            <th>Rewards</th>
                             <th>Email Address</th>
                             <th>Contact No.</th>
                             <th>Pending Payment</th>
@@ -57,8 +56,7 @@
                                 </div>
                             </td>
                             <td><nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.first_name }}</nuxt-link></td>
-                            <td>First Timer</td>
-                            <td>Teal</td>
+                            <td>{{ data.customer_details.customer_type.name }}</td>
                             <td>{{ data.email }}</td>
                             <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
                             <td>

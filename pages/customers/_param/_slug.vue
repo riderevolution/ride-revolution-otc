@@ -6,7 +6,9 @@
                 <div class="user_info">
                     <img :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images.length > 0" />
                     <div class="user_image_default" v-else>
-                        {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
+                        <div class="overlay">
+                            {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
+                        </div>
                     </div>
                     <div class="user_details">
                         <h1 class="user_name">{{ customer.first_name }} {{ customer.last_name }}</h1>
