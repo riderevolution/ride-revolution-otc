@@ -107,7 +107,6 @@
                         })
                     } else {
                         me.$scrollTo('.validation_errors', {
-                            container: '#default_form',
 							offset: -250
 						})
                     }

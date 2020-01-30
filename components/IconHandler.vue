@@ -50,6 +50,7 @@
                 }
             }
         },
+        inject: ['$validator'],
         data () {
             return {
                 showTags: false,

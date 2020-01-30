@@ -16,8 +16,8 @@
                         <div class="form_main_group">
                             <div class="form_group">
                                 <label for="name">Name <span>*</span></label>
-                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus >
-                                <!-- <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition> -->
+                                <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required:max:100'">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                             </div>
                             <icon-handler-container ref="handler"></icon-handler-container>
                         </div>
@@ -81,7 +81,7 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        // me.loader(true)
+                        me.loader(true)
                         me.$axios.post('api/extras/customer-types', formData).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
@@ -92,20 +92,18 @@
                                 }
                             }, 500)
                         }).catch(err => {
-                            console.log(err);
-                            // me.$store.state.errorList = err.response.data.errors
-                            // me.$store.state.errorStatus = true
+                            me.$store.state.errorList = err.response.data.errors
+                            me.$store.state.errorStatus = true
                         }).then(() => {
-                            // setTimeout( () => {
-                            //     if (!me.$store.state.errorStatus) {
-                            //         me.$router.push(`/admin/${me.prevRoute}/${me.lastRoute}`)
-                            //     }
-                            //     me.loader(false)
-                            // }, 500)
+                            setTimeout( () => {
+                                if (!me.$store.state.errorStatus) {
+                                    me.$router.push(`/admin/${me.prevRoute}/${me.lastRoute}`)
+                                }
+                                me.loader(false)
+                            }, 500)
                         })
                     } else {
                         me.$scrollTo('.validation_errors', {
-                            container: '#default_form',
 							offset: -250
 						})
                     }

@@ -26,6 +26,7 @@
                 }
             }
 		},
+		inject: ['$validator'],
 		components: {
 			IconHandler
 		},
