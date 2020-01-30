@@ -626,13 +626,13 @@
             },
             fetchData () {
                 const me = this
-                me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${me.$route.params.param}`).then(res => {
+                me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}`).then(res => {
                     if (res.data) {
                         res.data.classPackages.forEach((classPackage, index) => {
                             classPackage.isChecked = false
                             me.products.push(classPackage)
                         })
-                        me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${me.$route.params.param}&is_promo=1`).then(res => {
+                        me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}&is_promo=1`).then(res => {
                             if (res.data) {
                                 res.data.classPackages.forEach((promoPackage, index) => {
                                     promoPackage.isChecked = false
