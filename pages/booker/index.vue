@@ -898,7 +898,7 @@
                     }
                 })
                 if (!target.parentNode.classList.contains('toggled')) {
-                    await me.$axios.get(`api/schedules?month=${month}&year=${year}&day=${day}&studio_id=${me.studioID}`).then(res => {
+                    await me.$axios.get(`api/schedules?month=${month}&year=${year}&day=${day}&studio_id=${me.studioID}&for_booker=1`).then(res => {
                         if (res.data) {
                             me.schedules = res.data.schedules
                         }
