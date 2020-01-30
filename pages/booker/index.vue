@@ -572,7 +572,6 @@
                         me.past = false
                     }
                 }
-                console.log(me.$refs.plan.seats);
                 me.$store.state.scheduleID = data.id
                 me.fetchWaitlist(data.id)
 
@@ -664,10 +663,10 @@
                     value.classList.remove('toggled')
                     value.querySelector('.accordion_content').style.height = 0
                 })
-                // setTimeout(() => {
-                //     me.$refs.plan.fetchSeats(null, me.studioID)
-                //     document.querySelector('.plan_wrapper').style.transform = `matrix(0.55, 0, 0, 0.55, ${me.customWidth}, ${me.customHeight})`
-                // }, 10)
+                setTimeout(() => {
+                    me.$refs.plan.fetchSeats(null, me.studioID)
+                    document.querySelector('.plan_wrapper').style.transform = `matrix(0.55, 0, 0, 0.55, ${me.customWidth}, ${me.customHeight})`
+                }, 10)
                 me.selectStudio = true
             },
             updateNotes (event) {

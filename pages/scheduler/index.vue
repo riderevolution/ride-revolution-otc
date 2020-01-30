@@ -367,11 +367,13 @@
                 me.value = me.$moment(`${me.currentYear}-${me.currentMonth}-${1}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
                 me.calendarType = 'month'
                 me.$store.state.calendarClearStatus = true
+                document.body.classList.add('no_scroll')
             },
             duplicateMonth () {
                 const me = this
                 me.calendarType = 'month'
                 me.$store.state.calendarDuplicateStatus = true
+                document.body.classList.add('no_scroll')
             },
             clickDates (startNum, endNum, firstDayExcess) {
                 const me = this
@@ -413,6 +415,7 @@
                                 me.value = e.target.getAttribute('href')
                                 me.calendarType = 'day'
                                 me.$store.state.calendarClearStatus = true
+                                document.body.classList.add('no_scroll')
                             })
                         }
                         if (elementDayDuplicate != null) {
@@ -421,6 +424,7 @@
                                 me.value = e.target.getAttribute('href')
                                 me.calendarType = 'day'
                                 me.$store.state.calendarDuplicateStatus = true
+                                document.body.classList.add('no_scroll')
                             })
                         }
                     }
@@ -449,6 +453,7 @@
                                 e.preventDefault()
                                 me.calendarType = 'week'
                                 me.$store.state.calendarClearStatus = true
+                                document.body.classList.add('no_scroll')
                             })
                         }
                         if (elementWeekDuplicate != null) {
@@ -456,6 +461,7 @@
                                 e.preventDefault()
                                 me.calendarType = 'week'
                                 me.$store.state.calendarDuplicateStatus = true
+                                document.body.classList.add('no_scroll')
                             })
                         }
                     }
