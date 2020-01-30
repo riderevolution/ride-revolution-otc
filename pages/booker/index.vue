@@ -23,7 +23,9 @@
                                         <div class="customer_wrapper" v-if="customerLength > 0 && customer.id != data.id" :id="`customer_${data.id}`" v-for="(data, key) in populateCustomers" :key="key" @click="getCustomer(data)">
                                             <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" />
                                             <div class="customer_image" v-else>
-                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                                <div class="overlay">
+                                                    {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                                </div>
                                             </div>
                                             <div class="customer_name">
                                                 {{ data.first_name }} {{ data.last_name }}
@@ -41,7 +43,9 @@
                                         <div class="customer_header">
                                             <img class="customer_image" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images.length > 0" />
                                             <div class="customer_default_image" v-else>
-                                                {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
+                                                <div class="overlay">
+                                                    {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
+                                                </div>
                                             </div>
                                             <div class="customer_details">
                                                 <h2 class="customer_name">
@@ -237,6 +241,9 @@
             <prompt v-if="$store.state.promptStatus" :message="($refs.plan.hasCancel) ? $refs.plan.message : message" :hasCancel="$refs.plan.hasCancel" />
         </transition>
         <transition name="fade">
+            <prompt-broken-bike v-if="$store.state.promptBrokenBikeStatus" :message="$refs.plan.brokenMessage" />
+        </transition>
+        <transition name="fade">
             <prompt-booker v-if="$store.state.promptBookerStatus" :message="$refs.plan.message" />
         </transition>
         <transition name="fade">
@@ -277,6 +284,7 @@
     import Foot from '../../components/Foot'
     import SeatPlan from '../../components/SeatPlan'
     import Prompt from '../../components/modals/Prompt'
+    import PromptBrokenBike from '../../components/modals/PromptBrokenBike'
     import PromptBooker from '../../components/modals/PromptBooker'
     import PromptBookerAction from '../../components/modals/PromptBookerAction'
     import PromptSignOut from '../../components/modals/PromptSignOut'
@@ -293,6 +301,7 @@
             Foot,
             SeatPlan,
             Prompt,
+            PromptBrokenBike,
             PromptBooker,
             PromptBookerAction,
             PromptSignOut,

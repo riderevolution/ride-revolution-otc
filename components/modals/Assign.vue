@@ -56,26 +56,26 @@
                             </div>
                         </div>
                     </div>
-                    <transition name="fade">
-                        <div class="customer_picked" v-if="customer != ''">
-                            <div class="customer_header">
-                                <img class="customer_image" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images.length > 0" />
-                                <div class="customer_default_image" v-else>
+                    <div class="customer_picked" v-if="customer != ''">
+                        <div class="customer_header">
+                            <img class="customer_image" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images.length > 0" />
+                            <div class="customer_default_image" v-else>
+                                <div class="overlay">
                                     {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
                                 </div>
-                                <div class="customer_details">
-                                    <h2 class="customer_name">
-                                        {{ customer.first_name }} {{ customer.last_name }}
-                                    </h2>
-                                    <div class="customer_info">
-                                        <span>Birthday: {{ $moment(customer.customer_details.co_birthdate).format('M/D/YY') }}</span>
-                                        <span>{{ customer.email }}</span>
-                                        <span>{{ customer.customer_details.co_contact_number }}</span>
-                                    </div>
+                            </div>
+                            <div class="customer_details">
+                                <h2 class="customer_name">
+                                    {{ customer.first_name }} {{ customer.last_name }}
+                                </h2>
+                                <div class="customer_info">
+                                    <span>Birthday: {{ $moment(customer.customer_details.co_birthdate).format('M/D/YY') }}</span>
+                                    <span>{{ customer.email }}</span>
+                                    <span>{{ customer.customer_details.co_contact_number }}</span>
                                 </div>
                             </div>
                         </div>
-                    </transition>
+                    </div>
                     <div class="form_footer_wrapper">
                         <div class="form_flex">
                             <div class="button_group">

@@ -1323,7 +1323,6 @@ input::placeholder
                                 overflow-y: auto
                                 .customer_wrapper
                                     margin-right: 5px
-                                    padding: 10px 0
                         .customer_selection_list
                             .customer_wrapper
                                 display: flex
@@ -1344,6 +1343,15 @@ input::placeholder
                                     border-radius: 50%
                                     padding: 8px
                                     color: $white
+                                    width: 35px
+                                    height: 35px
+                                    .overlay
+                                        position: absolute
+                                        top: 50%
+                                        left: 0
+                                        right: 0
+                                        text-align: center
+                                        transform: translateY(-50%)
                                 .customer_name
                                     sf_pro_medium(16px)
                                     color: $black
@@ -1372,12 +1380,22 @@ input::placeholder
                         height: 50px
                         border-radius: 90%
                     .customer_default_image
+                        position: relative
                         sf_pro_bold(17px)
                         text-transform: uppercase
                         background-image: linear-gradient(137deg, $red, $orange)
                         border-radius: 50%
                         padding: 15px
                         color: #fff
+                        width: 50px
+                        height: 50px
+                        .overlay
+                            position: absolute
+                            top: 50%
+                            left: 0
+                            right: 0
+                            text-align: center
+                            transform: translateY(-50%)
                     .customer_details
                         padding-left: 10px
                         .customer_name
@@ -2969,6 +2987,15 @@ input::placeholder
                         border-radius: 50%
                         padding: 8px
                         color: $white
+                        width: 35px
+                        height: 35px
+                        .overlay
+                            position: absolute
+                            top: 50%
+                            left: 0
+                            right: 0
+                            text-align: center
+                            transform: translateY(-50%)
                     .table_data_link
                         margin-left: 15px
                 .table_data_link
@@ -5460,6 +5487,8 @@ input::placeholder
                     border-radius: 50%
                     padding: 30px
                     color: #fff
+                    width: 90px
+                    height: 90px
                     .overlay
                         position: absolute
                         top: 50%
@@ -5794,6 +5823,15 @@ input::placeholder
                                             border-radius: 50%
                                             padding: 8px
                                             color: $white
+                                            width: 35px
+                                            height: 35px
+                                            .overlay
+                                                position: absolute
+                                                top: 50%
+                                                left: 0
+                                                right: 0
+                                                text-align: center
+                                                transform: translateY(-50%)
                                         .customer_name
                                             sf_pro_medium(16px)
                                             color: $black
@@ -5860,12 +5898,22 @@ input::placeholder
                                         height: 50px
                                         border-radius: 90%
                                     .customer_default_image
+                                        position: relative
                                         sf_pro_bold(17px)
                                         text-transform: uppercase
                                         background-image: linear-gradient(137deg, $red, $orange)
                                         border-radius: 50%
                                         padding: 15px
                                         color: #fff
+                                        width: 50px
+                                        height: 50px
+                                        .overlay
+                                            position: absolute
+                                            top: 50%
+                                            left: 0
+                                            right: 0
+                                            text-align: center
+                                            transform: translateY(-50%)
                                     .customer_details
                                         padding-left: 10px
                                         .customer_name

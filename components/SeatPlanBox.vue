@@ -185,9 +185,8 @@
                         document.body.classList.add('no_scroll')
                         break
                     case 'broken':
-                        me.$parent.hasCancel = true
-                        me.$parent.message = 'Are you sure you want to continue?'
-                        me.$store.state.promptStatus = true
+                        me.$parent.brokenMessage = 'Are you sure you want to continue?'
+                        me.$store.state.promptBrokenBikeStatus = true
                         document.body.classList.add('no_scroll')
                         break
                 }

@@ -41,7 +41,9 @@
                                 <div class="thumb">
                                     <img :src="data.instructor_details.images[0].path_resized" v-if="data.instructor_details.images.length > 0" />
                                     <div class="table_image_default" v-else>
-                                        {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                        <div class="overlay">
+                                            {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                        </div>
                                     </div>
                                     <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/class-schedules`">{{ data.last_name }}</nuxt-link>
                                 </div>

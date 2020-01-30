@@ -21,6 +21,7 @@
                 hasCustomer: false,
                 hasCancel: false,
                 message: '',
+                brokenMessage: '',
                 hasFetchSeat: false,
                 seats: {
                     left: {
