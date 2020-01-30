@@ -3050,6 +3050,7 @@ input::placeholder
         align-items: center
         justify-content: space-between
         .action_flex
+            position: relative
             &.disabled_gear
                 .gear_action
                     .gear_overlay
@@ -3059,6 +3060,57 @@ input::placeholder
                                     pointer-events: none
                                     background-color: $border_alt
                                     color: $border_alt2
+            &.alt
+                display: flex
+                flex-flow: row wrap
+                align-items: center
+            .schedule_info
+                position: relative
+                margin-left: 10px
+                .overlay
+                    position: absolute
+                    top: calc(100% + 30px)
+                    left: 0
+                    z-index: 3
+                    width: 200px
+                    background-color: $white
+                    border-radius: 3px
+                    padding: 15px 0 5px
+                    border-radius: 3px
+                    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.16)
+                    opacity: 0
+                    visibility: hidden
+                    transition: .3s ease-in-out
+                    .studios
+                        padding-top: 10px
+                        border-top: 1px solid #F0F0F0
+                        label
+                            display: block
+                            sf_pro_regular(14px)
+                            color: $gray_alternate
+                            padding-left: 20px
+                            margin-bottom: 10px
+                    .type
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        margin-bottom: 10px
+                        padding: 0 0px 0 20px
+                        .color
+                            flex: 0 0 10px
+                            width: 10px
+                            height: 10px
+                            border-radius: 50%
+                            background-color: #DDD
+                            margin-right: 10px
+                        .type_title
+                            sf_pro_regular(14px)
+                            color: $black
+                    &.active
+                        top: calc(100% + 10px)
+                        opacity: 1
+                        visibility: visible
+                        transition: .3s ease-in-out
             .gear_action
                 position: relative
                 width: 38.568px

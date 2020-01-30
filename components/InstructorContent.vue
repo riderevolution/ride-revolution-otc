@@ -1,11 +1,21 @@
 <template>
     <div class="instructor_tab_content">
-        <div v-if="type == 'class-schedules' && loaded">
+        <div v-if="type == 'class-schedules'">
             <div class="calendar_wrapper">
                 <div class="calendar_actions">
-                    <div class="action_flex">
+                    <div class="action_flex alt">
                         <a href="javascript:void(0)" class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</a>
                         <a href="javascript:void(0)" class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</a>
+                        <div class="schedule_info">
+                            <img id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg" />
+                            <div class="overlay">
+                                <div class="type"><span class="color alt"></span><span class="type_title">Completed Class</span></div>
+                                <div class="studios">
+                                    <label>Studios</label>
+                                    <div class="type" v-for="(data, key) in studios" :key="key"><span class="color" :style="`background-color: ${data.color_code}`"></span><span class="type_title">{{ data.name }}</span></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="calendar_header">
@@ -46,16 +56,26 @@
         },
         data () {
             return {
-                loaded: true,
+                loaded: false,
                 currentDate: 0,
                 currentMonth: 0,
                 currentYear: 0,
                 monthName: '',
                 yearName: '',
-                dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+                dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                studios: []
             }
         },
         methods: {
+            toggleLegends (event) {
+                const me = this
+                let element = event.target
+                if (element.nextElementSibling.classList.contains('active')) {
+                    element.nextElementSibling.classList.remove('active')
+                } else {
+                    element.nextElementSibling.classList.add('active')
+                }
+            },
             generatePrevCalendar () {
                 const me = this
                 me.currentMonth = me.currentMonth - 1
@@ -113,18 +133,10 @@
                                     <td id="col_${i}" class='day_wrapper fade_in'>
                                         <div class='header_wrapper'>
                                             <div class='header_day ${(me.currentDate == startDate) ? 'active' : '' }'>${startDate}</div>
-                                            <div class='header_menu'>
-                                                <div class='menu_circles' id=menu_${startDate}>&#x25CF; &#x25CF; &#x25CF;</div>
-                                                <div class='menu_overlay ${(j == 6) ? 'alternate' : ''}'>
-                                                    <ul class='menu_list_wrapper'>
-                                                        <li class='menu_list'><a class='add menu_item' href='/${me.lastRoute}/${unixTimestamp}/create'>Add a Class</a></li>
-                                                        <li class='menu_list'><a class='clear menu_item' href='${dayDate}'>Clear a Day</a></li>
-                                                        <li class='menu_list'><a class='duplicate menu_item' href='${dayDate}'>Duplicate Day</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
                                         </div>
-                                        ${(j == 6) ? `<svg xmlns="http://www.w3.org/2000/svg" width="38.568" height="32.924" viewBox="0 0 38.568 32.924" class="calendar_gear" id="gear_${startDate}"> <rect width="38.569" height="32.924" rx="3" transform="translate(0 0)"/> <g transform="translate(10.043 7.221)"> <ellipse cx="6.719" cy="6.719" rx="6.719" ry="6.719" transform="translate(2.196 2.197)" class="gear_2"/> <line y2="2.197" transform="translate(8.916)" class="gear_2"/> <line y2="2.197" transform="translate(8.916 15.635)" class="gear_2"/> <line x2="2.197" transform="translate(0 8.916)" class="gear_2"/> <line x2="2.197" transform="translate(15.635 8.916)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(2.611 2.611)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(13.667 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(2.611 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(13.667 2.611)" class="gear_2"/> </g> </svg><div class="gear_overlay"><ul class="gear_list_wrapper"> <li class="gear_list"><a class="clear gear_item" href="javascript:void(0)">Clear Week</a></li> <li class="gear_list"><a class="duplicate gear_item" href="javascript:void(0)">Duplicate Week</a></li> </ul> </div>` : '' }
+                                        <div class="classes" id="class_${startDate}">
+                                            ${me.populateScheduler(startDate)}
+                                        </div>
                                     </td>`
                                 startDate++
                             } else {
@@ -155,7 +167,6 @@
                                             <div class='header_wrapper'>
                                                 <div class='header_day'>${nextDate}</div>
                                             </div>
-                                            ${(j == 6 && i == 4) ? `<svg xmlns="http://www.w3.org/2000/svg" width="38.568" height="32.924" viewBox="0 0 38.568 32.924" class="calendar_gear" id="gear_${startDate - 1}"> <rect width="38.569" height="32.924" rx="3" transform="translate(0 0)"/> <g transform="translate(10.043 7.221)"> <ellipse cx="6.719" cy="6.719" rx="6.719" ry="6.719" transform="translate(2.196 2.197)" class="gear_2"/> <line y2="2.197" transform="translate(8.916)" class="gear_2"/> <line y2="2.197" transform="translate(8.916 15.635)" class="gear_2"/> <line x2="2.197" transform="translate(0 8.916)" class="gear_2"/> <line x2="2.197" transform="translate(15.635 8.916)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(2.611 2.611)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(13.667 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(2.611 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(13.667 2.611)" class="gear_2"/> </g> </svg><div class="gear_overlay"><ul class="gear_list_wrapper"> <li class="gear_list"><a class="clear gear_item" href="javascript:void(0)">Clear Week</a></li> <li class="gear_list"><a class="duplicate gear_item" href="javascript:void(0)">Duplicate Week</a></li> </ul> </div>` : '' }
                                         </td>`
                                     nextDate++
                                 }
@@ -165,7 +176,6 @@
                                         <div class='header_wrapper'>
                                             <div class='header_day'>${nextDate}</div>
                                         </div>
-                                        ${(j == 6 && i == 4) ? `<svg xmlns="http://www.w3.org/2000/svg" width="38.568" height="32.924" viewBox="0 0 38.568 32.924" class="calendar_gear" id="gear_${startDate - 1}"> <rect width="38.569" height="32.924" rx="3" transform="translate(0 0)"/> <g transform="translate(10.043 7.221)"> <ellipse cx="6.719" cy="6.719" rx="6.719" ry="6.719" transform="translate(2.196 2.197)" class="gear_2"/> <line y2="2.197" transform="translate(8.916)" class="gear_2"/> <line y2="2.197" transform="translate(8.916 15.635)" class="gear_2"/> <line x2="2.197" transform="translate(0 8.916)" class="gear_2"/> <line x2="2.197" transform="translate(15.635 8.916)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(2.611 2.611)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(13.667 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(2.611 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(13.667 2.611)" class="gear_2"/> </g> </svg><div class="gear_overlay"><ul class="gear_list_wrapper"> <li class="gear_list"><a class="clear gear_item" href="javascript:void(0)">Clear Week</a></li> <li class="gear_list"><a class="duplicate gear_item" href="javascript:void(0)">Duplicate Week</a></li> </ul> </div>` : '' }
                                     </td>`
                                 nextDate++
                             }
@@ -173,13 +183,6 @@
                     }
                     calendarTable.appendChild(tableRow)
                 }
-                document.querySelectorAll('tr #col_5').forEach((element, index) => {
-                    let lastValue = element.querySelector('.header_wrapper .header_day').innerHTML
-                    let lastElement = document.querySelectorAll('tr #col_5')[document.querySelectorAll('tr #col_5').length - 1]
-                    if (lastValue == 31 || lastValue == 30) {
-                        lastElement.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="38.568" height="32.924" viewBox="0 0 38.568 32.924" class="calendar_gear" id="gear_${startDate - 1}"> <rect width="38.569" height="32.924" rx="3" transform="translate(0 0)"/> <g transform="translate(10.043 7.221)"> <ellipse cx="6.719" cy="6.719" rx="6.719" ry="6.719" transform="translate(2.196 2.197)" class="gear_2"/> <line y2="2.197" transform="translate(8.916)" class="gear_2"/> <line y2="2.197" transform="translate(8.916 15.635)" class="gear_2"/> <line x2="2.197" transform="translate(0 8.916)" class="gear_2"/> <line x2="2.197" transform="translate(15.635 8.916)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(2.611 2.611)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(13.667 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(2.611 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(13.667 2.611)" class="gear_2"/> </g> </svg><div class="gear_overlay"><ul class="gear_list_wrapper"> <li class="gear_list"><a class="clear gear_item" href="javascript:void(0)">Clear Week</a></li> <li class="gear_list"><a class="duplicate gear_item" href="javascript:void(0)">Duplicate Week</a></li> </ul> </div>`
-                    }
-                })
                 setTimeout( () => {
                     me.loader(false)
                     me.clickDates(0, endDate, excess)
@@ -190,6 +193,38 @@
                 do {
                     startNum++
                 } while (startNum < endNum + firstDayExcess)
+            },
+            /**
+             * Populate the Scheduler
+             */
+            populateScheduler (date) {
+                const me = this
+                let result = ''
+                // let scheduleCurrent = me.$moment(data.date).format('D')
+                // let currentDate = me.$moment(`${me.currentYear}-${me.currentMonth}-${date} ${data.schedule.start_time}`)
+                let scheduleDate = me.$moment()
+                // let unixTimestamp = me.$moment(`${me.currentYear}-${me.currentMonth}-${scheduleCurrent}`, 'YYYY-MM-D').valueOf()
+                result += `
+                    <a href="javascript:void(0)" class="class_wrapper completed">
+                        <div class="class_text margin"><span>10:00 AM</span></div>
+                        <div class="class_text">Ride Rev (50 mins.)</div>
+                    </a>`
+                result += `
+                    <a href="javascript:void(0)" class="class_wrapper" style="background-color: #6EC5A4">
+                        <div class="class_text margin"><span>10:00 AM</span></div>
+                        <div class="class_text">Ride Rev (50 mins.)</div>
+                    </a>`
+                result += `
+                    <a href="javascript:void(0)" class="class_wrapper" style="background-color: #FD649C">
+                        <div class="class_text margin"><span>10:00 AM</span></div>
+                        <div class="class_text">Ride Rev (50 mins.)</div>
+                    </a>`
+                result += `
+                    <a href="javascript:void(0)" class="class_wrapper" style="background-color: #5686FB">
+                        <div class="class_text margin"><span>10:00 AM</span></div>
+                        <div class="class_text">Ride Rev (50 mins.)</div>
+                    </a>`
+                return result
             },
             getFirstDayofWeek (startDate, excess) {
                 const me = this
@@ -211,13 +246,35 @@
             },
             fetchData () {
                 const me = this
+                if (me.$route.params.slug == 'class-schedules') {
+                    me.$axios.get('api/studios?enabled=1').then(res => {
+                        if (res.data) {
+                            me.studios = res.data.studios
+                        }
+                    })
+                }
                 me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
-                me.loaded = true
             },
+            toggleOverlays (e) {
+                const me = this
+                let target = e.target
+                let element = document.getElementById(`legend_toggler`)
+                if (element !== target) {
+                    if (element.nextElementSibling.classList.contains('active')) {
+                        element.nextElementSibling.classList.remove('active')
+                    }
+                }
+            }
         },
         mounted () {
             const me = this
             me.fetchData()
         },
+        beforeMount () {
+            document.addEventListener('click', this.toggleOverlays)
+        },
+        beforeDestroy () {
+            document.removeEventListener('click', this.toggleOverlays)
+        }
     }
 </script>
