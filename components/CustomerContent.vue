@@ -296,11 +296,11 @@
                         </div>
                         <div class="wrapper">
                             <label>Occupation</label>
-                            <p>{{ value.customer_details.occupation_id }}</p>
+                            <p>{{ value.customer_details.occupation.name }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Customer Type</label>
-                            <p>{{ value.type }}</p>
+                            <p>{{ value.customer_details.customer_type.name }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Rewards Membership</label>
