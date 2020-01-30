@@ -227,7 +227,9 @@
                         let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         let lastValue = ''
                         for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            if (newValue[i] != 'id') {
+                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            }
                         }
                         newValue = firstValue + ' ' + lastValue
                     } else {
