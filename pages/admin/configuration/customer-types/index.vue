@@ -25,7 +25,7 @@
                     <tbody v-if="res.length > 0">
                         <tr v-for="(data, key) in res" :key="key">
                             <td>{{ data.name }}</td>
-                            <td><img :src="data.images[0].path" /></td>
+                            <td><img width="36px" height="36px" :src="data.images[0].path" /></td>
                             <td>
                                 <div class="table_actions">
                                     <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>

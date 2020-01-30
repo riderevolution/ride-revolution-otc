@@ -232,19 +232,19 @@
                                 <div class="form_group_header">Emergency Contact</div>
                                 <div class="form_flex">
                                     <div class="form_group">
-                                        <label for="ec_full_name">Full Name</label>
+                                        <label for="ec_full_name">Full Name <span>*</span></label>
                                         <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_full_name')">{{ errors.first('ec_full_name') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
-                                        <label for="ec_contact_number">Contact Number</label>
+                                        <label for="ec_contact_number">Contact Number <span>*</span></label>
                                         <input type="text" name="ec_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:15'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_contact_number')">{{ errors.first('ec_contact_number') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
-                                        <label for="ec_relationship">Relationship</label>
+                                        <label for="ec_relationship">Relationship <span>*</span></label>
                                         <input type="text" name="ec_relationship" autocomplete="off" class="default_text" v-validate="'required|max:50'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_relationship')">{{ errors.first('ec_relationship') | properFormat }}</span></transition>
                                     </div>
@@ -265,7 +265,7 @@
                     <div class="form_footer_wrapper">
                         <div class="form_check">
                             <input type="checkbox" id="i_agree" name="i_agree" class="action_check" v-validate="'required'">
-                            <label for="i_agree">I agree to the <a href="javascript:void(0)" target="_blank">Terms &amp; Conditions</a> and <a href="javascript:void(0)" target="_blank">Privacy Policy</a> of Ride Revolution.</label>
+                            <label for="i_agree">I agree to the <a href="http://riderev.designbluemanila.ph/" target="_blank">Terms &amp; Conditions</a> and <a href="http://riderev.designbluemanila.ph/" target="_blank">Privacy Policy</a> of Ride Revolution.</label>
                             <transition name="slide"><span class="validation_errors" v-if="errors.has('i_agree')">{{ errors.first('i_agree') | properFormat }}</span></transition>
                         </div>
                         <div class="form_check">
