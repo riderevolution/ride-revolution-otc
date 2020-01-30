@@ -40,6 +40,46 @@
                 </div>
             </div>
         </div>
+        <div v-if="type == 'class-history'">
+            <div class="actions">
+                <div class="total">Total: 4</div>
+                <div class="cms_table_toggler">
+                    <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory(1)">All</div>
+                    <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory(2)">Completed</div>
+                    <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">Missed</div>
+                    <div :class="`status ${(classesHistoryStatus == 4) ? 'active' : ''}`" @click="toggleClassesHistory(4)">Cancelled</div>
+                </div>
+            </div>
+            <table class="cms_table">
+                <thead>
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Class</th>
+                        <th>Studio</th>
+                        <th>No. of Riders</th>
+                        <th>Status</th>
+                        <th>Sub Instructor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(n, key) in 3"  :key="key">
+                        <td>{{ formatClassDate('January 01, 2020 12:00', true) }}</td>
+                        <td>Ride Rev</td>
+                        <td>Greenbelt 5</td>
+                        <td>28</td>
+                        <td>Completed</td>
+                        <td>-</td>
+                    </tr>
+
+                </tbody>
+                <!-- <tbody class="no_results" v-else>
+                    <tr>
+                        <td :colspan="rowCount">No Result(s) Found.</td>
+                    </tr>
+                </tbody> -->
+            </table>
+            <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
+        </div>
     </div>
 </template>
 
@@ -56,6 +96,7 @@
         },
         data () {
             return {
+                classesHistoryStatus: 1,
                 loaded: false,
                 currentDate: 0,
                 currentMonth: 0,
@@ -67,6 +108,19 @@
             }
         },
         methods: {
+            toggleClassesHistory (status) {
+                const me = this
+                return me.classesHistoryStatus = status
+            },
+            formatClassDate (value, withTime) {
+                if (value) {
+                    if (withTime) {
+                        return this.$moment(value).format('M/D/YY (ddd) h:mm A')
+                    } else {
+                        return this.$moment(value).format('MMMM DD, YYYY')
+                    }
+                }
+            },
             toggleLegends (event) {
                 const me = this
                 let element = event.target
@@ -268,7 +322,9 @@
         },
         mounted () {
             const me = this
-            me.fetchData()
+            if (me.type == 'class-schedules') {
+                me.fetchData()
+            }
         },
         beforeMount () {
             document.addEventListener('click', this.toggleOverlays)

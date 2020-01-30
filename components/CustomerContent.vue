@@ -74,7 +74,7 @@
             <table class="cms_table">
                 <thead>
                     <tr>
-                        <th>Date &amp; time</th>
+                        <th>Date &amp; Time</th>
                         <th>Bike No.</th>
                         <th>Class</th>
                         <th>Studio</th>
@@ -146,7 +146,7 @@
             <table class="cms_table">
                 <thead>
                     <tr>
-                        <th>Date &amp; time</th>
+                        <th>Date &amp; Time</th>
                         <th>Bike No.</th>
                         <th>Class</th>
                         <th>Studio</th>
