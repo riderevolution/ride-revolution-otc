@@ -359,6 +359,7 @@
                             formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
                             formData.append('studios', JSON.stringify(me.studios))
                             formData.append('class_length', me.form.classLength)
+                            formData.append('scheduled_date_id', me.$route.query.i)
                             me.loader(true)
                             me.$axios.post(`api/schedules/${me.$route.params.id}`, formData).then(res => {
                                 setTimeout( () => {
@@ -394,6 +395,7 @@
                                 formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
                                 formData.append('studios', JSON.stringify(me.studios))
                                 formData.append('class_length', me.form.classLength)
+                                formData.append('scheduled_date_id', me.$route.query.i)
                                 me.loader(true)
                                 me.$axios.post(`api/schedules/${me.$route.params.id}`, formData).then(res => {
                                     setTimeout( () => {
@@ -442,7 +444,6 @@
             me.$axios.get(`api/schedules/${me.$route.params.id}`).then(res => {
                 if (res.data) {
                     me.res = res.data.schedule
-                    console.log(me.res);
                     me.form.classLengthTemp = me.res.class_length_unformatted
                     me.form.classLength = me.res.class_length
                     me.form.start.hour = me.res.start_time.split(':')[0]
