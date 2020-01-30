@@ -350,7 +350,7 @@
                 customWidth: 0,
                 customHeight: 0,
                 message: '',
-                selectStudio: true,
+                selectStudio: false,
                 findCustomer: true,
                 schedule: '',
                 waitlists: [],
@@ -411,9 +411,7 @@
                                 me.$store.state.errorStatus = true
                             }).then(() => {
                                 setTimeout( () => {
-                                    console.log(me.$store.state.scheduleID);
                                     me.fetchWaitlist(me.$store.state.scheduleID)
-                                    console.log(me.$store.state.scheduleID);
                                     me.loader(false)
                                 }, 500)
                             })
@@ -574,7 +572,8 @@
                 }
                 me.$store.state.scheduleID = data.id
                 me.fetchWaitlist(data.id)
-
+                me.selectCustomer = true
+                me.findCustomer = false
             },
             fetchWaitlist (schedule_id) {
                 const me = this
@@ -657,7 +656,6 @@
             },
             getStudio (event) {
                 const me = this
-                me.selectCustomer = true
                 me.studioID = event.target.value
                 document.querySelectorAll('.content_wrapper .class_accordion').forEach((value, index) => {
                     value.classList.remove('toggled')

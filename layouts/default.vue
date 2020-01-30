@@ -93,6 +93,7 @@
                 me.$store.state.seatID = 0
                 me.$store.state.waitlistID = 0
                 me.$store.state.pendingCustomerID = 0
+                me.$store.state.errorList = []
             }
         },
         data () {
