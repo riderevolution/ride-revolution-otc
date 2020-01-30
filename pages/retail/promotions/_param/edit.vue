@@ -318,7 +318,7 @@
                         me.form.start.convention = (me.form.start.convention == 'AM') ? 'PM' : 'AM'
                         break
                     case 'end':
-                        me.form.start.end = (me.form.start.end == 'AM') ? 'PM' : 'AM'
+                        me.form.end.convention = (me.form.end.convention == 'AM') ? 'PM' : 'AM'
                         break
                 }
             },
