@@ -458,7 +458,8 @@
                                 me.message = 'This promo code is not available anymore.'
                             }
                         }).catch(err => {
-                            console.log(err)
+                            me.$store.state.errorList = err.response.data.errors
+                            me.$store.state.errorQuickSaleStatus = true
                             me.promoApplied = false
                         })
                     } else {

@@ -1,7 +1,34 @@
 <template>
     <div class="instructor_tab_content">
-        <div v-if="type == 'class-schedule' && loaded">
-
+        <div v-if="type == 'class-schedules' && loaded">
+            <div class="calendar_wrapper">
+                <div class="calendar_actions">
+                    <div class="action_flex">
+                        <a href="javascript:void(0)" class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</a>
+                        <a href="javascript:void(0)" class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</a>
+                    </div>
+                </div>
+                <div class="calendar_header">
+                    <div class="calendar_prev" @click="generatePrevCalendar()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                    </div>
+                    <h2 class="calendar_title">{{ monthName }} {{ yearName }}</h2>
+                    <div class="calendar_next" @click="generateNextCalendar()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                    </div>
+                </div>
+                <div class="cms_table_calendar_wrapper">
+                    <table class="cms_table_calendar">
+                        <thead>
+                            <tr>
+                                <th v-for="(dayLabel, key) in dayLabels" :key="key">{{ dayLabel }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -19,7 +46,7 @@
         },
         data () {
             return {
-                loaded: false,
+                loaded: true,
                 currentDate: 0,
                 currentMonth: 0,
                 currentYear: 0,
@@ -96,9 +123,6 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="classes" id="class_${startDate}">
-                                            ${me.populateScheduler(startDate)}
                                         </div>
                                         ${(j == 6) ? `<svg xmlns="http://www.w3.org/2000/svg" width="38.568" height="32.924" viewBox="0 0 38.568 32.924" class="calendar_gear" id="gear_${startDate}"> <rect width="38.569" height="32.924" rx="3" transform="translate(0 0)"/> <g transform="translate(10.043 7.221)"> <ellipse cx="6.719" cy="6.719" rx="6.719" ry="6.719" transform="translate(2.196 2.197)" class="gear_2"/> <line y2="2.197" transform="translate(8.916)" class="gear_2"/> <line y2="2.197" transform="translate(8.916 15.635)" class="gear_2"/> <line x2="2.197" transform="translate(0 8.916)" class="gear_2"/> <line x2="2.197" transform="translate(15.635 8.916)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(2.611 2.611)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(13.667 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(2.611 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(13.667 2.611)" class="gear_2"/> </g> </svg><div class="gear_overlay"><ul class="gear_list_wrapper"> <li class="gear_list"><a class="clear gear_item" href="javascript:void(0)">Clear Week</a></li> <li class="gear_list"><a class="duplicate gear_item" href="javascript:void(0)">Duplicate Week</a></li> </ul> </div>` : '' }
                                     </td>`

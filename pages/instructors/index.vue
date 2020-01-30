@@ -43,10 +43,10 @@
                                     <div class="table_image_default" v-else>
                                         {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                     </div>
-                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/class-schedule`" table_action_text>{{ data.last_name }}</nuxt-link>
+                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/class-schedules`">{{ data.last_name }}</nuxt-link>
                                 </div>
                             </td>
-                            <td><a class="table_data_link" :href="`${$route.path}/${data.id}`" table_action_text>{{ data.first_name }}</a></td>
+                            <td><nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/class-schedules`">{{ data.first_name }}</nuxt-link></td>
                             <td>{{ data.instructor_details.nickname }}</td>
                             <td>{{ data.email }}</td>
                             <td>{{ (data.instructor_details != null) ? data.instructor_details.io_contact_number : '-' }}</td>

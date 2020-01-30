@@ -24,7 +24,7 @@
                 </div>
             </section>
             <section id="content">
-                <customer-content :value="customer" :type="$route.params.slug" />
+                <instructor-content :value="instructor" :type="$route.params.slug" />
                 <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
             </section>
         </div>
@@ -33,11 +33,11 @@
 </template>
 
 <script>
-    import CustomerContent from '../../../components/CustomerContent'
+    import InstructorContent from '../../../components/InstructorContent'
     import Foot from '../../../components/Foot'
     export default {
         components: {
-            CustomerContent,
+            InstructorContent,
             Foot
         },
         data () {
