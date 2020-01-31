@@ -39,7 +39,6 @@
                     me.$store.state.promptStatus = false
                     setTimeout( () => {
                         me.$parent.$refs.plan.hasCancel = false
-                        me.$parent.blockBike()
                     }, 10)
                 } else if (status && me.hasChange) {
                     me.$store.state.promptStatus = false

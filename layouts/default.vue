@@ -119,10 +119,10 @@
                 }
             },
         },
-        async mounted () {
+        mounted () {
             const me = this
             if (!me.routes.includes(me.$route.path)) {
-                await me.validateToken()
+                me.validateToken()
             }
             document.addEventListener('contextmenu', event => event.preventDefault())
             document.body.classList.add('cms')

@@ -32,16 +32,16 @@
             </div>
         </form>
         <transition name="fade">
-            <prompt v-if="$store.state.promptStatus" :message="message" :hasChange="true" />
+            <studio-changer-prompt v-if="$store.state.studioChangerPromptStatus" :message="message" :hasChange="true" />
         </transition>
     </div>
 </template>
 
 <script>
-    import Prompt from './Prompt'
+    import StudioChangerPrompt from './StudioChangerPrompt'
     export default {
         components: {
-            Prompt
+            StudioChangerPrompt
         },
         data () {
             return {
@@ -100,7 +100,7 @@
                     setTimeout( () => {
                         me.loader(false)
                         if (!me.$store.state.errorStatus) {
-                            me.$store.state.promptStatus = true
+                            me.$store.state.studioChangerPromptStatus = true
                             me.message = `You have successfully changed your studio from ${me.currentStudio.name} to ${me.selectedStudio.name}`
                         }
                     }, 500)

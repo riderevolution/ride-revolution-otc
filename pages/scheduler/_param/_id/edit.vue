@@ -74,17 +74,6 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('occassion')">{{ errors.first('occassion') | properFormat }}</span></transition>
                                 </div>
                             </transition>
-                            <div class="form_flex select_all">
-                                <label class="flex_label alternate">Restrict class to studios: <span>*</span></label>
-                                <div class="form_check select_all">
-                                    <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
-                                </div>
-                                <div class="form_check" v-for="(studio, key) in studios" :key="key">
-                                    <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checkedForReal" class="action_check">
-                                    <label :for="`studio_${key}`">{{ studio.name }}</label>
-                                </div>
-                                <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
-                            </div>
                             <transition name="fade">
                                 <div class="form_flex select_all" v-if="!isPrivate">
                                     <label class="flex_label alternate">Restrict class to customer types: <span>*</span></label>
@@ -122,10 +111,14 @@
                                     <input type="text" name="no_of_riders" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:99'" v-model="res.no_of_riders">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('no_of_riders')">{{ errors.first('no_of_riders') | properFormat }}</span></transition>
                                 </div>
-                                <div class="form_group">
+                                <div class="form_group flex">
                                     <label for="class_credits">Credits to Deduct <span>*</span></label>
-                                    <input type="text" name="class_credits" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:99'" v-model="res.class_credits">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ errors.first('class_credits') | properFormat }}</span></transition>
+                                    <div class="form_flex_input full">
+                                        <input type="text" name="class_credits" autocomplete="off" v-model="form.credits" class="default_text" v-validate="'required|numeric|min_value:1|max_value:9'">
+                                        <div class="up" @click="addCount()"></div>
+                                        <div class="down" @click="subtractCount()"></div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ errors.first('class_credits') | properFormat }}</span></transition>
+                                    </div>
                                 </div>
                             </div>
                             <div class="form_group">
@@ -193,7 +186,6 @@
         },
         data () {
             return {
-                hasStudio: false,
                 hasCustomerTypes: false,
                 isRepeat: false,
                 isPrivate: false,
@@ -202,7 +194,6 @@
                 classTypes: [],
                 customerTypes: [],
                 instructors: [],
-                studios: [],
                 prompt: false,
                 form: {
                     start: {
@@ -212,7 +203,8 @@
                     },
                     classLengthTemp: '',
                     classLength: '',
-                    instructor_id: ''
+                    instructor_id: '',
+                    credits: 0
                 }
             }
         },
@@ -256,25 +248,22 @@
                     result = false
                 }
                 return result
-            },
-            checkStudio () {
-                const me = this
-                let count = 0
-                let result = false
-                me.studios.forEach((data, index) => {
-                    if (data.checkedForReal) {
-                        count++
-                    }
-                })
-                if (count == me.studios.length) {
-                    result = true
-                } else {
-                    result = false
-                }
-                return result
             }
         },
         methods: {
+            addCount () {
+                const me = this
+                let data
+                data = parseInt(me.form.credits)
+                data != 0 && (me.form.credits = 0)
+                me.form.credits = (data += 1)
+            },
+            subtractCount () {
+                const me = this
+                let data
+                data = parseInt(me.form.credits)
+                data > 0 && (me.form.credits = (data -= 1))
+            },
             getClassLength (event) {
                 const me = this
                 let target = event.target.value
@@ -309,25 +298,6 @@
                     event.target.classList.add('checked')
                 }
             },
-            toggleSelectAllStudio (event) {
-                const me = this
-                if (me.checkStudio) {
-                    me.studios.forEach((data, index) => {
-                        data.checkedForReal = false
-                        me.hasStudio = true
-                    })
-                } else {
-                    me.studios.forEach((data, index) => {
-                        data.checkedForReal = true
-                        me.hasStudio = false
-                    })
-                }
-                if (event.target.classList.contains('checked')) {
-                    event.target.classList.remove('checked')
-                } else {
-                    event.target.classList.add('checked')
-                }
-            },
             changeConvention () {
                 const me = this
                 me.form.start.convention = (me.form.start.convention == 'AM') ? 'PM' : 'AM'
@@ -335,29 +305,20 @@
             submissionSuccess () {
                 const me = this
                 let ctr = 0
-                let ctr2 = 0
                 me.$validator.validateAll().then(valid => {
-                    me.studios.forEach((data, index) => {
+                    me.customerTypes.forEach((data, index) => {
                         if (data.checkedForReal) {
                             ctr++
                         }
                     })
-                    me.hasStudio = (ctr > 0) ? false : true
-                    me.customerTypes.forEach((data, index) => {
-                        if (data.checkedForReal) {
-                            ctr2++
-                        }
-                    })
-                    me.hasStudio = (ctr > 0) ? false : true
-                    me.hasCustomerTypes = (ctr2 > 0) ? false : true
-                    if (valid && !me.hasStudio && !me.hasCustomerTypes) {
+                    me.hasCustomerTypes = (ctr > 0) ? false : true
+                    if (valid && !me.hasCustomerTypes) {
                         if (!me.prompt) {
                             let formData = new FormData(document.getElementById('default_form'))
                             formData.append('_method', 'PATCH')
                             formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
                             formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
                             formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
-                            formData.append('studios', JSON.stringify(me.studios))
                             formData.append('class_length', me.form.classLength)
                             formData.append('scheduled_date_id', me.$route.query.i)
                             me.loader(true)
@@ -386,14 +347,13 @@
                             document.body.classList.add('no_scroll')
                         }
                     } else {
-                        if (valid && !me.hasStudio && me.hasCustomerTypes) {
+                        if (valid && me.hasCustomerTypes) {
                             if (!me.prompt) {
                                 let formData = new FormData(document.getElementById('default_form'))
                                 formData.append('_method', 'PATCH')
                                 formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
                                 formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
                                 formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
-                                formData.append('studios', JSON.stringify(me.studios))
                                 formData.append('class_length', me.form.classLength)
                                 formData.append('scheduled_date_id', me.$route.query.i)
                                 me.loader(true)
@@ -446,11 +406,11 @@
                     me.res = res.data.schedule
                     me.form.classLengthTemp = me.res.class_length_unformatted
                     me.form.classLength = me.res.class_length
+                    me.form.credits = me.res.class_credits
                     me.form.start.hour = me.res.start_time.split(':')[0]
                     me.form.start.mins = me.res.start_time.split(':')[1].split(' ')[0]
                     me.form.start.convention = me.res.start_time.split(':')[1].split(' ')[1]
                     me.customerTypes = res.data.schedule.customer_types
-                    me.studios = res.data.schedule.studios
                     me.isRepeat = (me.res.repeat == 1) ? true : false
                     me.prompt = (me.res.repeat == 1) ? true : false
                     me.isPrivate = (me.res.private_class == 1) ? true : false

@@ -13,7 +13,7 @@
                         <div class="form_group">
                             <label for="studio_id">Studio</label>
                             <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
-                                <option value="0" selected>All Studios</option>
+                                <option value="" disabled>Choose a Studio</option>
                                 <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                             </select>
                         </div>
@@ -158,13 +158,13 @@
                 let calendarTable = document.querySelector('.cms_table_calendar tbody')
                 let current = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d')
                 let excess = 0
-
+                me.form.studio_id = me.$store.state.user.current_studio_id
                 if (search) {
                     await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}`).then(res => {
                         me.schedules = res.data.schedules
                     })
                 } else {
-                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}`).then(res => {
+                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.$store.state.user.current_studio_id}`).then(res => {
                         me.schedules = res.data.schedules
                     })
                 }
@@ -511,6 +511,7 @@
                 me.$axios.get('api/instructors?enabled=1').then(res => {
                     me.instructors = res.data.instructors.data
                 })
+
                 me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
                 me.loaded = true
             },
@@ -518,7 +519,9 @@
         mounted () {
             const me = this
             me.lastRoute = me.$route.path.split('/')[1]
-            me.fetchData()
+            setTimeout( () => {
+                me.fetchData()
+            }, 150)
         },
         beforeMount () {
             document.addEventListener('click', this.toggleOverlays)
