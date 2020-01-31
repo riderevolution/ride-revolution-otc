@@ -254,8 +254,10 @@
                 const me = this
                 let data
                 data = parseInt(me.form.credits)
-                data != 0 && (me.form.credits = 0)
-                me.form.credits = (data += 1)
+                if (data != 9) {
+                    data != 0 && (me.form.credits = 0)
+                    me.form.credits = (data += 1)
+                }
             },
             subtractCount () {
                 const me = this
