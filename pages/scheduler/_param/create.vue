@@ -382,9 +382,6 @@
                 me.$axios.get(`api/instructors?enabled=1&studio_id=${me.$store.state.user.current_studio_id}`).then(res => {
                     me.instructors = res.data.instructors.data
                 })
-                me.$axios.get('api/studios').then(res => {
-                    me.studios = res.data.studios
-                })
             }
         },
         mounted () {

@@ -12,7 +12,7 @@
                     <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                         <div class="form_group">
                             <label for="studio_id">Studio</label>
-                            <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
+                            <select class="default_select alternate" name="studio_id" v-model="form.studio_id" @change="getStudio($event)">
                                 <option value="" disabled>Choose a Studio</option>
                                 <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                             </select>
@@ -508,13 +508,19 @@
                 me.$axios.get('api/studios?enabled=1').then(res => {
                     me.studios = res.data.studios
                 })
-                me.$axios.get('api/instructors?enabled=1').then(res => {
+                me.$axios.get(`api/instructors?enabled=1&studio_id=${me.$store.state.user.current_studio_id}`).then(res => {
                     me.instructors = res.data.instructors.data
                 })
-
                 me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
                 me.loaded = true
             },
+            getStudio (event) {
+                const me = this
+                let value = event.target.value
+                me.$axios.get(`api/instructors?enabled=1&studio_id=${value}`).then(res => {
+                    me.instructors = res.data.instructors.data
+                })
+            }
         },
         mounted () {
             const me = this
