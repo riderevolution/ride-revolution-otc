@@ -21,6 +21,14 @@
                             <label for="q">Find a Instructor</label>
                             <input type="text" name="q" autocomplete="off" placeholder="Search for a instructor" class="default_text search_alternate">
                         </div>
+                        <div class="form_group margin">
+                            <label for="studio_id">Studio</label>
+                            <select class="default_select alternate" name="studio_id">
+                                <option value="0" selected>All Studios</option>
+                                <option :value="data.id" v-for="(data, key) in studios" :key="key">{{ data.name }}</option>
+                            </select>
+                        </div>
+                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                     </form>
                 </div>
             </section>
@@ -30,6 +38,7 @@
                         <tr>
                             <th>Last Name</th>
                             <th>First Name</th>
+                            <th>Studio</th>
                             <th>Nickname</th>
                             <th>Email Address</th>
                             <th>Contact No.</th>
@@ -49,6 +58,7 @@
                                 </div>
                             </td>
                             <td><nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/class-schedules`">{{ data.first_name }}</nuxt-link></td>
+                            <td>{{ data.instructor_details.studio.name }}</td>
                             <td>{{ data.instructor_details.nickname }}</td>
                             <td>{{ data.email }}</td>
                             <td>{{ (data.instructor_details != null) ? data.instructor_details.io_contact_number : '-' }}</td>
@@ -93,7 +103,8 @@
                 status: 1,
                 res: [],
                 total_count: 0,
-                types: []
+                types: [],
+                studios: []
             }
         },
         methods: {
@@ -151,6 +162,9 @@
                         me.loader(false)
                     }, 500)
                     me.rowCount = document.getElementsByTagName('th').length
+                })
+                me.$axios.get('api/studios?enabled=1').then(res => {
+                    me.studios = res.data.studios
                 })
             }
         },

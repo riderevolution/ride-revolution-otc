@@ -174,6 +174,21 @@
                     </div>
                     <div class="form_wrapper">
                         <div class="form_header_wrapper">
+                            <h2 class="form_title">Instuctor Management</h2>
+                        </div>
+                        <div class="form_main_group">
+                            <div class="form_group">
+                                <label for="studio_id">Choose a Studio <span>*</span></label>
+                                <select class="default_select alternate" name="studio_id" v-validate="'required'">
+                                    <option value="" selected disabled>Choose a Studio</option>
+                                    <option :value="data.id"  v-for="(data, index) in studios">{{ data.name }}</option>
+                                </select>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('studio_id')">{{ errors.first('studio_id') | properFormat }}</span></transition>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form_wrapper">
+                        <div class="form_header_wrapper">
                             <h2 class="form_title">Health Waiver <span>*</span></h2>
                         </div>
                         <div class="form_main_group alternate">
@@ -305,7 +320,8 @@
                     medical_history: []
                 },
                 histories: [],
-                occupations: []
+                occupations: [],
+                studios: []
             }
         },
         computed: {
@@ -435,6 +451,9 @@
             })
             me.$axios.get('api/extras/medical-history-questions').then(res => {
                 me.histories = res.data.medicalHistoryQuestions
+            })
+            me.$axios.get('api/studios?enabled=1').then(res => {
+                me.studios = res.data.studios
             })
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 2]
             me.prevRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
