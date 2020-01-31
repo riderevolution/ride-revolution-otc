@@ -564,18 +564,17 @@
                     let scheduleTime = me.$moment(`${me.schedule.date} ${me.schedule.schedule.start_time}`)
                     let currentTime = me.$moment()
                     if (scheduleTime.diff(currentTime) < 0) {
+                        me.findCustomer = false
                         me.past = true
                         me.removeCustomer()
                     } else {
+                        me.findCustomer = false
+                        me.selectCustomer = true
                         me.past = false
                     }
                 }
                 me.$store.state.scheduleID = data.id
                 me.fetchWaitlist(data.id)
-                if (me.selectStudio) {
-                    me.findCustomer = false
-                    me.selectCustomer = true
-                }
             },
             fetchWaitlist (schedule_id) {
                 const me = this
