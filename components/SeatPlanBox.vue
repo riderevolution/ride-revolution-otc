@@ -2,16 +2,6 @@
     <div :class="`seat_boxes ${position} ${layout}`" v-if="data.length > 0">
         <div :class="`seat_position ${(seat.status == 'open' && $store.state.disableBookerUI) ? 'available' : ''} ${(seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id == $parent.$parent.$parent.customer.id)) ? 'highlight' : ''} ${(seat.status == 'open') ? '' : (seat.status == 'comp' ? (seat.comp.length > 0 ? 'comp' : '') : (seat.status == 'reserved') ? (seat.bookings.length > 0 && seat.bookings[0].user != null ? 'sign_in' : 'sign_in_guest') : (seat.status == 'blocked' ? 'comp blocked' : (!$store.state.disableBookerUI && seat.status == 'signed-in' ? 'sign_out' : (seat.status == 'no-show' ? 'no_show' : ''))))}`" v-for="(seat, lkey) in data">
 
-            <!-- <div :id="`seat_menu_${seat.number}`" class="seat_menu" @click.self="toggleMenu($event)" v-if="!$store.state.disableBookerUI && !$parent.hasCustomer && seat.status == 'open'">&#x25CF;&#x25CF;&#x25CF;</div>
-
-            <div :id="`seat_menu_${seat.number}`" class="seat_menu" @click.self="toggleMenu($event)" v-if="!$store.state.disableBookerUI && !$parent.hasCustomer && (seat.status == 'comp' || seat.status == 'blocked')">&#x25CF;&#x25CF;&#x25CF;</div>
-
-            <div :id="`seat_menu_${seat.number}`" class="seat_menu" @click.self="toggleMenu($event)" v-if="!$store.state.disableBookerUI && seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id == $parent.$parent.$parent.customer.id) && seat.status != 'signed-in'">&#x25CF;&#x25CF;&#x25CF;</div>
-
-            <div :id="`seat_menu_${seat.number}`" class="seat_menu" @click.self="toggleMenu($event)" v-if="!$store.state.disableBookerUI && (seat.bookings.length > 0 && seat.bookings[0].original_booker_id == $parent.$parent.$parent.customer.id) && (seat.status != 'signed-in' && seat.status != 'no-show')">&#x25CF;&#x25CF;&#x25CF;</div>
-
-            <div :id="`seat_menu_${seat.number}`" class="seat_menu" @click.self="toggleMenu($event)" v-if="!$store.state.disableBookerUI && !$parent.hasCustomer && (seat.bookings.length > 0 && seat.bookings[0].is_guest == 1) && (seat.status != 'signed-in' && seat.status != 'no-show')">&#x25CF;&#x25CF;&#x25CF;</div> -->
-
             <!-- <ul class="seat_overlay_menu">
 
                 <li v-if="(!$store.state.disableBookerUI && !$parent.hasCustomer) && (seat.status == 'open' || seat.status == 'comp')"><a href="javascript:void(0)" class="seat_item" @click="seatStatus(seat, seat.status, 'comp')">{{ (seat.status == 'comp') ? 'Remove Comp' : 'Comp' }}</a></li>
@@ -30,7 +20,9 @@
 
             <div class="seat_available" @click="toggleSwitchSeat(seat.id)" v-if="seat.status == 'open' && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
             <div class="seat_available" @click="signIn('open', seat)" v-if="seat.status == 'open' && $store.state.assignWaitlistBookerUI && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
-            <!-- <div class="seat_overlay" @click="signIn(seat.status, seat)" v-if="$parent.hasCustomer"></div> -->
+            <div class="seat_overlay" @click="signIn(seat.status, seat)" v-if="$parent.hasCustomer">
+                <div class="seat_number">{{ seat.number }}</div>
+            </div>
             <div class="seat_overlay" @click="toggleSideMenu(seat)" v-if="!$parent.hasCustomer">
                 <div class="seat_number">{{ seat.number }}</div>
             </div>

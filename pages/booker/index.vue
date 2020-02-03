@@ -139,7 +139,7 @@
                                             <option :value="key" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
                                         </select>
                                         <div class="class_info">
-                                            <div class="action_calendar_btn" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
+                                            <div class="action_calendar_btn" id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
                                             <div class="overlay">
                                                 <label>Customer Legend</label>
                                                 <div class="type_content">

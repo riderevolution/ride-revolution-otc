@@ -15,8 +15,8 @@
                         </g>
                     </svg>
                 </li>
-                <li id="item_1" class="side_item" @click="toggleMenu('broken-bike', 1)">
-                    <div class="item">Broken Bike</div>
+                <li id="item_1" class="side_item" @click="toggleMenu('block', 1)">
+                    <div class="item">Block</div>
                     <svg id="check" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
                         <g transform="translate(-804.833 -312)">
                             <circle class="circle" cx="14" cy="14" r="14" transform="translate(805.833 313)" />
@@ -74,7 +74,7 @@
                                 me.$store.state.assignStatus = true
                             }
                             break
-                        case 'broken-bike':
+                        case 'block':
                             me.$parent.brokenMessage = 'Are you sure you want to continue?'
                             me.$store.state.promptBrokenBikeStatus = true
                             break

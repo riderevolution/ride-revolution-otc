@@ -209,7 +209,7 @@
                                 formData.append('email', me.customer.email)
                             }
                             formData.append('staff_id', me.$store.state.user.id)
-                            formData.append('seat_id', me.$store.state.seatID)
+                            formData.append('seat_id', me.$store.state.seat.id)
                             me.$axios.post('api/comp', formData).then(res => {
                                 if (res.data) {
                                     setTimeout( () => {
@@ -237,7 +237,7 @@
                                         formData.append('guest_email', me.customer.email)
                                     }
                                     formData.append('is_guest', 1)
-                                    formData.append('seat_id', me.$store.state.seatID)
+                                    formData.append('seat_id', me.$store.state.seat.id)
                                     formData.append('user_id', me.$store.state.customerID)
                                     formData.append('class_package_id', res.data.booking.class_package_id)
                                     me.$axios.post('api/bookings', formData).then(res => {
@@ -256,7 +256,7 @@
                                             me.$parent.getSeats()
                                             me.$store.state.bookingID = 0
                                             me.$store.state.classPackageID = 0
-                                            me.$store.state.seatID = 0
+                                            me.$store.state.seat = ''
                                         }, 500)
                                     })
                                 }

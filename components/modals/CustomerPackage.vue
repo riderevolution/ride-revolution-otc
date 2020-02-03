@@ -130,7 +130,7 @@
                     let formData = new FormData(document.getElementById('default_form'))
                     formData.append('is_guest', 0)
                     formData.append('scheduled_date_id', me.$store.state.scheduleID)
-                    formData.append('seat_id', me.$store.state.seatID)
+                    formData.append('seat_id', me.$store.state.seat.id)
                     formData.append('user_id', me.$store.state.customerID)
                     formData.append('class_package_id', me.class_package_id)
                     me.loader(true)
@@ -160,7 +160,7 @@
                             me.$parent.getSeats()
                             me.$store.state.bookingID = 0
                             me.$store.state.classPackageID = 0
-                            me.$store.state.seatID = 0
+                            me.$store.state.seat = ''
                             me.$store.state.disableBookerUI = false
                             me.$store.state.assignWaitlistBookerUI = false
                         }, 500)
