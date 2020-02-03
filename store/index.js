@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 const createStore = () => {
     return new Vuex.Store({
         state: () => ({
+            bookerMenuPromptStatus: false,
             studioChangerPromptStatus: false,
             schedulerRepeatPromptStatus: false,
             promptBrokenBikeStatus: false,
@@ -19,7 +20,7 @@ const createStore = () => {
             compID: 0,
             bookingID: 0,
             scheduleID: 0,
-            seatID: 0,
+            seat: '',
             customerPackageStatus: false,
             removeAssignStatus: false,
             assignStatus: false,

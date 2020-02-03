@@ -765,6 +765,114 @@ table
                             flex: 0 0 calc(10% - 6.33%)
                             margin: 10px 20px
 
+.default_modal_side
+    position: fixed
+    top: 0
+    left: 0
+    z-index: 4
+    width: 100%
+    height: 100%
+    .background
+        position: fixed
+        z-index: 3
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        background-color: rgba(0, 0, 0, 0.5)
+    .side_wrapper
+        position: fixed
+        width: 400px
+        z-index: 5
+        top: 50%
+        left: 50%
+        background-color: $white
+        border-radius: 5px
+        transform: translate(-50%, -50%)
+        box-shadow: 5px 5px 40px rgba(0, 0, 0, 0.05)
+        .side_header
+            text-align: center
+            padding: 20px
+            border-bottom: 1px solid $border
+            h2
+                sf_pro_bold(22px)
+                color: $black
+        .side_menu
+            position: relative
+            list-style: none
+            padding: 0
+            margin: 0
+            .validation_errors
+                position: absolute
+                top: calc(100% - 5px)
+                left: 10px
+                background-color: $red
+                color: $white
+                sf_pro_medium(14px)
+                z-index: 1
+                padding: 5px 10px
+                border-radius: 5px
+                user-select: none
+                &::before
+                    content: ""
+                    position: absolute
+                    bottom: calc(100% - 1px)
+                    width: 0
+                    height: 0
+                    border-left: 7px solid transparent
+                    border-right: 7px solid transparent
+                    border-bottom: 7px solid $red
+                    left: 17px
+                    z-index: 1
+            .side_item
+                position: relative
+                padding: 20px
+                background-color: transparent
+                transition: .3s ease-in-out
+                .item
+                    sf_pro_medium(18px)
+                    color: $black
+                    background-color: transparent
+                    transition: .3s ease-in-out
+                &:hover
+                    background-color: $light_green
+                    transition: .3s ease-in-out
+                &.active
+                    background-color: $green
+                    transition: .3s ease-in-out
+                    .item
+                        color: $white
+                        transition: .3s ease-in-out
+                    #check
+                        .circle
+                            stroke: transparent
+                            transition: .3s ease-in-out
+                        .mark
+                            stroke: $green
+                            animation: dash 10s linear
+        #check
+            position: absolute
+            top: 50%
+            right: calc(0% + 20px)
+            transform: translateY(-50%)
+            .circle
+                fill: $white
+                stroke: $gray
+                transition: .3s ease-in-out
+            .mark
+                fill: transparent
+                stroke: transparent
+                stroke-linecap: round
+                stroke-width: 1.5
+                stroke-dasharray: 500
+                transition: .3s ease-in-out
+        .button_group
+            display: flex
+            flex-flow: row wrap
+            align-content: center
+            justify-content: center
+            margin: 30px 0
+
 .default_modal
     position: fixed
     top: 0
@@ -4448,7 +4556,7 @@ input::placeholder
                         transition: .3s ease-in-out
             .vue-pan-zoom-item,
             .vue-pan-zoom-scene
-                height: 450px
+                height: 550px
                 outline: none
                 overflow: hidden
             .vue-pan-zoom-scene
@@ -4456,6 +4564,7 @@ input::placeholder
                     margin: 30px
                     height: inherit
                     position: relative
+                    margin: 0 auto
                     .no_results
                         text-align: center
                         sf_pro_medium(50px)
@@ -4469,40 +4578,43 @@ input::placeholder
                         align-items: center
                         .seat_position
                             position: relative
-                            border-radius: 4px
                             text-align: center
                             cursor: pointer
-                            margin: 15px
-                            padding: 45px 20px
+                            margin: 15px 20px
+                            padding: 60px 20px
                             background-color: $white
-                            border: 1.5px solid $black
                             transition: .3s ease-in-out
                             &.available
-                                border: 1.5px solid $blue
-                                transition: .3s ease-in-out
-                                .seat_number
-                                    color: $blue
-                                    transition: .3s ease-in-out
-                            &.comp
-                                background-color: rgba(240, 241, 242, 0.3)
-                                background-image: url('/icons/blocked-seat.svg')
-                                background-repeat: no-repeat
-                                background-position: center
-                                background-size: cover
-                                border: 1.5px solid $gray_alternate
-                                .seat_number
-                                    color: $gray_alternate
-                            &.sign_out
-                                background-color: $light_green
-                                border: 1.5px solid transparent
-                                transition: .3s ease-in-out
-                                &.highlight
-                                    border: 1.5px solid $green
-                                    box-shadow: 0px 0px 40px rgba(51, 176, 157, 0.75)
-                                    transition: .3s ease-in-out
+                                .seat_overlay
+                                    border: 1.5px solid $blue
                                     .seat_number
-                                        color: $green
+                                        color: $blue
                                         transition: .3s ease-in-out
+                            &.comp
+                                .seat_overlay
+                                    background-image: url('/icons/blocked-seat.svg')
+                                    background-repeat: no-repeat
+                                    background-position: center
+                                    background-size: cover
+                                    background-color: rgba(240, 241, 242, 0.3)
+                                    border: 1.5px solid $gray_alternate
+                                    .seat_number
+                                        color: $gray_alternate
+                                    &:hover
+                                        background-color: transparent
+                                        border: 1.5px solid $gray_alternate
+                                        .seat_number
+                                            color: $gray_alternate
+                            &.sign_out
+                                &.highlight
+                                    .seat_overlay
+                                        background-color: $light_green
+                                        box-shadow: 0px 0px 40px rgba(51, 176, 157, 0.75)
+                                        border: 1.5px solid $green
+                                        transition: .3s ease-in-out
+                                        .seat_number
+                                            color: $green
+                                            transition: .3s ease-in-out
                                 .seat_action
                                     background-image: url('/icons/sign-out.svg')
                                     opacity: 1
@@ -4513,23 +4625,26 @@ input::placeholder
                                     transition: .3s ease-in-out
                             &.sign_in_guest,
                             &.no_show
-                                background-color: #EDEDED
-                                border: 1.5px solid $gray_alternate
-                                transition: .3s ease-in-out
-                                .seat_number
-                                    color: rgba(132, 143, 159, 0.4)
+                                .seat_overlay
+                                    background-color: #EDEDED
                                     transition: .3s ease-in-out
-                            &.sign_in
-                                background-color: #EDEDED
-                                border: 1.5px solid $gray_alternate
-                                transition: .3s ease-in-out
-                                &.highlight
-                                    border: 1.5px solid $green
-                                    box-shadow: 0px 0px 40px rgba(51, 176, 157, 0.75)
-                                    transition: .3s ease-in-out
+                                    border: 1.5px solid $gray_alternate
                                     .seat_number
-                                        color: $green
+                                        color: rgba(132, 143, 159, 0.4)
                                         transition: .3s ease-in-out
+                            &.sign_in
+                                .seat_overlay
+                                    background-color: #EDEDED
+                                    border: 1.5px solid $gray_alternate
+                                    transition: .3s ease-in-out
+                                &.highlight
+                                    .seat_overlay
+                                        box-shadow: 0px 0px 40px rgba(51, 176, 157, 0.75)
+                                        border: 1.5px solid $green
+                                        transition: .3s ease-in-out
+                                        .seat_number
+                                            color: $green
+                                            transition: .3s ease-in-out
                                 .seat_action
                                     background-image: url('/icons/sign-in.svg')
                                     opacity: 1
@@ -4566,11 +4681,11 @@ input::placeholder
                                     margin-right: 5px
                                     img
                                         width: auto
-                                        height: 20px
+                                        height: 30px
                                     &:last-child
                                         margin-right: 0px
                                 h2
-                                    sf_pro_regular(13px)
+                                    sf_pro_regular(18px)
                                     color: $black
                             .seat_available
                                 position: absolute
@@ -4580,15 +4695,34 @@ input::placeholder
                                 height: 100%
                                 z-index: 8
                                 cursor: pointer
-                            .seat_number
+                            .seat_overlay
                                 position: absolute
                                 top: 0
                                 left: 0
-                                right: 0
-                                text-align: center
-                                sf_pro_bold(30px)
-                                color: $black
-                                padding: 26px 25px
+                                width: 100%
+                                height: 100%
+                                cursor: pointer
+                                border-radius: 4px
+                                border: 1.5px solid $black
+                                background-color: transparent
+                                transition: .3s ease-in-out
+                                .seat_number
+                                    position: absolute
+                                    top: 50%
+                                    left: 0
+                                    right: 0
+                                    text-align: center
+                                    sf_pro_bold(40px)
+                                    color: $black
+                                    transform: translateY(-50%)
+                                    transition: .3s ease-in-out
+                                &:hover
+                                    border: 1.5px solid $green
+                                    background-color: $green
+                                    transition: .3s ease-in-out
+                                    .seat_number
+                                        color: $white
+                                        transition: .3s ease-in-out
                             .seat_menu
                                 position: absolute
                                 top: 0
@@ -4651,10 +4785,10 @@ input::placeholder
                             .seat_action
                                 position: absolute
                                 z-index: 2
-                                top: calc(0% - 8px)
+                                top: calc(0% - 15px)
                                 right: calc(0% - 20px)
-                                width: 40px
-                                height: 38px
+                                width: 50px
+                                height: 48px
                                 background-position: 50% calc(0% + -14px)
                                 background-repeat: no-repeat
                                 background-size: 190%
@@ -4667,12 +4801,12 @@ input::placeholder
                                     transition: .3s ease-in-out
                         &.layout_1
                             &.bottom
-                                bottom: calc(0% + 170px)
+                                bottom: calc(0% + 150px)
                             &.bottom_alt
-                                bottom: calc(0% + 50px)
+                                bottom: calc(0% - 10px)
                                 left: calc(0% - 65px)
                             &.bottom_alt_2
-                                bottom: calc(0% - 70px)
+                                bottom: calc(0% - 160px)
                         &.layout_2
                             &.bottom
                                 bottom: calc(0% + 170px)
@@ -4690,20 +4824,24 @@ input::placeholder
                                 justify-content: center
                         &.left
                             align-items: flex-start
-                            top: calc(0% - 180px)
-                            left: calc(0% - 60px)
+                            top: calc(0% - 170px)
+                            left: calc(0% - 80px)
+                            width: 350px
                             .seat_position
-                                flex: 0 0 calc(50% - 52.5px)
+                                flex: 0 0 calc(50% - 50px)
+                                margin: 20px
                                 &:nth-child(2)
                                     top: calc(0px + 60px)
                                 &:last-child
                                     top: calc(0px + 60px)
                         &.right
                             align-items: flex-start
-                            top: calc(0% - 180px)
-                            right: calc(0% - 45px)
+                            top: calc(0% - 170px)
+                            right: calc(0% - 373px)
+                            width: 350px
                             .seat_position
-                                flex: 0 0 calc(50% - 52.5px)
+                                flex: 0 0 calc(50% - 50px)
+                                margin: 20px
                                 &:first-child
                                     top: calc(0px + 60px)
                                 &:nth-child(3)
@@ -4711,9 +4849,9 @@ input::placeholder
                         &.bottom,
                         &.bottom_alt,
                         &.bottom_alt_2
-                            width: 100%
+                            width: 1650px
                             .seat_position
-                                flex: 0 0 calc(10% - 30px)
+                                flex: 0 0 calc(10% - 40px)
             .seat_legends
                 position: relative
                 display: flex
@@ -6284,6 +6422,19 @@ input::placeholder
 	to {
 		opacity: 1
         transform: translateX(0px)
+    }
+}
+
+/**
+ * Slide In Y */
+@keyframes slide_in_y {
+	from {
+		opacity: 0
+        transform: translate(100px, -50%)
+    }
+	to {
+		opacity: 1
+        transform: translate(0, -50%)
     }
 }
 

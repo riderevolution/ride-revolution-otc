@@ -100,7 +100,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
                                 </div>
                             </div>
-                            <a href="javascript:void(0)" class="action_calendar_btn" @click="populateClasses()">Today</a>
+                            <div class="action_calendar_btn" @click="populateClasses()">Today</div>
                         </div>
                         <div class="content_wrapper">
                             <div class="class_accordion" v-for="(result, key) in results" :key="key">
@@ -108,13 +108,13 @@
                                 <div class="accordion_content">
                                     <a href="javascript:void(0)" :id="`class_${dkey}_${key}`" class="class_content" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
                                         <div class="class_title">
-                                            <span>{{ data.schedule.start_time }}, {{ data.schedule.description }}</span>
+                                            <span>{{ data.schedule.start_time }}, {{ data.schedule.class_type.name }}</span>
                                             <div class="class_status full">
                                                 Full (28)
                                             </div>
                                         </div>
                                         <div class="class_text">
-                                            {{ data.schedule.instructor_schedules[0].user.first_name }} ({{ data.schedule.class_length_formatted }})
+                                            {{ data.schedule.description }}
                                         </div>
                                         <div class="class_text alternate">
                                             <span>Signed-in: 3</span>
@@ -139,7 +139,7 @@
                                             <option :value="key" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
                                         </select>
                                         <div class="class_info">
-                                            <img id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg" />
+                                            <div class="action_calendar_btn" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
                                             <div class="overlay">
                                                 <label>Customer Legend</label>
                                                 <div class="type_content">
@@ -163,7 +163,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <label class="booker_label">{{ (schedule != '') ? schedule.schedule.description : 'Please Select a Class' }}</label>
+                                    <label class="booker_label">{{ (schedule != '') ? `${schedule.schedule.instructor_schedules[0].user.first_name} (${schedule.schedule.class_length_formatted})` : 'Please Select a Class' }}</label>
                                     <div class="controls">
                                         <button id="zoom_in">Zoom in</button>
                                         <button id="zoom_out" class="margin">Zoom out</button>
@@ -241,7 +241,7 @@
             <prompt v-if="$store.state.promptStatus" :message="($refs.plan.hasCancel) ? $refs.plan.message : message" :hasCancel="$refs.plan.hasCancel" />
         </transition>
         <transition name="fade">
-            <prompt-broken-bike v-if="$store.state.promptBrokenBikeStatus" :message="$refs.plan.brokenMessage" />
+            <prompt-broken-bike v-if="$store.state.promptBrokenBikeStatus" :message="brokenMessage" />
         </transition>
         <transition name="fade">
             <prompt-booker v-if="$store.state.promptBookerStatus" :message="$refs.plan.message" />
@@ -276,6 +276,9 @@
         <transition name="fade">
             <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
         </transition>
+        <transition name="fade">
+            <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
@@ -296,6 +299,7 @@
     import RemoveAssign from '../../components/modals/RemoveAssign'
     import PendingTransactions from '../../components/modals/PendingTransactions'
     import CustomerPendingQuickSale from '../../components/modals/CustomerPendingQuickSale'
+    import BookerMenuPrompt from '../../components/modals/BookerMenuPrompt'
     export default {
         components: {
             Foot,
@@ -312,10 +316,13 @@
             Assign,
             RemoveAssign,
             PendingTransactions,
-            CustomerPendingQuickSale
+            CustomerPendingQuickSale,
+            BookerMenuPrompt
         },
         data () {
             return {
+                assignType: 0,
+                brokenMessage: '',
                 inWaitlist: false,
                 past: false,
                 waitlistID: 0,
@@ -339,7 +346,6 @@
                 studioID: 0,
                 current: 0,
                 last: 0,
-                test: 0,
                 currentMonth: 0,
                 currentYear: 0,
                 isPrev: false,
@@ -479,18 +485,18 @@
             },
             blockBike () {
                 const me = this
-                if (me.$store.state.seatID != 0) {
+                if (me.$store.state.seat != '') {
                     let formData = new FormData()
                     formData.append('_method', 'PATCH')
                     me.loader(true)
-                    me.$axios.get(`api/seats/${me.$store.state.seatID}`).then(res => {
+                    me.$axios.get(`api/seats/${me.$store.state.seat.id}`).then(res => {
                         if (res.data) {
                             if (res.data.seat.status == 'open') {
                                 formData.append('status', 'blocked')
                             } else {
                                 formData.append('status', 'open')
                             }
-                            me.$axios.post(`api/seats/update-status/${me.$store.state.seatID}`, formData).then(res => {
+                            me.$axios.post(`api/seats/update-status/${me.$store.state.seat.id}`, formData).then(res => {
                                 if (res.data) {
                                     setTimeout( () => {
                                         if (res.data.seat.status == 'open') {
@@ -509,7 +515,7 @@
                                 setTimeout( () => {
                                     me.getSeats()
                                     me.$refs.plan.hasCancel = false
-                                    me.$store.state.seatID = 0
+                                    me.$store.state.seat = ''
                                 }, 500)
                             })
                         }
@@ -687,7 +693,7 @@
             panZoomInit (instance, id) {
                 const me = this
                 me.customInstance = instance
-                let planWidth = document.querySelector('.plan_wrapper').getBoundingClientRect().width
+                let planWidth = 1000
                 let planHeight = document.querySelector('.plan_wrapper').getBoundingClientRect().height
                 instance.zoomAbs(planWidth / 2, planHeight / 2, 0.55)
                 me.customWidth = instance.getTransform().x

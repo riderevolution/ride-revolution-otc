@@ -6,7 +6,7 @@
                 {{ message }}
             </div>
             <div class="button_group">
-                <a href="javascript:void(0)" class="action_cancel_btn" @click.once="toggleClose()">Cancel</a>
+                <div class="action_cancel_btn" @click.once="toggleClose()">Cancel</div>
                 <div class="action_success_btn confirm margin" @click.once="toggleSubmit()">Confirm</div>
             </div>
         </div>
