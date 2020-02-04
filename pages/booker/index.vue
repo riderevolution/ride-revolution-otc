@@ -220,7 +220,7 @@
                                             <td>{{ waitlist.user.last_name }}</td>
                                             <td>{{ waitlist.user.first_name }}</td>
                                             <td class="action">
-                                                <a href="javascript:void(0)" @click="assignWaitlist(waitlist)" :class="`${(waitlist.past == 1) ? 'disabled' : ''}`">Assign Seat</a>
+                                                <a href="javascript:void(0)" @click="assignWaitlist(waitlist)" :class="`${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</a>
                                                 <a href="javascript:void(0)" :class="`margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</a>
                                             </td>
                                         </tr>
