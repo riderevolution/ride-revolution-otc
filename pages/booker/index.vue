@@ -349,7 +349,7 @@
                 currentMonth: 0,
                 currentYear: 0,
                 isPrev: false,
-                selectCustomer: false,
+                selectCustomer: true,
                 toggleCustomers: false,
                 zoomCtr: 0.55,
                 customInstance: [],
@@ -443,9 +443,9 @@
             },
             changeSeat () {
                 const me = this
-                if (me.$store.state.seatID != 0) {
+                if (me.$store.state.seat != '') {
                     let formData = new FormData()
-                    formData.append('seat_id', me.$store.state.seatID)
+                    formData.append('seat_id', me.$store.state.seat.id)
                     formData.append('booking_id', me.$store.state.bookingID)
                     me.loader(true)
                     me.$axios.post('api/bookings/switch-seat', formData).then(res => {
@@ -469,12 +469,43 @@
                     })
                 }
             },
+            noShow () {
+                const me = this
+                let formData = new FormData()
+                formData.append('_method', 'PATCH')
+                formData.append('type', (me.$store.state.seat.status == 'comp') ? 'comp' : 'booking')
+                formData.append('data_id', (me.$store.state.seat.comp.length > 0) ? me.$store.state.seat.comp[0].id : me.$store.state.seat.booking[0].id)
+                me.loader(true)
+                me.$axios.post('api/bookings/no-show', formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.$refs.plan.message = 'No Show Confirmed.'
+                        }, 10)
+                        me.$store.state.promptBookerStatus = true
+                        document.body.classList.add('no_scroll')
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.getSeats()
+                    }, 500)
+                })
+            },
+            cancelSeat () {
+                const me = this
+                me.$store.state.promptCancelStatus = true
+                document.body.classList.add('no_scroll')
+            },
             removeAssign () {
                 const me = this
                 if (me.$store.state.compID != 0) {
                     me.loader(true)
                     me.$axios.delete(`api/comp/${me.$store.state.compID}`).then(res => {
                         if (res.data) {
+                            me.actionMessage = 'Successfully removed a comp.'
+                            me.$store.state.promptBookerActionStatus = true
                             setTimeout( () => {
                                 me.getSeats()
                                 me.$refs.plan.hasCancel = false
@@ -565,6 +596,7 @@
                         offset: -250
                     })
                 }
+                me.selectCustomer = true
                 me.schedule = data
                 if (me.selectStudio) {
                     let scheduleTime = me.$moment(`${me.schedule.date} ${me.schedule.schedule.start_time}`)
@@ -575,7 +607,6 @@
                         me.removeCustomer()
                     } else {
                         me.findCustomer = false
-                        me.selectCustomer = true
                         me.past = false
                     }
                 }

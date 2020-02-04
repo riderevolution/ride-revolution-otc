@@ -175,8 +175,10 @@
             const me = this
             if (me.$store.state.customerID != 0) {
                 me.$axios.get(`api/customers/${me.$store.state.customerID}/packages`).then(res => {
-                    if (res.data.customer.user_package_counts) {
-                        me.res = res.data.customer.user_package_counts
+                    if (res.data) {
+                        if (res.data.customer.user_package_counts) {
+                            me.res = res.data.customer.user_package_counts
+                        }
                     }
                 })
             }

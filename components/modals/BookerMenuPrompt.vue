@@ -6,17 +6,8 @@
                 <h2>Choose an action</h2>
             </div>
             <ul class="side_menu">
-                <li id="item_0" class="side_item" @click="toggleMenu('comp', 0)">
-                    <div class="item">Comp</div>
-                    <svg id="check" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
-                        <g transform="translate(-804.833 -312)">
-                            <circle class="circle" cx="14" cy="14" r="14" transform="translate(805.833 313)" />
-                            <path class="mark" d="M6466.494,185.005l4.85,4.85,9.6-9.6" transform="translate(-5653.091 142.403)" />
-                        </g>
-                    </svg>
-                </li>
-                <li id="item_1" class="side_item" @click="toggleMenu('block', 1)">
-                    <div class="item">Block</div>
+                <li :id="`item_${key}`" :class="`side_item ${item.class} ${(item.toggled) ? 'active' : ''}`" @click="toggleMenu(item, key)" v-if="seat.status == item.status" v-for="(item, key) in populateItems" :key="key">
+                    <div class="item">{{ item.name }}</div>
                     <svg id="check" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
                         <g transform="translate(-804.833 -312)">
                             <circle class="circle" cx="14" cy="14" r="14" transform="translate(805.833 313)" />
@@ -40,7 +31,97 @@
             return {
                 selectedMenu: false,
                 selectedCount: 0,
-                selectedType: ''
+                selectedType: '',
+                seat: '',
+                items: [
+                    {
+                        name: 'Comp',
+                        status: 'open',
+                        forPast: false,
+                        class: '',
+                        toggled: false
+                    },
+                    {
+                        name: 'Block',
+                        status: 'open',
+                        forPast: false,
+                        class: 'alt',
+                        toggled: false
+                    },
+                    {
+                        name: 'Remove Comp',
+                        status: 'comp',
+                        forPast: false,
+                        class: 'alt',
+                        toggled: false
+                    },
+                    {
+                        name: 'Make Vacant',
+                        status: 'blocked',
+                        forPast: false,
+                        class: '',
+                        toggled: false
+                    },
+                    {
+                        name: 'Switch Package',
+                        status: 'reserved',
+                        forPast: false,
+                        class: '',
+                        toggled: false
+                    },
+                    {
+                        name: 'Switch Seat',
+                        status: 'reserved',
+                        forPast: false,
+                        class: '',
+                        toggled: false
+                    },
+                    {
+                        name: 'Cancel Seat',
+                        status: 'reserved',
+                        forPast: false,
+                        class: 'alt',
+                        toggled: false
+                    },
+                    {
+                        name: 'Cancel Guest',
+                        status: 'reserved-guest',
+                        forPast: false,
+                        class: 'alt',
+                        toggled: false
+                    },
+                    {
+                        name: 'No Show',
+                        status: 'reserved',
+                        forPast: true,
+                        class: 'alt',
+                        toggled: false
+                    },
+                    {
+                        name: 'No Show',
+                        status: 'reserved-guest',
+                        forPast: true,
+                        class: 'alt',
+                        toggled: false
+                    }
+                ]
+            }
+        },
+        computed: {
+            populateItems () {
+                const me = this
+                let results = []
+                if (me.seat != '') {
+                    me.items.forEach((item, index) => {
+                        // if (me.$store.state.user.staff_details.role_id != 1) {
+                        //     item.status = (item.forPast) ? (me.seat.status == 'signed-in' ? 'signed-in' : item.status) : item.status
+                        // } else {
+                        item.status = (item.status == 'reserved') ? (me.seat.status == 'signed-in' ? 'signed-in' : item.status) : item.status
+                        // }
+                        results.push(item)
+                    })
+                }
+                return results
             }
         },
         methods: {
@@ -49,16 +130,16 @@
                 me.$store.state.bookerMenuPromptStatus = false
                 document.body.classList.remove('no_scroll')
             },
-            toggleMenu (type, unique) {
+            toggleMenu (item, unique) {
                 const me = this
-                let items = document.querySelectorAll('.side_menu .side_item')
                 me.selectedMenu = false
                 me.selectedCount += 1
-                me.selectedType = type
-                document.getElementById(`item_${unique}`).classList.add('active')
-                items.forEach((element, index) => {
-                    if (unique != index) {
-                        document.getElementById(`item_${index}`).classList.remove('active')
+                me.selectedType = me.convertToSlug(item.name)
+                me.items.forEach((element, index) => {
+                    if (unique == index) {
+                        element.toggled = true
+                    } else {
+                        element.toggled = false
                     }
                 })
             },
@@ -67,16 +148,30 @@
                 if (me.selectedCount > 0) {
                     switch (me.selectedType) {
                         case 'comp':
+                        case 'remove-comp':
                             me.$parent.assignType = 0
-                            if (me.$store.state.seat.status == 'comp') {
+                            if (me.seat.status == 'comp') {
                                 me.$store.state.removeAssignStatus = true
                             } else {
                                 me.$store.state.assignStatus = true
                             }
                             break
                         case 'block':
+                        case 'make-vacant':
                             me.$parent.brokenMessage = 'Are you sure you want to continue?'
                             me.$store.state.promptBrokenBikeStatus = true
+                            break
+                        case 'switch-package':
+                            me.$store.state.customerPackageStatus = true
+                            me.$store.state.customerID = me.$store.state.seat.bookings[0].user_id
+                            me.$parent.packageMethod = 'update'
+                            break
+                        case 'switch-seat':
+                            me.$store.state.disableBookerUI = true
+                            setTimeout( () => {
+                                me.$parent.$refs.plan.message = 'Please select a new seat.'
+                            }, 10)
+                            me.$store.state.promptBookerStatus = true
                             break
                     }
                     me.$store.state.bookerMenuPromptStatus = false
@@ -84,6 +179,10 @@
                     me.selectedMenu = true
                 }
             }
+        },
+        mounted () {
+            const me = this
+            me.seat = me.$store.state.seat
         }
     }
 </script>
