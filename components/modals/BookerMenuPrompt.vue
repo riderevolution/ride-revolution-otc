@@ -173,6 +173,13 @@
                             }, 10)
                             me.$store.state.promptBookerStatus = true
                             break
+                        case 'cancel-seat':
+                        case 'cancel-guest':
+                            me.$store.state.promptCancelStatus = true
+                            break
+                        case 'no-show':
+                            me.$parent.noShow()
+                            break
                     }
                     me.$store.state.bookerMenuPromptStatus = false
                 } else {

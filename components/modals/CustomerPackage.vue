@@ -3,14 +3,14 @@
         <div class="background" @click="toggleClose()"></div>
         <form id="default_form" class="overlay" @submit.prevent="submissionCreateSuccess()" v-if="type == 'create'">
             <div class="modal_wrapper">
-                <h2 class="form_title">Choose a Package</h2>
+                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin">
                         <div class="form_radio" v-for="(data, key) in res" :key="key">
                             <input type="radio" :id="`package_${key}`" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
-                                <p>{{ data.class_package.name }}</p>
+                                <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
                             </label>
                         </div>
@@ -26,21 +26,21 @@
         </form>
         <form id="default_form" class="overlay" @submit.prevent="submissionUpdateSuccess()" v-if="type == 'update'">
             <div class="modal_wrapper">
-                <h2 class="form_title">Choose a Package</h2>
+                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin">
                         <div :class="`form_radio ${($store.state.classPackageID == data.class_package.id) ? 'toggled' : ''}`" v-for="(data, key) in res" :key="key">
                             <input type="radio" :id="`package_${key}`" :checked="$store.state.classPackageID == data.class_package.id" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
-                                <p>{{ data.class_package.name }}</p>
+                                <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
                             </label>
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="button_group">
-                            <a href="javascript:void(0)" class="action_cancel_btn" @click="toggleClose()">Cancel</a>
+                            <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                             <button type="submit" name="submit" class="action_success_btn margin alternate">Select</button>
                         </div>
                     </div>
@@ -104,8 +104,10 @@
                                 }, 500)
                             }
                         }).catch(err => {
-                            me.$store.state.errorList = err.response.data.errors
-                            me.$store.state.errorStatus = true
+                            setTimeout( () => {
+                                me.$store.state.errorList = err.response.data.errors
+                                me.$store.state.errorStatus = true
+                            }, 500)
                         }).then(() => {
                             me.$store.state.customerPackageStatus = false
                             setTimeout( () => {
@@ -143,8 +145,10 @@
                             }, 500)
                         }
                     }).catch(err => {
-                        me.$store.state.errorList = err.response.data.errors
-                        me.$store.state.errorStatus = true
+                        setTimeout( () => {
+                            me.$store.state.errorList = err.response.data.errors
+                            me.$store.state.errorStatus = true
+                        }, 500)
                     }).then(() => {
                         me.$store.state.customerPackageStatus = false
                         if (me.$store.state.waitlistID != 0) {

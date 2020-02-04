@@ -46,22 +46,6 @@
             }
         },
         methods: {
-            toggleOverlays (e) {
-                const me = this
-                let target = e.target
-                for (let i = 1; i < me.ctr + 1; i++) {
-                    let element = document.getElementById(`seat_menu_${i}`)
-                    if (element !== null) {
-                        if (element !== target && element !== target.parentNode.parentNode.parentNode.previousElementSibling) {
-                            if (element.nextElementSibling !== null) {
-                                if (element.nextElementSibling.classList.contains('active')) {
-                                    element.nextElementSibling.classList.remove('active')
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             fetchSeats (schedule_id, id) {
                 const me = this
                 let layout = `layout_${id}`
@@ -105,12 +89,6 @@
                     me.hasFetchSeat = false
                 }
             }
-        },
-        beforeMount () {
-            document.addEventListener('click', this.toggleOverlays)
-        },
-        beforeDestroy () {
-            document.removeEventListener('click', this.toggleOverlays)
         }
     }
 </script>

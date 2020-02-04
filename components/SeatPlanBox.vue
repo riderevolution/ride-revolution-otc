@@ -7,8 +7,8 @@
             <!-- <div class="seat_overlay" @click="signIn(seat.status, seat)" v-if="$parent.hasCustomer">
                 <div class="seat_number">{{ seat.number }}</div>
             </div> -->
-            <div class="seat_action" @click.self="toggleAction(seat.status, (seat.bookings.length > 0) ? seat.bookings[0].id : null)" v-if="!$parent.$parent.$parent.past"></div>
-            <div class="seat_pending" @click.self="checkPending((seat.bookings.length > 0) ? seat.bookings[0].user_id : null)" v-if="!$store.state.disableBookerUI && seat.userPendingPayments > 0 && seat.status != 'no-show' && !$parent.$parent.$parent.past"></div>
+            <div class="seat_action" @click.self="toggleAction(seat.status, (seat.bookings.length > 0) ? seat.bookings[0].id : null)" v-if="seat.past == 0"></div>
+            <div class="seat_pending" @click.self="checkPending((seat.bookings.length > 0) ? seat.bookings[0].user_id : null)" v-if="!$store.state.disableBookerUI && seat.userPendingPayments > 0 && seat.status != 'no-show' && seat.past == 0"></div>
             <div :class="`seat_overlay ${($store.state.disableBookerUI) ? 'disabled' : ''}`" @click="toggleMenu(seat, seat.status)">
                 <div class="seat_number">{{ seat.number }}</div>
                 <div class="seat_info" v-if="seat.comp.length > 0 || seat.bookings.length > 0">

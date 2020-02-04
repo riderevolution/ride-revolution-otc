@@ -5,7 +5,7 @@
                 <div class="action_wrapper">
                     <h1 class="header_title">Booker</h1>
                     <div class="actions">
-                        <form :class="`customer_filter_flex ${($store.state.disableBookerUI) ? 'disable_booker' : ''} ${(past) ? 'disabled_past' : ''}`" id="filter" @submit.prevent>
+                        <form :class="`customer_filter_flex ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" id="filter" @submit.prevent>
                             <div class="form_group customer">
                                 <label for="studio_id">Studio</label>
                                 <select :class="`default_select alternate ${(!selectStudio) ? 'highlighted' : ''}`" name="studio_id" @change="getStudio($event)">
@@ -474,15 +474,15 @@
                 let formData = new FormData()
                 formData.append('_method', 'PATCH')
                 formData.append('type', (me.$store.state.seat.status == 'comp') ? 'comp' : 'booking')
-                formData.append('data_id', (me.$store.state.seat.comp.length > 0) ? me.$store.state.seat.comp[0].id : me.$store.state.seat.booking[0].id)
+                formData.append('data_id', (me.$store.state.seat.comp.length > 0) ? me.$store.state.seat.comp[0].id : me.$store.state.seat.bookings[0].id)
                 me.loader(true)
                 me.$axios.post('api/bookings/no-show', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
+                            document.body.classList.add('no_scroll')
+                            me.$store.state.promptBookerStatus = true
                             me.$refs.plan.message = 'No Show Confirmed.'
-                        }, 10)
-                        me.$store.state.promptBookerStatus = true
-                        document.body.classList.add('no_scroll')
+                        }, 500)
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
@@ -492,11 +492,6 @@
                         me.getSeats()
                     }, 500)
                 })
-            },
-            cancelSeat () {
-                const me = this
-                me.$store.state.promptCancelStatus = true
-                document.body.classList.add('no_scroll')
             },
             removeAssign () {
                 const me = this
@@ -603,11 +598,11 @@
                     let currentTime = me.$moment()
                     if (scheduleTime.diff(currentTime) < 0) {
                         me.findCustomer = false
-                        me.past = true
+                        // me.past = true
                         me.removeCustomer()
                     } else {
                         me.findCustomer = false
-                        me.past = false
+                        // me.past = false
                     }
                 }
                 me.$store.state.scheduleID = data.id

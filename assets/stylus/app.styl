@@ -918,6 +918,9 @@ table
                 color: $black
                 padding: 40px
                 border-bottom: 1px solid $border
+                span
+                    sf_pro_regular(15px)
+                    color: $border_alt2
             .form_close
                 position: absolute
                 width: 20px
@@ -4654,8 +4657,7 @@ input::placeholder
                                         .seat_number
                                             color: rgba(132, 143, 159, 0.6)
                                             transition: .3s ease-in-out
-                            &.sign_in_guest,
-                            &.no_show
+                            &.sign_in_guest
                                 .seat_overlay
                                     background-color: #EDEDED
                                     transition: .3s ease-in-out
@@ -4667,6 +4669,21 @@ input::placeholder
                                         background-color: #EDEDED
                                         transition: .3s ease-in-out
                                         border: 1.5px solid $gray_alternate
+                                        .seat_number
+                                            color: rgba(132, 143, 159, 0.4)
+                                            transition: .3s ease-in-out
+                            &.no_show
+                                .seat_overlay
+                                    background-color: $light_red
+                                    transition: .3s ease-in-out
+                                    border: 1.5px solid $red
+                                    .seat_number
+                                        color: rgba(132, 143, 159, 0.4)
+                                        transition: .3s ease-in-out
+                                    &:hover
+                                        background-color: $light_red
+                                        transition: .3s ease-in-out
+                                        border: 1.5px solid $red
                                         .seat_number
                                             color: rgba(132, 143, 159, 0.4)
                                             transition: .3s ease-in-out
