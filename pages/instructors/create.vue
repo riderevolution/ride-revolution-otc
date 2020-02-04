@@ -48,7 +48,7 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="io_contact_number">Contact Number <span>*</span></label>
-                                    <input type="text" name="io_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:15'">
+                                    <input type="text" name="io_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:11'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('io_contact_number')">{{ errors.first('io_contact_number') | properFormat }}</span></transition>
                                 </div>
                             </div>
@@ -78,7 +78,7 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('io_sex')">{{ errors.first('io_sex') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
-                                    <label for="occupation_id">Occupation</label>
+                                    <label for="occupation_id">Occupation <span>*</span></label>
                                     <select class="default_select alternate" name="occupation_id" v-validate="'required'">
                                         <option value="" selected disabled>Choose a Occupation</option>
                                         <option :value="occupation.id" v-for="(occupation, index) in occupations">{{ occupation.name }}</option>
@@ -87,16 +87,14 @@
                                 </div>
                             </div>
                             <div class="form_flex">
-                                <transition name="fade">
-                                    <div class="form_group">
-                                        <label for="io_shoe_size">Shoe Size <span>*</span></label>
-                                        <select class="default_select alternate" name="io_shoe_size" v-validate="'required|max:20'">
-                                            <option value="" selected disabled>Choose Shoe Size</option>
-                                            <option :value="size.size" v-for="(size, index) in sizes">{{ size }}</option>
-                                        </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_shoe_size')">{{ errors.first('io_shoe_size') | properFormat }}</span></transition>
-                                    </div>
-                                </transition>
+                                <div class="form_group">
+                                    <label for="io_shoe_size">Shoe Size <span>*</span></label>
+                                    <select class="default_select alternate" name="io_shoe_size" v-validate="'required'">
+                                        <option value="" selected disabled>Choose Shoe Size</option>
+                                        <option :value="size" v-for="(size, index) in sizes">{{ size }}</option>
+                                    </select>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('io_shoe_size')">{{ errors.first('io_shoe_size') | properFormat }}</span></transition>
+                                </div>
                                 <div class="form_group">
                                     <label for="io_nickname">Nickname <span>*</span></label>
                                     <input type="text" name="io_nickname" autocomplete="off" class="default_text" v-validate="'required|max:30'">
@@ -243,7 +241,7 @@
                                     </div>
                                     <div class="form_group">
                                         <label for="ec_contact_number">Contact Number <span>*</span></label>
-                                        <input type="text" name="ec_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:15'">
+                                        <input type="text" name="ec_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:11'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_contact_number')">{{ errors.first('ec_contact_number') | properFormat }}</span></transition>
                                     </div>
                                 </div>

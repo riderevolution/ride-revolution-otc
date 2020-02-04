@@ -158,7 +158,6 @@
                 let calendarTable = document.querySelector('.cms_table_calendar tbody')
                 let current = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d')
                 let excess = 0
-                me.form.studio_id = me.$store.state.user.current_studio_id
                 if (search) {
                     await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}`).then(res => {
                         me.schedules = res.data.schedules
@@ -527,6 +526,7 @@
             me.lastRoute = me.$route.path.split('/')[1]
             setTimeout( () => {
                 me.fetchData()
+                me.form.studio_id = me.$store.state.user.current_studio_id
             }, 150)
         },
         beforeMount () {

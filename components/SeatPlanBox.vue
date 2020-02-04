@@ -173,7 +173,7 @@
                         document.body.classList.add('no_scroll')
                     }
                 }
-                me.$store.state.seatID = seat.id
+                me.$store.state.seat = seat
             },
             seatStatus (data, status, type) {
                 const me = this

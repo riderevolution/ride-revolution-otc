@@ -48,7 +48,7 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="co_contact_number">Contact Number <span>*</span></label>
-                                    <input type="text" name="co_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:15'">
+                                    <input type="text" name="co_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:11'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('co_contact_number')">{{ errors.first('co_contact_number') | properFormat }}</span></transition>
                                 </div>
                             </div>
@@ -238,7 +238,7 @@
                                     </div>
                                     <div class="form_group">
                                         <label for="ec_contact_number">Contact Number <span>*</span></label>
-                                        <input type="text" name="ec_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:15'">
+                                        <input type="text" name="ec_contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:11'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_contact_number')">{{ errors.first('ec_contact_number') | properFormat }}</span></transition>
                                     </div>
                                 </div>
