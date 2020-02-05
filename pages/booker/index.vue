@@ -220,7 +220,7 @@
                                             <td>{{ waitlist.user.last_name }}</td>
                                             <td>{{ waitlist.user.first_name }}</td>
                                             <td class="action">
-                                                <a href="javascript:void(0)" @click="assignWaitlist(waitlist)" :class="`${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</a>
+                                                <a href="javascript:void(0)" @click="prioritizeWaitlist(waitlist)" :class="`${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</a>
                                                 <a href="javascript:void(0)" :class="`margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</a>
                                             </td>
                                         </tr>
@@ -375,18 +375,32 @@
             toggleDisabled () {
                 const me = this
                 me.$store.state.disableBookerUI = false
-                me.$store.state.assignWaitlistBookerUI = false
             },
-            assignWaitlist (data) {
+            prioritizeWaitlist (data) {
                 const me = this
+                let formData = new FormData()
+                formData.append('_method', 'PATCH')
                 me.$store.state.customerID = data.user_id
                 me.$store.state.waitlistID = data.id
-                me.$store.state.disableBookerUI = true
-                me.$store.state.assignWaitlistBookerUI = true
                 me.customer = data.user
-                setTimeout( () => {
-                    me.$refs.plan.hasCustomer = true
-                }, 10)
+                me.loader(true)
+                me.$axios.post(`api/waitlists/${data.id}/prioritize`, formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.actionMessage = `Successfully prioritized ${me.customer.first_name} ${me.customer.last_name}`
+                            me.$store.state.promptBookerActionStatus = true
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.fetchWaitlist(me.$store.state.scheduleID)
+                        me.$store.state.waitlistID = 0
+                        me.loader(false)
+                    }, 500)
+                })
             },
             removeToWaitlist (id) {
                 const me = this
@@ -402,25 +416,9 @@
                     formData.append('user_id', me.$store.state.customerID)
                     me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
                         if (res.data.result == 0) {
-                            formData.append('studio_id', me.studioID)
-                            me.loader(true)
-                            me.$axios.post('api/waitlists', formData).then(res => {
-                                if (res.data) {
-                                    setTimeout( () => {
-                                        me.actionMessage = 'Successfully added to waitlist.'
-                                        me.$store.state.promptBookerActionStatus = true
-                                        document.body.classList.add('no_scroll')
-                                    }, 500)
-                                }
-                            }).catch(err => {
-                                me.$store.state.errorList = err.response.data.errors
-                                me.$store.state.errorStatus = true
-                            }).then(() => {
-                                setTimeout( () => {
-                                    me.fetchWaitlist(me.$store.state.scheduleID)
-                                    me.loader(false)
-                                }, 500)
-                            })
+                            me.$store.state.customerPackageStatus = true
+                            me.packageMethod = 'waitlist'
+                            document.body.classList.add('no_scroll')
                         } else {
                             setTimeout( () => {
                                 me.$refs.plan.message = 'The customer has already been scheduled.'
@@ -748,6 +746,7 @@
                     if (me.$store.state.scheduleID != 0) {
                         setTimeout( () => {
                             me.getSeats()
+                            me.fetchWaitlist(me.$store.state.scheduleID)
                         }, 10)
                     }
                 })

@@ -12,7 +12,6 @@ const createStore = () => {
             upcomingClassesLayoutStatus: false,
             customerPromptStatus: false,
             pendingTransactionsStatus: false,
-            assignWaitlistBookerUI: false,
             disableBookerUI: false,
             pendingCustomerID: 0,
             waitlistID: 0,

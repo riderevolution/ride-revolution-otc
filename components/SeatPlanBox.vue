@@ -3,10 +3,6 @@
         <div :class="`seat_position ${(seat.status == 'open' && $store.state.disableBookerUI) ? 'available' : ''} ${(seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id == $parent.$parent.$parent.customer.id)) ? 'highlight' : ''} ${(seat.status == 'open') ? '' : (seat.status == 'comp' ? (seat.comp.length > 0 ? 'comp' : '') : (seat.status == 'reserved') ? 'sign_in' : (seat.status == 'blocked' ? 'comp blocked' : (!$store.state.disableBookerUI && seat.status == 'signed-in' ? 'sign_out' : (seat.status == 'no-show' ? 'no_show' : (seat.status == 'reserved-guest') ? 'sign_in_guest' : ''))))}`" v-for="(seat, lkey) in data">
 
             <div class="seat_available" @click="toggleSwitchSeat(seat)" v-if="seat.status == 'open' && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
-            <!-- <div class="seat_available" @click="signIn('open', seat)" v-if="seat.status == 'open' && $store.state.assignWaitlistBookerUI && $store.state.disableBookerUI && seat.bookings.length <= 0"></div> -->
-            <!-- <div class="seat_overlay" @click="signIn(seat.status, seat)" v-if="$parent.hasCustomer">
-                <div class="seat_number">{{ seat.number }}</div>
-            </div> -->
             <div class="seat_action" @click.self="toggleAction(seat.status, (seat.bookings.length > 0) ? seat.bookings[0].id : null)" v-if="seat.past == 0"></div>
             <div class="seat_pending" @click.self="checkPending((seat.bookings.length > 0) ? seat.bookings[0].user_id : null)" v-if="!$store.state.disableBookerUI && seat.userPendingPayments > 0 && seat.status != 'no-show' && seat.past == 0"></div>
             <div :class="`seat_overlay ${($store.state.disableBookerUI) ? 'disabled' : ''}`" @click="toggleMenu(seat, seat.status)">
@@ -89,10 +85,6 @@
                             } else {
                                 me.$store.state.bookerMenuPromptStatus = true
                                 document.body.classList.add('no_scroll')
-                                // me.$parent.message = 'Please select a customer first.'
-                                // me.$parent.$parent.$parent.findCustomer = false
-                                // me.$store.state.promptBookerStatus = true
-                                // document.body.classList.add('no_scroll')
                             }
                         // }
                         break

@@ -47,6 +47,29 @@
                 </div>
             </div>
         </form>
+        <form id="default_form" class="overlay" @submit.prevent="submissionWaitlistSuccess()" v-if="type == 'waitlist'">
+            <div class="modal_wrapper">
+                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
+                <div class="form_close" @click="toggleClose()"></div>
+                <div class="modal_main_group">
+                    <div class="form_flex_radio alternate margin">
+                        <div :class="`form_radio ${($store.state.classPackageID == data.class_package.id) ? 'toggled' : ''}`" v-for="(data, key) in res" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="$store.state.classPackageID == data.class_package.id" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                            <label :for="`package_${key}`">
+                                <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
+                                <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form_footer_wrapper">
+                        <div class="button_group">
+                            <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
+                            <button type="submit" name="submit" class="action_success_btn margin alternate">Select</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </template>
 
@@ -86,6 +109,46 @@
                 const me = this
                 me.$store.state.customerPackageStatus = false
                 document.body.classList.remove('no_scroll')
+            },
+            submissionWaitlistSuccess () {
+                const me = this
+                me.$validator.validateAll().then(valid => {
+                    if (valid) {
+                        let formData = new FormData(document.getElementById('default_form'))
+                        formData.append('class_package_id', me.$store.state.classPackageID)
+                        formData.append('user_id', me.$store.state.customerID)
+                        formData.append('scheduled_date_id', me.$store.state.scheduleID)
+                        formData.append('studio_id', me.$parent.studioID)
+                        me.loader(true)
+                        me.$axios.post('api/waitlists', formData).then(res => {
+                            if (res.data) {
+                                setTimeout( () => {
+                                    me.$parent.actionMessage = 'Successfully added to waitlist.'
+                                    me.$store.state.promptBookerActionStatus = true
+                                }, 500)
+                            }
+                        }).catch(err => {
+                            setTimeout( () => {
+                                me.$store.state.errorList = err.response.data.errors
+                                me.$store.state.errorStatus = true
+                            }, 500)
+                        }).then(() => {
+                            me.$store.state.customerPackageStatus = false
+                            setTimeout( () => {
+                                me.$parent.fetchWaitlist(me.$store.state.scheduleID)
+                                me.$store.state.classPackageID = 0
+                                me.$store.state.disableBookerUI = false
+                                me.$store.state.assignWaitlistBookerUI = false
+                                me.loader(false)
+                            }, 500)
+                        })
+                    } else {
+                        me.$scrollTo('.validation_errors', {
+                            container: '.default_modal',
+                            offset: -250
+                        })
+                    }
+                })
             },
             submissionUpdateSuccess () {
                 const me = this
