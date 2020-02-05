@@ -1435,7 +1435,7 @@ input::placeholder
                     .customer_selection
                         position: absolute
                         top: 105%
-                        z-index: 2
+                        z-index: 1
                         background-color: #fff
                         width: 100%
                         padding: 10px 3px 10px 0
@@ -5956,7 +5956,7 @@ input::placeholder
                             .customer_selection
                                 position: absolute
                                 top: 105%
-                                z-index: 2
+                                z-index: 1
                                 background-color: #fff
                                 width: 100%
                                 padding: 10px 3px 10px 0
@@ -6118,7 +6118,8 @@ input::placeholder
                                     justify-content: center
                                     text-align: center
                                     border-top: 1px solid $border
-                                    a
+                                    .item
+                                        position: relative
                                         flex: 1 0 auto
                                         padding: 10px
                                         sf_pro_regular(15px)
@@ -6127,10 +6128,35 @@ input::placeholder
                                         text-decoration: none
                                         border-right: 1px solid $border
                                         transition: .3s ease-in-out
+                                        .validation_errors
+                                            position: absolute
+                                            top: calc(100% + 10px)
+                                            background-color: $green
+                                            color: $white
+                                            sf_pro_medium(14px)
+                                            z-index: 1
+                                            padding: 5px 10px
+                                            border-radius: 5px
+                                            user-select: none
+                                            left: 0
+                                            right: 0
+                                            &::before
+                                                content: ""
+                                                position: absolute
+                                                bottom: calc(100% - 1px)
+                                                width: 0
+                                                height: 0
+                                                border-left: 7px solid transparent
+                                                border-right: 7px solid transparent
+                                                border-bottom: 7px solid $green
+                                                left: 50%
+                                                z-index: 1
+                                                transform: translateX(-50%)
                                         &:last-child
                                             border-right: 1px solid transparent
                                         &:hover,
-                                        &:focus
+                                        &:focus,
+                                        &.active
                                             color: $green
                                             background-color: $light_green
                                             transition: .3s ease-in-out

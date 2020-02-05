@@ -68,11 +68,14 @@
                                             </div>
                                         </div>
                                         <div class="customer_footer" v-if="customer != ''">
-                                            <a href="javascript:void(0)">Attendance</a>
-                                            <a href="javascript:void(0)">Packages</a>
-                                            <a href="javascript:void(0)">Redeem</a>
-                                            <a href="javascript:void(0)" @click="toggleQuickSale('credit')">Buy Credits</a>
-                                            <a href="javascript:void(0)" @click="toggleQuickSale('product')">Buy Products</a>
+                                            <div class="item">Attendance</div>
+                                            <div class="item">Packages</div>
+                                            <div class="item">Redeem</div>
+                                            <div id="credits" class="item" @click="toggleQuickSale('credit')">
+                                                Buy Credits
+                                                <transition name="slide"><span class="validation_errors alt" v-if="buyCredits">Buy Here</span></transition>
+                                            </div>
+                                            <div class="item" @click="toggleQuickSale('product')">Buy Products</div>
                                         </div>
                                     </div>
                                 </transition>
@@ -357,6 +360,7 @@
                 customHeight: 0,
                 message: '',
                 selectStudio: false,
+                buyCredits: false,
                 findCustomer: true,
                 schedule: '',
                 waitlists: [],
@@ -644,6 +648,8 @@
             },
             toggleQuickSale (type) {
                 const me = this
+                document.getElementById('credits').classList.remove('active')
+                me.buyCredits = false
                 switch (type) {
                     case 'credit':
                         me.$store.state.customerCreditQuickSaleStatus = true
