@@ -18,6 +18,10 @@
             message: {
                 type: String,
                 default: ''
+            },
+            hasChanged: {
+                type: Boolean,
+                default: false
             }
         },
         methods: {
@@ -28,9 +32,13 @@
             },
             toggleSuccess () {
                 const me = this
-                me.$store.state.studioChangerPromptStatus = false
-                document.body.classList.remove('no_scroll')
-                window.location.reload(true)
+                if (me.hasChanged) {
+                    me.$store.state.studioChangerPromptStatus = false
+                    document.body.classList.remove('no_scroll')
+                    window.location.reload(true)
+                } else {
+                    me.$store.state.studioChangerPromptStatus = false
+                }
             }
         }
     }

@@ -34,13 +34,13 @@
                 selectedType: '',
                 seat: '',
                 items: [
-                    {
-                        name: 'Comp',
-                        status: 'open',
-                        forPast: false,
-                        class: '',
-                        toggled: false
-                    },
+                    // {
+                    //     name: 'Comp',
+                    //     status: 'open',
+                    //     forPast: false,
+                    //     class: '',
+                    //     toggled: false
+                    // },
                     {
                         name: 'Block',
                         status: 'open',
@@ -48,13 +48,13 @@
                         class: 'alt',
                         toggled: false
                     },
-                    {
-                        name: 'Remove Comp',
-                        status: 'comp',
-                        forPast: false,
-                        class: 'alt',
-                        toggled: false
-                    },
+                    // {
+                    //     name: 'Remove Comp',
+                    //     status: 'comp',
+                    //     forPast: false,
+                    //     class: 'alt',
+                    //     toggled: false
+                    // },
                     {
                         name: 'Make Vacant',
                         status: 'blocked',

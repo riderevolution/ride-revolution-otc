@@ -32,7 +32,7 @@
             </div>
         </form>
         <transition name="fade">
-            <studio-changer-prompt v-if="$store.state.studioChangerPromptStatus" :message="message" :hasChange="true" />
+            <studio-changer-prompt v-if="$store.state.studioChangerPromptStatus" :message="message" :hasChanged="hasChanged" />
         </transition>
     </div>
 </template>
@@ -49,20 +49,24 @@
                 studio: '',
                 studios: [],
                 currentStudio: [],
-                selectedStudio: []
+                selectedStudio: [],
+                hasChanged: false
             }
         },
         methods: {
             selectStudio (data, key) {
                 const me = this
-                let element = document.getElementById(`studio_${key}`)
-                element.classList.add('active')
-                me.studios.forEach((element, index) => {
-                    if (key != index) {
-                        document.getElementById(`studio_${index}`).classList.remove('active')
-                    }
-                })
-                me.studio = data.id
+                if (data.id != me.currentStudio.id) {
+                    let element = document.getElementById(`studio_${key}`)
+                    element.classList.add('active')
+                    me.studios.forEach((element, index) => {
+                        if (key != index) {
+                            document.getElementById(`studio_${index}`).classList.remove('active')
+                        }
+                    })
+                    me.studio = data.id
+                    me.hasChanged = true
+                }
             },
             toggleClose () {
                 const me = this
@@ -71,40 +75,45 @@
             },
             submissionSuccess () {
                 const me = this
-                me.loader(true)
-                me.$axios.get(`api/studios/${me.studio}`, {
-                    headers: {
-                        Authorization: `Bearer ${me.$store.state.token}`
-                    }
-                }).then(res => {
-                    if (res.data) {
-                        let formData = new FormData()
-                        me.selectedStudio = res.data.studio
-                        formData.append('current_studio_id', me.selectedStudio.id)
-                        me.$axios.post('api/extras/change-current-user-studio', formData, {
-                            headers: {
-                                Authorization: `Bearer ${me.$store.state.token}`
-                            }
-                        }).then(res => {
-                            if (res.data) {
-                                setTimeout( () => {
-                                    me.$store.state.user = res.data.user
-                                }, 10)
-                            }
-                        })
-                    }
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                        if (!me.$store.state.errorStatus) {
-                            me.$store.state.studioChangerPromptStatus = true
-                            me.message = `You have successfully changed your studio from ${me.currentStudio.name} to ${me.selectedStudio.name}`
+                if (me.studio != '') {
+                    me.loader(true)
+                    me.$axios.get(`api/studios/${me.studio}`, {
+                        headers: {
+                            Authorization: `Bearer ${me.$store.state.token}`
                         }
-                    }, 500)
-                })
+                    }).then(res => {
+                        if (res.data) {
+                            let formData = new FormData()
+                            me.selectedStudio = res.data.studio
+                            formData.append('current_studio_id', me.selectedStudio.id)
+                            me.$axios.post('api/extras/change-current-user-studio', formData, {
+                                headers: {
+                                    Authorization: `Bearer ${me.$store.state.token}`
+                                }
+                            }).then(res => {
+                                if (res.data) {
+                                    setTimeout( () => {
+                                        me.$store.state.user = res.data.user
+                                    }, 10)
+                                }
+                            })
+                        }
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    }).then(() => {
+                        setTimeout( () => {
+                            me.loader(false)
+                            if (!me.$store.state.errorStatus) {
+                                me.$store.state.studioChangerPromptStatus = true
+                                me.message = `You have successfully changed your studio from ${me.currentStudio.name} to ${me.selectedStudio.name}`
+                            }
+                        }, 500)
+                    })
+                } else {
+                    me.$store.state.studioChangerPromptStatus = true
+                    me.message = `You are already in this studio.`
+                }
             }
         },
         mounted () {
@@ -118,7 +127,11 @@
                     me.currentStudio = res.data.studio
                 }
             })
-            me.$axios.get('api/studios').then(res => {
+            me.$axios.get('api/studios', {
+                headers: {
+                    Authorization: `Bearer ${me.$store.state.token}`
+                }
+            }).then(res => {
                 if (res.data) {
                     me.studios = res.data.studios
                 }
