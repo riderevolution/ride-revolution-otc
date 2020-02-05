@@ -312,9 +312,7 @@
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
                         formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
-                        if (me.hasCustomerTypes) {
-                            formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
-                        }
+                        formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
                         formData.append('studio_id', me.$store.state.user.current_studio_id)
                         formData.append('class_length', me.form.classLength)
                         me.loader(true)
