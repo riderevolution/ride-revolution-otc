@@ -314,13 +314,15 @@
                         }
                     })
                     me.hasCustomerTypes = (ctr > 0) ? false : true
-                    if (valid && !me.hasCustomerTypes) {
+                    if (valid) {
                         if (!me.prompt) {
                             let formData = new FormData(document.getElementById('default_form'))
                             formData.append('_method', 'PATCH')
                             formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
                             formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
-                            formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
+                            if (me.hasCustomerTypes) {
+                                formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
+                            }
                             formData.append('class_length', me.form.classLength)
                             formData.append('scheduled_date_id', me.$route.query.i)
                             me.loader(true)
@@ -349,45 +351,9 @@
                             document.body.classList.add('no_scroll')
                         }
                     } else {
-                        if (valid && me.hasCustomerTypes) {
-                            if (!me.prompt) {
-                                let formData = new FormData(document.getElementById('default_form'))
-                                formData.append('_method', 'PATCH')
-                                formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
-                                formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
-                                formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
-                                formData.append('class_length', me.form.classLength)
-                                formData.append('scheduled_date_id', me.$route.query.i)
-                                me.loader(true)
-                                me.$axios.post(`api/schedules/${me.$route.params.id}`, formData).then(res => {
-                                    setTimeout( () => {
-                                        if (res.data) {
-                                            me.notify('Content has been Updated')
-                                        } else {
-                                            me.$store.state.errorList.push('Sorry, Something went wrong')
-                                            me.$store.state.errorStatus = true
-                                        }
-                                    }, 500)
-                                }).catch(err => {
-                                    me.$store.state.errorList = err.response.data.errors
-                                    me.$store.state.errorStatus = true
-                                }).then(() => {
-                                    setTimeout( () => {
-                                        if (!me.$store.state.errorStatus) {
-                                            me.$router.push(`/${me.lastRoute}`)
-                                        }
-                                        me.loader(false)
-                                    }, 500)
-                                })
-                            } else {
-                                me.$store.state.promptStatus = true
-                                document.body.classList.add('no_scroll')
-                            }
-                        } else {
-                            me.$scrollTo('.validation_errors', {
-		                        offset: -250
-			                })
-                        }
+                        me.$scrollTo('.validation_errors', {
+                            offset: -250
+                        })
                     }
                 })
             },

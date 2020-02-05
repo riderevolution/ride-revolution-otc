@@ -308,69 +308,40 @@
                         }
                     })
                     me.hasCustomerTypes = (ctr > 0) ? false : true
-                    if (valid && !me.hasCustomerTypes) {
+                    if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
                         formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
-                        formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
+                        if (me.hasCustomerTypes) {
+                            formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
+                        }
                         formData.append('studio_id', me.$store.state.user.current_studio_id)
                         formData.append('class_length', me.form.classLength)
-                        // me.loader(true)
+                        me.loader(true)
                         me.$axios.post('api/schedules', formData).then(res => {
-                            console.log(res.data)
-                            // setTimeout( () => {
-                            //     if (res.data) {
-                            //         me.notify('Content has been Added')
-                            //     } else {
-                            //         me.$store.state.errorList.push('Sorry, Something went wrong')
-                            //         me.$store.state.errorStatus = true
-                            //     }
-                            // }, 500)
+                            setTimeout( () => {
+                                if (res.data) {
+                                    me.notify('Content has been Added')
+                                } else {
+                                    me.$store.state.errorList.push('Sorry, Something went wrong')
+                                    me.$store.state.errorStatus = true
+                                }
+                            }, 500)
                         }).catch(err => {
                             me.$store.state.errorList = err.response.data.errors
                             me.$store.state.errorStatus = true
-                        // }).then(() => {
-                        //     setTimeout( () => {
-                        //         if (!me.$store.state.errorStatus) {
-                        //             me.$router.push(`/${me.lastRoute}`)
-                        //         }
-                        //         me.loader(false)
-                        //     }, 500)
+                        }).then(() => {
+                            setTimeout( () => {
+                                if (!me.$store.state.errorStatus) {
+                                    me.$router.push(`/${me.lastRoute}`)
+                                }
+                                me.loader(false)
+                            }, 500)
                         })
                     } else {
-                        if (valid && me.hasCustomerTypes) {
-                            let formData = new FormData(document.getElementById('default_form'))
-                            formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
-                            formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
-                            formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
-                            formData.append('studio_id', me.$store.state.user.current_studio_id)
-                            formData.append('class_length', me.form.classLength)
-                            me.loader(true)
-                            me.$axios.post('api/schedules', formData).then(res => {
-                                setTimeout( () => {
-                                    if (res.data) {
-                                        me.notify('Content has been Added')
-                                    } else {
-                                        me.$store.state.errorList.push('Sorry, Something went wrong')
-                                        me.$store.state.errorStatus = true
-                                    }
-                                }, 500)
-                            }).catch(err => {
-                                me.$store.state.errorList = err.response.data.errors
-                                me.$store.state.errorStatus = true
-                            }).then(() => {
-                                setTimeout( () => {
-                                    if (!me.$store.state.errorStatus) {
-                                        me.$router.push(`/${me.lastRoute}`)
-                                    }
-                                    me.loader(false)
-                                }, 500)
-                            })
-                        } else {
-                            me.$scrollTo('.validation_errors', {
-                                offset: -250
-                            })
-                        }
+                        me.$scrollTo('.validation_errors', {
+                            offset: -250
+                        })
                     }
                 })
             },
