@@ -360,7 +360,7 @@
             const me = this
             setTimeout( () => {
                 me.fetchTypes()
-            }, 150)
+            }, 300)
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
         }
     }

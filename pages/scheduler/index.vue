@@ -527,7 +527,7 @@
             setTimeout( () => {
                 me.fetchData()
                 me.form.studio_id = me.$store.state.user.current_studio_id
-            }, 150)
+            }, 300)
         },
         beforeMount () {
             document.addEventListener('click', this.toggleOverlays)
