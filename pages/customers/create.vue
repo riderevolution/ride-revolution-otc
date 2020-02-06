@@ -31,12 +31,12 @@
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="first_name">First Name <span>*</span></label>
-                                    <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9]*$', max: 100}">
+                                    <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="last_name">Last Name <span>*</span></label>
-                                    <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9]*$', max: 100}">
+                                    <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') | properFormat }}</span></transition>
                                 </div>
                             </div>
@@ -126,17 +126,17 @@
                         <div class="form_main_group">
                             <div class="form_group">
                                 <label for="pa_address_1">Address Line 1 <span>*</span></label>
-                                <input type="text" name="pa_address_1" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9-.]*$'}" v-model="form.pa_address_1">
+                                <input type="text" name="pa_address_1" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.pa_address_1">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_1')">{{ errors.first('pa_address_1') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="pa_address_2">Address Line 2 <span>*</span></label>
-                                <input type="text" name="pa_address_2" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9-.]*$'}" v-model="form.pa_address_2">
+                                <input type="text" name="pa_address_2" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.pa_address_2">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_2')">{{ errors.first('pa_address_2') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="pa_city">City <span>*</span></label>
-                                <input type="text" name="pa_city" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9-.]*$', max: 30}" v-model="form.pa_city">
+                                <input type="text" name="pa_city" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$', max: 30}" v-model="form.pa_city">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_city')">{{ errors.first('pa_city') | properFormat }}</span></transition>
                             </div>
                         </div>
@@ -152,17 +152,17 @@
                         <div class="form_main_group">
                             <div class="form_group">
                                 <label for="ba_address_1">Address Line 1 <span>*</span></label>
-                                <input type="text" name="ba_address_1" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9-.]*$'}" v-model="form.ba_address_1">
+                                <input type="text" name="ba_address_1" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.ba_address_1">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address_1')">{{ errors.first('ba_address_1') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="ba_address_2">Address Line 2 <span>*</span></label>
-                                <input type="text" name="ba_address_2" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9-.]*$'}" v-model="form.ba_address_2">
+                                <input type="text" name="ba_address_2" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.ba_address_2">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address_2')">{{ errors.first('ba_address_2') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="ba_city">City <span>*</span></label>
-                                <input type="text" name="ba_city" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9-.]*$', max: 30}" v-model="form.ba_city">
+                                <input type="text" name="ba_city" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$', max: 30}" v-model="form.ba_city">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_city')">{{ errors.first('ba_city') | properFormat }}</span></transition>
                             </div>
                         </div>
@@ -233,7 +233,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="ec_full_name">Full Name <span>*</span></label>
-                                        <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9]*$', max: 100}">
+                                        <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_full_name')">{{ errors.first('ec_full_name') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -245,13 +245,13 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="ec_relationship">Relationship <span>*</span></label>
-                                        <input type="text" name="ec_relationship" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9]*$', max: 50}">
+                                        <input type="text" name="ec_relationship" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 50}">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_relationship')">{{ errors.first('ec_relationship') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_group">
                                     <label for="signature">Signature <span>*</span></label>
-                                    <input type="text" name="signature" autocomplete="off" placeholder="Enter your full name" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9]*$', max: 100}">
+                                    <input type="text" name="signature" autocomplete="off" placeholder="Enter your full name" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('signature')">{{ errors.first('signature') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_check">
