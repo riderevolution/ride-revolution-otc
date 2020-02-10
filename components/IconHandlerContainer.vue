@@ -51,13 +51,15 @@
 				}, 10)
 			}
 		},
-		async mounted () {
-            await setTimeout( () => {
-                if (this.data != '') {
+		mounted () {
+			let ctr = 0
+			setInterval( () => {
+                if (ctr < 1 && this.data != '') {
     				this.images = this.data
+					ctr++
     			}
                 this.determineIfShowCloser()
-            }, 250)
+			}, 500)
 		}
 	}
 </script>

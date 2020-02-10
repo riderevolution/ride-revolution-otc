@@ -102,14 +102,16 @@
                 }
             }
         },
-        async mounted () {
-            await setTimeout( () => {
-                if (this.item) {
+        mounted () {
+            let ctr = 0
+            setInterval( () => {
+                if (ctr < 1 && this.item) {
                     this.dataImage.title = this.item.title
                     this.dataImage.alt = this.item.alt
                     this.showTags = (this.item != 0) ? true : false
+                    ctr++
                 }
-            }, 300)
+            }, 500)
         }
     }
 </script>
