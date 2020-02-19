@@ -317,11 +317,11 @@
                         name: 'Physical Gift Card',
                         type: 'physical-gift-card'
                     },
-                    {
-                        id: 0,
-                        name: 'Digital Gift Card',
-                        type: 'custom-gift-card'
-                    }
+                    // {
+                    //     id: 0,
+                    //     name: 'Digital Gift Card',
+                    //     type: 'custom-gift-card'
+                    // }
                 ],
                 form: {
                     search: '',
