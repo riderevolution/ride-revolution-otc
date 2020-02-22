@@ -171,6 +171,7 @@
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('type', me.type)
                         formData.append('origin_date', me.datePicked)
+                        formData.append('studio_id', me.$store.state.user.current_studio_id)
                         me.$axios.post('api/schedules/duplicate', formData).then(res => {
                             if (res.data) {
                                 me.$parent.generateCalendar(me.$parent.currentYear, me.$parent.currentMonth, 0, 0)
