@@ -175,6 +175,7 @@
                             me.$store.state.customerPackageStatus = false
                             setTimeout( () => {
                                 me.$parent.getSeats()
+                                me.$parent.fetchWaitlist(me.$store.state.scheduleID)
                                 me.$store.state.bookingID = 0
                                 me.$store.state.classPackageID = 0
                                 me.$store.state.disableBookerUI = false
@@ -214,17 +215,9 @@
                         }, 500)
                     }).then(() => {
                         me.$store.state.customerPackageStatus = false
-                        if (me.$store.state.waitlistID != 0) {
-                            me.$axios.delete(`api/waitlists/${me.$store.state.waitlistID}`).then(res => {
-                                if (res.data) {
-                                    setTimeout( () => {
-                                        me.$parent.fetchWaitlist(me.$store.state.scheduleID)
-                                    }, 500)
-                                }
-                            })
-                        }
                         setTimeout( () => {
                             me.$parent.getSeats()
+                            me.$parent.fetchWaitlist(me.$store.state.scheduleID)
                             me.$store.state.bookingID = 0
                             me.$store.state.classPackageID = 0
                             me.$store.state.seat = ''
