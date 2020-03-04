@@ -28,6 +28,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form_group">
+                                <label for="description">Description <span>*</span></label>
+                                <textarea name="description" rows="8" id="description" class="default_text" v-validate="'required|max:2000'"></textarea>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
+                            </div>
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
@@ -122,6 +127,20 @@
             const me = this
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
             me.prevRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 4]
+            setTimeout( () => {
+                $('#description').summernote({
+                    tabsize: 4,
+                    height: 400,
+                    followingToolbar: false,
+                    codemirror: {
+                        lineNumbers: true,
+                        htmlMode: true,
+                        mode: "text/html",
+                        tabMode: 'indent',
+                        lineWrapping: true
+                    }
+                })
+            }, 100)
         }
     }
 </script>

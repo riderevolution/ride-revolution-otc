@@ -48,6 +48,14 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('por_allow_sharing_of_package')">{{ errors.first('por_allow_sharing_of_package') | properFormat }}</span></transition>
                                     </div>
                                 </div>
+                                <div class="form_group">
+                                    <label for="discounted_package_price">Discounted Package Price <span>*</span></label>
+                                    <div class="form_flex_input full">
+                                        <input type="text" name="discounted_package_price" class="default_text number" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}">
+                                        <div class="placeholder">PHP</div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('discounted_package_price')">{{ errors.first('discounted_package_price') | properFormat }}</span></transition>
+                                    </div>
+                                </div>
                                 <div class="form_flex">
                                     <div class="form_group new_alt">
                                         <label for="promo_start_date">Start Date <span>*</span></label>
@@ -125,8 +133,13 @@
                             </div>
                             <div class="form_group">
                                 <label for="description">Description <span>*</span></label>
-                                <textarea name="description" rows="8" class="default_text" v-validate="'required|max:500'"></textarea>
+                                <textarea name="description" rows="8" id="description" class="default_text" v-validate="'required|max:2000'"></textarea>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
+                            </div>
+                            <div class="form_group">
+                                <label for="summary">Summary <span>*</span></label>
+                                <textarea name="summary" rows="4" id="summary" class="default_text" v-validate="'required|max:500'"></textarea>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('summary')">{{ errors.first('summary') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group flex">
@@ -408,11 +421,38 @@
                 })
             }
         },
-        async mounted () {
+        mounted () {
             const me = this
             me.fetchTypes()
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
             me.prevRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 4]
+            setTimeout( () => {
+                $('#description').summernote({
+                    tabsize: 4,
+                    height: 400,
+                    followingToolbar: false,
+                    codemirror: {
+                        lineNumbers: true,
+                        htmlMode: true,
+                        mode: "text/html",
+                        tabMode: 'indent',
+                        lineWrapping: true
+                    }
+                })
+                $('#summary').summernote({
+                    tabsize: 4,
+                    height: 200,
+                    followingToolbar: false,
+                    disableResizeEditor: true,
+                    codemirror: {
+                        lineNumbers: true,
+                        htmlMode: true,
+                        mode: "text/html",
+                        tabMode: 'indent',
+                        lineWrapping: true
+                    }
+                })
+            }, 100)
         }
     }
 </script>

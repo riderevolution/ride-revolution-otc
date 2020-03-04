@@ -48,7 +48,7 @@
                         <tr v-for="(data, key) in res.customers.data" :key="key">
                             <td>
                                 <div class="thumb">
-                                    <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" />
+                                    <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
                                     <div class="table_image_default" v-else>
                                         {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                     </div>

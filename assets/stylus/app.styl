@@ -82,6 +82,21 @@ table
 .hidden
     display: none
 
+.note-editor
+    &.note-frame
+            border: 1px solid #ccc
+            transition: 0.3s ease-in-out
+        &:hover,
+        &:focus
+            border: 1px solid #383D40
+            transition: 0.3s ease-in-out
+        .note-toolbar
+            background-color: #F8F8FB
+        .note-editing-area
+            .note-editable
+                sf_pro_regular(18px)
+                padding: 20px 25px
+
 /**
  * Default Loader **/
 .loader_wrapper

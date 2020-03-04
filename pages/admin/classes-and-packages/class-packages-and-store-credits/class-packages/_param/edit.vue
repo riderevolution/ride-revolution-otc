@@ -48,6 +48,14 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('por_restrict_to_new_customers')">{{ errors.first('por_restrict_to_new_customers') | properFormat }}</span></transition>
                                     </div>
                                 </div>
+                                <div class="form_group">
+                                    <label for="discounted_price">Discounted Package Price <span>*</span></label>
+                                    <div class="form_flex_input full">
+                                        <input type="text" name="discounted_price" class="default_text number" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" v-model="res.discounted_price">
+                                        <div class="placeholder">PHP</div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('discounted_price')">{{ errors.first('discounted_price') | properFormat }}</span></transition>
+                                    </div>
+                                </div>
                                 <div class="form_flex">
                                     <div class="form_group new_alt">
                                         <label for="promo_start_date">Start Date <span>*</span></label>
@@ -125,8 +133,13 @@
                             </div>
                             <div class="form_group">
                                 <label for="description">Description <span>*</span></label>
-                                <textarea name="description" rows="8" class="default_text" v-validate="'required|max:500'" v-model="res.description"></textarea>
+                                <textarea name="description" rows="8" class="default_text" id="description" v-validate="'required|max:2000'"></textarea>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
+                            </div>
+                            <div class="form_group">
+                                <label for="summary">Summary <span>*</span></label>
+                                <textarea name="summary" rows="4" id="summary" class="default_text" v-validate="'required|max:500'"></textarea>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('summary')">{{ errors.first('summary') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group flex">
@@ -372,7 +385,7 @@
                         me.$axios.post(`api/packages/class-packages/${me.$route.params.param}`, formData).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
-                                    me.notify('Content has been Added')
+                                    me.notify('Content has been Updated')
                                 } else {
                                     me.$store.state.errorList.push('Sorry, Something went wrong')
                                     me.$store.state.errorStatus = true
@@ -413,6 +426,35 @@
             const me = this
             me.fetchTypes()
             me.$axios.get(`api/packages/class-packages/${me.$route.params.param}`).then(res => {
+                setTimeout( () => {
+                    $('#description').summernote({
+                        tabsize: 4,
+                        height: 400,
+                        followingToolbar: false,
+                        codemirror: {
+                            lineNumbers: true,
+                            htmlMode: true,
+                            mode: "text/html",
+                            tabMode: 'indent',
+                            lineWrapping: true
+                        }
+                    })
+                    $('#summary').summernote({
+                        tabsize: 4,
+                        height: 200,
+                        followingToolbar: false,
+                        disableResizeEditor: true,
+                        codemirror: {
+                            lineNumbers: true,
+                            htmlMode: true,
+                            mode: "text/html",
+                            tabMode: 'indent',
+                            lineWrapping: true
+                        }
+                    })
+                    $('#description').summernote('code', me.res.description)
+                    $('#summary').summernote('code', me.res.summary)
+                }, 100)
                 me.res = res.data.classPackage
                 me.form.purchaseLimit = me.res.por_purchase_limit
                 me.form.classCount = me.res.class_count

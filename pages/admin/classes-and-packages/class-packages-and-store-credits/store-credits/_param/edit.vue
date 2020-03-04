@@ -28,6 +28,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form_group">
+                                <label for="description">Description <span>*</span></label>
+                                <textarea name="description" rows="8" class="default_text" id="description" v-validate="'required|max:2000'"></textarea>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
+                            </div>
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
@@ -124,6 +129,21 @@
             const me = this
             me.$axios.get(`api/packages/store-credits/${me.$route.params.param}`).then(res => {
                 me.res = res.data.storeCredit
+                setTimeout( () => {
+                    $('#description').summernote({
+                        tabsize: 4,
+                        height: 400,
+                        followingToolbar: false,
+                        codemirror: {
+                            lineNumbers: true,
+                            htmlMode: true,
+                            mode: "text/html",
+                            tabMode: 'indent',
+                            lineWrapping: true
+                        }
+                    })
+                    $('#description').summernote('code', me.res.description)
+                }, 100)
             })
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 4]
             me.prevRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 5]
