@@ -78,7 +78,7 @@
                         <div class="form_main_group">
                             <div class="form_flex">
                                 <div class="form_group flex">
-                                    <label>Allowed time for booking before class starts: <span>*</span></label>
+                                    <label>Allowed time to book before class starts: <span>*</span></label>
                                     <div class="form_flex_input">
                                         <input type="text" name="booking_hours" class="default_text number" autocomplete="off" v-model="form.booking.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'">
                                         <div class="placeholder">hours</div>
