@@ -114,7 +114,7 @@
                             </div>
                             <div class="form_flex">
                                 <div class="form_group flex">
-                                    <label>Time before customer is marked no show before class starts: <span>*</span></label>
+                                    <label>Time before customer is marked no show after class starts: <span>*</span></label>
                                     <div class="form_flex_input">
                                         <input type="text" name="no_show_hours" class="default_text number" autocomplete="off" v-model="form.noShow.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'">
                                         <div class="placeholder">hours</div>

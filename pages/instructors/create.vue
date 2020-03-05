@@ -21,7 +21,7 @@
                                         Max dimension: 600x600
                                     </div>
                                 </transition>
-                                <input type="file" id="image" name="image[]" class="action_photo" @change="getFile($event)" v-validate="'image|size:1000|image|ext:jpeg,jpg,png'">
+                                <input type="file" id="image" name="image[]" class="action_photo" @change="getFile($event)" v-validate="'required|image|size:1000|image|ext:jpeg,jpg,png'">
                                 <label for="image" :class="`${(previewImage) ? 'active' : ''}`"><span>Upload Photo</span></label>
                                 <img id="preview_image" src="/" v-if="previewImage" />
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('image[]')">{{ errors.first('image[]') | properFormat }}</span></transition>
