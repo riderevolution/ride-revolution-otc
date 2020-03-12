@@ -121,7 +121,7 @@
                             if (startDate <= endDate) {
                                 switch (j) {
                                     case 6:
-                                    element.day.push(startDate)
+                                        element.day.push(startDate)
                                         break
                                 }
                                 if (me.$moment(`${element.year}-${element.month}-${startDate}`, 'YYYY-MM-D').format('d') == j) {
@@ -166,6 +166,7 @@
             },
             submissionSuccess () {
                 const me = this
+                me.loader(true)
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
@@ -181,7 +182,10 @@
                             me.$store.state.errorStatus = true
                         }).then(() => {
                             me.$store.state.calendarDuplicateStatus = false
-                            document.body.classList.remove('no_scroll')
+                            setTimeout( () => {
+                                me.loader(false)
+                                document.body.classList.remove('no_scroll')
+                            }, 500)
                         })
                     } else {
                         document.querySelector('.validation_errors').scrollIntoView({block: 'center', behavior: 'smooth'})
