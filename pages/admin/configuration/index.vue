@@ -42,11 +42,11 @@
                             imgSrc: '/icons/types-icon.svg',
                             link: '/admin/configuration/customer-types'
                         },
-                        {
-                            label: 'Occupations',
-                            imgSrc: '/icons/occupation-icon.svg',
-                            link: '/admin/configuration/occupations'
-                        },
+                        // {
+                        //     label: 'Occupations',
+                        //     imgSrc: '/icons/occupation-icon.svg',
+                        //     link: '/admin/configuration/occupations'
+                        // },
                         {
                             label: 'Gift Card Titles',
                             imgSrc: '/icons/gift-card-title-icon.svg',
