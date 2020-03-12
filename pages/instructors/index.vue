@@ -48,7 +48,7 @@
                         <tr v-for="(data, key) in res.instructors.data" :key="key">
                             <td>
                                 <div class="thumb">
-                                    <img :src="data.instructor_details.images[0].path_resized" v-if="data.instructor_details.images.path != null" />
+                                    <img :src="data.instructor_details.images[0].path_resized" v-if="data.instructor_details.images[0].path != null" />
                                     <div class="table_image_default" v-else>
                                         <div class="overlay">
                                             {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}

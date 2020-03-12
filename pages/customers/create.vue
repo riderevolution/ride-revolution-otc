@@ -78,12 +78,12 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('co_sex')">{{ errors.first('co_sex') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
-                                    <label for="occupation_id">Occupation</label>
-                                    <select class="default_select alternate" name="occupation_id" v-validate="'required'">
+                                    <label for="profession">Occupation</label>
+                                    <select class="default_select alternate" name="profession" v-validate="'required'">
                                         <option value="" selected disabled>Choose a Occupation</option>
-                                        <option :value="occupation.id" v-for="(occupation, index) in occupations">{{ occupation.name }}</option>
+                                        <option :value="data" v-for="(data, index) in professions">{{ data }}</option>
                                     </select>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('occupation_id')">{{ errors.first('occupation_id') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('profession')">{{ errors.first('profession') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_flex">
@@ -316,7 +316,7 @@
                 },
                 histories: [],
                 types: [],
-                occupations: []
+                professions: ['Accounting/Finance', 'Admin/Human Resources', 'Arts/Media/Communications', 'Building/Construction', 'Compute', 'Education/Training', 'Engineering', 'Healthcare', 'Hotel/Restaurant', 'Manufacturing', 'Sales/Marketing', 'Sciences', 'Services', 'Others']
             }
         },
         computed: {
@@ -459,9 +459,6 @@
             const me = this
             me.$axios.get('api/extras/customer-types').then(res => {
                 me.types = res.data.customerTypes
-            })
-            me.$axios.get('api/extras/occupations').then(res => {
-                me.occupations = res.data.occupations
             })
             me.$axios.get('api/extras/medical-history-questions').then(res => {
                 if (res.data) {
