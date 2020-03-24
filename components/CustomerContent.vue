@@ -9,7 +9,7 @@
                 <div :class="`status ${(packageStatus == 5) ? 'active' : ''}`" @click="togglePackages(5)">Expired</div>
             </div>
             <div class="cms_table_package" v-if="value.user_package_counts.length > 0">
-                <div class="table_package" v-for="(data, key) in value.user_package_counts" :key="key" v-if="data.count > 0">
+                <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="data.count > 0 && !data.expired">
                     <h2 class="package_title">
                         {{ data.class_package.name }}
                         <span :class="`${addViolatorClass(data)}`">{{ checkWarning(data) }}</span>
@@ -44,10 +44,10 @@
                             <div class="package_options">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
-                                    <a href="javascript:void(0)" class="option_link">Transfer Package</a>
-                                    <a href="javascript:void(0)" class="option_link">Share Package</a>
-                                    <a href="javascript:void(0)" class="option_link">Freeze Package</a>
-                                    <a href="javascript:void(0)" class="option_link">Print Receipt</a>
+                                    <div class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+                                    <div class="option_link">Share Package</div>
+                                    <div class="option_link">Freeze Package</div>
+                                    <div class="option_link">Print Receipt</div>
                                 </div>
                             </div>
                         </div>
@@ -131,10 +131,10 @@
             <div class="actions">
                 <div class="total">Total: 4</div>
                 <div class="cms_table_toggler">
-                    <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory('all')">All</div>
-                    <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory('completed')">Completed</div>
-                    <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory('no-show')">No Show</div>
-                    <div :class="`status ${(classesHistoryStatus == 4) ? 'active' : ''}`" @click="toggleClassesHistory('cancelled')">Cancelled</div>
+                    <div :class="`status ${(classesHistoryStatus == 'all') ? 'active' : ''}`" @click="toggleClassesHistory('all')">All</div>
+                    <div :class="`status ${(classesHistoryStatus == 'completed') ? 'active' : ''}`" @click="toggleClassesHistory('completed')">Completed</div>
+                    <div :class="`status ${(classesHistoryStatus == 'no-show') ? 'active' : ''}`" @click="toggleClassesHistory('no-show')">No Show</div>
+                    <div :class="`status ${(classesHistoryStatus == 'cancelled') ? 'active' : ''}`" @click="toggleClassesHistory('cancelled')">Cancelled</div>
                 </div>
             </div>
             <table class="cms_table">
@@ -388,17 +388,22 @@
         <transition name="fade">
             <customer-prompt :status="promptMessage" ref="enabled" v-if="$store.state.customerPromptStatus" />
         </transition>
+        <transition name="fade">
+            <package-action :packageID="packageID" v-if="$store.state.packageActionStatus" />
+        </transition>
     </div>
 </template>
 
 <script>
     import CustomerPrompt from '../components/modals/CustomerPrompt'
     import CustomerPendingQuickSale from '../components/modals/CustomerPendingQuickSale'
+    import PackageAction from '../components/modals/PackageAction'
     import Pagination from '../components/Pagination'
     export default {
         components: {
             CustomerPrompt,
             CustomerPendingQuickSale,
+            PackageAction,
             Pagination
         },
         props: {
@@ -412,6 +417,7 @@
         },
         data () {
             return {
+                packageID: 0,
                 rowCount: 0,
                 promptMessage: '',
                 isActivated: true,
@@ -424,12 +430,41 @@
                     freeze: 0,
                 },
                 packageStatus: 1,
-                classesHistoryStatus: 1,
+                classesHistoryStatus: 'all',
                 res: [],
                 transaction: []
             }
         },
+        computed: {
+            populatePackages () {
+                const me = this
+                let result = []
+                if (me.$route.params.slug == 'packages') {
+                    let current = me.$moment()
+                    me.value.user_package_counts.forEach((element, index) => {
+                        let expiry = me.$moment(element.class_package.computed_expiration_date)
+                        if (parseInt(expiry.diff(current, 'days')) > 0) {
+                            element.expired = false
+                        } else {
+                            element.expired = true
+                        }
+                        result.push(element)
+                    })
+                }
+                return result
+            }
+        },
         methods: {
+            togglePackageAction (data, type) {
+                const me = this
+                switch (type) {
+                    case 'transfer':
+                        me.$store.state.packageActionStatus = true
+                        document.body.classList.add('no_scroll')
+                        break
+                }
+                me.packageID = data.class_package.id
+            },
             checkStatus (data) {
                 const me = this
                 let result = ''
@@ -618,24 +653,24 @@
                 const me = this
                 me.loader(true)
                 me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?classHistoryStatus=${status}`).then(res => {
-                    console.log(res.data);
-                //     if (res.data) {
-                //         me.res = res.data.customers
-                //     }
-                // }).catch(err => {
-                //     me.$store.state.errorList = err.response.data.errors
-                //     me.$store.state.errorStatus = true
-                // }).then(() => {
-                //     me.rowCount = document.getElementsByTagName('th').length
-                //     setTimeout( () => {
-                //         me.classesHistoryStatus = status
-                //         me.loader(false)
-                //     }, 500)
+                    if (res.data) {
+                        me.res = res.data.customer
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    me.rowCount = document.getElementsByTagName('th').length
+                    setTimeout( () => {
+                        me.classesHistoryStatus = status
+                        me.loader(false)
+                    }, 500)
                 })
             },
         },
         mounted () {
             const me = this
+            me.res = []
             if (me.$route.params.slug == 'transactions') {
                 me.res = me.value.payments
             } else {

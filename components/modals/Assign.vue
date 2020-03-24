@@ -35,15 +35,17 @@
                     </transition>
                     <div class="customer_filter">
                         <div class="form_group" v-click-outside="closeMe">
-                            <label for="customer">Find a Customer</label>
-                            <input type="text" name="customer" autocomplete="off" placeholder="Search for a customer" class="default_text search_alternate" @click="toggleCustomers ^= true" @input="searchCustomer($event)">
-                            <transition name="slide"><span class="validation_errors" v-if="findCustomer && customer == ''">Select Customer</span></transition>
+                            <label for="customer">Find a Member</label>
+                            <input type="text" name="customer" autocomplete="off" placeholder="Search for a member" class="default_text search_alternate" @click="toggleCustomers ^= true" @input="searchCustomer($event)">
+                            <transition name="slide"><span class="validation_errors" v-if="findCustomer && customer == ''">Select Member</span></transition>
                             <div :class="`customer_selection ${(customerLength > 6) ? 'scrollable' : ''}`" v-if="toggleCustomers">
                                 <div class="customer_selection_list">
                                     <div class="customer_wrapper" v-if="customerLength > 0 && customer.id != data.id" :id="`customer_${data.id}`" v-for="(data, key) in populateCustomers" :key="key" @click="getCustomer(data)">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path_resized != null" />
                                         <div class="customer_image" v-else>
-                                            {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                            <div class="overlay">
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                            </div>
                                         </div>
                                         <div class="customer_name">
                                             {{ data.first_name }} {{ data.last_name }}
