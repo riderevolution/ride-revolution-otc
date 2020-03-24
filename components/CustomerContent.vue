@@ -44,9 +44,9 @@
                             <div class="package_options">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
-                                    <div class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
-                                    <div class="option_link">Share Package</div>
-                                    <div class="option_link">Freeze Package</div>
+                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link">Share Package</div>
+                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link">Freeze Package</div>
                                     <div class="option_link">Print Receipt</div>
                                 </div>
                             </div>
