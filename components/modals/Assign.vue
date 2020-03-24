@@ -41,7 +41,7 @@
                             <div :class="`customer_selection ${(customerLength > 6) ? 'scrollable' : ''}`" v-if="toggleCustomers">
                                 <div class="customer_selection_list">
                                     <div class="customer_wrapper" v-if="customerLength > 0 && customer.id != data.id" :id="`customer_${data.id}`" v-for="(data, key) in populateCustomers" :key="key" @click="getCustomer(data)">
-                                        <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" />
+                                        <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path_resized != null" />
                                         <div class="customer_image" v-else>
                                             {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                         </div>

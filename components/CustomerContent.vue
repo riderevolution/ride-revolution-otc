@@ -60,11 +60,11 @@
         </div>
         <div v-if="type == 'badges' && loaded">
             <div class="cms_col_five">
-                <div class="cms_col not" v-for="(badge, key) in value.badges" :key="key">
+                <div :class="`cms_col ${(badge.earned_on != null) ? '' : 'not'}`" v-for="(badge, key) in value.badges" :key="key">
                     <div class="badge"><img :src="badge.badge_image" /></div>
                     <div class="info">
                         <h2>{{ badge.description }}</h2>
-                        <!-- <p>Earned on: Apr 23, 2020</p> -->
+                        <p v-if="badge.earned_on != null">Earned on: {{ formatClassDate(badge.earned_on, false) }}</p>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="value.upcomingClasses.length > 0">
                     <tr v-for="(data, key) in value.upcomingClasses" :key="key">
                         <td><div class="table_data_link link" @click="toggleLayout(data.scheduled_date.schedule.studio.id, data.scheduled_date_id)">{{ formatClassDate(data.created_at, true) }}</div></td>
                         <td>{{ data.seat.number }}</td>
@@ -108,7 +108,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td>Completed</td>
+                        <td class="alt">{{ data.status }}</td>
                         <td>
                             <p>Singe Class Package</p>
                             <p class="id">854585961462367501</p>
@@ -121,11 +121,11 @@
                     </tr>
 
                 </tbody>
-                <!-- <tbody class="no_results" v-else>
+                <tbody class="no_results" v-else>
                     <tr>
                         <td :colspan="rowCount">No Result(s) Found.</td>
                     </tr>
-                </tbody> -->
+                </tbody>
             </table>
             <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
         </div>
@@ -209,7 +209,7 @@
                     <div class="toggler" @click="toggleAccordion($event, key)"></div>
                     <div class="content_headers">
                         <div class="accordion_content">{{ formatDate(data.created_at, true) }}</div>
-                        <div class="accordion_content">{{ data.studio.name }}</div>
+                        <div class="accordion_content">{{ (data.studio_id != null) ? data.studio.name : 'Website' }}</div>
                         <div class="accordion_content">{{ countVariantQty(data.payment_items) }}</div>
                         <div class="accordion_content capital">{{ replacer(data.payment_method.method) }}</div>
                         <div :class="`accordion_content ${(data.status == 'pending') ? 'red' : ''}`">Php {{ totalCount(data.total) }}</div>
@@ -615,8 +615,10 @@
             if (me.$route.params.slug == 'transactions') {
                 me.res = me.value.payments
             }
-            me.rowCount = document.getElementsByTagName('th').length
             me.loaded = true
+            setTimeout( () => {
+                me.rowCount = document.getElementsByTagName('th').length
+            }, 250)
         },
         beforeMount () {
             document.addEventListener('click', this.toggleOverlays)
