@@ -8,12 +8,11 @@
                 <div :class="`status ${(packageStatus == 4) ? 'active' : ''}`" @click="togglePackages(4)">Frozen</div>
                 <div :class="`status ${(packageStatus == 5) ? 'active' : ''}`" @click="togglePackages(5)">Expired</div>
             </div>
-            <div class="cms_table_package">
-                <div class="table_package" v-for="(data, key) in value.user_package_counts" :key="key" v-if="value.user_package_counts.length > 0">
+            <div class="cms_table_package" v-if="value.user_package_counts.length > 0">
+                <div class="table_package" v-for="(data, key) in value.user_package_counts" :key="key" v-if="data.count > 0">
                     <h2 class="package_title">
                         {{ data.class_package.name }}
-                        <span class="warning" v-if="checkWarning(data)">{{ violator.warning }} Days Left</span>
-                        <span class="shared">Shared with Sheena Villeta</span>
+                        <span :class="`${addViolatorClass(data)}`">{{ checkWarning(data) }}</span>
                     </h2>
                     <div class="package_details">
                         <div class="package_status">
@@ -36,7 +35,7 @@
                                 <label>Purchase Date / Activation Date</label>
                             </div>
                             <div class="date margin">
-                                <p>{{ formatDate(data.class_package.computed_expiration_date, false) }}</p>
+                                <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
                                 <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
                             </div>
                         </div>
@@ -78,7 +77,7 @@
                         <th>Bike No.</th>
                         <th>Class</th>
                         <th>Studio</th>
-                        <th>instructor</th>
+                        <th>Instructor</th>
                         <th>Guests</th>
                         <th>Status</th>
                         <th>Series ID</th>
@@ -86,18 +85,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(n, key) in 3" :key="key">
-                        <td><div class="table_data_link link" @click="toggleLayout(n, 21550)">{{ formatClassDate('January 01, 2020 12:00', true) }}</div></td>
-                        <td>5</td>
-                        <td>Ride Rev</td>
-                        <td>Greenbelt 5</td>
+                    <tr v-for="(data, key) in value.upcomingClasses" :key="key">
+                        <td><div class="table_data_link link" @click="toggleLayout(data.scheduled_date.schedule.studio.id, data.scheduled_date_id)">{{ formatClassDate(data.created_at, true) }}</div></td>
+                        <td>{{ data.seat.number }}</td>
+                        <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
+                        <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                         <td>
                             <div class="thumb">
-                                <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
-                                <div class="table_image_default">
-                                    CR
-                                </div>
-                                <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
+                                <img :src="data.instructor.user.instructor_details.images[0].path_resized" />
+                                <nuxt-link class="table_data_link" to="/">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
                             </div>
                         </td>
                         <td>
@@ -264,9 +260,9 @@
                     <div class="form_header_wrapper">
                         <h2 class="form_title">Customer Overview</h2>
                         <div class="form_check toggler">
-                            <input type="hidden" id="is_promo" name="is_promo" class="action_check" :value="(isActivated) ? 1 : 0">
-                            <div :class="`toggle ${(isActivated) ? 'active' : ''}`" @click="toggledPrompt()"></div>
-                            <label for="is_promo">{{ (isActivated) ? 'Activated' : 'Deactivated' }}</label>
+                            <input type="hidden" id="is_promo" name="is_promo" class="action_check" :value="(value.enabled) ? 1 : 0">
+                            <div :class="`toggle alt ${(value.enabled) ? 'active' : ''}`" @click="toggledPrompt(value)"></div>
+                            <label for="is_promo">{{ (value.enabled) ? 'Activated' : 'Deactivated' }}</label>
                         </div>
                     </div>
                     <div class="form_overview">
@@ -279,10 +275,6 @@
                             <p>{{ value.email }}</p>
                         </div>
                         <div class="wrapper">
-                            <label>Password</label>
-                            <p>*******</p>
-                        </div>
-                        <div class="wrapper">
                             <label>Phone Number</label>
                             <p>{{ value.customer_details.co_contact_number }}</p>
                         </div>
@@ -292,11 +284,11 @@
                         </div>
                         <div class="wrapper">
                             <label>Gender</label>
-                            <p>{{ value.customer_details.co_sex }}</p>
+                            <p class="alt">{{ value.customer_details.co_sex }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Occupation</label>
-                            <p>{{ value.customer_details.occupation.name }}</p>
+                            <p>{{ value.customer_details.profession }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Customer Type</label>
@@ -401,7 +393,7 @@
             <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
         </transition>
         <transition name="fade">
-            <customer-prompt :status="promptMessage" v-if="$store.state.customerPromptStatus" />
+            <customer-prompt :status="promptMessage" ref="enabled" v-if="$store.state.customerPromptStatus" />
         </transition>
     </div>
 </template>
@@ -431,6 +423,7 @@
                 promptMessage: '',
                 isActivated: true,
                 loaded: false,
+                violatorClass: '',
                 violator: {
                     warning: 0,
                     shared: 0,
@@ -451,15 +444,22 @@
                 me.$parent.layout.schedule = scheduledDateID
                 me.$store.state.upcomingClassesLayoutStatus = true
             },
-            toggledPrompt () {
+            toggledPrompt (data) {
                 const me = this
-                me.isActivated ^= true
-                if (me.isActivated) {
-                    me.promptMessage = 'Activate'
-                } else {
+                if (data.enabled) {
                     me.promptMessage = 'Deactivate'
+                } else {
+                    me.promptMessage = 'Activate'
                 }
+                data.enabled ^= 1
                 me.$store.state.customerPromptStatus = true
+                setTimeout( () => {
+                    me.$refs.enabled.confirm.table_name = 'users'
+                    me.$refs.enabled.confirm.id = data.id
+                    me.$refs.enabled.confirm.enabled = data.enabled
+                    me.$refs.enabled.confirm.status = (data.enabled) ? 'activated' : 'deactivated'
+                    me.$refs.enabled.confirm.type = 'user'
+                }, 100)
                 document.body.classList.add('no_scroll')
             },
             toggleGuest (event) {
@@ -549,13 +549,21 @@
             },
             checkWarning (data) {
                 const me = this
+                let sample = ''
                 let expiry = me.$moment(data.class_package.computed_expiration_date)
                 let current = me.$moment()
                 if (parseInt(expiry.diff(current, 'days')) <= 15) {
-                    me.violator.warning = expiry.diff(current, 'days')
-                    return true
-                } else {
-                    return false
+                    sample = expiry.diff(current, 'days') + ' Days Left'
+                    me.addViolatorClass(data)
+                }
+                return sample
+            },
+            addViolatorClass (data) {
+                const me = this
+                let expiry = me.$moment(data.class_package.computed_expiration_date)
+                let current = me.$moment()
+                if (parseInt(expiry.diff(current, 'days')) <= 15) {
+                    return 'warning'
                 }
             },
             toggledOption (event) {

@@ -1,5 +1,5 @@
 <template>
-    <div class="content">
+    <div class="content" v-if="$store.state.isAuth">
         <div id="admin" class="cms_dashboard">
             <section id="top_content">
                 <h1 class="header_title">Dashboard</h1>

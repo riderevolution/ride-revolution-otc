@@ -1674,6 +1674,8 @@ input::placeholder
                 p
                     sf_pro_regular(15px)
                     color: $black
+                    &.alt
+                        text-transform: capitalize
         .form_overview_instructor
             display: flex
             flex-flow: row wrap
@@ -2000,6 +2002,10 @@ input::placeholder
             border-radius: 16px
             transform: translateY(-50%)
             transition: .3s ease-in-out
+            &.alt
+                background-color: $light_red
+                &::before
+                    background-color: $red
             &.active
                 background-color: $light_green
                 transition: .3s ease-in-out
@@ -5660,6 +5666,8 @@ input::placeholder
                     width: 90px
                     height: 90px
                     border-radius: 90%
+                    object-fit: cover
+                    object-position: center
                 .user_image_default
                     position: relative
                     sf_pro_bold(24px)

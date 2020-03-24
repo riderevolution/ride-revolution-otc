@@ -21,15 +21,43 @@
                 default: ''
             }
         },
+        data () {
+            return {
+                confirm: {
+                    table_name: '',
+                    id: 0,
+                    enabled: 0,
+                    status: '',
+                    type: ''
+                }
+            }
+        },
         methods: {
             toggleClose (status) {
                 const me = this
                 if (status) {
-                    me.$parent.isActivated = false
-                    me.$store.state.customerPromptStatus = false
-                    document.body.classList.remove('no_scroll')
+                    me.loader(true)
+                    me.$axios.patch(`api/extras/toggle-status`, me.confirm).then(res => {
+                        setTimeout( () => {
+                            me.$store.state.customerPromptStatus = false
+                            me.notify(`${me.confirm.type.charAt(0).toUpperCase() + me.confirm.type.slice(1)} has been ${me.confirm.status}`)
+                            me.$parent.$parent.fetchData()
+                            document.body.classList.remove('no_scroll')
+                        }, 500)
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    }).then(() => {
+                        setTimeout( () => {
+                            me.loader(false)
+                        }, 500)
+                    })
                 } else {
-                    me.$parent.isActivated = true
+                    if (me.$parent.value.enabled) {
+                        me.$parent.value.enabled = 0
+                    } else {
+                        me.$parent.value.enabled = 1
+                    }
                     me.$store.state.customerPromptStatus = false
                     document.body.classList.remove('no_scroll')
                 }
