@@ -97,29 +97,27 @@
                             </div>
                         </td>
                         <td>
-                            <div class="table_select" v-if="key != 1">
-                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">3 Guests</div>
+                            <div class="table_select" v-if="data.guestBookings && data.guestBookings.length > 0">
+                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">{{ data.guestBookings.length }} Guests</div>
                                 <div class="overlay">
                                     <ul>
-                                        <li v-line-clamp="1">16 - Sample Name</li>
-                                        <li v-line-clamp="1">4 - Jennifer Castillo</li>
-                                        <li v-line-clamp="1">1 - Edcel Games</li>
+                                        <li v-for="(subData, key) in data.guestBookings" :key="key" v-line-clamp="1">{{ subData.seat.number }} - {{ subData.guest_first_name }} {{ subData.guest_last_name }}</li>
                                     </ul>
                                 </div>
                             </div>
+                            <p v-else>N/A</p>
                         </td>
                         <td class="alt">{{ data.status }}</td>
                         <td>
-                            <p>Singe Class Package</p>
-                            <p class="id">854585961462367501</p>
+                            <p>{{ data.class_package.name }}</p>
+                            <p class="id">{{ data.class_package.sku_id }}</p>
                         </td>
                         <td>
-                            <div class="full table_actions">
+                            <div class="full table_actions" v-if="data.status == 'reserved'">
                                 <div class="table_action_success link" @click="getCurrentCustomer()">Sign In</div>
                             </div>
                         </td>
                     </tr>
-
                 </tbody>
                 <tbody class="no_results" v-else>
                     <tr>
@@ -133,10 +131,10 @@
             <div class="actions">
                 <div class="total">Total: 4</div>
                 <div class="cms_table_toggler">
-                    <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory(1)">All</div>
-                    <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory(2)">Completed</div>
-                    <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">No Show</div>
-                    <div :class="`status ${(classesHistoryStatus == 4) ? 'active' : ''}`" @click="toggleClassesHistory(4)">Cancelled</div>
+                    <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory('all')">All</div>
+                    <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory('completed')">Completed</div>
+                    <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory('no-show')">No Show</div>
+                    <div :class="`status ${(classesHistoryStatus == 4) ? 'active' : ''}`" @click="toggleClassesHistory('cancelled')">Cancelled</div>
                 </div>
             </div>
             <table class="cms_table">
@@ -146,52 +144,47 @@
                         <th>Bike No.</th>
                         <th>Class</th>
                         <th>Studio</th>
-                        <th>instructor</th>
+                        <th>Instructor</th>
                         <th>Guests</th>
                         <th>Status</th>
                         <th>Series ID</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr v-for="(n, key) in 3"  :key="key">
-                        <td>{{ formatClassDate('January 01, 2020 12:00', true) }}</td>
-                        <td>5</td>
-                        <td>Ride Rev</td>
-                        <td>Greenbelt 5</td>
+                <tbody v-if="value.classHistory.length > 0">
+                    <tr v-for="(data, key) in res.classHistory" :key="key">
+                        <td>{{ formatClassDate(data.created_at, true) }}</td>
+                        <td>{{ data.seat.number }}</td>
+                        <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
+                        <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                         <td>
                             <div class="thumb">
-                                <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
-                                <div class="table_image_default">
-                                    CR
-                                </div>
-                                <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
+                                <img :src="data.instructor.user.instructor_details.images[0].path_resized" />
+                                <nuxt-link class="table_data_link" to="/">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
                             </div>
                         </td>
                         <td>
-                            <div class="table_select" v-if="key != 1">
-                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">3 Guests</div>
+                            <div class="table_select" v-if="data.guestBookings && data.guestBookings.length > 0">
+                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">{{ data.guestBookings.length }} Guests</div>
                                 <div class="overlay">
                                     <ul>
-                                        <li v-line-clamp="1">16 - Sample Name</li>
-                                        <li v-line-clamp="1">4 - Jennifer Castillo</li>
-                                        <li v-line-clamp="1">1 - Edcel Games</li>
+                                        <li v-for="(subData, key) in data.guestBookings" :key="key" v-line-clamp="1">{{ subData.seat.number }} - {{ subData.guest_first_name }} {{ subData.guest_last_name }}</li>
                                     </ul>
                                 </div>
                             </div>
+                            <p v-else>N/A</p>
                         </td>
-                        <td>Completed</td>
+                        <td class="alt">{{ checkStatus(data) }}</td>
                         <td>
-                            <p>Singe Class Package</p>
-                            <p class="id">854585961462367501</p>
+                            <p>{{ data.class_package.name }}</p>
+                            <p class="id">{{ data.class_package.sku_id }}</p>
                         </td>
                     </tr>
-
                 </tbody>
-                <!-- <tbody class="no_results" v-else>
+                <tbody class="no_results" v-else>
                     <tr>
                         <td :colspan="rowCount">No Result(s) Found.</td>
                     </tr>
-                </tbody> -->
+                </tbody>
             </table>
             <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
         </div>
@@ -437,6 +430,22 @@
             }
         },
         methods: {
+            checkStatus (data) {
+                const me = this
+                let result = ''
+                if (data.deleted_at != null) {
+                    result = 'Cancelled'
+                }
+                switch (data.status) {
+                    case 'signed-in':
+                        result = 'Completed'
+                        break
+                    case 'no-show':
+                        result = 'No Show'
+                        break;
+                }
+                 return result
+            },
             toggleLayout (studioId, scheduledDateID) {
                 const me = this
                 me.loader(true)
@@ -603,17 +612,34 @@
             },
             togglePackages (status) {
                 const me = this
-                return me.packageStatus = status
+                me.packageStatus = status
             },
             toggleClassesHistory (status) {
                 const me = this
-                return me.classesHistoryStatus = status
+                me.loader(true)
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?classHistoryStatus=${status}`).then(res => {
+                    console.log(res.data);
+                //     if (res.data) {
+                //         me.res = res.data.customers
+                //     }
+                // }).catch(err => {
+                //     me.$store.state.errorList = err.response.data.errors
+                //     me.$store.state.errorStatus = true
+                // }).then(() => {
+                //     me.rowCount = document.getElementsByTagName('th').length
+                //     setTimeout( () => {
+                //         me.classesHistoryStatus = status
+                //         me.loader(false)
+                //     }, 500)
+                })
             },
         },
         mounted () {
             const me = this
             if (me.$route.params.slug == 'transactions') {
                 me.res = me.value.payments
+            } else {
+                me.res = me.value
             }
             me.loaded = true
             setTimeout( () => {
