@@ -5360,7 +5360,23 @@ input::placeholder
                             opacity: 1
                             visibility: visible
                             transition: .3s ease-in-out .2s
+                    .nav_back
+                        sf_pro_light(16px)
+                        padding: 0 0 0 20px
+                        margin-left: 20px
+                        margin-bottom: 20px
+                        transition: .3s ease-in-out .2s
+                        &::before
+                            left: 0%
+                            transform: translateX(0%) translateY(-50%)
+                            transition: .3s ease-in-out .1s
                     .nav_list
+                        &.alt
+                            .child_item_wrapper
+                                .nav_child_item
+                                    sf_pro_light(16px)
+                                    padding: 20px 30px 20px 70px
+                                    transition: .3s ease-in-out .2s
                         .item_wrapper
                             .nav_item
                                 padding: 20px 30px 20px 70px
@@ -5407,6 +5423,25 @@ input::placeholder
                     letter-spacing: 0px
                     opacity: 0
                     transition: .3s ease-in-out
+            .nav_back
+                position: relative
+                sf_pro_light(0)
+                color: $green
+                padding: 20px 30px
+                margin-left: 0
+                margin-bottom: 0
+                cursor: pointer
+                transition: .3s ease-in-out
+                &::before
+                    content: ''
+                    position: absolute
+                    top: 50%
+                    left: 50%
+                    border-top: 7px solid transparent
+                    border-bottom: 7px solid transparent
+                    border-right: 7px solid $green
+                    transform: translateX(-50%) translateY(-50%)
+                    transition: .3s ease-in-out
             .nav_list
                 position: relative
                 list-style: none
@@ -5415,6 +5450,35 @@ input::placeholder
                 max-height: 750px
                 overflow-x: hidden
                 overflow-y: auto
+                &.alt
+                    .child_item_wrapper
+                        .nav_child_item
+                            position: relative
+                            display: block
+                            sf_pro_light(0px)
+                            color: $black
+                            text-decoration: none
+                            outline: none
+                            padding: 20px 30px
+                            background-color: transparent
+                            border-left: 2px solid transparent
+                            transition: .3s ease-in-out
+                            &.nuxt-link-exact-active,
+                            &.nuxt-link-active,
+                            &:hover,
+                            &:focus
+                                background-color: $light_green
+                                border-left: 2px solid $green
+                                transition: .3s ease-in-out
+                            &::before
+                                content: ''
+                                position: absolute
+                                top: 50%
+                                left: 22px
+                                width: 20px
+                                height: 1px
+                                transform: translateY(-50%)
+                                background-color: $green
                 .item_wrapper
                     .nav_item
                         sf_pro_regular(16px)
@@ -5434,8 +5498,8 @@ input::placeholder
                         & ~ .sub_wrapper
                             display: block
                             height: 0px
-                            overflow: hidden
                             opacity: 0
+                            visibility: hidden
                             transition: .3s ease-in-out
                         &.dashboard
                             background-image: url('/icons/navbar/dashboard-unselected.png')
@@ -5537,6 +5601,7 @@ input::placeholder
                         .nav_item
                             & ~ .sub_wrapper
                                 opacity: 1
+                                visibility: visible
                                 transition: .3s ease-in-out
                             &.nav_parent
                                 position: relative
@@ -6469,6 +6534,15 @@ input::placeholder
 .slide-leave-to
     opacity: 0
     transform: translateY(-20px)
+
+.slide_alt-enter-active,
+.slide_alt-leave-active
+    transition: all .2s ease-in-out
+
+.slide_alt-enter,
+.slide_alt-leave-to
+    opacity: 0
+    transform: translateX(-20px)
 
 .fade_in
     animation: fade_in .3s
