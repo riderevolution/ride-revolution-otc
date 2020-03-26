@@ -2,58 +2,60 @@
     <div class="customer_tab_content">
         <div v-if="type == 'packages' && loaded">
             <div class="cms_table_toggler">
-                <div :class="`status ${(packageStatus == 1) ? 'active' : ''}`" @click="togglePackages(1)">Owned</div>
-                <div :class="`status ${(packageStatus == 2) ? 'active' : ''}`" @click="togglePackages(2)">Transferred</div>
-                <div :class="`status ${(packageStatus == 3) ? 'active' : ''}`" @click="togglePackages(3)">Shared</div>
-                <div :class="`status ${(packageStatus == 4) ? 'active' : ''}`" @click="togglePackages(4)">Frozen</div>
-                <div :class="`status ${(packageStatus == 5) ? 'active' : ''}`" @click="togglePackages(5)">Expired</div>
+                <div :class="`status ${(packageStatus == 'all') ? 'active' : ''}`" @click="togglePackages('all')">Owned</div>
+                <div :class="`status ${(packageStatus == 'shared') ? 'active' : ''}`" @click="togglePackages('shared')">Shared</div>
+                <div :class="`status ${(packageStatus == 'frozen') ? 'active' : ''}`" @click="togglePackages('frozen')">Frozen</div>
             </div>
-            <div class="cms_table_package" v-if="value.user_package_counts.length > 0">
-                <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="data.count > 0 && !data.expired">
-                    <h2 class="package_title">
-                        {{ data.class_package.name }}
-                        <span :class="`${addViolatorClass(data)}`">{{ checkWarning(data) }}</span>
-                    </h2>
-                    <div class="package_details">
-                        <div class="package_status">
-                            <div class="box">
-                                <div class="overlay">
-                                    <p>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</p>
-                                    <label>Used</label>
+            <div class="cms_table_package">
+                <div v-if="res.user_package_counts.length > 0">
+                    <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="data.count > 0 && !data.expired">
+                        <h2 class="package_title">
+                            {{ data.class_package.name }}
+                            <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment(), 'days')) <= 15">{{ checkViolator(data, 'warning') }}</span>
+                            <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
+                            <span class="frozen" v-if="data.frozen">Frozen</span>
+                        </h2>
+                        <div class="package_details">
+                            <div class="package_status">
+                                <div class="box">
+                                    <div class="overlay">
+                                        <p>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</p>
+                                        <label>Used</label>
+                                    </div>
+                                </div>
+                                <div class="box margin">
+                                    <div class="overlay">
+                                        <p>{{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : (parseInt(data.count) == data.original_package_count) ? parseInt(data.original_package_count) : parseInt(data.count) }}</p>
+                                        <label>Available</label>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="box margin">
-                                <div class="overlay">
-                                    <p>{{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : (parseInt(data.count) == data.original_package_count) ? parseInt(data.original_package_count) : parseInt(data.count) }}</p>
-                                    <label>Available</label>
+                            <div class="package_date">
+                                <div class="date">
+                                    <p>{{ formatDate(data.created_at, false) }} / {{ (data.activation_date != 'NA') ? formatDate(data.activation_date, false) : 'N/A' }}</p>
+                                    <label>Purchase Date / Activation Date</label>
+                                </div>
+                                <div class="date margin">
+                                    <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
+                                    <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
                                 </div>
                             </div>
-                        </div>
-                        <div class="package_date">
-                            <div class="date">
-                                <p>{{ formatDate(data.created_at, false) }} / {{ (data.activation_date != 'NA') ? formatDate(data.activation_date, false) : 'N/A' }}</p>
-                                <label>Purchase Date / Activation Date</label>
-                            </div>
-                            <div class="date margin">
-                                <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
-                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
-                            </div>
-                        </div>
-                        <div class="package_action">
-                            <a href="/booker" class="action_success_btn" @click.prevent="getCurrentCustomer()">Book a Class</a>
-                            <div class="package_options">
-                                <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
-                                <div class="option_selector">
-                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
-                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link">Share Package</div>
-                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link">Freeze Package</div>
-                                    <div class="option_link">Print Receipt</div>
+                            <div class="package_action">
+                                <a href="/booker" class="action_success_btn" @click.prevent="getCurrentCustomer()">Book a Class</a>
+                                <div class="package_options">
+                                    <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
+                                    <div class="option_selector">
+                                        <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+                                        <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
+                                        <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
+                                        <div class="option_link">Print Receipt</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="no_results" v-if="value.user_package_counts.length == 0">
+                <div class="no_results" v-if="res.user_package_counts.length == 0">
                     No Package(s) Found.
                 </div>
             </div>
@@ -389,7 +391,13 @@
             <customer-prompt :status="promptMessage" ref="enabled" v-if="$store.state.customerPromptStatus" />
         </transition>
         <transition name="fade">
-            <package-action :packageID="packageID" v-if="$store.state.packageActionStatus" />
+            <package-action-prompt :message="packagePromptMessage" :type="packagePromptType" v-if="$store.state.packageActionPromptStatus" />
+        </transition>
+        <transition name="fade">
+            <package-action :packageID="packageID" :type="packageActionType" v-if="$store.state.packageActionStatus" />
+        </transition>
+        <transition name="fade">
+            <package-action-validate :packageID="packageID" v-if="$store.state.packageActionValidateStatus" />
         </transition>
     </div>
 </template>
@@ -398,12 +406,16 @@
     import CustomerPrompt from '../components/modals/CustomerPrompt'
     import CustomerPendingQuickSale from '../components/modals/CustomerPendingQuickSale'
     import PackageAction from '../components/modals/PackageAction'
+    import PackageActionPrompt from '../components/modals/PackageActionPrompt'
+    import PackageActionValidate from '../components/modals/PackageActionValidate'
     import Pagination from '../components/Pagination'
     export default {
         components: {
             CustomerPrompt,
             CustomerPendingQuickSale,
             PackageAction,
+            PackageActionPrompt,
+            PackageActionValidate,
             Pagination
         },
         props: {
@@ -417,6 +429,11 @@
         },
         data () {
             return {
+                tempData: null,
+                methodType: '',
+                packageActionType: '',
+                packagePromptType: '',
+                packagePromptMessage: '',
                 packageID: 0,
                 rowCount: 0,
                 promptMessage: '',
@@ -429,7 +446,7 @@
                     transferred: 0,
                     freeze: 0,
                 },
-                packageStatus: 1,
+                packageStatus: 'all',
                 classesHistoryStatus: 'all',
                 res: [],
                 transaction: []
@@ -459,9 +476,31 @@
                 const me = this
                 switch (type) {
                     case 'transfer':
+                        me.packageActionType = 'Transfer'
                         me.$store.state.packageActionStatus = true
                         document.body.classList.add('no_scroll')
                         break
+                    case 'share':
+                        if (data.sharedto_user_id != null) {
+                            me.methodType = 'unshare'
+                            me.tempData = data
+                            me.$store.state.packageActionValidateStatus = true
+                        } else {
+                            me.methodType = 'share'
+                            me.$store.state.packageActionStatus = true
+                        }
+                        document.body.classList.add('no_scroll')
+                        me.packageActionType = 'Share'
+                        break
+                    case 'freeze':
+                        if (data.frozen) {
+                            me.methodType = 'unfreeze'
+                        } else {
+                            me.methodType = 'freeze'
+                        }
+                        me.$store.state.packageActionValidateStatus = true
+                        document.body.classList.add('no_scroll')
+                        break;
                 }
                 me.packageID = data.class_package.id
             },
@@ -591,24 +630,20 @@
                     }
                 }
             },
-            checkWarning (data) {
+            checkViolator (data, type) {
                 const me = this
-                let sample = ''
+                let result = ''
                 let expiry = me.$moment(data.class_package.computed_expiration_date)
                 let current = me.$moment()
-                if (parseInt(expiry.diff(current, 'days')) <= 15) {
-                    sample = expiry.diff(current, 'days') + ' Days Left'
-                    me.addViolatorClass(data)
+                switch (type) {
+                    case 'warning':
+                        result = expiry.diff(current, 'days') + ' Days Left'
+                        break
+                    case 'shared':
+                        result = `Shared with ${data.sharedto_user.first_name} ${data.sharedto_user.last_name}`
+                        break;
                 }
-                return sample
-            },
-            addViolatorClass (data) {
-                const me = this
-                let expiry = me.$moment(data.class_package.computed_expiration_date)
-                let current = me.$moment()
-                if (parseInt(expiry.diff(current, 'days')) <= 15) {
-                    return 'warning'
-                }
+                return result
             },
             toggledOption (event) {
                 const me = this
@@ -647,7 +682,21 @@
             },
             togglePackages (status) {
                 const me = this
-                me.packageStatus = status
+                me.loader(true)
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${status}`).then(res => {
+                    if (res.data) {
+                        me.res = res.data.customer
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    me.rowCount = document.getElementsByTagName('th').length
+                    setTimeout( () => {
+                        me.packageStatus = status
+                        me.loader(false)
+                    }, 500)
+                })
             },
             toggleClassesHistory (status) {
                 const me = this

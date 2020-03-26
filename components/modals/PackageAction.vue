@@ -3,7 +3,7 @@
         <div class="background" @click="toggleClose()"></div>
         <form id="default_form" class="overlay assign" @submit.prevent="submissionSuccess()">
             <div class="modal_wrapper">
-                <h2 class="form_title">Sample</h2>
+                <h2 class="form_title">{{ type }}</h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group alternate">
                     <div class="customer_filter">
@@ -33,7 +33,7 @@
                     </div>
                     <div class="customer_picked" v-if="customer != ''">
                         <div class="customer_header">
-                            <img class="customer_image" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images.length > 0" />
+                            <img class="customer_image" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images[0].path_resized != null" />
                             <div class="customer_default_image" v-else>
                                 <div class="overlay">
                                     {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
@@ -71,6 +71,9 @@
             packageID: {
                 type: Number,
                 default: 0
+            },
+            type: {
+                default: null
             }
         },
         data () {
@@ -106,27 +109,63 @@
             },
             submissionSuccess () {
                 const me = this
+                let formData = new FormData()
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
-                        // me.loader(true)
-                        let formData = new FormData()
-                        formData.append('receiver_id', me.customer.id)
-                        formData.append('class_package_id', me.packageID)
-                        formData.append('sender_id', me.$parent.res.id)
-                        me.$axios.post('api/packages/class-packages/transfer', formData).then(res => {
-                            if (res.data) {
-                                setTimeout( () => {
-                                    console.log(res.data);
-                                }, 500)
-                            }
-                        // }).catch(err => {
-                        //     me.$store.state.errorList = err.response.data.errors
-                        //     me.$store.state.errorStatus = true
-                        // }).then(() => {
-                        //     setTimeout( () => {
-                        //         me.loader(false)
-                        //     }, 500)
-                        })
+                        me.loader(true)
+                        switch (me.type) {
+                            case 'Transfer':
+                                formData.append('receiver_id', me.customer.id)
+                                formData.append('class_package_id', me.packageID)
+                                formData.append('sender_id', me.$parent.res.id)
+                                me.$axios.post('api/packages/class-packages/transfer', formData).then(res => {
+                                    if (res.data) {
+                                        me.$store.state.packageActionStatus = false
+                                        setTimeout( () => {
+                                            if (me.$route.params.slug == 'packages') {
+                                                document.getElementById('packages').click()
+                                            }
+                                            me.$store.state.packageActionPromptStatus = true
+                                            me.$parent.packagePromptType = 'Transfer'
+                                            me.$parent.packagePromptMessage = 'You have successfully transfered your package.'
+                                        }, 500)
+                                    }
+                                }).catch(err => {
+                                    me.$store.state.errorList = err.response.data.errors
+                                    me.$store.state.errorStatus = true
+                                }).then(() => {
+                                    setTimeout( () => {
+                                        me.loader(false)
+                                    }, 500)
+                                })
+                                break
+                            case 'Share':
+                                formData.append('receiver_id', me.customer.id)
+                                formData.append('class_package_id', me.packageID)
+                                formData.append('sender_id', me.$parent.res.id)
+                                me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData).then(res => {
+                                    if (res.data) {
+                                        me.$store.state.packageActionStatus = false
+                                        setTimeout( () => {
+                                            if (me.$route.params.slug == 'packages') {
+                                                document.getElementById('packages').click()
+                                            }
+                                            me.$store.state.packageActionPromptStatus = true
+                                            me.$parent.packagePromptType = 'Share'
+                                            me.$parent.packagePromptMessage = 'You have successfully shared your package.'
+                                        }, 500)
+                                    }
+                                }).catch(err => {
+                                    me.$store.state.errorList = err.response.data.errors
+                                    me.$store.state.errorStatus = true
+                                }).then(() => {
+                                    setTimeout( () => {
+                                        me.loader(false)
+                                    }, 500)
+                                })
+                                break;
+                        }
+
                     } else {
                         if (me.customer == '') {
                             me.findCustomer = true
