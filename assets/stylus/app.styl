@@ -26,16 +26,28 @@ image_default =
     object-fit: cover
 
 body
-    ::-webkit-scrollbar-track
-    	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1)
-    	background-color: #f8f8fb
-    	border-radius: 10px
-    ::-webkit-scrollbar
-    	width: 8px
-    	background-color: #f8f8fb
-    ::-webkit-scrollbar-thumb
-    	border-radius: 10px
-    	background-color: #C9CAD3
+    &::-webkit-scrollbar
+        width: 20px
+        background-color: $white
+    &::-webkit-scrollbar-track
+        box-shadow: none
+    &::-webkit-scrollbar-thumb
+        background-color: $green
+        border: 6px solid rgba(0, 0, 0, 0)
+        background-clip: padding-box
+        border-radius: 50px
+
+::-webkit-scrollbar-track
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1)
+	background-color: #f8f8fb
+	border-radius: 10px
+::-webkit-scrollbar
+	width: 8px
+	height: 10px
+	background-color: #f8f8fb
+::-webkit-scrollbar-thumb
+	border-radius: 10px
+	background-color: #C9CAD3
 
 body
     overflow-x: hidden
@@ -2996,11 +3008,13 @@ input::placeholder
             td
                 padding: 10px 20px
 .cms_table
-    position: relative
     border-collapse: collapse
     width: 100%
     border-radius: 10px
     margin-bottom: 60px
+    display: block
+    overflow-x: auto
+    white-space: nowrap
     thead
         &.sticky
             th
@@ -5667,6 +5681,8 @@ input::placeholder
                     outline: none
     .admin_flex
         flex: 1 0 50%
+        display: block
+        width: 100%
         .content
             padding-top: 79px
             position: relative
@@ -6523,7 +6539,7 @@ input::placeholder
                                 width: 350px
                         .default_select,
                         .default_text
-                            width: 250px
+                            width: 200px
                     .action_btn
                         display: inline-block
                         width: auto

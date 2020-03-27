@@ -5,10 +5,10 @@
                 <div class="action_wrapper">
                     <div>
                         <div class="header_title">
-                            <h1>Top Riders</h1>
+                            <h1>Attendance Summary</h1>
                             <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
                         </div>
-                        <h2 class="header_subtitle">List of riders with the most ride count</h2>
+                        <h2 class="header_subtitle">Summary of rider count and revenue per class schedule</h2>
                     </div>
                     <div class="actions">
                         <a href="javascript:void(0)" class="action_btn">Print</a>
@@ -32,14 +32,21 @@
                             </select>
                         </div>
                         <div class="form_group margin">
-                            <label for="type">By Time Slot</label>
+                            <label for="type">Class Package</label>
                             <select class="default_select alternate" name="type">
                                 <option value="" selected>All Customer Types</option>
                                 <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
                             </select>
                         </div>
                         <div class="form_group margin">
-                            <label for="type">By Instructor</label>
+                            <label for="type">Instructor</label>
+                            <select class="default_select alternate" name="type">
+                                <option value="" selected>All Customer Types</option>
+                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                            </select>
+                        </div>
+                        <div class="form_group margin">
+                            <label for="type">Customer Type</label>
                             <select class="default_select alternate" name="type">
                                 <option value="" selected>All Customer Types</option>
                                 <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
@@ -68,36 +75,60 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Rank</th>
-                            <th>Customer</th>
-                            <th>No. of Rides</th>
-                            <th>Customer Type</th>
-                            <th>Rewards</th>
-                            <th>Age</th>
-                            <th>Profession</th>
-                            <th>Gender</th>
-                            <th>City</th>
+                            <th>Date</th>
+                            <th>Total Rides</th>
+                            <th>Paying Riders</th>
+                            <th>Comped Riders</th>
+                            <th>First Timers</th>
+                            <th>No Shows</th>
+                            <th>Cancel</th>
+                            <th>Waitlist</th>
+                            <th>Repeat</th>
+                            <th>Avg Riders</th>
+                            <th>Number Classes</th>
+                            <th>Avg Spots</th>
+                            <th>Total Bikes</th>
+                            <th>Capacity</th>
+                            <th>Paying</th>
+                            <th>Total Revenue</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">
+                        <tr>
+                            <td><b>Summary</b></td>
+                            <td><b>165</b></td>
+                            <td><b>23</b></td>
+                            <td><b>23</b></td>
+                            <td><b>23</b></td>
+                            <td><b>0</b></td>
+                            <td><b>0</b></td>
+                            <td><b>0</b></td>
+                            <td><b>0</b></td>
+                            <td><b>0</b></td>
+                            <td><b>0</b></td>
+                            <td><b>0</b></td>
+                            <td><b>0</b></td>
+                            <td><b>86%</b></td>
+                            <td><b>83%</b></td>
+                            <td><b>1000</b></td>
+                        </tr>
                         <tr v-for="(data, key) in res.customers.data" :key="key">
-                            <td>{{ key + 1 }}</td>
-                            <td>
-                                <div class="thumb">
-                                    <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
-                                    <div class="table_image_default" v-else>
-                                        {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
-                                    </div>
-                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.first_name }} {{ data.last_name }}</nuxt-link>
-                                </div>
-                            </td>
-                            <td>5</td>
-                            <td>Regular</td>
-                            <td>Black</td>
+                            <td>{{ $moment().format('MM DD, YYYY') }}</td>
+                            <td>165</td>
                             <td>23</td>
-                            <td>Programmer</td>
-                            <td>Female</td>
-                            <td>Sample</td>
+                            <td>23</td>
+                            <td>23</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>86%</td>
+                            <td>83%</td>
+                            <td>1000</td>
                         </tr>
                     </tbody>
                     <tbody class="no_results" v-else>
