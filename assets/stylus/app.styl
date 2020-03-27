@@ -6017,14 +6017,20 @@ input::placeholder
         padding: 60px 40px 0
         .header_title
             neutra_text(36px)
-            line-height: 1.5
             color: $black
             text-transform: capitalize
             padding-left: 15px
+            h1
+                neutra_text(36px)
+                text-transform: capitalize
             span
                 margin-left: 10px
-                sf_pro_bold(18px)
+                neutra_text(25px)
                 color: $border_alt2
+        .header_subtitle
+            sf_pro_medium(18px)
+            color: $border_alt2
+            margin-top: 5px
         &.booker
             .action_wrapper
                 .actions
@@ -6296,6 +6302,39 @@ input::placeholder
                 flex-flow: row wrap
                 align-items: center
                 justify-content: flex-end
+                &.alt
+                    justify-content: flex-start
+                    .actions
+                        margin-top: 10px
+                        margin-bottom: 10px
+                        .total
+                            padding: 0 0 0 25px
+                            &.alt
+                                padding: 0
+                    .toggler
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        .status
+                            background-color: $white
+                            padding: 12px 40px
+                            text-align: center
+                            sf_pro_medium(16px)
+                            color: $black
+                            border-radius: 0px
+                            border-right: 1px solid $border
+                            box-shadow: 3px 3px 20px transparent
+                            transition: .3s ease-in-out
+                            &:last-child
+                                border-right: 1px solid transparent
+                            &.active
+                                position: relative
+                                z-index: 0
+                                color: $white
+                                background-color: $green
+                                border-radius: 5px
+                                box-shadow: 3px 3px 20px rgba(0,0,0,0.3)
+                                transition: .3s ease-in-out
                 .action_btn
                     display: flex
                     flex-flow: row wrap

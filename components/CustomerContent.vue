@@ -5,6 +5,7 @@
                 <div :class="`status ${(packageStatus == 'all') ? 'active' : ''}`" @click="togglePackages('all')">Owned</div>
                 <div :class="`status ${(packageStatus == 'shared') ? 'active' : ''}`" @click="togglePackages('shared')">Shared</div>
                 <div :class="`status ${(packageStatus == 'frozen') ? 'active' : ''}`" @click="togglePackages('frozen')">Frozen</div>
+                <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
             </div>
             <div class="cms_table_package">
                 <div v-if="res.user_package_counts.length > 0">
@@ -458,7 +459,7 @@
                 let result = []
                 if (me.$route.params.slug == 'packages') {
                     let current = me.$moment()
-                    me.value.user_package_counts.forEach((element, index) => {
+                    me.res.user_package_counts.forEach((element, index) => {
                         let expiry = me.$moment(element.class_package.computed_expiration_date)
                         if (parseInt(expiry.diff(current, 'days')) > 0) {
                             element.expired = false
@@ -640,7 +641,11 @@
                         result = expiry.diff(current, 'days') + ' Days Left'
                         break
                     case 'shared':
-                        result = `Shared with ${data.sharedto_user.first_name} ${data.sharedto_user.last_name}`
+                        if (me.$route.params.param == data.user_id) {
+                            result = `Shared with ${data.sharedto_user.first_name} ${data.sharedto_user.last_name}`
+                        } else {
+                            result = `Shared by ${data.sharedby_user.first_name} ${data.sharedby_user.last_name}`
+                        }
                         break;
                 }
                 return result

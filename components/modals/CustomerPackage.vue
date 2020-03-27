@@ -234,22 +234,26 @@
         async mounted () {
             const me = this
             if (me.$store.state.customerID != 0) {
-                me.$axios.get(`api/customers/${me.$store.state.customerID}/packages`).then(res => {
+                me.loader(true)
+                me.$axios.get(`api/customers/${me.$store.state.customerID}/packages?forOTCBooking=1`).then(res => {
                     if (res.data) {
-                        if (res.data.customer.user_package_counts.length > 0) {
-                            me.res = res.data.customer.user_package_counts
-                        } else {
-                            me.$store.state.customerPackageStatus = false
-                            setTimeout( () => {
-                                me.$parent.$refs.plan.message = 'Please buy a class package first'
-                            }, 10)
-                            me.$parent.buyCredits = true
-                            document.getElementById('credits').classList.add('active')
-                            me.$scrollTo('#credits', {
-                                offset: -250
-                            })
-                            me.$store.state.promptBookerStatus = true
-                        }
+                        setTimeout( () => {
+                            if (res.data.customer.user_package_counts.length > 0) {
+                                me.res = res.data.customer.user_package_counts
+                            } else {
+                                me.$store.state.customerPackageStatus = false
+                                setTimeout( () => {
+                                    me.$parent.$refs.plan.message = 'Please buy a class package first'
+                                }, 10)
+                                me.$parent.buyCredits = true
+                                document.getElementById('credits').classList.add('active')
+                                me.$scrollTo('#credits', {
+                                    offset: -250
+                                })
+                                me.$store.state.promptBookerStatus = true
+                            }
+                            me.loader(false)
+                        }, 500)
                     }
                 })
             }
