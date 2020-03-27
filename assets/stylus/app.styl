@@ -26,16 +26,28 @@ image_default =
     object-fit: cover
 
 body
-    ::-webkit-scrollbar-track
-    	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1)
-    	background-color: #f8f8fb
-    	border-radius: 10px
-    ::-webkit-scrollbar
-    	width: 8px
-    	background-color: #f8f8fb
-    ::-webkit-scrollbar-thumb
-    	border-radius: 10px
-    	background-color: #C9CAD3
+    &::-webkit-scrollbar
+        width: 20px
+        background-color: $white
+    &::-webkit-scrollbar-track
+        box-shadow: none
+    &::-webkit-scrollbar-thumb
+        background-color: $green
+        border: 6px solid rgba(0, 0, 0, 0)
+        background-clip: padding-box
+        border-radius: 50px
+
+::-webkit-scrollbar-track
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1)
+	background-color: #f8f8fb
+	border-radius: 10px
+::-webkit-scrollbar
+	width: 8px
+	height: 10px
+	background-color: #f8f8fb
+::-webkit-scrollbar-thumb
+	border-radius: 10px
+	background-color: #C9CAD3
 
 body
     overflow-x: hidden
@@ -1474,7 +1486,10 @@ input::placeholder
                                 img
                                     flex: 0 0 35px
                                     width: 35px
+                                    height: 35px
                                     border-radius: 50%
+                                    object-fit: cover
+                                    object-position: center
                                 .customer_image
                                     position: relative
                                     text-transform: uppercase
@@ -1674,6 +1689,8 @@ input::placeholder
                 p
                     sf_pro_regular(15px)
                     color: $black
+                    &.alt
+                        text-transform: capitalize
         .form_overview_instructor
             display: flex
             flex-flow: row wrap
@@ -2000,6 +2017,10 @@ input::placeholder
             border-radius: 16px
             transform: translateY(-50%)
             transition: .3s ease-in-out
+            &.alt
+                background-color: $light_red
+                &::before
+                    background-color: $red
             &.active
                 background-color: $light_green
                 transition: .3s ease-in-out
@@ -2987,11 +3008,13 @@ input::placeholder
             td
                 padding: 10px 20px
 .cms_table
-    position: relative
     border-collapse: collapse
     width: 100%
     border-radius: 10px
     margin-bottom: 60px
+    display: block
+    overflow-x: auto
+    white-space: nowrap
     thead
         &.sticky
             th
@@ -3031,6 +3054,8 @@ input::placeholder
                 sf_pro_regular(16px)
                 color: $black
                 padding: 20px 30px
+                &.alt
+                    text-transform: uppercase
                 .id
                     color: $border_alt2
                     sf_pro_regular(15px)
@@ -3119,6 +3144,8 @@ input::placeholder
                         width: 35px
                         height: 35px
                         border-radius: 50%
+                        object-fit: cover
+                        object-position: center
                     .table_image_default
                         position: relative
                         text-transform: uppercase
@@ -5347,7 +5374,23 @@ input::placeholder
                             opacity: 1
                             visibility: visible
                             transition: .3s ease-in-out .2s
+                    .nav_back
+                        sf_pro_light(16px)
+                        padding: 0 0 0 20px
+                        margin-left: 20px
+                        margin-bottom: 20px
+                        transition: .3s ease-in-out .2s
+                        &::before
+                            left: 0%
+                            transform: translateX(0%) translateY(-50%)
+                            transition: .3s ease-in-out .1s
                     .nav_list
+                        &.alt
+                            .child_item_wrapper
+                                .nav_child_item
+                                    sf_pro_light(16px)
+                                    padding: 20px 30px 20px 70px
+                                    transition: .3s ease-in-out .2s
                         .item_wrapper
                             .nav_item
                                 padding: 20px 30px 20px 70px
@@ -5394,6 +5437,25 @@ input::placeholder
                     letter-spacing: 0px
                     opacity: 0
                     transition: .3s ease-in-out
+            .nav_back
+                position: relative
+                sf_pro_light(0)
+                color: $green
+                padding: 20px 30px
+                margin-left: 0
+                margin-bottom: 0
+                cursor: pointer
+                transition: .3s ease-in-out
+                &::before
+                    content: ''
+                    position: absolute
+                    top: 50%
+                    left: 50%
+                    border-top: 7px solid transparent
+                    border-bottom: 7px solid transparent
+                    border-right: 7px solid $green
+                    transform: translateX(-50%) translateY(-50%)
+                    transition: .3s ease-in-out
             .nav_list
                 position: relative
                 list-style: none
@@ -5402,6 +5464,35 @@ input::placeholder
                 max-height: 750px
                 overflow-x: hidden
                 overflow-y: auto
+                &.alt
+                    .child_item_wrapper
+                        .nav_child_item
+                            position: relative
+                            display: block
+                            sf_pro_light(0px)
+                            color: $black
+                            text-decoration: none
+                            outline: none
+                            padding: 20px 30px
+                            background-color: transparent
+                            border-left: 2px solid transparent
+                            transition: .3s ease-in-out
+                            &.nuxt-link-exact-active,
+                            &.nuxt-link-active,
+                            &:hover,
+                            &:focus
+                                background-color: $light_green
+                                border-left: 2px solid $green
+                                transition: .3s ease-in-out
+                            &::before
+                                content: ''
+                                position: absolute
+                                top: 50%
+                                left: 22px
+                                width: 20px
+                                height: 1px
+                                transform: translateY(-50%)
+                                background-color: $green
                 .item_wrapper
                     .nav_item
                         sf_pro_regular(16px)
@@ -5421,8 +5512,8 @@ input::placeholder
                         & ~ .sub_wrapper
                             display: block
                             height: 0px
-                            overflow: hidden
                             opacity: 0
+                            visibility: hidden
                             transition: .3s ease-in-out
                         &.dashboard
                             background-image: url('/icons/navbar/dashboard-unselected.png')
@@ -5524,6 +5615,7 @@ input::placeholder
                         .nav_item
                             & ~ .sub_wrapper
                                 opacity: 1
+                                visibility: visible
                                 transition: .3s ease-in-out
                             &.nav_parent
                                 position: relative
@@ -5589,6 +5681,8 @@ input::placeholder
                     outline: none
     .admin_flex
         flex: 1 0 50%
+        display: block
+        width: 100%
         .content
             padding-top: 79px
             position: relative
@@ -5660,6 +5754,8 @@ input::placeholder
                     width: 90px
                     height: 90px
                     border-radius: 90%
+                    object-fit: cover
+                    object-position: center
                 .user_image_default
                     position: relative
                     sf_pro_bold(24px)
@@ -5799,6 +5895,9 @@ input::placeholder
                             &.shared
                                 color: $blue
                                 background-color: $light_blue
+                            &.frozen
+                                color: $light_blue
+                                background-color: $blue
                             &.warning
                                 color: $white
                                 background-color: $red
@@ -5934,14 +6033,20 @@ input::placeholder
         padding: 60px 40px 0
         .header_title
             neutra_text(36px)
-            line-height: 1.5
             color: $black
             text-transform: capitalize
             padding-left: 15px
+            h1
+                neutra_text(36px)
+                text-transform: capitalize
             span
                 margin-left: 10px
-                sf_pro_bold(18px)
+                neutra_text(25px)
                 color: $border_alt2
+        .header_subtitle
+            sf_pro_medium(18px)
+            color: $border_alt2
+            margin-top: 5px
         &.booker
             .action_wrapper
                 .actions
@@ -5995,7 +6100,10 @@ input::placeholder
                                         img
                                             flex: 0 0 35px
                                             width: 35px
+                                            height: 35px
                                             border-radius: 50%
+                                            object-fit: cover
+                                            object-position: center
                                         .customer_image
                                             position: relative
                                             text-transform: uppercase
@@ -6210,6 +6318,39 @@ input::placeholder
                 flex-flow: row wrap
                 align-items: center
                 justify-content: flex-end
+                &.alt
+                    justify-content: flex-start
+                    .actions
+                        margin-top: 10px
+                        margin-bottom: 10px
+                        .total
+                            padding: 0 0 0 25px
+                            &.alt
+                                padding: 0
+                    .toggler
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        .status
+                            background-color: $white
+                            padding: 12px 40px
+                            text-align: center
+                            sf_pro_medium(16px)
+                            color: $black
+                            border-radius: 0px
+                            border-right: 1px solid $border
+                            box-shadow: 3px 3px 20px transparent
+                            transition: .3s ease-in-out
+                            &:last-child
+                                border-right: 1px solid transparent
+                            &.active
+                                position: relative
+                                z-index: 0
+                                color: $white
+                                background-color: $green
+                                border-radius: 5px
+                                box-shadow: 3px 3px 20px rgba(0,0,0,0.3)
+                                transition: .3s ease-in-out
                 .action_btn
                     display: flex
                     flex-flow: row wrap
@@ -6398,7 +6539,7 @@ input::placeholder
                                 width: 350px
                         .default_select,
                         .default_text
-                            width: 250px
+                            width: 200px
                     .action_btn
                         display: inline-block
                         width: auto
@@ -6448,6 +6589,15 @@ input::placeholder
 .slide-leave-to
     opacity: 0
     transform: translateY(-20px)
+
+.slide_alt-enter-active,
+.slide_alt-leave-active
+    transition: all .2s ease-in-out
+
+.slide_alt-enter,
+.slide_alt-leave-to
+    opacity: 0
+    transform: translateX(-20px)
 
 .fade_in
     animation: fade_in .3s

@@ -41,6 +41,7 @@ export default {
   */
   plugins: [
       { src: '~/plugins/vue-scrollto', ssr: false },
+      { src: '~/plugins/v-calendar', ssr: false },
       { src: '~/plugins/vue-line-clamp', ssr: false },
       { src: '~/plugins/vue-moment' },
       { src: '~/plugins/vue-click-outside' },
@@ -62,7 +63,9 @@ export default {
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
-    baseURL: (process.env.NODE_ENV == "development") ? 'http://api.riderevolution.test' : 'http://api-riderev.designbluemanila.ph',
+    // baseURL: (process.env.NODE_ENV == "development") ? 'http://api-riderev.designbluemanila.ph' : 'http://api-riderev.designbluemanila.ph',
+    baseURL: (process.env.NODE_ENV == "development") ? 'https://e50898e6.ngrok.io' : 'http://api-riderev.designbluemanila.ph',
+    // baseURL: (process.env.NODE_ENV == "development") ? 'http://api.riderevolution.test' : 'http://api-riderev.designbluemanila.ph',
     // baseURL: (process.env.NODE_ENV == "development") ? 'http://127.0.0.1:8000' : 'https://api.riderevol.tk',
     credentials: false
   },

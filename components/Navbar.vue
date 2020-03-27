@@ -8,19 +8,30 @@
                     Revolution
                 </div>
             </nuxt-link>
-            <ul class="nav_list">
-                <li class="item_wrapper" v-for="(navItem, parent_key) in navItems" :key="parent_key">
-                    <nuxt-link :class="`nav_item ${navItem.class} ${(navItem.subItems) ? 'nav_parent' : ''}`" :to="navItem.link" v-if="navItem.hasLink" @click.native.self="resetToggle()">{{ navItem.title }}</nuxt-link>
-                    <nuxt-link :event="''" :class="`nav_item ${navItem.class} ${(navItem.subItems) ? 'nav_parent' : ''}`" :to="navItem.link" v-else @click.native.self="toggleChild($event)">{{ navItem.title }}</nuxt-link>
-                    <div class="sub_wrapper" v-if="navItem.subItems">
-                        <ul class="sub_nav_list" v-for="(subItem, sub_key) in navItem.subItems" :key="sub_key">
-                            <li class="sub_item_wrapper">
-                                <nuxt-link class="sub_nav_item" :to="subItem.link" @click.native.self="resetToggle()">{{ subItem.title }}</nuxt-link>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-            </ul>
+            <transition name="slide_alt">
+                <ul class="nav_list" v-if="!hasToggleThirdLevel">
+                    <li class="item_wrapper" v-for="(navItem, parent_key) in navItems" :key="parent_key">
+                        <nuxt-link :class="`nav_item ${navItem.class} ${(navItem.subItems) ? 'nav_parent' : ''}`" :to="navItem.link" v-if="navItem.hasLink" @click.native.self="resetToggle()">{{ navItem.title }}</nuxt-link>
+                        <nuxt-link :event="''" :class="`nav_item ${navItem.class} ${(navItem.subItems) ? 'nav_parent' : ''}`" :to="navItem.link" v-else @click.native.self="toggleChild($event)">{{ navItem.title }}</nuxt-link>
+                        <div class="sub_wrapper" v-if="navItem.subItems">
+                            <ul class="sub_nav_list" v-for="(subItem, sub_key) in navItem.subItems" :key="sub_key">
+                                <li :class="`sub_item_wrapper ${(subItem.hasChild) ? 'child' : ''}`">
+                                    <nuxt-link class="sub_nav_item" :to="subItem.link" @click.native.self="resetToggle()" v-if="!subItem.hasChild">{{ subItem.title }}</nuxt-link>
+                                    <nuxt-link class="sub_nav_item" :event="''" :to="subItem.link" @click.native.self="toggleSubChild(subItem)" v-else>{{ subItem.title }}</nuxt-link>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </transition>
+            <div class="nav_back" v-if="hasToggleThirdLevel" @click="back()">Back</div>
+            <transition name="slide_alt">
+                <ul class="nav_list alt" v-if="hasToggleThirdLevel">
+                    <li class="child_item_wrapper" v-for="(navItem, child_key) in thirdNavItems" :key="child_key">
+                        <nuxt-link class="nav_child_item" :to="navItem.link" @click.native.self="resetToggle()">{{ navItem.title }}</nuxt-link>
+                    </li>
+                </ul>
+            </transition>
         </div>
     </div>
 </template>
@@ -29,6 +40,8 @@
     export default {
         data () {
             return {
+                hasToggleThirdLevel: false,
+                thirdNavItems: null,
                 navItems: [
                     {
                         title: 'Dashboard',
@@ -105,9 +118,128 @@
                     {
                         title: 'Reporting',
                         link: '/reporting',
-                        hasLink: true,
+                        hasLink: false,
                         class: 'reporting',
-                        image: '/icons/navbar/reporting-unselected.png'
+                        image: '/icons/navbar/reporting-unselected.png',
+                        subItems: [
+                            {
+                                title: 'Customer Report',
+                                link: '/reporting/customer-report',
+                                hasChild: true,
+                                subChildren: [
+                                    {
+                                        title: 'Customer Accounts',
+                                        link: '/reporting/customer-report/customer-accounts'
+                                    },
+                                    {
+                                        title: 'Non Returning Customers',
+                                        link: '/reporting/customer-report/non-returning-customers'
+                                    },
+                                    {
+                                        title: 'Outstanding Credits',
+                                        link: '/reporting/customer-report/outstanding-credits'
+                                    },
+                                    {
+                                        title: 'Customer Retention',
+                                        link: '/reporting/customer-report/customer-retention'
+                                    },
+                                    {
+                                        title: 'Top Riders',
+                                        link: '/reporting/customer-report/top-riders'
+                                    }
+                                ]
+                            },
+                            {
+                                title: 'Class Report',
+                                link: '/reporting/class-report',
+                                hasChild: true,
+                                subChildren: [
+                                    {
+                                        title: 'Attendance Summary',
+                                        link: '/reporting/class-report/attendance-summary'
+                                    },
+                                    {
+                                        title: 'Attendance with Revenue',
+                                        link: '/reporting/class-report/attendance-with-revenue'
+                                    },
+                                    {
+                                        title: 'Attendance by Timeslot',
+                                        link: '/reporting/class-report/attendance-by-timeslot'
+                                    },
+                                    {
+                                        title: 'Attendance by Month',
+                                        link: '/reporting/class-report/attendance-by-month'
+                                    },
+                                    {
+                                        title: 'Comped Attendance',
+                                        link: '/reporting/class-report/comped-attendance'
+                                    },
+                                    {
+                                        title: 'Instructor Attendance Summary',
+                                        link: '/reporting/class-report/instructor-attendance-summary'
+                                    }
+                                ]
+                            },
+                            {
+                                title: 'Class Package Report',
+                                link: '/reporting/class-package-report',
+                                hasChild: true,
+                                subChildren: [
+                                    {
+                                        title: 'Remaining Class Package Value',
+                                        link: '/reporting/class-package-report/remaining-class-package-value'
+                                    },
+                                    {
+                                        title: 'Class Package Expiration',
+                                        link: '/reporting/class-package-report/class-package-expiration'
+                                    }
+                                ]
+                            },
+                            {
+                                title: 'Sales Report',
+                                link: '/reporting/sales-report',
+                                hasChild: true,
+                                subChildren: [
+                                    {
+                                        title: 'Sales & Transactions',
+                                        link: '/reporting/sales-report/sales-and-transactions'
+                                    },
+                                    {
+                                        title: 'Sales by Payment Type',
+                                        link: '/reporting/sales-report/sales-by-payment-type'
+                                    },
+                                    {
+                                        title: 'Sales by Class Package',
+                                        link: '/reporting/sales-report/sales-by-class-package'
+                                    },
+                                    {
+                                        title: 'Sales by Products',
+                                        link: '/reporting/sales-report/sales-by-products'
+                                    },
+                                    {
+                                        title: 'Earned Package Revenue',
+                                        link: '/reporting/sales-report/earned-package-revenue'
+                                    },
+                                    {
+                                        title: 'Revenue Summary',
+                                        link: '/reporting/sales-report/revenue-summary'
+                                    },
+                                    {
+                                        title: 'Promotions Redeemed',
+                                        link: '/reporting/sales-report/promotions-redeemed'
+                                    },
+                                    {
+                                        title: 'Sales by Customer',
+                                        link: '/reporting/sales-report/sales-by-customer'
+                                    }
+                                ]
+                            },
+                            {
+                                title: 'Inventory Value Report',
+                                link: '/reporting/inventory-value-report',
+                                hasChild: false,
+                            }
+                        ]
                     },
                     {
                         title: 'Admin',
@@ -170,7 +302,7 @@
                 document.querySelector('.navbar_container').classList.remove('toggled')
                 // document.querySelector('.admin_flex .content').classList.remove('toggled')
             },
-            toggleChild(event) {
+            toggleChild (event) {
                 const me = this
                 const target = event.target
                 me.isHovered = false
@@ -184,6 +316,18 @@
                         me.isHovered = true
                     }, 100)
                 }
+            },
+            toggleSubChild (data) {
+                const me = this
+                if (data.hasChild) {
+                    me.thirdNavItems = data.subChildren
+                    me.hasToggleThirdLevel = true
+                }
+            },
+            back () {
+                const me = this
+                me.hasToggleThirdLevel = false
+                me.thirdNavItems = null
             }
         }
     }

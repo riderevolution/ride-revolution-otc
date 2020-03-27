@@ -2,70 +2,72 @@
     <div class="customer_tab_content">
         <div v-if="type == 'packages' && loaded">
             <div class="cms_table_toggler">
-                <div :class="`status ${(packageStatus == 1) ? 'active' : ''}`" @click="togglePackages(1)">Owned</div>
-                <div :class="`status ${(packageStatus == 2) ? 'active' : ''}`" @click="togglePackages(2)">Transferred</div>
-                <div :class="`status ${(packageStatus == 3) ? 'active' : ''}`" @click="togglePackages(3)">Shared</div>
-                <div :class="`status ${(packageStatus == 4) ? 'active' : ''}`" @click="togglePackages(4)">Frozen</div>
-                <div :class="`status ${(packageStatus == 5) ? 'active' : ''}`" @click="togglePackages(5)">Expired</div>
+                <div :class="`status ${(packageStatus == 'all') ? 'active' : ''}`" @click="togglePackages('all')">Owned</div>
+                <div :class="`status ${(packageStatus == 'shared') ? 'active' : ''}`" @click="togglePackages('shared')">Shared</div>
+                <div :class="`status ${(packageStatus == 'frozen') ? 'active' : ''}`" @click="togglePackages('frozen')">Frozen</div>
+                <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
             </div>
             <div class="cms_table_package">
-                <div class="table_package" v-for="(data, key) in value.user_package_counts" :key="key" v-if="value.user_package_counts.length > 0">
-                    <h2 class="package_title">
-                        {{ data.class_package.name }}
-                        <span class="warning" v-if="checkWarning(data)">{{ violator.warning }} Days Left</span>
-                        <span class="shared">Shared with Sheena Villeta</span>
-                    </h2>
-                    <div class="package_details">
-                        <div class="package_status">
-                            <div class="box">
-                                <div class="overlay">
-                                    <p>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</p>
-                                    <label>Used</label>
+                <div v-if="res.user_package_counts.length > 0">
+                    <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="data.count > 0 && !data.expired">
+                        <h2 class="package_title">
+                            {{ data.class_package.name }}
+                            <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment(), 'days')) <= 15">{{ checkViolator(data, 'warning') }}</span>
+                            <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
+                            <span class="frozen" v-if="data.frozen">Frozen</span>
+                        </h2>
+                        <div class="package_details">
+                            <div class="package_status">
+                                <div class="box">
+                                    <div class="overlay">
+                                        <p>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</p>
+                                        <label>Used</label>
+                                    </div>
+                                </div>
+                                <div class="box margin">
+                                    <div class="overlay">
+                                        <p>{{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : (parseInt(data.count) == data.original_package_count) ? parseInt(data.original_package_count) : parseInt(data.count) }}</p>
+                                        <label>Available</label>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="box margin">
-                                <div class="overlay">
-                                    <p>{{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : (parseInt(data.count) == data.original_package_count) ? parseInt(data.original_package_count) : parseInt(data.count) }}</p>
-                                    <label>Available</label>
+                            <div class="package_date">
+                                <div class="date">
+                                    <p>{{ formatDate(data.created_at, false) }} / {{ (data.activation_date != 'NA') ? formatDate(data.activation_date, false) : 'N/A' }}</p>
+                                    <label>Purchase Date / Activation Date</label>
+                                </div>
+                                <div class="date margin">
+                                    <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
+                                    <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
                                 </div>
                             </div>
-                        </div>
-                        <div class="package_date">
-                            <div class="date">
-                                <p>{{ formatDate(data.created_at, false) }} / {{ (data.activation_date != 'NA') ? formatDate(data.activation_date, false) : 'N/A' }}</p>
-                                <label>Purchase Date / Activation Date</label>
-                            </div>
-                            <div class="date margin">
-                                <p>{{ formatDate(data.class_package.computed_expiration_date, false) }}</p>
-                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
-                            </div>
-                        </div>
-                        <div class="package_action">
-                            <a href="/booker" class="action_success_btn" @click.prevent="getCurrentCustomer()">Book a Class</a>
-                            <div class="package_options">
-                                <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
-                                <div class="option_selector">
-                                    <a href="javascript:void(0)" class="option_link">Transfer Package</a>
-                                    <a href="javascript:void(0)" class="option_link">Share Package</a>
-                                    <a href="javascript:void(0)" class="option_link">Freeze Package</a>
-                                    <a href="javascript:void(0)" class="option_link">Print Receipt</a>
+                            <div class="package_action">
+                                <a href="/booker" class="action_success_btn" @click.prevent="getCurrentCustomer()">Book a Class</a>
+                                <div class="package_options">
+                                    <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
+                                    <div class="option_selector">
+                                        <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+                                        <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
+                                        <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
+                                        <div class="option_link">Print Receipt</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="no_results" v-if="value.user_package_counts.length == 0">
+                <div class="no_results" v-if="res.user_package_counts.length == 0">
                     No Package(s) Found.
                 </div>
             </div>
         </div>
         <div v-if="type == 'badges' && loaded">
             <div class="cms_col_five">
-                <div class="cms_col not" v-for="(badge, key) in value.badges" :key="key">
+                <div :class="`cms_col ${(badge.earned_on != null) ? '' : 'not'}`" v-for="(badge, key) in value.badges" :key="key">
                     <div class="badge"><img :src="badge.badge_image" /></div>
                     <div class="info">
                         <h2>{{ badge.description }}</h2>
-                        <!-- <p>Earned on: Apr 23, 2020</p> -->
+                        <p v-if="badge.earned_on != null">Earned on: {{ formatClassDate(badge.earned_on, false) }}</p>
                     </div>
                 </div>
             </div>
@@ -78,58 +80,53 @@
                         <th>Bike No.</th>
                         <th>Class</th>
                         <th>Studio</th>
-                        <th>instructor</th>
+                        <th>Instructor</th>
                         <th>Guests</th>
                         <th>Status</th>
                         <th>Series ID</th>
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr v-for="(n, key) in 3" :key="key">
-                        <td><div class="table_data_link link" @click="toggleLayout(n, 21550)">{{ formatClassDate('January 01, 2020 12:00', true) }}</div></td>
-                        <td>5</td>
-                        <td>Ride Rev</td>
-                        <td>Greenbelt 5</td>
+                <tbody v-if="value.upcomingClasses.length > 0">
+                    <tr v-for="(data, key) in value.upcomingClasses" :key="key">
+                        <td><div class="table_data_link link" @click="toggleLayout(data.scheduled_date.schedule.studio.id, data.scheduled_date_id)">{{ formatClassDate(data.created_at, true) }}</div></td>
+                        <td>{{ data.seat.number }}</td>
+                        <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
+                        <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                         <td>
                             <div class="thumb">
-                                <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
-                                <div class="table_image_default">
-                                    CR
-                                </div>
-                                <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
+                                <img :src="data.instructor.user.instructor_details.images[0].path_resized" />
+                                <nuxt-link class="table_data_link" to="/">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
                             </div>
                         </td>
                         <td>
-                            <div class="table_select" v-if="key != 1">
-                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">3 Guests</div>
+                            <div class="table_select" v-if="data.guestBookings && data.guestBookings.length > 0">
+                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">{{ data.guestBookings.length }} Guests</div>
                                 <div class="overlay">
                                     <ul>
-                                        <li v-line-clamp="1">16 - Sample Name</li>
-                                        <li v-line-clamp="1">4 - Jennifer Castillo</li>
-                                        <li v-line-clamp="1">1 - Edcel Games</li>
+                                        <li v-for="(subData, key) in data.guestBookings" :key="key" v-line-clamp="1">{{ subData.seat.number }} - {{ subData.guest_first_name }} {{ subData.guest_last_name }}</li>
                                     </ul>
                                 </div>
                             </div>
+                            <p v-else>N/A</p>
                         </td>
-                        <td>Completed</td>
+                        <td class="alt">{{ data.status }}</td>
                         <td>
-                            <p>Singe Class Package</p>
-                            <p class="id">854585961462367501</p>
+                            <p>{{ data.class_package.name }}</p>
+                            <p class="id">{{ data.class_package.sku_id }}</p>
                         </td>
                         <td>
-                            <div class="full table_actions">
+                            <div class="full table_actions" v-if="data.status == 'reserved'">
                                 <div class="table_action_success link" @click="getCurrentCustomer()">Sign In</div>
                             </div>
                         </td>
                     </tr>
-
                 </tbody>
-                <!-- <tbody class="no_results" v-else>
+                <tbody class="no_results" v-else>
                     <tr>
                         <td :colspan="rowCount">No Result(s) Found.</td>
                     </tr>
-                </tbody> -->
+                </tbody>
             </table>
             <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
         </div>
@@ -137,10 +134,10 @@
             <div class="actions">
                 <div class="total">Total: 4</div>
                 <div class="cms_table_toggler">
-                    <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory(1)">All</div>
-                    <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory(2)">Completed</div>
-                    <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">No Show</div>
-                    <div :class="`status ${(classesHistoryStatus == 4) ? 'active' : ''}`" @click="toggleClassesHistory(4)">Cancelled</div>
+                    <div :class="`status ${(classesHistoryStatus == 'all') ? 'active' : ''}`" @click="toggleClassesHistory('all')">All</div>
+                    <div :class="`status ${(classesHistoryStatus == 'completed') ? 'active' : ''}`" @click="toggleClassesHistory('completed')">Completed</div>
+                    <div :class="`status ${(classesHistoryStatus == 'no-show') ? 'active' : ''}`" @click="toggleClassesHistory('no-show')">No Show</div>
+                    <div :class="`status ${(classesHistoryStatus == 'cancelled') ? 'active' : ''}`" @click="toggleClassesHistory('cancelled')">Cancelled</div>
                 </div>
             </div>
             <table class="cms_table">
@@ -150,52 +147,47 @@
                         <th>Bike No.</th>
                         <th>Class</th>
                         <th>Studio</th>
-                        <th>instructor</th>
+                        <th>Instructor</th>
                         <th>Guests</th>
                         <th>Status</th>
                         <th>Series ID</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr v-for="(n, key) in 3"  :key="key">
-                        <td>{{ formatClassDate('January 01, 2020 12:00', true) }}</td>
-                        <td>5</td>
-                        <td>Ride Rev</td>
-                        <td>Greenbelt 5</td>
+                <tbody v-if="value.classHistory.length > 0">
+                    <tr v-for="(data, key) in res.classHistory" :key="key">
+                        <td>{{ formatClassDate(data.created_at, true) }}</td>
+                        <td>{{ data.seat.number }}</td>
+                        <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
+                        <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                         <td>
                             <div class="thumb">
-                                <!-- <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images.length > 0" /> -->
-                                <div class="table_image_default">
-                                    CR
-                                </div>
-                                <nuxt-link class="table_data_link" to="/">Billie Capistrano</nuxt-link>
+                                <img :src="data.instructor.user.instructor_details.images[0].path_resized" />
+                                <nuxt-link class="table_data_link" to="/">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
                             </div>
                         </td>
                         <td>
-                            <div class="table_select" v-if="key != 1">
-                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">3 Guests</div>
+                            <div class="table_select" v-if="data.guestBookings && data.guestBookings.length > 0">
+                                <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">{{ data.guestBookings.length }} Guests</div>
                                 <div class="overlay">
                                     <ul>
-                                        <li v-line-clamp="1">16 - Sample Name</li>
-                                        <li v-line-clamp="1">4 - Jennifer Castillo</li>
-                                        <li v-line-clamp="1">1 - Edcel Games</li>
+                                        <li v-for="(subData, key) in data.guestBookings" :key="key" v-line-clamp="1">{{ subData.seat.number }} - {{ subData.guest_first_name }} {{ subData.guest_last_name }}</li>
                                     </ul>
                                 </div>
                             </div>
+                            <p v-else>N/A</p>
                         </td>
-                        <td>Completed</td>
+                        <td class="alt">{{ checkStatus(data) }}</td>
                         <td>
-                            <p>Singe Class Package</p>
-                            <p class="id">854585961462367501</p>
+                            <p>{{ data.class_package.name }}</p>
+                            <p class="id">{{ data.class_package.sku_id }}</p>
                         </td>
                     </tr>
-
                 </tbody>
-                <!-- <tbody class="no_results" v-else>
+                <tbody class="no_results" v-else>
                     <tr>
                         <td :colspan="rowCount">No Result(s) Found.</td>
                     </tr>
-                </tbody> -->
+                </tbody>
             </table>
             <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
         </div>
@@ -213,7 +205,7 @@
                     <div class="toggler" @click="toggleAccordion($event, key)"></div>
                     <div class="content_headers">
                         <div class="accordion_content">{{ formatDate(data.created_at, true) }}</div>
-                        <div class="accordion_content">{{ data.studio.name }}</div>
+                        <div class="accordion_content">{{ (data.studio_id != null) ? data.studio.name : 'Website' }}</div>
                         <div class="accordion_content">{{ countVariantQty(data.payment_items) }}</div>
                         <div class="accordion_content capital">{{ replacer(data.payment_method.method) }}</div>
                         <div :class="`accordion_content ${(data.status == 'pending') ? 'red' : ''}`">Php {{ totalCount(data.total) }}</div>
@@ -264,9 +256,9 @@
                     <div class="form_header_wrapper">
                         <h2 class="form_title">Customer Overview</h2>
                         <div class="form_check toggler">
-                            <input type="hidden" id="is_promo" name="is_promo" class="action_check" :value="(isActivated) ? 1 : 0">
-                            <div :class="`toggle ${(isActivated) ? 'active' : ''}`" @click="toggledPrompt()"></div>
-                            <label for="is_promo">{{ (isActivated) ? 'Activated' : 'Deactivated' }}</label>
+                            <input type="hidden" id="is_promo" name="is_promo" class="action_check" :value="(value.enabled) ? 1 : 0">
+                            <div :class="`toggle alt ${(value.enabled) ? 'active' : ''}`" @click="toggledPrompt(value)"></div>
+                            <label for="is_promo">{{ (value.enabled) ? 'Activated' : 'Deactivated' }}</label>
                         </div>
                     </div>
                     <div class="form_overview">
@@ -279,10 +271,6 @@
                             <p>{{ value.email }}</p>
                         </div>
                         <div class="wrapper">
-                            <label>Password</label>
-                            <p>*******</p>
-                        </div>
-                        <div class="wrapper">
                             <label>Phone Number</label>
                             <p>{{ value.customer_details.co_contact_number }}</p>
                         </div>
@@ -292,11 +280,11 @@
                         </div>
                         <div class="wrapper">
                             <label>Gender</label>
-                            <p>{{ value.customer_details.co_sex }}</p>
+                            <p class="alt">{{ value.customer_details.co_sex }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Occupation</label>
-                            <p>{{ value.customer_details.occupation.name }}</p>
+                            <p>{{ value.customer_details.profession }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Customer Type</label>
@@ -401,7 +389,16 @@
             <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
         </transition>
         <transition name="fade">
-            <customer-prompt :status="promptMessage" v-if="$store.state.customerPromptStatus" />
+            <customer-prompt :status="promptMessage" ref="enabled" v-if="$store.state.customerPromptStatus" />
+        </transition>
+        <transition name="fade">
+            <package-action-prompt :message="packagePromptMessage" :type="packagePromptType" v-if="$store.state.packageActionPromptStatus" />
+        </transition>
+        <transition name="fade">
+            <package-action :packageID="packageID" :type="packageActionType" v-if="$store.state.packageActionStatus" />
+        </transition>
+        <transition name="fade">
+            <package-action-validate :packageID="packageID" v-if="$store.state.packageActionValidateStatus" />
         </transition>
     </div>
 </template>
@@ -409,11 +406,17 @@
 <script>
     import CustomerPrompt from '../components/modals/CustomerPrompt'
     import CustomerPendingQuickSale from '../components/modals/CustomerPendingQuickSale'
+    import PackageAction from '../components/modals/PackageAction'
+    import PackageActionPrompt from '../components/modals/PackageActionPrompt'
+    import PackageActionValidate from '../components/modals/PackageActionValidate'
     import Pagination from '../components/Pagination'
     export default {
         components: {
             CustomerPrompt,
             CustomerPendingQuickSale,
+            PackageAction,
+            PackageActionPrompt,
+            PackageActionValidate,
             Pagination
         },
         props: {
@@ -427,23 +430,97 @@
         },
         data () {
             return {
+                tempData: null,
+                methodType: '',
+                packageActionType: '',
+                packagePromptType: '',
+                packagePromptMessage: '',
+                packageID: 0,
                 rowCount: 0,
                 promptMessage: '',
                 isActivated: true,
                 loaded: false,
+                violatorClass: '',
                 violator: {
                     warning: 0,
                     shared: 0,
                     transferred: 0,
                     freeze: 0,
                 },
-                packageStatus: 1,
-                classesHistoryStatus: 1,
+                packageStatus: 'all',
+                classesHistoryStatus: 'all',
                 res: [],
                 transaction: []
             }
         },
+        computed: {
+            populatePackages () {
+                const me = this
+                let result = []
+                if (me.$route.params.slug == 'packages') {
+                    let current = me.$moment()
+                    me.res.user_package_counts.forEach((element, index) => {
+                        let expiry = me.$moment(element.class_package.computed_expiration_date)
+                        if (parseInt(expiry.diff(current, 'days')) > 0) {
+                            element.expired = false
+                        } else {
+                            element.expired = true
+                        }
+                        result.push(element)
+                    })
+                }
+                return result
+            }
+        },
         methods: {
+            togglePackageAction (data, type) {
+                const me = this
+                switch (type) {
+                    case 'transfer':
+                        me.packageActionType = 'Transfer'
+                        me.$store.state.packageActionStatus = true
+                        document.body.classList.add('no_scroll')
+                        break
+                    case 'share':
+                        if (data.sharedto_user_id != null) {
+                            me.methodType = 'unshare'
+                            me.tempData = data
+                            me.$store.state.packageActionValidateStatus = true
+                        } else {
+                            me.methodType = 'share'
+                            me.$store.state.packageActionStatus = true
+                        }
+                        document.body.classList.add('no_scroll')
+                        me.packageActionType = 'Share'
+                        break
+                    case 'freeze':
+                        if (data.frozen) {
+                            me.methodType = 'unfreeze'
+                        } else {
+                            me.methodType = 'freeze'
+                        }
+                        me.$store.state.packageActionValidateStatus = true
+                        document.body.classList.add('no_scroll')
+                        break;
+                }
+                me.packageID = data.class_package.id
+            },
+            checkStatus (data) {
+                const me = this
+                let result = ''
+                if (data.deleted_at != null) {
+                    result = 'Cancelled'
+                }
+                switch (data.status) {
+                    case 'signed-in':
+                        result = 'Completed'
+                        break
+                    case 'no-show':
+                        result = 'No Show'
+                        break;
+                }
+                 return result
+            },
             toggleLayout (studioId, scheduledDateID) {
                 const me = this
                 me.loader(true)
@@ -451,15 +528,22 @@
                 me.$parent.layout.schedule = scheduledDateID
                 me.$store.state.upcomingClassesLayoutStatus = true
             },
-            toggledPrompt () {
+            toggledPrompt (data) {
                 const me = this
-                me.isActivated ^= true
-                if (me.isActivated) {
-                    me.promptMessage = 'Activate'
-                } else {
+                if (data.enabled) {
                     me.promptMessage = 'Deactivate'
+                } else {
+                    me.promptMessage = 'Activate'
                 }
+                data.enabled ^= 1
                 me.$store.state.customerPromptStatus = true
+                setTimeout( () => {
+                    me.$refs.enabled.confirm.table_name = 'users'
+                    me.$refs.enabled.confirm.id = data.id
+                    me.$refs.enabled.confirm.enabled = data.enabled
+                    me.$refs.enabled.confirm.status = (data.enabled) ? 'activated' : 'deactivated'
+                    me.$refs.enabled.confirm.type = 'user'
+                }, 100)
                 document.body.classList.add('no_scroll')
             },
             toggleGuest (event) {
@@ -547,16 +631,24 @@
                     }
                 }
             },
-            checkWarning (data) {
+            checkViolator (data, type) {
                 const me = this
+                let result = ''
                 let expiry = me.$moment(data.class_package.computed_expiration_date)
                 let current = me.$moment()
-                if (parseInt(expiry.diff(current, 'days')) <= 15) {
-                    me.violator.warning = expiry.diff(current, 'days')
-                    return true
-                } else {
-                    return false
+                switch (type) {
+                    case 'warning':
+                        result = expiry.diff(current, 'days') + ' Days Left'
+                        break
+                    case 'shared':
+                        if (me.$route.params.param == data.user_id) {
+                            result = `Shared with ${data.sharedto_user.first_name} ${data.sharedto_user.last_name}`
+                        } else {
+                            result = `Shared by ${data.sharedby_user.first_name} ${data.sharedby_user.last_name}`
+                        }
+                        break;
                 }
+                return result
             },
             toggledOption (event) {
                 const me = this
@@ -595,20 +687,53 @@
             },
             togglePackages (status) {
                 const me = this
-                return me.packageStatus = status
+                me.loader(true)
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${status}`).then(res => {
+                    if (res.data) {
+                        me.res = res.data.customer
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    me.rowCount = document.getElementsByTagName('th').length
+                    setTimeout( () => {
+                        me.packageStatus = status
+                        me.loader(false)
+                    }, 500)
+                })
             },
             toggleClassesHistory (status) {
                 const me = this
-                return me.classesHistoryStatus = status
+                me.loader(true)
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?classHistoryStatus=${status}`).then(res => {
+                    if (res.data) {
+                        me.res = res.data.customer
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    me.rowCount = document.getElementsByTagName('th').length
+                    setTimeout( () => {
+                        me.classesHistoryStatus = status
+                        me.loader(false)
+                    }, 500)
+                })
             },
         },
         mounted () {
             const me = this
+            me.res = []
             if (me.$route.params.slug == 'transactions') {
                 me.res = me.value.payments
+            } else {
+                me.res = me.value
             }
-            me.rowCount = document.getElementsByTagName('th').length
             me.loaded = true
+            setTimeout( () => {
+                me.rowCount = document.getElementsByTagName('th').length
+            }, 250)
         },
         beforeMount () {
             document.addEventListener('click', this.toggleOverlays)

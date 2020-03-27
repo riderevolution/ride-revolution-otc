@@ -157,30 +157,31 @@
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('booking_id', me.$store.state.bookingID)
                         formData.append('class_package_id', me.$store.state.classPackageID)
-                        me.loader(true)
+                        // me.loader(true)
                         me.$axios.post('api/bookings/change-package', formData).then(res => {
-                            if (res.data) {
-                                setTimeout( () => {
-                                    me.$parent.actionMessage = 'Successfully changed package.'
-                                    me.$store.state.promptBookerActionStatus = true
-                                    document.body.classList.add('no_scroll')
-                                }, 500)
-                            }
-                        }).catch(err => {
-                            setTimeout( () => {
-                                me.$store.state.errorList = err.response.data.errors
-                                me.$store.state.errorStatus = true
-                            }, 500)
-                        }).then(() => {
-                            me.$store.state.customerPackageStatus = false
-                            setTimeout( () => {
-                                me.$parent.getSeats()
-                                me.$parent.fetchWaitlist(me.$store.state.scheduleID)
-                                me.$store.state.bookingID = 0
-                                me.$store.state.classPackageID = 0
-                                me.$store.state.disableBookerUI = false
-                                me.$store.state.assignWaitlistBookerUI = false
-                            }, 500)
+                            console.log(res.data);
+                        //     if (res.data) {
+                        //         setTimeout( () => {
+                        //             me.$parent.actionMessage = 'Successfully changed package.'
+                        //             me.$store.state.promptBookerActionStatus = true
+                        //             document.body.classList.add('no_scroll')
+                        //         }, 500)
+                        //     }
+                        // }).catch(err => {
+                        //     setTimeout( () => {
+                        //         me.$store.state.errorList = err.response.data.errors
+                        //         me.$store.state.errorStatus = true
+                        //     }, 500)
+                        // }).then(() => {
+                        //     me.$store.state.customerPackageStatus = false
+                        //     setTimeout( () => {
+                        //         me.$parent.getSeats()
+                        //         me.$parent.fetchWaitlist(me.$store.state.scheduleID)
+                        //         me.$store.state.bookingID = 0
+                        //         me.$store.state.classPackageID = 0
+                        //         me.$store.state.disableBookerUI = false
+                        //         me.$store.state.assignWaitlistBookerUI = false
+                        //     }, 500)
                         })
                     } else {
                         me.$scrollTo('.validation_errors', {
@@ -199,31 +200,32 @@
                     formData.append('seat_id', me.$store.state.seat.id)
                     formData.append('user_id', me.$store.state.customerID)
                     formData.append('class_package_id', me.class_package_id)
-                    me.loader(true)
+                    // me.loader(true)
                     me.$axios.post('api/bookings', formData).then(res => {
                         if (res.data) {
-                            setTimeout( () => {
-                                me.$parent.actionMessage = 'Seat has been successfully reserved.'
-                                me.$store.state.promptBookerActionStatus = true
-                                document.body.classList.add('no_scroll')
-                            }, 500)
+                            console.log(res.data);
+                            // setTimeout( () => {
+                            //     me.$parent.actionMessage = 'Seat has been successfully reserved.'
+                            //     me.$store.state.promptBookerActionStatus = true
+                            //     document.body.classList.add('no_scroll')
+                            // }, 500)
                         }
-                    }).catch(err => {
-                        setTimeout( () => {
-                            me.$store.state.errorList = err.response.data.errors
-                            me.$store.state.errorStatus = true
-                        }, 500)
-                    }).then(() => {
-                        me.$store.state.customerPackageStatus = false
-                        setTimeout( () => {
-                            me.$parent.getSeats()
-                            me.$parent.fetchWaitlist(me.$store.state.scheduleID)
-                            me.$store.state.bookingID = 0
-                            me.$store.state.classPackageID = 0
-                            me.$store.state.seat = ''
-                            me.$store.state.disableBookerUI = false
-                            me.$store.state.assignWaitlistBookerUI = false
-                        }, 500)
+                    // }).catch(err => {
+                    //     setTimeout( () => {
+                    //         me.$store.state.errorList = err.response.data.errors
+                    //         me.$store.state.errorStatus = true
+                    //     }, 500)
+                    // }).then(() => {
+                    //     me.$store.state.customerPackageStatus = false
+                    //     setTimeout( () => {
+                    //         me.$parent.getSeats()
+                    //         me.$parent.fetchWaitlist(me.$store.state.scheduleID)
+                    //         me.$store.state.bookingID = 0
+                    //         me.$store.state.classPackageID = 0
+                    //         me.$store.state.seat = ''
+                    //         me.$store.state.disableBookerUI = false
+                    //         me.$store.state.assignWaitlistBookerUI = false
+                    //     }, 500)
                     })
                 } else {
                     me.$store.state.errorList = ['Please select a Package']
@@ -234,22 +236,26 @@
         async mounted () {
             const me = this
             if (me.$store.state.customerID != 0) {
-                me.$axios.get(`api/customers/${me.$store.state.customerID}/packages`).then(res => {
+                me.loader(true)
+                me.$axios.get(`api/customers/${me.$store.state.customerID}/packages?forOTCBooking=1`).then(res => {
                     if (res.data) {
-                        if (res.data.customer.user_package_counts.length > 0) {
-                            me.res = res.data.customer.user_package_counts
-                        } else {
-                            me.$store.state.customerPackageStatus = false
-                            setTimeout( () => {
-                                me.$parent.$refs.plan.message = 'Please buy a class package first'
-                            }, 10)
-                            me.$parent.buyCredits = true
-                            document.getElementById('credits').classList.add('active')
-                            me.$scrollTo('#credits', {
-                                offset: -250
-                            })
-                            me.$store.state.promptBookerStatus = true
-                        }
+                        setTimeout( () => {
+                            if (res.data.customer.user_package_counts.length > 0) {
+                                me.res = res.data.customer.user_package_counts
+                            } else {
+                                me.$store.state.customerPackageStatus = false
+                                setTimeout( () => {
+                                    me.$parent.$refs.plan.message = 'Please buy a class package first'
+                                }, 10)
+                                me.$parent.buyCredits = true
+                                document.getElementById('credits').classList.add('active')
+                                me.$scrollTo('#credits', {
+                                    offset: -250
+                                })
+                                me.$store.state.promptBookerStatus = true
+                            }
+                            me.loader(false)
+                        }, 500)
                     }
                 })
             }

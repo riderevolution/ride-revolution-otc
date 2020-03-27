@@ -3,6 +3,9 @@ import Vuex from 'vuex'
 const createStore = () => {
     return new Vuex.Store({
         state: () => ({
+            packageActionValidateStatus: false,
+            packageActionPromptStatus: false,
+            packageActionStatus: false,
             bookerMenuPromptStatus: false,
             studioChangerPromptStatus: false,
             schedulerRepeatPromptStatus: false,

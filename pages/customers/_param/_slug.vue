@@ -4,7 +4,7 @@
             <section id="top_content">
                 <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
                 <div class="user_info">
-                    <img :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images.length > 0" />
+                    <img :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images[0].path_resized > 0" />
                     <div class="user_image_default" v-else>
                         <div class="overlay">
                             {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
@@ -33,7 +33,6 @@
             </section>
             <section id="content">
                 <customer-content :value="customer" :type="$route.params.slug" />
-                <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
             </section>
             <transition name="fade">
                 <upcoming-classes-layout :studio="layout.studio" :schedule="layout.schedule" v-if="$store.state.upcomingClassesLayoutStatus" />
