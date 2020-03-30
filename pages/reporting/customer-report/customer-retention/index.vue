@@ -15,22 +15,9 @@
                         <a href="javascript:void(0)" class="action_btn margin">Export</a>
                     </div>
                 </div>
-                <div class="action_buttons alt">
-                    <div class="actions">
-                        <div class="toggler">
-                            <div :class="`status ${(status == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First Stime</div>
-                            <div :class="`status ${(status == 'second') ? 'active' : ''}`" @click="toggleStatus('second')">Second Time</div>
-                            <div :class="`status ${(status == 'third') ? 'active' : ''}`" @click="toggleStatus('third')">Third Time</div>
-                            <div :class="`status ${(status == 'fourth') ? 'active' : ''}`" @click="toggleStatus('fourth')">Fourth Time</div>
-                        </div>
-                        <div class="total">Total: {{ totalItems(res.customers.total) }}</div>
-                        <div class="total">Total Riders: {{ totalItems(res.customers.total) }}</div>
-                        <div class="total">Retained: {{ totalItems(res.customers.total) }}</div>
-                    </div>
-                </div>
                 <div class="filter_wrapper">
                     <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
-                        <div class="form_group margin">
+                        <div class="form_group">
                             <label for="range">Date Range</label>
                             <no-ssr>
                                 <vc-date-picker
@@ -50,6 +37,15 @@
                 </div>
             </section>
             <section id="content" v-if="loaded">
+                <div class="cms_table_toggler">
+                    <div class="total">Total: {{ totalItems(res.customers.total) }}</div>
+                    <div class="total">Total Riders: {{ totalItems(res.customers.total) }}</div>
+                    <div class="total">Retained: {{ totalItems(res.customers.total) }}</div>
+                    <div :class="`status ${(status == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First Stime</div>
+                    <div :class="`status ${(status == 'second') ? 'active' : ''}`" @click="toggleStatus('second')">Second Time</div>
+                    <div :class="`status ${(status == 'third') ? 'active' : ''}`" @click="toggleStatus('third')">Third Time</div>
+                    <div :class="`status ${(status == 'fourth') ? 'active' : ''}`" @click="toggleStatus('fourth')">Fourth Time</div>
+                </div>
                 <table class="cms_table">
                     <thead>
                         <tr>

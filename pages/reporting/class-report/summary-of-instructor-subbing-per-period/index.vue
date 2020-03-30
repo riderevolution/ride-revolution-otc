@@ -11,12 +11,9 @@
                         <h2 class="header_subtitle">Instructor Subbing per class schedule.</h2>
                     </div>
                     <div class="actions">
-                        <div class="total">Total Subbed Classes: {{ totalItems(res.customers.total) }}</div>
+                        <a href="javascript:void(0)" class="action_btn">Print</a>
+                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
                     </div>
-                </div>
-                <div class="action_buttons">
-                    <a href="javascript:void(0)" class="action_btn">Print</a>
-                    <a href="javascript:void(0)" class="action_btn margin">Export</a>
                 </div>
                 <div class="filter_wrapper">
                     <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
@@ -54,6 +51,9 @@
                 </div>
             </section>
             <section id="content" v-if="loaded">
+                <div class="cms_table_toggler">
+                    <div class="total">Total Subbed Classes: {{ totalItems(res.customers.total) }}</div>
+                </div>
                 <table class="cms_table">
                     <thead>
                         <tr>

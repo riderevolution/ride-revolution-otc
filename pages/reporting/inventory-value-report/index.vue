@@ -10,17 +10,9 @@
                         <h2 class="header_subtitle">Expiration details of each class package</h2>
                     </div>
                     <div class="actions">
-                        <div class="toggler">
-                            <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleStatus('all')">All: 800</div>
-                            <div :class="`status ${(status == 'merch') ? 'active' : ''}`" @click="toggleStatus('merch')">Merchandise: 100</div>
-                            <div :class="`status ${(status == 'food') ? 'active' : ''}`" @click="toggleStatus('food')">Food &amp; Beverage: 400</div>
-                            <div :class="`status ${(status == 'gift') ? 'active' : ''}`" @click="toggleStatus('gift')">Gift Cards: 100</div>
-                        </div>
+                        <a href="javascript:void(0)" class="action_btn">Print</a>
+                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
                     </div>
-                </div>
-                <div class="action_buttons">
-                    <a href="javascript:void(0)" class="action_btn">Print</a>
-                    <a href="javascript:void(0)" class="action_btn margin">Export</a>
                 </div>
                 <div class="filter_wrapper">
                     <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
@@ -50,6 +42,12 @@
                 </div>
             </section>
             <section id="content" v-if="loaded">
+                <div class="cms_table_toggler">
+                    <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleStatus('all')">All: 800</div>
+                    <div :class="`status ${(status == 'merch') ? 'active' : ''}`" @click="toggleStatus('merch')">Merchandise: 100</div>
+                    <div :class="`status ${(status == 'food') ? 'active' : ''}`" @click="toggleStatus('food')">Food &amp; Beverage: 400</div>
+                    <div :class="`status ${(status == 'gift') ? 'active' : ''}`" @click="toggleStatus('gift')">Gift Cards: 100</div>
+                </div>
                 <table class="cms_table">
                     <thead>
                         <tr>
