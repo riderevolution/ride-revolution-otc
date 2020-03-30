@@ -7,7 +7,30 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin">
-                        <div class="form_radio" v-for="(data, key) in res" :key="key">
+                        <div class="form_radio" v-for="(data, key) in res" v-if="data.count > 0" :key="key">
+                            <input type="radio" :id="`package_${key}`" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                            <label :for="`package_${key}`">
+                                <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
+                                <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form_footer_wrapper">
+                        <div class="button_group">
+                            <a href="javascript:void(0)" class="action_cancel_btn" @click="toggleClose()">Cancel</a>
+                            <button type="submit" name="submit" class="action_success_btn margin alternate">Select</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <form id="default_form" class="overlay" @submit.prevent="submissionCreateGuestSuccess()" v-if="type == 'create-guest'">
+            <div class="modal_wrapper">
+                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
+                <div class="form_close" @click="toggleClose()"></div>
+                <div class="modal_main_group">
+                    <div class="form_flex_radio alternate margin">
+                        <div class="form_radio" v-for="(data, key) in res" v-if="data.count > 0" :key="key">
                             <input type="radio" :id="`package_${key}`" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
@@ -30,7 +53,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin">
-                        <div :class="`form_radio ${($store.state.classPackageID == data.class_package.id) ? 'toggled' : ''}`" v-for="(data, key) in res" :key="key">
+                        <div :class="`form_radio ${($store.state.classPackageID == data.class_package.id) ? 'toggled' : ''}`" v-if="data.count > 0" v-for="(data, key) in res" :key="key">
                             <input type="radio" :id="`package_${key}`" :checked="$store.state.classPackageID == data.class_package.id" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
@@ -88,7 +111,9 @@
         data () {
             return {
                 res: [],
-                class_package_id: []
+                class_package_id: [],
+                old_package_count_id: null,
+                new_package_count_id: null
             }
         },
         methods: {
@@ -96,12 +121,15 @@
                 const me = this
                 let element = document.getElementById(`package_${key}`)
                 me.class_package_id = data.class_package.id
+                me.new_package_count_id = data.id
                 me.$store.state.classPackageID = data.class_package.id
                 me.res.forEach((value, index) => {
                     if (index == key) {
                         element.parentNode.classList.add('toggled')
                     } else {
-                        document.getElementById(`package_${index}`).parentNode.classList.remove('toggled')
+                        if (document.getElementById(`package_${index}`)) {
+                            document.getElementById(`package_${index}`).parentNode.classList.remove('toggled')
+                        }
                     }
                 })
             },
@@ -156,32 +184,31 @@
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('booking_id', me.$store.state.bookingID)
-                        formData.append('class_package_id', me.$store.state.classPackageID)
-                        // me.loader(true)
+                        formData.append('new_user_package_count_id', me.new_package_count_id)
+                        formData.append('old_user_package_count_id', me.old_package_count_id)
+                        me.loader(true)
                         me.$axios.post('api/bookings/change-package', formData).then(res => {
-                            console.log(res.data);
-                        //     if (res.data) {
-                        //         setTimeout( () => {
-                        //             me.$parent.actionMessage = 'Successfully changed package.'
-                        //             me.$store.state.promptBookerActionStatus = true
-                        //             document.body.classList.add('no_scroll')
-                        //         }, 500)
-                        //     }
-                        // }).catch(err => {
-                        //     setTimeout( () => {
-                        //         me.$store.state.errorList = err.response.data.errors
-                        //         me.$store.state.errorStatus = true
-                        //     }, 500)
-                        // }).then(() => {
-                        //     me.$store.state.customerPackageStatus = false
-                        //     setTimeout( () => {
-                        //         me.$parent.getSeats()
-                        //         me.$parent.fetchWaitlist(me.$store.state.scheduleID)
-                        //         me.$store.state.bookingID = 0
-                        //         me.$store.state.classPackageID = 0
-                        //         me.$store.state.disableBookerUI = false
-                        //         me.$store.state.assignWaitlistBookerUI = false
-                        //     }, 500)
+                            if (res.data) {
+                                setTimeout( () => {
+                                    me.$parent.actionMessage = 'Successfully changed package.'
+                                    me.$store.state.classPackageID = me.new_package_count_id
+                                    me.$store.state.promptBookerActionStatus = true
+                                    document.body.classList.add('no_scroll')
+                                }, 500)
+                            }
+                        }).catch(err => {
+                            setTimeout( () => {
+                                me.$store.state.errorList = err.response.data.errors
+                                me.$store.state.errorStatus = true
+                            }, 500)
+                        }).then(() => {
+                            me.$store.state.customerPackageStatus = false
+                            setTimeout( () => {
+                                me.$parent.getSeats()
+                                me.$parent.fetchWaitlist(me.$store.state.scheduleID)
+                                me.$store.state.disableBookerUI = false
+                                me.$store.state.assignWaitlistBookerUI = false
+                            }, 500)
                         })
                     } else {
                         me.$scrollTo('.validation_errors', {
@@ -190,6 +217,24 @@
                         })
                     }
                 })
+            },
+            submissionCreateGuestSuccess () {
+                const me = this
+                if (me.class_package_id != 0) {
+                    let formData = new FormData()
+                    formData.append('scheduled_date_id', me.$store.state.scheduleID)
+                    formData.append('user_id', me.$store.state.customerID)
+                    me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
+                        if (res.data.result > 0) {
+                            me.$store.state.customerPackageStatus = false
+                            me.$store.state.assignStatus = true
+                            me.$parent.$refs.plan.assignType = 1
+                        }
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    })
+                }
             },
             submissionCreateSuccess () {
                 const me = this
@@ -200,32 +245,31 @@
                     formData.append('seat_id', me.$store.state.seat.id)
                     formData.append('user_id', me.$store.state.customerID)
                     formData.append('class_package_id', me.class_package_id)
-                    // me.loader(true)
+                    me.loader(true)
                     me.$axios.post('api/bookings', formData).then(res => {
                         if (res.data) {
-                            console.log(res.data);
-                            // setTimeout( () => {
-                            //     me.$parent.actionMessage = 'Seat has been successfully reserved.'
-                            //     me.$store.state.promptBookerActionStatus = true
-                            //     document.body.classList.add('no_scroll')
-                            // }, 500)
+                            setTimeout( () => {
+                                me.$parent.actionMessage = 'Seat has been successfully reserved.'
+                                me.$store.state.promptBookerActionStatus = true
+                                document.body.classList.remove('no_scroll')
+                            }, 500)
                         }
-                    // }).catch(err => {
-                    //     setTimeout( () => {
-                    //         me.$store.state.errorList = err.response.data.errors
-                    //         me.$store.state.errorStatus = true
-                    //     }, 500)
-                    // }).then(() => {
-                    //     me.$store.state.customerPackageStatus = false
-                    //     setTimeout( () => {
-                    //         me.$parent.getSeats()
-                    //         me.$parent.fetchWaitlist(me.$store.state.scheduleID)
-                    //         me.$store.state.bookingID = 0
-                    //         me.$store.state.classPackageID = 0
-                    //         me.$store.state.seat = ''
-                    //         me.$store.state.disableBookerUI = false
-                    //         me.$store.state.assignWaitlistBookerUI = false
-                    //     }, 500)
+                    }).catch(err => {
+                        setTimeout( () => {
+                            me.$store.state.errorList = err.response.data.errors
+                            me.$store.state.errorStatus = true
+                        }, 500)
+                    }).then(() => {
+                        me.$store.state.customerPackageStatus = false
+                        setTimeout( () => {
+                            me.$parent.getSeats()
+                            me.$parent.fetchWaitlist(me.$store.state.scheduleID)
+                            me.$store.state.bookingID = 0
+                            me.$store.state.classPackageID = 0
+                            me.$store.state.seat = ''
+                            me.$store.state.disableBookerUI = false
+                            me.$store.state.assignWaitlistBookerUI = false
+                        }, 500)
                     })
                 } else {
                     me.$store.state.errorList = ['Please select a Package']
@@ -242,6 +286,11 @@
                         setTimeout( () => {
                             if (res.data.customer.user_package_counts.length > 0) {
                                 me.res = res.data.customer.user_package_counts
+                                me.res.forEach((data, index) => {
+                                    if (me.$store.state.classPackageID == data.class_package.id) {
+                                        me.old_package_count_id = data.id
+                                    }
+                                })
                             } else {
                                 me.$store.state.customerPackageStatus = false
                                 setTimeout( () => {

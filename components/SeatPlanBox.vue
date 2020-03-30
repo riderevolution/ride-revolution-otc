@@ -3,7 +3,7 @@
         <div :class="`seat_position ${(seat.status == 'open' && $store.state.disableBookerUI) ? 'available' : ''} ${(seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id == $parent.$parent.$parent.customer.id)) ? 'highlight' : ''} ${(seat.status == 'open') ? '' : (seat.status == 'comp' ? (seat.comp.length > 0 ? 'comp' : '') : (seat.status == 'reserved') ? 'sign_in' : (seat.status == 'blocked' ? 'comp blocked' : (!$store.state.disableBookerUI && seat.status == 'signed-in' ? 'sign_out' : (seat.status == 'no-show' ? 'no_show' : (seat.status == 'reserved-guest') ? 'sign_in_guest' : ''))))}`" v-for="(seat, lkey) in data">
 
             <div class="seat_available" @click="toggleSwitchSeat(seat)" v-if="seat.status == 'open' && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
-            <div class="seat_action" @click.self="toggleAction(seat.status, (seat.bookings.length > 0) ? seat.bookings[0].id : null)" v-if="seat.past == 0"></div>
+            <div class="seat_action" @click.self="toggleAction(seat.status, (seat.bookings.length > 0) ? seat.bookings[0].id : null)"></div>
             <div class="seat_pending" @click.self="checkPending((seat.bookings.length > 0) ? seat.bookings[0].user_id : null)" v-if="!$store.state.disableBookerUI && seat.userPendingPayments > 0 && seat.status != 'no-show' && seat.past == 0"></div>
             <div :class="`seat_overlay ${($store.state.disableBookerUI) ? 'disabled' : ''}`" @click="toggleMenu(seat, seat.status)">
                 <div class="seat_number">{{ seat.number }}</div>
@@ -57,36 +57,35 @@
                 me.$store.state.seat = seat
                 switch (status) {
                     case 'open':
-                        // if (seat.past == 0) {
-                            if (me.$parent.hasCustomer && me.$parent.$parent.$parent.customer.id != '') {
-                                let formData = new FormData()
-                                formData.append('scheduled_date_id', me.$store.state.scheduleID)
-                                formData.append('user_id', me.$store.state.customerID)
-                                me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
-                                    if (res.data.guests >= 5) {
-                                        me.$parent.message = 'The user has already reached the guest limit.'
-                                        me.$store.state.promptBookerStatus = true
+                        if (me.$parent.hasCustomer && me.$parent.$parent.$parent.customer.id != '') {
+                            let formData = new FormData()
+                            formData.append('scheduled_date_id', me.$store.state.scheduleID)
+                            formData.append('user_id', me.$store.state.customerID)
+                            me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
+                                if (res.data.guests >= 5) {
+                                    me.$parent.message = 'The user has already reached the guest limit.'
+                                    me.$store.state.promptBookerStatus = true
+                                    document.body.classList.add('no_scroll')
+                                } else {
+                                    console.log(res.data);
+                                    if (res.data.result == 0) {
+                                        me.$store.state.customerPackageStatus = true
+                                        me.$parent.$parent.$parent.packageMethod = 'create'
                                         document.body.classList.add('no_scroll')
                                     } else {
-                                        if (res.data.result == 0) {
-                                            me.$store.state.customerPackageStatus = true
-                                            me.$parent.$parent.$parent.packageMethod = 'create'
-                                            document.body.classList.add('no_scroll')
-                                        } else {
-                                            me.$parent.assignType = 1
-                                            me.$store.state.assignStatus = true
-                                            document.body.classList.add('no_scroll')
-                                        }
+                                        me.$store.state.customerPackageStatus = true
+                                        me.$parent.$parent.$parent.packageMethod = 'create-guest'
+                                        document.body.classList.add('no_scroll')
                                     }
-                                }).catch(err => {
-                                    me.$store.state.errorList = err.response.data.errors
-                                    me.$store.state.errorStatus = true
-                                })
-                            } else {
-                                me.$store.state.bookerMenuPromptStatus = true
-                                document.body.classList.add('no_scroll')
-                            }
-                        // }
+                                }
+                            }).catch(err => {
+                                me.$store.state.errorList = err.response.data.errors
+                                me.$store.state.errorStatus = true
+                            })
+                        } else {
+                            me.$store.state.bookerMenuPromptStatus = true
+                            document.body.classList.add('no_scroll')
+                        }
                         break
                     case 'comp':
                     case 'blocked':

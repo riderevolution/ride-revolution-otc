@@ -241,7 +241,7 @@
                                     formData.append('is_guest', 1)
                                     formData.append('seat_id', me.$store.state.seat.id)
                                     formData.append('user_id', me.$store.state.customerID)
-                                    formData.append('class_package_id', res.data.booking.class_package_id)
+                                    formData.append('class_package_id', me.$store.state.classPackageID)
                                     me.$axios.post('api/bookings', formData).then(res => {
                                         if (res.data) {
                                             setTimeout( () => {
