@@ -85,7 +85,7 @@
                             <th>Total Net Revenue</th>
                         </tr>
                     </thead>
-                    <tbody :class="`${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res">
+                    <tbody :class="`${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res" v-if="res.length > 0">
                         <tr class="parent">
                             <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment().format('MMMM DD, YYYY') }}</td>
                             <td>{{ $moment().format('h:mm A') }}</td>
@@ -130,6 +130,11 @@
                                     </table>
                                 </div>
                             </td>
+                        </tr>
+                    </tbody>
+                    <tbody class="no_results" v-else>
+                        <tr>
+                            <td :colspan="rowCount">No Result(s) Found.</td>
                         </tr>
                     </tbody>
                 </table>

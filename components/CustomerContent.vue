@@ -192,61 +192,70 @@
             <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
         </div>
         <div v-if="type == 'transactions' && loaded">
-            <div class="cms_table_accordion alt">
-                <div class="header_wrapper">
-                    <div class="accordion_header">Transanction Date</div>
-                    <div class="accordion_header">Branch</div>
-                    <div class="accordion_header">Total Qty.</div>
-                    <div class="accordion_header">Payment Method</div>
-                    <div class="accordion_header">Total Price</div>
-                    <div class="accordion_header action">Status</div>
-                </div>
-                <div :class="`content_wrapper ${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
-                    <div class="toggler" @click="toggleAccordion($event, key)"></div>
-                    <div class="content_headers">
-                        <div class="accordion_content">{{ formatDate(data.created_at, true) }}</div>
-                        <div class="accordion_content">{{ (data.studio_id != null) ? data.studio.name : 'Website' }}</div>
-                        <div class="accordion_content">{{ countVariantQty(data.payment_items) }}</div>
-                        <div class="accordion_content capital">{{ replacer(data.payment_method.method) }}</div>
-                        <div :class="`accordion_content ${(data.status == 'pending') ? 'red' : ''}`">Php {{ totalCount(data.total) }}</div>
-                        <div class="accordion_actions action">
-                            <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
-                            <a class="accordion_action_edit" href="javascript:void(0)" @click="toggleForm(data.id)" v-if="data.status == 'pending'">Pay Now</a>
-                        </div>
-                    </div>
-                    <div class="accordion_table">
-                        <table class="cms_table">
-                            <thead>
-                                <tr>
-                                    <th class="padding_left">Product</th>
-                                    <th>Category</th>
-                                    <th>Qty</th>
-                                    <th>Price</th>
-                                </tr>
-                            </thead>
-                            <tbody v-if="data.payment_items.length > 0">
-                                <tr v-for="(item, key) in data.payment_items" :key="key">
-                                    <td class="padding_left"><b>{{ (item.type == 'custom-gift-card') ? 'Digital Gift Card - ' : (item.type == 'physical-gift-card' ? 'Physical Gift Card - ' : '') }}</b> {{ (item.product_variant) ? `${item.product_variant.product.name} ${item.product_variant.variant}` : (item.class_package ? item.class_package.name : (item.store_credit ? item.store_credit.name : item.gift_card.card_code )) }}</td>
-                                    <td>{{ (item.product_variant) ? item.product_variant.product.category.name : 'N/A' }}</td>
-                                    <td>{{ item.quantity }}</td>
-                                    <td class="price">
-                                        <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" >PHP {{ totalCount(item.total) }}</p>
-                                        <p v-if="data.promo_code_used !== null">PHP {{ totalCount(item.originalTotal) }}</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tbody class="no_results" v-else>
-                                <tr>
-                                    <td :colspan="rowCount">No Result(s) Found.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="no_results" v-if="res.data.length == 0">
-                    No Result(s) Found.
-                </div>
-            </div>
+            <table class="cms_table_accordion">
+                <thead>
+                    <tr>
+                        <th>Transanction Date</th>
+                        <th>Branch</th>
+                        <th>Total Qty.</th>
+                        <th>Payment Method</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody :class="`${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
+                    <tr class="parent alt">
+                        <td class="toggler" @click.self="toggleAccordion($event, key)">{{ formatDate(data.created_at, true) }}</td>
+                        <td>{{ (data.studio_id != null) ? data.studio.name : 'Website' }}</td>
+                        <td>{{ countVariantQty(data.payment_items) }}</td>
+                        <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
+                        <td :class="`${(data.status == 'pending') ? 'red' : ''}`">Php {{ totalCount(data.total) }}</td>
+                        <td>
+                            <div class="table_actions">
+                                <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
+                                <div class="table_action_edit link" @click="toggleForm(data.id)" v-if="data.status == 'pending'">Pay Now</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="pads" colspan="8">
+                            <div class="accordion_table">
+                                <table class="cms_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Category</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody  v-if="data.payment_items.length > 0">
+                                        <tr v-for="(item, key) in data.payment_items" :key="key">
+                                            <td><b>{{ (item.type == 'custom-gift-card') ? 'Digital Gift Card - ' : (item.type == 'physical-gift-card' ? 'Physical Gift Card - ' : '') }}</b> {{ (item.product_variant) ? `${item.product_variant.product.name} ${item.product_variant.variant}` : (item.class_package ? item.class_package.name : (item.store_credit ? item.store_credit.name : item.gift_card.card_code )) }}</td>
+                                            <td>{{ (item.product_variant) ? item.product_variant.product.category.name : 'N/A' }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td class="price">
+                                                <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" >PHP {{ totalCount(item.total) }}</p>
+                                                <p v-if="data.promo_code_used !== null">PHP {{ totalCount(item.originalTotal) }}</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody class="no_results" v-else>
+                                        <tr>
+                                            <td :colspan="rowCount">No Result(s) Found.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody class="no_results" v-else>
+                    <tr>
+                        <td :colspan="rowCount">No Result(s) Found.</td>
+                    </tr>
+                </tbody>
+            </table>
             <pagination :apiRoute="`api/customers/${$route.params.param}/${$route.params.slug}`" :current="res.current_page" :last="res.last_page" :total="res.total" />
             <button type="button" class="hidden" id="transactions" @click="populateTransactions()"></button>
         </div>
@@ -595,9 +604,9 @@
                 const target = event.target
                 me.res.data[key].open ^= true
                 if (me.res.data[key].open) {
-                    target.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.querySelector('.accordion_table').scrollHeight}px`
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
                 } else {
-                    target.parentNode.querySelector('.accordion_table').style.height = 0
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
                 }
             },
             getCurrentCustomer () {
