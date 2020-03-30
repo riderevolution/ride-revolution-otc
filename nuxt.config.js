@@ -63,8 +63,8 @@ export default {
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
-    // baseURL: (process.env.NODE_ENV == "development") ? 'http://api-riderev.designbluemanila.ph' : 'http://api-riderev.designbluemanila.ph',
-    baseURL: (process.env.NODE_ENV == "development") ? 'https://18fcdd43.ngrok.io' : 'http://api-riderev.designbluemanila.ph',
+    baseURL: (process.env.NODE_ENV == "development") ? 'http://api-riderev.designbluemanila.ph' : 'http://api-riderev.designbluemanila.ph',
+    // baseURL: (process.env.NODE_ENV == "development") ? 'https://18fcdd43.ngrok.io' : 'http://api-riderev.designbluemanila.ph',
     // baseURL: (process.env.NODE_ENV == "development") ? 'http://api.riderevolution.test' : 'http://api-riderev.designbluemanila.ph',
     // baseURL: (process.env.NODE_ENV == "development") ? 'http://127.0.0.1:8000' : 'https://api.riderevol.tk',
     credentials: false
