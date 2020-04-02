@@ -523,11 +523,24 @@
         },
         mounted () {
             const me = this
+            me.loader(true)
             me.lastRoute = me.$route.path.split('/')[1]
-            setTimeout( () => {
-                me.fetchData()
-                me.form.studio_id = me.$store.state.user.current_studio_id
-            }, 100)
+            let token = me.$cookies.get('token')
+            me.$axios.get('api/user', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(res => {
+                if (res.data != 0) {
+                    setTimeout( () => {
+                        me.fetchData()
+                        me.form.studio_id = res.data.user.current_studio_id
+                        me.loader(false)
+                    }, 500)
+                }
+            }).catch(err => {
+                console.log(err);
+            })
         },
         beforeMount () {
             document.addEventListener('click', this.toggleOverlays)
