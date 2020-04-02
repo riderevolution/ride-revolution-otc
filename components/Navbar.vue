@@ -175,6 +175,10 @@
                                         link: '/reporting/class-report/comped-attendance'
                                     },
                                     {
+                                        title: 'Summary of Instructor Subbing per Period',
+                                        link: '/reporting/class-report/summary-of-instructor-subbing-per-period'
+                                    },
+                                    {
                                         title: 'Instructor Attendance Summary',
                                         link: '/reporting/class-report/instructor-attendance-summary'
                                     }

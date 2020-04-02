@@ -147,6 +147,7 @@
             },
             async generateCalendar (year, month, highlight, search) {
                 const me = this
+                me.loader(true)
                 me.clearTableRows()
                 me.currentDate = me.$moment().date()
                 me.monthName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('MMMM')
@@ -168,7 +169,6 @@
                     })
                 }
 
-                me.loader(true)
                 /**
                  * Generate Rows **/
                 for (let i = 0; i < 6; i++) {
@@ -261,10 +261,10 @@
                     }
                 })
                 setTimeout( () => {
-                    me.loader(false)
                     me.clickDates(0, endDate, excess)
                     me.checkAllDayPerWeek()
-                }, 300)
+                    me.loader(false)
+                }, 500)
             },
             checkAllDayPerWeek () {
                 const me = this
@@ -523,11 +523,24 @@
         },
         mounted () {
             const me = this
+            me.loader(true)
             me.lastRoute = me.$route.path.split('/')[1]
-            setTimeout( () => {
-                me.fetchData()
-                me.form.studio_id = me.$store.state.user.current_studio_id
-            }, 300)
+            let token = me.$cookies.get('token')
+            me.$axios.get('api/user', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(res => {
+                if (res.data != 0) {
+                    setTimeout( () => {
+                        me.fetchData()
+                        me.form.studio_id = res.data.user.current_studio_id
+                        me.loader(false)
+                    }, 500)
+                }
+            }).catch(err => {
+                console.log(err);
+            })
         },
         beforeMount () {
             document.addEventListener('click', this.toggleOverlays)

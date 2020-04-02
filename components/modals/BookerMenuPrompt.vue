@@ -84,22 +84,8 @@
                         toggled: false
                     },
                     {
-                        name: 'Cancel Guest',
-                        status: 'reserved-guest',
-                        forPast: false,
-                        class: 'alt',
-                        toggled: false
-                    },
-                    {
                         name: 'No Show',
                         status: 'reserved',
-                        forPast: true,
-                        class: 'alt',
-                        toggled: false
-                    },
-                    {
-                        name: 'No Show',
-                        status: 'reserved-guest',
                         forPast: true,
                         class: 'alt',
                         toggled: false
@@ -113,11 +99,16 @@
                 let results = []
                 if (me.seat != '') {
                     me.items.forEach((item, index) => {
-                        // if (me.$store.state.user.staff_details.role_id != 1) {
-                        //     item.status = (item.forPast) ? (me.seat.status == 'signed-in' ? 'signed-in' : item.status) : item.status
-                        // } else {
-                        item.status = (item.status == 'reserved') ? (me.seat.status == 'signed-in' ? 'signed-in' : item.status) : item.status
-                        // }
+                        if (item.status == 'reserved') {
+                            if (me.seat.status =='signed-in' || me.seat.status == 'reserved-guest') {
+                                item.status = me.seat.status
+                                if (me.seat.status == 'reserved-guest' && item.name == 'Cancel Seat') {
+                                    item.name = 'Cancel Guest'
+                                }
+                            }
+                        }
+                        // item.status = (item.status == 'reserved') ? (me.seat.status == 'signed-in' ? 'signed-in' : item.status) : item.status
+
                         results.push(item)
                     })
                 }
@@ -163,7 +154,7 @@
                             break
                         case 'switch-package':
                             me.$store.state.customerPackageStatus = true
-                            me.$store.state.customerID = me.$store.state.seat.bookings[0].user_id
+                            me.$store.state.customerID = me.$store.state.customerID
                             me.$parent.packageMethod = 'update'
                             break
                         case 'switch-seat':

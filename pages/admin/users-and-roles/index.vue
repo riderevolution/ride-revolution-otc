@@ -35,63 +35,70 @@
                 </div>
             </section>
             <section id="content">
-                <!-- Accordion Role -->
-                <div class="cms_table_accordion" v-if="status == 1">
-                    <div class="header_wrapper">
-                        <div class="accordion_header">Role Name</div>
-                        <div class="accordion_header">Users</div>
-                        <div class="accordion_header">Permissions</div>
-                        <div class="accordion_header action">Action</div>
-                    </div>
-                    <div :class="`content_wrapper ${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res" v-if="res.length > 0">
-                        <div class="toggler" @click="toggleAccordion($event, key)"></div>
-                        <div class="content_headers">
-                            <div class="accordion_content">{{ role.display_name }}</div>
-                            <div class="accordion_content">{{ countActivatedUsers(role.staff_details) }}</div>
-                            <div class="accordion_content">{{ countPermissions(parser(role.permissions)) }}</div>
-                            <div class="accordion_actions action">
-                                <a class="accordion_action_edit" href="javascript:void(0)" @click="toggleForm(role.id, 1, 'role')">Edit Role</a>
-                                <a class="accordion_action_cancel" @click.self="toggleStatus(role.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1 && role.id != 1">Deactivate Role</a>
-                                <a class="accordion_action_success" @click.self="toggleStatus(role.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate Role</a>
-                            </div>
-                        </div>
-                        <!-- Accordion User per Role -->
-                        <div class="accordion_table">
-                            <table class="cms_table">
-                                <thead>
-                                    <tr>
-                                        <th class="padding_left">Email Address</th>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody v-if="role.staff_details.length > 0">
-                                    <tr v-for="(staff, key) in role.staff_details" :key="key" v-if="staff.user.enabled == 1">
-                                        <td class="padding_left">{{ staff.user.email }}</td>
-                                        <td>{{ staff.user.first_name }}</td>
-                                        <td>{{ staff.user.last_name }}</td>
-                                        <td>
-                                            <div class="table_actions">
-                                                <a class="table_action_edit" href="javascript:void(0)" @click="toggleForm(staff.user.id, 1, 'user')">Edit User</a>
-                                                <a class="table_action_cancel" @click.self="toggleUserStatus(staff.user.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate User</a>
-                                                <a class="table_action_success" @click.self="toggleUserStatus(staff.user.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate User</a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tbody class="no_results" v-else>
-                                    <tr>
-                                        <td :colspan="rowCount">No Result(s) Found.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="no_results" v-if="res.length == 0">
-                        No Result(s) Found.
-                    </div>
-                </div>
+                <table class="cms_table_accordion" v-if="status == 1">
+                    <thead>
+                        <tr>
+                            <th>Role Name</th>
+                            <th>Users</th>
+                            <th>Permissions</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody :class="`${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res" v-if="res.length > 0">
+                        <tr class="parent">
+                            <td class="toggler" @click.self="toggleAccordion($event, key)">{{ role.display_name }}</td>
+                            <td>{{ countActivatedUsers(role.staff_details) }}</td>
+                            <td>{{ countPermissions(parser(role.permissions)) }}</td>
+                            <td>
+                                <div class="table_actions">
+                                    <div class="table_action_edit link" @click="toggleForm(role.id, 1, 'role')">Edit Role</div>
+                                    <div class="table_action_cancel link" @click.self="toggleStatus(role.id, 0, 'Deactivated')" v-if="status == 1">Deactivate Role</div>
+                                    <div class="table_action_success link"  @click.self="toggleStatus(role.id, 1, 'Activated')" v-if="status == 0">Activate Role</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pads" colspan="8">
+                                <div class="accordion_table">
+                                    <table class="cms_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Email Address</th>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody v-if="role.staff_details.length > 0">
+                                            <tr v-for="(staff, key) in role.staff_details" :key="key" v-if="staff.user.enabled == 1">
+                                                <td>{{ staff.user.email }}</td>
+                                                <td>{{ staff.user.first_name }}</td>
+                                                <td>{{ staff.user.last_name }}</td>
+                                                <td>
+                                                    <div class="table_actions">
+                                                        <div class="table_action_edit link" @click="toggleForm(staff.user.id, 1, 'user')">Edit User</div>
+                                                        <div class="table_action_cancel link" @click.self="toggleUserStatus(staff.user.id, 0, 'Deactivated')" v-if="status == 1">Deactivate User</div>
+                                                        <div class="table_action_success link" @click.self="toggleUserStatus(staff.user.id, 1, 'Activated')" v-if="status == 0">Activate User</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody class="no_results" v-else>
+                                            <tr>
+                                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody class="no_results" v-else>
+                        <tr>
+                            <td :colspan="rowCount">No Result(s) Found.</td>
+                        </tr>
+                    </tbody>
+                </table>
                 <!-- Roles Table -->
                 <table class="cms_table" v-else-if="status == 0">
                     <thead>
@@ -109,8 +116,8 @@
                             <td>{{ countPermissions(parser(role.permissions)) }}</td>
                             <td>
                                 <div class="table_actions">
-                                    <a class="table_action_edit" href="javascript:void(0)" @click="toggleForm(role.id, 1, 'role')">Edit Role</a>
-                                    <a class="table_action_success" @click.self="toggleStatus(role.id, 1, 'Activated')" href="javascript:void(0)">Activate Role</a>
+                                    <div class="table_action_edit link" @click="toggleForm(role.id, 1, 'role')">Edit Role</div>
+                                    <div class="table_action_success link" @click.self="toggleStatus(role.id, 1, 'Activated')">Activate Role</div>
                                 </div>
                             </td>
                         </tr>
@@ -266,9 +273,9 @@
                 const target = event.target
                 me.res[key].open ^= true
                 if (me.res[key].open) {
-                    target.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.querySelector('.accordion_table').scrollHeight}px`
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
                 } else {
-                    target.parentNode.querySelector('.accordion_table').style.height = 0
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
                 }
             },
             /**

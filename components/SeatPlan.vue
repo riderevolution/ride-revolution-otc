@@ -15,6 +15,7 @@
         },
         data () {
             return {
+                assignType: 0,
                 ctr: 0,
                 temp: [],
                 hasCustomer: false,

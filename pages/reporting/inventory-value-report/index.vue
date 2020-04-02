@@ -5,10 +5,9 @@
                 <div class="action_wrapper">
                     <div>
                         <div class="header_title">
-                            <h1>Customer Retention</h1>
-                            <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                            <h1>Inventory Value Report</h1>
                         </div>
-                        <h2 class="header_subtitle">Returning Customers</h2>
+                        <h2 class="header_subtitle">Expiration details of each class package</h2>
                     </div>
                     <div class="actions">
                         <a href="javascript:void(0)" class="action_btn">Print</a>
@@ -18,15 +17,21 @@
                 <div class="filter_wrapper">
                     <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
                         <div class="form_group">
-                            <label for="range">Date Range</label>
+                            <label for="type">Branch</label>
+                            <select class="default_select alternate" name="type">
+                                <option value="" selected>All Customer Types</option>
+                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                            </select>
+                        </div>
+                        <div class="form_group margin">
+                            <label for="value_as_of">Value as of</label>
                             <no-ssr>
                                 <vc-date-picker
-                                    mode='range'
-                                    v-model="range"
+                                    v-model="value_as_of"
                                     :input-props='{
                                         class: "vc-appearance-none default_select alternate",
-                                        id: "range",
-                                        name: "range",
+                                        id: "value_as_of",
+                                        name: "value_as_of",
                                         readonly: true
                                     }'
                                 />
@@ -38,39 +43,30 @@
             </section>
             <section id="content" v-if="loaded">
                 <div class="cms_table_toggler">
-                    <div class="total">Total: {{ totalItems(res.customers.total) }}</div>
-                    <div class="total">Total Riders: {{ totalItems(res.customers.total) }}</div>
-                    <div class="total">Retained: {{ totalItems(res.customers.total) }}</div>
-                    <div :class="`status ${(status == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First Stime</div>
-                    <div :class="`status ${(status == 'second') ? 'active' : ''}`" @click="toggleStatus('second')">Second Time</div>
-                    <div :class="`status ${(status == 'third') ? 'active' : ''}`" @click="toggleStatus('third')">Third Time</div>
-                    <div :class="`status ${(status == 'fourth') ? 'active' : ''}`" @click="toggleStatus('fourth')">Fourth Time</div>
+                    <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleStatus('all')">All: 800</div>
+                    <div :class="`status ${(status == 'merch') ? 'active' : ''}`" @click="toggleStatus('merch')">Merchandise: 100</div>
+                    <div :class="`status ${(status == 'food') ? 'active' : ''}`" @click="toggleStatus('food')">Food &amp; Beverage: 400</div>
+                    <div :class="`status ${(status == 'gift') ? 'active' : ''}`" @click="toggleStatus('gift')">Gift Cards: 100</div>
                 </div>
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Customer</th>
-                            <th>Sign Up</th>
-                            <th>First Class</th>
-                            <th>Last Class</th>
-                            <th>City</th>
+                            <th>Product Name</th>
+                            <th>SKU ID</th>
+                            <th>In Stock</th>
+                            <th>Price (Per Piece)</th>
+                            <th>Total Cost of Good</th>
+                            <th>Retail Value</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">
                         <tr v-for="(data, key) in res.customers.data" :key="key">
-                            <td>
-                                <div class="thumb">
-                                    <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
-                                    <div class="table_image_default" v-else>
-                                        {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
-                                    </div>
-                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.first_name }} {{ data.last_name }}</nuxt-link>
-                                </div>
-                            </td>
-                            <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                            <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                            <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                            <td>Sample</td>
+                            <td>SAmple ASpmple</td>
+                            <td>123786123876</td>
+                            <td>12</td>
+                            <td>Php 24,000</td>
+                            <td>Php 24,000</td>
+                            <td>Php 24,000</td>
                         </tr>
                     </tbody>
                     <tbody class="no_results" v-else>
@@ -82,50 +78,28 @@
                 <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
             </section>
         </div>
-        <transition name="fade">
-            <confirm-status v-if="$store.state.confirmStatus" ref="enabled" :status="status" />
-        </transition>
-        <transition name="fade">
-            <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
-        </transition>
-        <transition name="fade">
-            <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
-        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
 
 <script>
-    import Foot from '../../../../components/Foot'
-    import UserForm from '../../../../components/modals/UserForm'
-    import RoleForm from '../../../../components/modals/RoleForm'
-    import ConfirmStatus from '../../../../components/modals/ConfirmStatus'
-    import PendingTransactions from '../../../../components/modals/PendingTransactions'
-    import CustomerPendingQuickSale from '../../../../components/modals/CustomerPendingQuickSale'
-    import Pagination from '../../../../components/Pagination'
+    import Foot from '../../../components/Foot'
+    import Pagination from '../../../components/Pagination'
     export default {
         components: {
             Foot,
-            UserForm,
-            RoleForm,
-            ConfirmStatus,
-            PendingTransactions,
-            CustomerPendingQuickSale,
             Pagination
         },
         data () {
             return {
-                range: {
-                    start: new Date(),
-                    end: new Date()
-                },
                 loaded: false,
                 id: 0,
                 type: 0,
                 rowCount: 0,
-                status: 'first',
+                status: 'all',
                 res: [],
                 types: [],
+                value_as_of: new Date(),
                 transaction: []
             }
         },

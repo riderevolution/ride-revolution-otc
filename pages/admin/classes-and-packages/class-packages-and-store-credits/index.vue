@@ -40,6 +40,7 @@
             </section>
             <section id="content" v-if="loaded">
                 <div class="cms_table_toggler">
+                    <div class="total">Total: {{ totalItems((res.classPackages) ? res.classPackages.total : res.storeCredits.total) }}</div>
                     <div :class="`status ${(package_status == 1) ? 'active' : ''}`" @click="togglePackages(1)">Regular</div>
                     <div :class="`status ${(package_status == 2) ? 'active' : ''}`" @click="togglePackages(2)">Promo</div>
                     <div :class="`status ${(package_status == 3) ? 'active' : ''}`" @click="togglePackages(3)">Store Credits</div>

@@ -113,7 +113,7 @@
                             <td><b>1000</b></td>
                         </tr>
                         <tr v-for="(data, key) in res.customers.data" :key="key">
-                            <td>{{ $moment().format('MM DD, YYYY') }}</td>
+                            <td>{{ $moment().format('MMM DD, YYYY') }}</td>
                             <td>165</td>
                             <td>23</td>
                             <td>23</td>

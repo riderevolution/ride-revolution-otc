@@ -117,7 +117,7 @@
                         selector.querySelector('thead').classList.remove('sticky')
                     }
                 }
-            },
+            }
         },
         mounted () {
             const me = this
@@ -131,6 +131,7 @@
             window.addEventListener('scroll', this.windowScroll)
         },
         beforeDestroy () {
+
             window.removeEventListener('scroll', this.windowScroll)
         },
         head () {
