@@ -49,11 +49,11 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Customer</th>
-                            <th>Sign Up</th>
-                            <th>First Class</th>
-                            <th>Last Class</th>
-                            <th>City</th>
+                            <th class="stick">Customer</th>
+                            <th class="stick">Sign Up</th>
+                            <th class="stick">First Class</th>
+                            <th class="stick">Last Class</th>
+                            <th class="stick">City</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">

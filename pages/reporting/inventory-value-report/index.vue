@@ -51,16 +51,16 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Product Name</th>
-                            <th>SKU ID</th>
-                            <th>In Stock</th>
-                            <th>Price (Per Piece)</th>
-                            <th>Total Cost of Good</th>
-                            <th>Retail Value</th>
+                            <th class="stick">Product Name</th>
+                            <th class="stick">SKU ID</th>
+                            <th class="stick">In Stock</th>
+                            <th class="stick">Price (Per Piece)</th>
+                            <th class="stick">Total Cost of Good</th>
+                            <th class="stick">Retail Value</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">
-                        <tr v-for="(data, key) in res.customers.data" :key="key">
+                        <tr v-for="(data, key) in 5" :key="key">
                             <td>SAmple ASpmple</td>
                             <td>123786123876</td>
                             <td>12</td>

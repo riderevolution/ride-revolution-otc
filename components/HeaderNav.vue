@@ -23,7 +23,11 @@
         </div>
         <div :class="`header_select ${(isToggled) ? 'active' : ''}`" v-click-outside="closeMe">
             <div class="header_user" @click="showSelect()">
-                <div class="user_picture">{{ $store.state.user.first_name.charAt(0) }}</div>
+                <div class="user_picture">
+                    <div class="overlay">
+                        {{ $store.state.user.first_name.charAt(0) }}{{ $store.state.user.last_name.charAt(0) }}
+                    </div>
+                </div>
                 <div class="user_name">Hello, {{ $store.state.user.first_name }}!</div>
             </div>
             <div class="user_select">

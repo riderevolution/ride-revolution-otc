@@ -79,15 +79,15 @@
                 <table class="cms_table" v-if="res.productVariants && package_status == 1">
                     <thead>
                         <tr>
-                            <th>Product Name</th>
-                            <th>SKU ID</th>
-                            <th>Category</th>
-                            <th>Studio</th>
-                            <th>Supplier</th>
-                            <th>In Stock</th>
-                            <th>Unit Price</th>
-                            <th>Sale Price</th>
-                            <th>Sellable</th>
+                            <th class="stick">Product Name</th>
+                            <th class="stick">SKU ID</th>
+                            <th class="stick">Category</th>
+                            <th class="stick">Studio</th>
+                            <th class="stick">Supplier</th>
+                            <th class="stick">In Stock</th>
+                            <th class="stick">Unit Price</th>
+                            <th class="stick">Sale Price</th>
+                            <th class="stick">Sellable</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.productVariants.data.length > 0">
@@ -124,12 +124,12 @@
                 <table class="cms_table" v-if="res.promos && package_status == 2">
                     <thead>
                         <tr>
-                            <th>Promo Name</th>
-                            <th>Discount</th>
-                            <th>Promo Code</th>
-                            <th>Start date</th>
-                            <th>End Date</th>
-                            <th>Action</th>
+                            <th class="stick">Promo Name</th>
+                            <th class="stick">Discount</th>
+                            <th class="stick">Promo Code</th>
+                            <th class="stick">Start date</th>
+                            <th class="stick">End Date</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.promos.data.length > 0">
@@ -157,10 +157,10 @@
                 <table class="cms_table" v-if="res.giftCards && package_status == 3">
                     <thead>
                         <tr>
-                            <th>Card Code</th>
-                            <th>Starting Value</th>
-                            <th>Date Created</th>
-                            <th>Action</th>
+                            <th class="stick">Card Code</th>
+                            <th class="stick">Starting Value</th>
+                            <th class="stick">Date Created</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.giftCards.data.length > 0">

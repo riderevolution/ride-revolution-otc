@@ -131,7 +131,6 @@
             window.addEventListener('scroll', this.windowScroll)
         },
         beforeDestroy () {
-
             window.removeEventListener('scroll', this.windowScroll)
         },
         head () {

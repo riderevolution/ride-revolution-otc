@@ -47,13 +47,13 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Customer</th>
-                            <th>Last Package Used</th>
-                            <th>Date Purchased/Date Activated</th>
-                            <th>Last Class</th>
-                            <th>Contact Number</th>
-                            <th>Email Address</th>
-                            <th>City</th>
+                            <th class="stick">Customer</th>
+                            <th class="stick">Last Package Used</th>
+                            <th class="stick">Date Purchased/Date Activated</th>
+                            <th class="stick">Last Class</th>
+                            <th class="stick">Contact Number</th>
+                            <th class="stick">Email Address</th>
+                            <th class="stick">City</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">

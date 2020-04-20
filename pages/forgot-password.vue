@@ -35,11 +35,6 @@
                 }
             }
         },
-        mounted () {
-            if (this.$cookies.get('token') != null && this.$cookies.get('token') !== undefined) {
-                this.$router.push('/')
-            }
-        },
         methods: {
             submissionSuccess () {
                 const me = this
@@ -62,6 +57,11 @@
                     }
                 })
             }
-        }
+        },
+        mounted () {
+            if (this.$cookies.get('token') != null && this.$cookies.get('token') !== undefined) {
+                this.$router.push('/')
+            }
+        },
     }
 </script>

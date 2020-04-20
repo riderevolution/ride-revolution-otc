@@ -60,8 +60,10 @@
                                         <td>{{ variant.sku_id }}</td>
                                         <td>{{ variant.unit_price }}</td>
                                         <td>{{ variant.sale_price }}</td>
-                                        <td class="table_actions full">
-                                            <a class="table_action_cancel" href="javascript:void(0)" @click="toggleDelete(variant.id)">Remove</a>
+                                        <td width="20%">
+                                            <div class="table_actions full">
+                                                <div class="table_action_cancel link" @click="toggleDelete(variant.id)">Remove</div>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>

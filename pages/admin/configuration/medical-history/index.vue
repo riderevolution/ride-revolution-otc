@@ -17,10 +17,10 @@
                 <table class="cms_table" v-if="loaded">
                     <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Created At</th>
-                            <th>Updated At</th>
-                            <th>Action</th>
+                            <th class="stick">Title</th>
+                            <th class="stick">Created At</th>
+                            <th class="stick">Updated At</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.length > 0">

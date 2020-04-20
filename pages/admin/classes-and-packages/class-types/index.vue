@@ -21,10 +21,10 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Class Type</th>
-                            <th>Class Length</th>
-                            <th>Bookable</th>
-                            <th>Action</th>
+                            <th class="stick">Class Type</th>
+                            <th class="stick">Class Length</th>
+                            <th class="stick">Bookable</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.classTypes.data.length > 0">

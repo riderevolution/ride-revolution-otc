@@ -338,12 +338,12 @@ table
  * Default Buttons **/
 .action_success_btn
     display: inline-block
-    width: 225px
-    sf_pro_medium(16px)
+    width: auto
+    sf_pro_medium(12px)
     text-decoration: none
     outline: none
     color: $green
-    padding: 17px
+    padding: 10px 20px
     background-color: $light_green
     border: 1px solid $light_green
     border-radius: 3px
@@ -389,12 +389,12 @@ table
         transition: .3s ease-in-out
 .action_cancel_btn
     display: inline-block
-    width: 225px
-    sf_pro_medium(16px)
+    width: auto
+    sf_pro_medium(12px)
     text-decoration: none
     outline: none
     color: $red
-    padding: 17px
+    padding: 10px 20px
     background-color: $light_red
     border: 1px solid $light_red
     border-radius: 3px
@@ -415,11 +415,11 @@ table
         transition: .3s ease-in-out
 .action_back_btn
     display: inline-block
-    sf_pro_medium(18px)
+    sf_pro_medium(12px)
     text-decoration: none
     outline: none
     color: $black
-    padding: 10px
+    padding: 10px 20px
     background-color: transparent
     border: 1px solid transparent
     border-radius: 3px
@@ -444,12 +444,12 @@ table
         transition: .3s ease-in-out
 .action_btn
     display: inline-block
-    width: 225px
-    sf_pro_medium(16px)
+    width: auto
+    sf_pro_medium(12px)
     text-decoration: none
     outline: none
     color: $blue
-    padding: 17px
+    padding: 10px 20px
     background-color: $light_blue
     border: 1px solid $light_blue
     border-radius: 3px
@@ -461,7 +461,7 @@ table
     &.white
         sf_pro_medium(14px)
         width: auto
-        padding: 10px 12px
+        padding: 10px 20px
         color: $white
         background-color: transparent
         border: 1px solid $white
@@ -477,9 +477,9 @@ table
             color: $red
             transition: .3s ease-in-out
     &.margin
-        margin-left: 20px
+        margin-left: 15px
     &.alternate
-        margin-left: 20px
+        margin-left: 15px
         background-color: $blue
         border: 1px solid $blue
         color: $white
@@ -510,10 +510,10 @@ table
         border: 1px solid #ccc
         transition: .3s ease-in-out
 .action_highlight
-    sf_pro_regular(15px)
+    sf_pro_regular(14px)
     color: $green
     background-color: $light_green
-    padding: 10px 15px
+    padding: 10px 20px
     span
         sf_pro_regular(12px)
 .action_calendar_btn
@@ -522,7 +522,7 @@ table
     color: $black
     background-color: #F2F2F2
     border: 1px solid rgba(171, 173, 185, 0.25)
-    padding: 10px 15px
+    padding: 10px 20px
     text-decoration: none
     outline: none
     border-radius: 3px
@@ -535,11 +535,11 @@ table
 .action_user_btn
     display: inline-block
     width: auto
-    sf_pro_medium(16px)
+    sf_pro_medium(14px)
     text-decoration: none
     outline: none
     color: $white
-    padding: 12px 20px
+    padding: 15px 20px
     background-color: $black_alternate2
     border: 1px solid $black_alternate2
     border-radius: 3px
@@ -941,14 +941,15 @@ table
             border-radius: 5px
             .form_title
                 position: relative
-                sf_pro_bold(22px)
+                sf_pro_bold(18px)
                 color: $black
-                padding: 40px
+                padding: 20px
                 border-bottom: 1px solid $border
                 span
-                    sf_pro_regular(15px)
+                    sf_pro_regular(14px)
                     color: $border_alt2
             .form_close
+                cursor: pointer
                 position: absolute
                 width: 20px
                 height: 20px
@@ -973,7 +974,11 @@ table
                     background-color: $border_alt2
                     transform: rotate(-45deg)
             .modal_main_group
-                padding: 40px
+                padding: 20px
+                max-height: 400px
+                overflow-x: hidden
+                overflow-y: auto
+                margin-right: 5px
                 .form_footer_wrapper
                     margin-top: 40px
                     margin-bottom: 0
@@ -1132,22 +1137,22 @@ table
                         border-radius: 5px
                         .total_title
                             position: relative
-                            sf_pro_bold(24px)
+                            sf_pro_bold(20px)
                             color: $black
                         .total_price
-                            sf_pro_regular(20px)
+                            sf_pro_regular(16px)
                             color: $red
                             margin-top: 10px
                     .modal_tab
                         margin: 150px 0
                         height: 100%
-                        max-height: 450px
+                        max-height: 400px
                         overflow-x: hidden
                         overflow-y: auto
                         .modal_tab_title
                             position: relative
-                            padding: 30px 60px
-                            sf_pro_semibold(18px)
+                            padding: 15px 20px
+                            sf_pro_semibold(14px)
                             color: $black
                             background-color: transparent
                             transition: .3s ease-in-out
@@ -1169,27 +1174,31 @@ table
                                     transition: .3s ease-in-out
                 .right_side
                     flex: 0 0 75%
-                    padding: 30px
+                    padding: 20px 30px
                     .modal_tab_content_header
                         margin-bottom: 10px
                         .tab_content_flex
                             display: flex
                             flex-flow: row wrap
                             justify-content: space-between
+                            margin-bottom: 20px
                             &.alternate
-                                padding: 30px 0 40px
+                                padding: 20px 0 30px
                             .form_flex
                                 flex: 1 0 auto
                                 justify-content: flex-start
+                                align-items: flex-end
                                 .action_btn
                                     width: auto
+                                .form_group
+                                    margin-bottom: 0
                             button
-                                padding: 14px
+                                padding: 10px 15px
                         .total_items
-                            sf_pro_semibold(16px)
+                            sf_pro_semibold(14px)
                             color: $black
                             span
-                                sf_pro_regular(16px)
+                                sf_pro_regular(14px)
                                 color: $border_alt2
                     .modal_tab_content
                         padding: 0 20px 0 0
@@ -1198,7 +1207,7 @@ table
                         overflow-x: hidden
                         overflow-y: auto
                         .no_results
-                            sf_pro_regular(16px)
+                            sf_pro_regular(14px)
                             color: $black
                             padding: 20px 35px
                             text-align: center
@@ -1329,8 +1338,8 @@ table
  * Default Form */
 .default_select
     width: 100%
-    padding: 15px 40px 15px 15px
-    sf_pro_regular(15px)
+    padding: 10px 40px 10px 15px
+    sf_pro_regular(12px)
     color: $black
     -webkit-appearance: none
     outline: none
@@ -1371,9 +1380,9 @@ input::placeholder
     width: 100%
     background-color: $white
     border: 1px solid #ccc
-    padding: 15px
+    padding: 10px 15px
     border-radius: 3px
-    sf_pro_regular(15px)
+    sf_pro_regular(12px)
     color: $black
     outline: none
     resize: none
@@ -1386,7 +1395,7 @@ input::placeholder
         pointer-events: none
         background-color: $border_alt
     &.date
-        padding: 13px
+        padding: 8px 15px
         resize: none
     &.search
         background-image: url('/icons/search-icon.svg')
@@ -1398,7 +1407,7 @@ input::placeholder
         background-position: calc(100% - 10px) center
         background-repeat: no-repeat
         background-size: 20px
-        padding: 15px 40px 15px 15px
+        padding: 10px 40px 10px 15px
     &.no_click
         pointer-events: none
     &.number
@@ -1416,7 +1425,7 @@ input::placeholder
 #default_form,
 #custom_gift_form
     width: 100%
-    max-width: 50%
+    max-width: 65%
     margin: 0 auto
     &.alternate
         max-width: 100%
@@ -1572,7 +1581,7 @@ input::placeholder
     .form_wrapper
         background-color: $white
         box-shadow: 5px 5px 40px rgba(0, 0, 0, 0.05)
-        margin-bottom: 60px
+        margin-bottom: 30px
         border-radius: 5px
         .cms_table
             margin-bottom: 0
@@ -1583,18 +1592,18 @@ input::placeholder
             flex-flow: row wrap
             align-items: center
             justify-content: space-between
-            padding: 30px
+            padding: 20px
             border-bottom: 1px solid $border
             .title_wrapper
                 flex: 0 0 auto
             .form_title
                 flex: 0 0 auto
-                sf_pro_bold(22px)
+                sf_pro_bold(18px)
                 color: $black
                 span
                     color: $green
             .form_label
-                sf_pro_regular(15px)
+                sf_pro_regular(14px)
                 color: $gray
                 margin-top: 10px
             .action_success_btn
@@ -1633,20 +1642,20 @@ input::placeholder
                         stroke: $green
                         transition: .3s ease-in-out
         .form_main_group
-            padding: 30px
+            padding: 20px
             &.alternate
                 border-bottom: 1px solid $border
             .button_group
                 .action_btn
-                    padding: 14px
+                    padding: 10px 15px
             .no_results
                 background-color: $white
-                sf_pro_regular(16px)
+                sf_pro_regular(14px)
                 color: $black
                 padding: 20px 35px
                 text-align: center
             &.alternate
-                padding: 30px 30px 10px
+                padding: 20px 20px 10px
                 border-bottom: 1px solid $border
                 .form_group
                     &.alternate
@@ -1655,7 +1664,7 @@ input::placeholder
                     .validation_errors
                         top: calc(0% + 25px)
             &.alternate_2
-                padding: 30px 0
+                padding: 20px 0
                 height: 100%
                 max-height: 500px
                 overflow-y: auto
@@ -1684,10 +1693,10 @@ input::placeholder
                 &:last-child
                     margin-bottom: 0
                 label
-                    sf_pro_regular(18px)
+                    sf_pro_regular(16px)
                     color: $border_alt2
                 p
-                    sf_pro_regular(15px)
+                    sf_pro_regular(14px)
                     color: $black
                     &.alt
                         text-transform: capitalize
@@ -1704,7 +1713,7 @@ input::placeholder
                 height: 30px
                 background-color: $yellow
                 border-radius: 50%
-                sf_pro_bold(19px)
+                sf_pro_bold(16px)
                 span
                     position: absolute
                     top: 50%
@@ -1827,7 +1836,7 @@ input::placeholder
 .form_flex
     display: flex
     flex-flow: row wrap
-    align-items: center
+    align-items: flex-end
     justify-content: space-between
     &.trio
         align-items: flex-start
@@ -1852,6 +1861,7 @@ input::placeholder
         overflow-y: auto
         overflow-x: hidden
         &.select_all
+            margin-top: 20px
             margin-bottom: 0px
     &.select_all
         position: relative
@@ -1882,11 +1892,11 @@ input::placeholder
         flex: 0 0 100%
         sf_pro_semibold(18px)
         color: $black
-        margin-bottom: 20px
+        margin-bottom: 15px
         &.alternate
             user-select: none
             display: block
-            sf_pro_regular(16px)
+            sf_pro_regular(14px)
             font-weight: normal
             color: $black
             margin-bottom: 10px
@@ -1894,7 +1904,7 @@ input::placeholder
                 color: $green
     .form_check
         flex: 1 0 35%
-        margin-bottom: 20px
+        margin-bottom: 15px
         &.select_all
             flex: 0 0 100%
         .action_check
@@ -1910,6 +1920,7 @@ input::placeholder
                 top: calc(100% + 5px) !important
         &.full
             flex: 1 0 48.33%
+            margin-bottom: 0
         &.check
             margin-bottom: 0
         &.flex
@@ -1941,7 +1952,7 @@ input::placeholder
         top: 50%
         right: calc(0px + 40px)
         z-index: 1
-        sf_pro_regular(15px)
+        sf_pro_regular(14   px)
         color: $gray
         transform: translateY(-50%)
     .up
@@ -2001,7 +2012,7 @@ input::placeholder
         &.active
             pointer-events: none
         label
-            sf_pro_regular(18px)
+            sf_pro_regular(14px)
             margin-bottom: 0
             margin-left: 0
         .action_check
@@ -2043,14 +2054,14 @@ input::placeholder
         flex: 0 0 auto
     label
         flex: 0 auto
-        margin-left: 10px
+        margin-left: 5px
         margin-bottom: 0 !important
-        sf_pro_regular(15px)
+        sf_pro_regular(14px)
         font-weight: normal
         color: $black
         cursor: pointer
         a
-            sf_pro_regular(18px)
+            sf_pro_regular(16px)
             color: $blue
             text-decoration: none
             transition: .3s ease-in-out
@@ -2060,9 +2071,9 @@ input::placeholder
     .action_check
         -webkit-appearance: none
         outline: none
-        width: 22px
-        height: 22px
-        padding-left: 22px
+        width: 20px
+        height: 20px
+        padding-left: 20px
         background-image: url('/icons/uncheck-icon.svg')
         background-position: center
         background-repeat: no-repeat
@@ -2076,7 +2087,7 @@ input::placeholder
         top: calc(100% + 5px)
         background-color: $red
         color: $white
-        sf_pro_medium(14px)
+        sf_pro_medium(12px)
         z-index: 1
         padding: 5px 10px
         border-radius: 5px
@@ -2095,11 +2106,11 @@ input::placeholder
             z-index: 1
 
 .custom_action_check
-    sf_pro_regular(15px)
+    sf_pro_regular(14px)
     color: $black
     -webkit-appearance: none
     outline: none
-    padding: 5px 0 5px 30px
+    padding: 5px 0 5px 25px
     background-image: url('/icons/uncheck-icon.svg')
     background-position: center left
     background-size: 25%
@@ -2166,21 +2177,21 @@ input::placeholder
                 flex-flow: row wrap
                 align-items: center
                 justify-content: space-between
-                sf_pro_semibold(18px)
+                sf_pro_semibold(16px)
                 transition: .3s ease-in-out
                 p
                     margin-bottom: 0
                 .id
-                    sf_pro_regular(15px)
+                    sf_pro_regular(14px)
                     color: $border_alt2
                     transition: .3s ease-in-out
                     &.alternate
-                        sf_pro_semibold(18px)
+                        sf_pro_semibold(16px)
     label
         flex: 0 auto
         margin-left: 10px
         margin-bottom: 0
-        sf_pro_regular(15px)
+        sf_pro_regular(14px)
         font-weight: normal
         color: $black
         cursor: pointer
@@ -2215,7 +2226,7 @@ input::placeholder
         top: calc(100% + 15px)
         background-color: $red
         color: $white
-        sf_pro_medium(14px)
+        sf_pro_medium(12px)
         z-index: 1
         padding: 5px 10px
         border-radius: 5px
@@ -2246,7 +2257,7 @@ input::placeholder
         flex: 0 0 auto
         margin-left: 0
         margin-bottom: 0 !important
-        sf_pro_regular(16px)
+        sf_pro_regular(14px)
         font-weight: normal
         color: $black
         span
@@ -2256,7 +2267,7 @@ input::placeholder
         top: calc(100% + 5px)
         background-color: $red
         color: $white
-        sf_pro_medium(14px)
+        sf_pro_medium(12px)
         z-index: 1
         padding: 5px 10px
         border-radius: 5px
@@ -2314,7 +2325,7 @@ input::placeholder
 
 .form_group
     position: relative
-    margin-bottom: 30px
+    margin-bottom: 20px
     &.active
         pointer-events: all
     &.not_active
@@ -2325,12 +2336,12 @@ input::placeholder
         color: $gray
         text-align: right
     &.margin
-        margin-left: 20px
+        margin-left: 15px
     &.no_margin
         margin-bottom: 0
     .action_forgot_text
         display: inline-block
-        sf_pro_regular(13px)
+        sf_pro_regular(12px)
         color: $gray
         text-decoration: none
         margin-top: 5px
@@ -2339,23 +2350,23 @@ input::placeholder
             color: $red
             transition: .3s ease-in-out
     .form_group_header
-        sf_pro_bold(18px)
+        sf_pro_bold(16px)
         color: $black
-        margin-bottom: 30px
+        margin-bottom: 20px
     .form_group_body
         padding: 25px
         border: 1px solid $border
         border-radius: 5px
-        sf_pro_regular(18px)
+        sf_pro_regular(16px)
         color: $black
         line-height: 1.5
         height: 100%
-        max-height: 520px
+        max-height: 400px
         overflow-y: scroll
     label
         user-select: none
         display: block
-        sf_pro_regular(16px)
+        sf_pro_regular(14px)
         font-weight: normal
         color: $black
         margin-bottom: 10px
@@ -2365,7 +2376,7 @@ input::placeholder
         position: absolute
         top: calc(50% + 1px)
         right: calc(0% + 10px)
-        sf_pro_regular(16px)
+        sf_pro_regular(14px)
         color: $gray
     .validation_errors
         position: absolute
@@ -2539,8 +2550,8 @@ input::placeholder
     span
         display: block
         width: 100%
-        padding: 15px 40px 15px 15px
-        sf_pro_regular(15px)
+        padding: 10px 40px 10px 15px
+        sf_pro_regular(14px)
         color: $black
         -webkit-appearance: none
         outline: none
@@ -2577,9 +2588,9 @@ input::placeholder
             .action_check
                 -webkit-appearance: none
                 outline: none
-                flex: 0 0 22px
-                width: 22px
-                height: 22px
+                flex: 0 0 20px
+                width: 20px
+                height: 20px
                 background-image: url('/icons/uncheck-icon.svg')
                 background-position: center
                 background-repeat: no-repeat
@@ -2590,7 +2601,7 @@ input::placeholder
                     transition: .3s ease-in-out
             label
                 margin-bottom: 0
-                margin-left: 10px
+                margin-left: 5px
 
 .form_disclaimer
     user-select: none
@@ -2608,7 +2619,7 @@ input::placeholder
     .action_btn,
     .action_cancel_btn,
     .action_success_btn
-        width: 180px
+        width: auto
 
 .note-tooltip
     sf_pro_regular(14px)
@@ -2722,7 +2733,7 @@ input::placeholder
     justify-content: flex-end
     margin-bottom: 40px
     .total
-        sf_pro_medium(22px)
+        sf_pro_medium(18px)
         color: $black
         padding: 0 25px 0 40px
     .cms_table_toggler
@@ -2733,16 +2744,17 @@ input::placeholder
     flex-flow: row wrap
     align-items: center
     justify-content: flex-end
-    margin-bottom: 40px
+    margin-bottom: 20px
     .total
-        sf_pro_medium(22px)
+        sf_pro_medium(18px)
         color: $black
         padding: 0 25px 0 0
     .status
+        cursor: pointer
         background-color: $white
-        padding: 12px 40px
+        padding: 10px 20px
         text-align: center
-        sf_pro_medium(16px)
+        sf_pro_medium(14px)
         color: $black
         border-radius: 0px
         border-right: 1px solid $border
@@ -2773,18 +2785,18 @@ input::placeholder
         flex-flow: row wrap
         align-items: center
         justify-content: flex-start
-        padding: 0 30px
+        padding: 0 20px
         .input_header
             &.name
-                flex: 1 0 20%
+                flex: 1 0 15%
             flex: 1 0 10%
-            sf_pro_semibold(16px)
+            sf_pro_semibold(14px)
             color: $gray
             text-align: left
-            padding: 20px 20px 20px 0
+            padding: 0 15px 10px 0
             background-color: transparent
             &:last-child
-                padding: 20px 0
+                padding: 0 0 10px
             &.image_upload
                 flex: 1 0 10%
     .content_wrapper
@@ -2800,11 +2812,13 @@ input::placeholder
                 .input_wrapper
                     .input_content
                         color: $red
+                        &.name
+                            padding: 10px 15px
                         .default_content
                             color: $red
             .input_wrapper
                 position: relative
-                padding: 0 30px
+                padding: 0 20px
                 display: flex
                 flex-flow: row wrap
                 align-items: center
@@ -2826,7 +2840,7 @@ input::placeholder
                         left: calc(0% - 40px)
                         background-color: $red
                         color: $white
-                        sf_pro_medium(14px)
+                        sf_pro_medium(14    px)
                         z-index: 1
                         padding: 2px 10px
                         border-radius: 5px
@@ -2847,11 +2861,11 @@ input::placeholder
                 .input_content
                     position: relative
                     flex: 1 0 10%
-                    sf_pro_regular(16px)
+                    sf_pro_regular(14px)
                     color: $black
-                    padding: 20px 20px 20px 0
+                    padding: 10px 15px 10px 0
                     &.name
-                        flex: 1 0 20%
+                        flex: 1 0 15%
                     &.alternate
                         display: flex
                         flex-flow: row wrap
@@ -2859,7 +2873,7 @@ input::placeholder
                         span
                             flex: 0 1 auto
                         .default_content
-                            flex: 1 1 75%
+                            flex: 1 1 25%
                             width: 100%
                             margin-left: 5px
                     .default_content
@@ -2870,14 +2884,14 @@ input::placeholder
                         outline: none
                         pointer-events: none
                         user-select: none
-                        sf_pro_regular(16px)
+                        sf_pro_regular(14px)
                         color: $black
                     .validation_errors
                         position: absolute
                         top: calc(100% - 15px)
                         background-color: $red
                         color: $white
-                        sf_pro_medium(14px)
+                        sf_pro_medium(12px)
                         z-index: 1
                         padding: 5px 10px
                         border-radius: 5px
@@ -2903,10 +2917,10 @@ input::placeholder
                         justify-content: space-between
                         .action_cancel_btn
                             flex: 1 0 50%
-                            padding: 13px
+                            padding: 10px 20px
                         .action_btn
                             flex: 0 0 50%
-                            padding: 13px
+                            padding: 10px 20px
                             width: auto
                             display: flex
                             flex-flow: row wrap
@@ -2953,7 +2967,7 @@ input::placeholder
                 justify-content: flex-end
                 margin-bottom: 10px
                 label
-                    sf_pro_medium(18px)
+                    sf_pro_medium(16px)
                     color: $border_alt2
                     margin-right: 10px
                 .footer_input
@@ -2966,7 +2980,7 @@ input::placeholder
                         top: calc(100% + 5px)
                         background-color: $red
                         color: $white
-                        sf_pro_medium(14px)
+                        sf_pro_medium(12px)
                         z-index: 1
                         padding: 5px 10px
                         border-radius: 5px
@@ -2984,11 +2998,11 @@ input::placeholder
                             left: 17px
                             z-index: 1
             .footer_cost
-                sf_pro_medium(18px)
+                sf_pro_medium(16px)
                 color: $border_alt2
                 margin-bottom: 7px
             .footer_total_cost
-                sf_pro_bold(22px)
+                sf_pro_bold(20px)
                 color: $black
                 .total_cost
                     color: $green
@@ -3002,6 +3016,26 @@ input::placeholder
         text-align: center
 /**
  * Default Table */
+.table_notepad
+    display: block
+    width: 500px
+    background-color: $white
+    margin: 0 0 40px
+    .footer_title
+        sf_pro_semibold(16px)
+        color: $black
+        padding: 20px
+    .notepad_text
+        border-top: 1px solid $border
+        textarea
+            sf_pro_regular(16px)
+            color: $black
+            width: 100% !important
+            border: none
+            outline: none
+            padding: 15px
+            max-height: 400px
+            overflow-y: auto
 .form_table
     .cms_table
         thead
@@ -3015,28 +3049,31 @@ input::placeholder
     border-collapse: collapse
     width: 100%
     border-radius: 10px
-    margin-bottom: 60px
+    margin-bottom: 30px
     thead
         &.sticky
-            th
+            .stick
                 background-color: $green
                 position: sticky
                 z-index: 1
-                top: calc(0% + 80px)
+                top: calc(0% + 55px)
                 color: $white
                 transition: .3s ease-in-out
         tr
             th
-                sf_pro_semibold(16px)
+                sf_pro_semibold(14px)
                 color: $gray
                 text-align: left
-                padding: 15px 30px
+                padding: 15px 20px
                 background-color: transparent
                 transition: .3s ease-in-out
-                &:first-child
-                    border-radius: 10px 0 0 0
-                &:last-child
-                    border-radius: 0 10px 0 0
+                &.cms_table_title
+                    sf_pro_semibold(18px)
+                    color: #383D40
+                    .date
+                        margin-left: 10px
+                        neutra_text(18px)
+                        color: $border_alt2
     tbody
         border-radius: 3px
         box-shadow: 15px 25px 40px rgba(0, 0, 0, 0.05)
@@ -3052,14 +3089,14 @@ input::placeholder
                 &:hover
                     background-color: $light_red
             td
-                sf_pro_regular(16px)
+                sf_pro_regular(14px)
                 color: $black
-                padding: 20px 30px
+                padding: 15px 20px
                 &.alt
                     text-transform: uppercase
                 .id
                     color: $border_alt2
-                    sf_pro_regular(15px)
+                    sf_pro_regular(14px)
                 .table_select
                     position: relative
                     .table_select_label
@@ -3099,7 +3136,7 @@ input::placeholder
                             visibility: visible
                             transition: .3s ease-in-out
                 span
-                    sf_pro_bold(16px)
+                    sf_pro_bold(14px)
                     &.green
                         color: $green
                     &.red
@@ -3107,10 +3144,10 @@ input::placeholder
                     p
                         color: $black
                 &.green
-                    sf_pro_bold(16px)
+                    sf_pro_bold(14px)
                     color: $green
                 &.red
-                    sf_pro_bold(16px)
+                    sf_pro_bold(14px)
                     color: $red
                 &.image_upload
                     display: flex
@@ -3151,9 +3188,8 @@ input::placeholder
                         position: relative
                         text-transform: uppercase
                         background-image: linear-gradient(137deg, $red, $orange)
-                        sf_pro_regular(16px)
+                        sf_pro_regular(14px)
                         border-radius: 50%
-                        padding: 8px
                         color: $white
                         width: 35px
                         height: 35px
@@ -3167,7 +3203,7 @@ input::placeholder
                     .table_data_link
                         margin-left: 15px
                 .table_data_link
-                    sf_pro_regular(16px)
+                    sf_pro_regular(14px)
                     color: $blue
                     text-decoration: none
                     &.alternate
@@ -3184,7 +3220,7 @@ input::placeholder
                     display: flex
                     flex-flow: row wrap
                     align-items: center
-                    justify-content: space-between
+                    justify-content: flex-start
                     .table_action_text
                         &.green
                             color: $green
@@ -3192,12 +3228,15 @@ input::placeholder
                             color: $red
                     a,
                     .link
-                        flex: 0 0 47%
+                        flex: 0 0 auto
                         text-align: center
                         text-decoration: none
-                        sf_pro_medium(16px)
+                        sf_pro_medium(14px)
                         padding: 10px
                         cursor: pointer
+                        margin-left: 10px
+                        &:first-child
+                            margin-left: 0
                         &.table_action_edit
                             border-radius: 3px
                             background-color: $light_blue
@@ -3504,7 +3543,7 @@ input::placeholder
                                         .menu_list
                                             .menu_item
                                                 display: block
-                                                sf_pro_regular(15px)
+                                                sf_pro_regular(14px)
                                                 color: $black
                                                 text-decoration: none
                                                 padding: 10px 20px
@@ -3523,7 +3562,7 @@ input::placeholder
                             .class_wrapper
                                 display: block
                                 background-color: $blue
-                                padding: 10px
+                                padding: 5px 10px
                                 margin-bottom: 3px
                                 text-decoration: none
                                 &.private
@@ -3540,7 +3579,7 @@ input::placeholder
                                         color: $black
                                 .class_text
                                     color: $white
-                                    sf_pro_regular(14px)
+                                    sf_pro_regular(12px)
                                     &.margin
                                         margin-bottom: 5px
                         .calendar_gear
@@ -3585,7 +3624,7 @@ input::placeholder
                                 .gear_list
                                     .gear_item
                                         display: block
-                                        sf_pro_regular(15px)
+                                        sf_pro_regular(14px)
                                         color: $black
                                         text-decoration: none
                                         padding: 10px 20px
@@ -3606,10 +3645,10 @@ input::placeholder
     border-radius: 10px
     thead
         th
-            sf_pro_semibold(16px)
+            sf_pro_semibold(14px)
             color: $gray
             text-align: left
-            padding: 10px 20px
+            padding: 15px 20px
             background-color: transparent
             &:first-child
                 border-radius: 10px 0 0 0
@@ -3622,14 +3661,14 @@ input::placeholder
             border-bottom: 2px dashed $border
             transition: .3s ease-in-out
             td
-                sf_pro_regular(16px)
+                sf_pro_regular(14px)
                 color: $black
-                padding: 20px
+                padding: 15px 20px
                 .table_actions
                     display: flex
                     flex-flow: row wrap
                     align-items: center
-                    justify-content: space-between
+                    justify-content: flex-start
                     &.full
                         a
                             flex: 0 0 100%
@@ -3639,11 +3678,14 @@ input::placeholder
                     a,
                     .link
                         cursor: pointer
-                        flex: 0 0 47%
+                        flex: 0 0 auto
                         text-align: center
                         text-decoration: none
-                        sf_pro_medium(16px)
+                        sf_pro_medium(14px)
                         padding: 10px
+                        margin-left: 10px
+                        &:first-child
+                            margin-left: 0
                         &.table_action_edit
                             border-radius: 3px
                             background-color: $light_blue
@@ -3698,10 +3740,10 @@ input::placeholder
                 transition: .3s ease-in-out
         tr
             th
-                sf_pro_semibold(16px)
+                sf_pro_semibold(14px)
                 color: $gray
                 text-align: left
-                padding: 15px 30px
+                padding: 15px 20px
                 background-color: transparent
                 transition: .3s ease-in-out
                 &:first-child
@@ -3723,7 +3765,7 @@ input::placeholder
                             transform: translateY(-50%) rotate(180deg)
                             transition: .3s ease-in-out
                     &.pads
-                        padding: 20px 30px
+                        padding: 15px 20px
                         transition: .3s ease-in-out
                     .accordion_table
                         opacity: 1
@@ -3736,15 +3778,16 @@ input::placeholder
                 transition: .3s ease-in-out
                 &.alt
                     td
-                        sf_pro_semibold(16px)
+                        sf_pro_semibold(14px)
                         color: $black
-                &:last-child
+            &:last-child
+                &.parent
                     border-bottom: 1px solid transparent
             td
                 position: relative
-                sf_pro_semibold(20px)
+                sf_pro_semibold(14px)
                 color: $green
-                padding: 20px 30px
+                padding: 15px 20px
                 transition: .3s ease-in-out
                 &.capitalize
                     text-transform: capitalize
@@ -3754,7 +3797,7 @@ input::placeholder
                     display: flex
                     flex-flow: row wrap
                     align-items: center
-                    justify-content: space-between
+                    justify-content: flex-start
                     .action_status
                         sf_pro_semibold(12px)
                         text-transform: uppercase
@@ -3769,12 +3812,15 @@ input::placeholder
                             color: $red
                     .link,
                     a
-                        flex: 0 0 47%
+                        flex: 0 0 auto
                         text-align: center
                         text-decoration: none
-                        sf_pro_medium(16px)
+                        sf_pro_medium(14px)
                         padding: 10px
                         cursor: pointer
+                        margin-left: 10px
+                        &:first-child
+                            margin-left: 0
                         &.table_action_edit
                             border-radius: 3px
                             background-color: $light_blue
@@ -3805,7 +3851,7 @@ input::placeholder
                 &.pads
                     padding: 0
                 &.toggler
-                    padding: 20px 30px 20px 40px
+                    padding: 15px 30px 15px 40px
                     &::before
                         content: ''
                         position: absolute
@@ -3828,15 +3874,15 @@ input::placeholder
                         tbody
                             box-shadow: none
                             td
-                                sf_pro_regular(16px)
+                                sf_pro_regular(14px)
                                 color: $black
-                                padding: 20px 30px
+                                padding: 15px 20px
         &.no_results
             background-color: $white
             padding: 20px 35px
             text-align: center
             td
-                sf_pro_regular(16px)
+                sf_pro_regular(14px)
                 color: $black
 
 /**
@@ -3945,7 +3991,7 @@ input::placeholder
             display: block
             text-align: center
             background-color: $white
-            padding: 100px 0
+            padding: 80px 20px
             box-shadow: 15px 25px 40px transparent
             text-decoration: none
             transition: .3s ease-in-out
@@ -3954,14 +4000,14 @@ input::placeholder
                     right: 0
                     margin: 0 auto
             .total_count
-                sf_pro_bold(45px)
+                sf_pro_bold(30px)
                 color: $black
                 margin: 15px 0
             .total_text
-                sf_pro_light(16px)
+                sf_pro_light(14px)
                 color: $black
             .total_title
-                sf_pro_bold(22px)
+                sf_pro_bold(18px)
                 color: $black
                 margin-top: 15px
             &:hover
@@ -4062,10 +4108,10 @@ input::placeholder
             flex-flow: row wrap
             align-items: center
             justify-content: space-between
-            padding: 20px 20px 20px 35px
+            padding: 15px 20px
             border-bottom: 1px solid $border
             .header_title
-                sf_pro_bold(22px)
+                sf_pro_bold(16px)
                 color: $black
         .taxonomy_content
             padding: 20px
@@ -5119,8 +5165,8 @@ input::placeholder
         position: absolute
         top: 50%
         left: 50%
-        width: 400px
-        padding: 40px
+        width: 300px
+        padding: 30px
         border-radius: 20px
         background-color: $white
         box-shadow: 15px 25px 40px rgba(0, 0, 0, 0.5)
@@ -5130,9 +5176,9 @@ input::placeholder
             flex-flow: row wrap
             align-items: center
             justify-content: center
-            margin-bottom: 40px
+            margin-bottom: 20px
             .logo_title
-                neutra_text(18px)
+                neutra_text(16px)
                 line-height: 1.5
                 color: $black
                 text-transform: uppercase
@@ -5171,9 +5217,9 @@ input::placeholder
             display: flex
             flex-flow: row wrap
             align-items: center
-            padding-right: 30px
+            padding-right: 15px
             .header_actions
-                margin-right: 30px
+                margin-right: 15px
                 display: flex
                 flex-flow: row wrap
                 align-items: center
@@ -5225,7 +5271,7 @@ input::placeholder
                 content: ''
                 position: absolute
                 top: 50%
-                right: calc(0px + 30px)
+                right: calc(0px + 10px)
                 width: 0
                 border-left: 7px solid transparent
                 border-right: 7px solid transparent
@@ -5233,7 +5279,7 @@ input::placeholder
                 transform: translateY(-50%) rotate(0deg)
                 transition: .3s ease-in-out
             .header_user
-                padding: 20px 60px 20px 30px
+                padding: 10px 40px 10px 15px
                 display: flex
                 flex-flow: row wrap
                 align-items: center
@@ -5241,21 +5287,29 @@ input::placeholder
                 .user_picture
                     position: relative
                     text-transform: uppercase
+                    width: 35px
+                    height: 35px
                     background-image: linear-gradient(137deg, $red, $orange)
                     border-radius: 50%
-                    margin-right: 15px
-                    padding: 10px 14px
-                    color: $white
-                    sf_pro_regular(16px)
+                    margin-right: 10px
+                    .overlay
+                        position: absolute
+                        top: 50%
+                        left: 0
+                        right: 0
+                        text-align: center
+                        transform: translateY(-50%)
+                        color: $white
+                        sf_pro_regular(14px)
                 .user_name
-                    sf_pro_regular(16px)
+                    sf_pro_regular(14px)
                     color: $black_alternate
             .user_select
                 position: absolute
                 right: 15px
                 top: calc(100% + 30px)
                 z-index: 1
-                width: 350px
+                width: 300px
                 border-radius: 5px
                 background-color: $white
                 opacity: 0
@@ -5276,7 +5330,7 @@ input::placeholder
                     border-radius: 5px 5px 0 0
                     .select_info
                         .header_name
-                            sf_pro_regular(18px)
+                            sf_pro_regular(16px)
                             color: $white
                         .header_role
                             sf_pro_light(14px)
@@ -5290,7 +5344,7 @@ input::placeholder
                     justify-content: space-between
                     .select_item
                         position: relative
-                        sf_pro_regular(16px)
+                        sf_pro_regular(14px)
                         color: $black_alternate
                         transition: .3s ease-in-out
                         &.account
@@ -5353,28 +5407,29 @@ input::placeholder
     .navbar_container
         position: fixed
         z-index: 3
-        flex: 0 0 70px
-        width: 70px
+        flex: 0 0 50px
+        width: 50px
         height: 100vh
         transition: .3s ease-in-out
         &.toggled
             &:hover
-                flex: 0 0 300px
-                width: 300px
+                flex: 0 0 275px
+                width: 275px
                 transition: .3s ease-in-out .2s
                 .navbar
                     .logo
-                        padding: 10px 10px 60px
+                        padding: 10px 10px 20px
                         transition: .3s ease-in-out .2s
                         .logo_title
-                            neutra_text(18px)
+                            flex: 1 0 auto
+                            neutra_text(14px)
                             letter-spacing: 1px
                             padding-left: 10px
                             opacity: 1
                             visibility: visible
                             transition: .3s ease-in-out .2s
                     .nav_back
-                        sf_pro_light(16px)
+                        sf_pro_light(14px)
                         padding: 0 0 0 20px
                         margin-left: 20px
                         margin-bottom: 20px
@@ -5387,14 +5442,19 @@ input::placeholder
                         &.alt
                             .child_item_wrapper
                                 .nav_child_item
-                                    sf_pro_light(16px)
-                                    padding: 20px 30px 20px 70px
+                                    sf_pro_light(14px)
+                                    padding: 15px 20px 15px 50px
                                     transition: .3s ease-in-out .2s
                         .item_wrapper
                             .nav_item
-                                padding: 20px 30px 20px 70px
+                                sf_pro_regular(14px)
+                                padding: 15px 20px 15px 50px
                                 color: $black
                                 transition: .3s ease-in-out .2s
+                                span
+                                    opacity: 1
+                                    visibility: visible
+                                    transition: .3s ease-in-out .2s
                                 &.nav_parent
                                     &::before
                                         opacity: 1
@@ -5407,8 +5467,8 @@ input::placeholder
                                 .sub_nav_list
                                     .sub_item_wrapper
                                         .sub_nav_item
-                                            sf_pro_light(16px)
-                                            padding: 20px 30px 20px 70px
+                                            sf_pro_light(14px)
+                                            padding: 15px 20px 15px 50px
                                             transition: .3s ease-in-out .2s
         .navbar
             height: 100%
@@ -5419,11 +5479,11 @@ input::placeholder
                 display: flex
                 flex-flow: row wrap
                 align-items: center
-                justify-content: flex-start
-                padding: 10px 2px 60px
+                justify-content: center
+                padding: 10px 0 20px
                 transition: .3s ease-in-out
                 img
-                    width: 65px
+                    width: 40px
                     {image_default}
                     transition: .3s ease-in-out
                 .logo_title
@@ -5440,7 +5500,7 @@ input::placeholder
                 position: relative
                 sf_pro_light(0)
                 color: $green
-                padding: 20px 30px
+                padding: 15px 20px
                 margin-left: 0
                 margin-bottom: 0
                 cursor: pointer
@@ -5460,7 +5520,7 @@ input::placeholder
                 list-style: none
                 padding: 0
                 height: 100%
-                max-height: 750px
+                max-height: 500px
                 overflow-x: hidden
                 overflow-y: auto
                 &.alt
@@ -5472,7 +5532,7 @@ input::placeholder
                             color: $black
                             text-decoration: none
                             outline: none
-                            padding: 20px 30px
+                            padding: 15px 20px
                             background-color: transparent
                             border-left: 2px solid transparent
                             transition: .3s ease-in-out
@@ -5487,32 +5547,36 @@ input::placeholder
                                 content: ''
                                 position: absolute
                                 top: 50%
-                                left: 22px
-                                width: 20px
+                                left: 15px
+                                width: 15px
                                 height: 1px
                                 transform: translateY(-50%)
                                 background-color: $green
                 .item_wrapper
                     .nav_item
-                        sf_pro_regular(16px)
+                        sf_pro_regular(0)
                         color: transparent
                         display: block
                         position: relative
-                        padding: 20px 30px
+                        padding: 18px 20px
                         border-left: 2px solid transparent
                         background-color: transparent
                         text-decoration: none
                         outline: none
                         z-index: 0
-                        background-position: calc(0% + 20px) calc(50%)
+                        background-position: calc(0% + 13px) calc(50%)
                         background-repeat: no-repeat
-                        background-size: 25px
+                        background-size: 20px
                         transition: .3s ease-in-out .1s
+                        span
+                            opacity: 0
+                            visibility: hidden
+                            transition: .3s ease-in-out
                         & ~ .sub_wrapper
                             display: block
                             height: 0px
+                            overflow: hidden
                             opacity: 0
-                            visibility: hidden
                             transition: .3s ease-in-out
                         &.dashboard
                             background-image: url('/icons/navbar/dashboard-unselected.png')
@@ -5538,10 +5602,10 @@ input::placeholder
                                 top: 50%
                                 width: 0
                                 height: 0
-                                border-left: 7px solid transparent
-                                border-right: 7px solid transparent
-                                border-top: 7px solid $green
-                                right: 25px
+                                border-left: 5px solid transparent
+                                border-right: 5px solid transparent
+                                border-top: 5px solid $green
+                                right: 15px
                                 z-index: 1
                                 transform: translateY(-50%) rotate(0deg)
                                 opacity: 0
@@ -5614,7 +5678,6 @@ input::placeholder
                         .nav_item
                             & ~ .sub_wrapper
                                 opacity: 1
-                                visibility: visible
                                 transition: .3s ease-in-out
                             &.nav_parent
                                 position: relative
@@ -5633,7 +5696,7 @@ input::placeholder
                                     color: $black
                                     text-decoration: none
                                     outline: none
-                                    padding: 20px 30px
+                                    padding: 15px 20px
                                     background-color: transparent
                                     border-left: 2px solid transparent
                                     transition: .3s ease-in-out
@@ -5648,8 +5711,8 @@ input::placeholder
                                         content: ''
                                         position: absolute
                                         top: 50%
-                                        left: 22px
-                                        width: 20px
+                                        left: 15px
+                                        width: 15px
                                         height: 1px
                                         transform: translateY(-50%)
                                         background-color: $green
@@ -5683,18 +5746,18 @@ input::placeholder
         display: block
         width: 100%
         .content
-            padding-top: 79px
+            padding-top: 55px
             position: relative
             flex: 1 auto
             background-color: #F8F8FB
-            padding-left: 70px
+            padding-left: 50px
             height: 100vh
             transition: .3s ease-in-out
             &.toggled
                 padding-left: 300px
                 transition: .3s ease-in-out .2s
                 .footer
-                    padding: 20px 40px 20px 340px
+                    padding: 15px 40px 15px 280px
                     transition: .3s ease-in-out .2s
     .footer
         position: fixed
@@ -5706,12 +5769,12 @@ input::placeholder
         flex-flow: row wrap
         align-items: center
         justify-content: space-between
-        padding: 20px 40px 20px 110px
+        padding: 15px 40px 15px 80px
         background-color: $white
         transition: .3s ease-in-out
         opacity: 1
         .footer_label
-            sf_pro_light(14px)
+            sf_pro_light(12px)
             color: $gray
 
 #admin
@@ -6029,21 +6092,21 @@ input::placeholder
         flex-flow: row wrap
         justify-content: space-between
         align-items: center
-        padding: 60px 40px 0
+        padding: 30px 30px 0
         .header_title
-            neutra_text(36px)
+            neutra_text(26px)
             color: $black
             text-transform: capitalize
             padding-left: 15px
             h1
-                neutra_text(36px)
+                neutra_text(26px)
                 text-transform: capitalize
             span
                 margin-left: 10px
-                neutra_text(25px)
+                neutra_text(18px)
                 color: $border_alt2
         .header_subtitle
-            sf_pro_medium(18px)
+            sf_pro_medium(16px)
             color: $border_alt2
             margin-top: 5px
         &.booker
@@ -6309,7 +6372,7 @@ input::placeholder
                                     transition: .3s ease-in-out
         &.table
             box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.09)
-            padding: 60px 40px 40px
+            padding: 30px
             .header_title
                 padding-left: 0px
             .action_buttons
@@ -6334,9 +6397,9 @@ input::placeholder
                         align-items: center
                         .status
                             background-color: $white
-                            padding: 12px 40px
+                            padding: 10px 20px
                             text-align: center
-                            sf_pro_medium(16px)
+                            sf_pro_medium(14px)
                             color: $black
                             border-radius: 0px
                             border-right: 1px solid $border
@@ -6398,10 +6461,6 @@ input::placeholder
                     .header_title,
                     .action_buttons
                         flex: 0 0 auto
-                    .action_buttons
-                        a,
-                        button
-                            width: 200px
                 .header_title
                     flex: 0 0 auto
                     display: flex
@@ -6415,7 +6474,7 @@ input::placeholder
                     span
                         &.green,
                         &.red
-                            sf_pro_bold(18px)
+                            sf_pro_bold(16px)
                             margin-left: 20px
                         &.green
                             color: $green
@@ -6467,7 +6526,7 @@ input::placeholder
                     flex: 0 0 auto
                     margin-top: 0
                 .total
-                    sf_pro_medium(22px)
+                    sf_pro_medium(18px)
                     color: $black
                     padding: 0 25px 0 40px
                 .toggler
@@ -6476,9 +6535,9 @@ input::placeholder
                     align-items: center
                     .status
                         background-color: $white
-                        padding: 12px 40px
+                        padding: 10px 20px
                         text-align: center
-                        sf_pro_medium(16px)
+                        sf_pro_medium(14px)
                         color: $black
                         border-radius: 0px
                         border-right: 1px solid $border
@@ -6505,14 +6564,14 @@ input::placeholder
                         flex-flow: row wrap
                         align-items: center
                         padding-bottom: 15px
-                        margin-left: 20px
+                        margin-left: 15px
                         .legend_title
-                            sf_pro_regular(16px)
+                            sf_pro_regular(14px)
                             color: $black
                             span
-                                sf_pro_regular(16px)
+                                sf_pro_regular(14px)
                             &.margin
-                                margin-left: 20px
+                                margin-left: 15px
                             &.black
                                 span
                                     color: $black
@@ -6528,34 +6587,34 @@ input::placeholder
                     align-items: flex-end
                     justify-content: flex-start
                     .filter_label
-                        sf_pro_medium(18px)
+                        sf_pro_medium(16px)
                         color: $black
                         &.margin
-                            margin-left: 20px
+                            margin-left: 15px
                     .form_group
-                        margin-top: 20px
+                        margin-top: 15px
                         margin-bottom: 0
                         &.alternate
                             .default_text
-                                width: 350px
+                                width: 300px
                         .default_select,
                         .default_text
-                            width: 200px
+                            width: 150px
                     .action_btn
                         display: inline-block
                         width: auto
-                        padding: 14px 20px
+                        padding: 10px 20px
 
     #content
-        padding: 60px 40px
+        padding: 30px
         position: relative
         &.alternate
             padding: 0
         &.alternate_2
-            padding: 60px 20px
+            padding: 30px 15px
         .header_selector
             border-bottom: 1px solid $border
-            padding: 0 40px 20px
+            padding: 0 30px
             .default_select
                 width: 210px
                 sf_pro_regular(22px)

@@ -21,13 +21,6 @@
                             <label for="q">Find a Instructor</label>
                             <input type="text" name="q" autocomplete="off" placeholder="Search for a instructor" class="default_text search_alternate">
                         </div>
-                        <div class="form_group margin">
-                            <label for="studio_id">Studio</label>
-                            <select class="default_select alternate" name="studio_id">
-                                <option value="0" selected>All Studios</option>
-                                <option :value="data.id" v-for="(data, key) in studios" :key="key">{{ data.name }}</option>
-                            </select>
-                        </div>
                         <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                     </form>
                 </div>
@@ -36,12 +29,12 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Last Name</th>
-                            <th>First Name</th>
-                            <th>Studio</th>
-                            <th>Nickname</th>
-                            <th>Email Address</th>
-                            <th>Contact No.</th>
+                            <th class="stick">Last Name</th>
+                            <th class="stick">First Name</th>
+                            <th class="stick">Studio</th>
+                            <th class="stick">Nickname</th>
+                            <th class="stick">Email Address</th>
+                            <th class="stick">Contact No.</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.instructors.data.length > 0">
@@ -103,8 +96,7 @@
                 status: 1,
                 res: [],
                 total_count: 0,
-                types: [],
-                studios: []
+                types: []
             }
         },
         methods: {
@@ -162,9 +154,6 @@
                         me.loader(false)
                     }, 500)
                     me.rowCount = document.getElementsByTagName('th').length
-                })
-                me.$axios.get('api/studios?enabled=1').then(res => {
-                    me.studios = res.data.studios
                 })
             }
         },

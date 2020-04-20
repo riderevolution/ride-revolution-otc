@@ -29,10 +29,10 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Supplier Name</th>
-                            <th>Email Address</th>
-                            <th>Contact Number</th>
-                            <th>Action</th>
+                            <th class="stick">Supplier Name</th>
+                            <th class="stick">Email Address</th>
+                            <th class="stick">Contact Number</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.suppliers.data.length > 0">
@@ -40,9 +40,9 @@
                             <td>{{ data.name }}</td>
                             <td>{{ data.email }}</td>
                             <td>{{ data.contact_number }}</td>
-                            <td>
+                            <td width="20%">
                                 <div class="table_actions">
-                                    <nuxt-link class="table_action_edit" :to="`/${prevRoute}/products/create?s=${data.id}`">Add a Product</nuxt-link>
+                                    <nuxt-link class="table_action_success" :to="`/${prevRoute}/products/create?s=${data.id}`">Add a Product</nuxt-link>
                                     <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
                                 </div>
                             </td>

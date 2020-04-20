@@ -50,13 +50,13 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Category</th>
-                            <th>Studio</th>
-                            <th>Supplier</th>
-                            <th>Sellable</th>
-                            <th>Action</th>
+                            <th class="stick">Name</th>
+                            <th class="stick">Description</th>
+                            <th class="stick">Category</th>
+                            <th class="stick">Studio</th>
+                            <th class="stick">Supplier</th>
+                            <th class="stick">Sellable</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.products.data.length > 0">

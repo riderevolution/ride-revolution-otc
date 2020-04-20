@@ -25,15 +25,15 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Customer</th>
-                            <th>Rewards</th>
-                            <th>Store Credits Bought</th>
-                            <th>Store Credits Refunded</th>
-                            <th>Store Credits Remaining</th>
-                            <th>Spent</th>
-                            <th>Contact Number</th>
-                            <th>Email Address</th>
-                            <th>City</th>
+                            <th class="stick">Customer</th>
+                            <th class="stick">Rewards</th>
+                            <th class="stick">Store Credits Bought</th>
+                            <th class="stick">Store Credits Refunded</th>
+                            <th class="stick">Store Credits Remaining</th>
+                            <th class="stick">Spent</th>
+                            <th class="stick">Contact Number</th>
+                            <th class="stick">Email Address</th>
+                            <th class="stick">City</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">

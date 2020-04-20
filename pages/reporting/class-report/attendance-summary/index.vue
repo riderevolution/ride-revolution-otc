@@ -75,22 +75,22 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Total Rides</th>
-                            <th>Paying Riders</th>
-                            <th>Comped Riders</th>
-                            <th>First Timers</th>
-                            <th>No Shows</th>
-                            <th>Cancel</th>
-                            <th>Waitlist</th>
-                            <th>Repeat</th>
-                            <th>Avg Riders</th>
-                            <th>Number Classes</th>
-                            <th>Avg Spots</th>
-                            <th>Total Bikes</th>
-                            <th>Capacity</th>
-                            <th>Paying</th>
-                            <th>Total Revenue</th>
+                            <th class="stick">Date</th>
+                            <th class="stick">Total Rides</th>
+                            <th class="stick">Paying Riders</th>
+                            <th class="stick">Comped Riders</th>
+                            <th class="stick">First Timers</th>
+                            <th class="stick">No Shows</th>
+                            <th class="stick">Cancel</th>
+                            <th class="stick">Waitlist</th>
+                            <th class="stick">Repeat</th>
+                            <th class="stick">Avg Riders</th>
+                            <th class="stick">Number Classes</th>
+                            <th class="stick">Avg Spots</th>
+                            <th class="stick">Total Bikes</th>
+                            <th class="stick">Capacity</th>
+                            <th class="stick">Paying</th>
+                            <th class="stick">Total Revenue</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">

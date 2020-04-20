@@ -21,11 +21,11 @@
                 <table class="cms_table" v-if="loaded">
                     <thead>
                         <tr>
-                            <th>Color</th>
-                            <th>Studio</th>
-                            <th>Purchases Email Sender</th>
-                            <th>Reservations Email Sender</th>
-                            <th>Action</th>
+                            <th class="stick">Color</th>
+                            <th class="stick">Studio</th>
+                            <th class="stick">Purchases Email Sender</th>
+                            <th class="stick">Reservations Email Sender</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.length > 0">
