@@ -24,18 +24,12 @@
                             </select>
                         </div>
                         <div class="form_group margin">
-                            <label for="value_as_of">Value as of</label>
-                            <no-ssr>
-                                <vc-date-picker
-                                    v-model="value_as_of"
-                                    :input-props='{
-                                        class: "vc-appearance-none default_select alternate",
-                                        id: "value_as_of",
-                                        name: "value_as_of",
-                                        readonly: true
-                                    }'
-                                />
-                            </no-ssr>
+                            <label for="start_date">Start Date</label>
+                            <input type="date" name="start_date" class="default_text date" />
+                        </div>
+                        <div class="form_group margin">
+                            <label for="end_date">End Date</label>
+                            <input type="date" name="end_date" class="default_text date" />
                         </div>
                         <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                     </form>

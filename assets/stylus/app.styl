@@ -535,11 +535,11 @@ table
 .action_user_btn
     display: inline-block
     width: auto
-    sf_pro_medium(14px)
+    sf_pro_medium(12px)
     text-decoration: none
     outline: none
     color: $white
-    padding: 15px 20px
+    padding: 10px 20px
     background-color: $black_alternate2
     border: 1px solid $black_alternate2
     border-radius: 3px
@@ -993,47 +993,47 @@ table
                     justify-content: space-between
                     .header_side
                         flex: 1 0 100%
-                        margin-bottom: 40px
+                        margin-bottom: 20px
                         .header_title
                             position: relative
-                            sf_pro_bold(24px)
+                            sf_pro_bold(20px)
                             color: $black
                         .header_subtitle
                             margin-top: 5px
-                            sf_pro_regular(16px)
+                            sf_pro_regular(14px)
                             color: $border_alt2
                             text-transform: uppercase
                             .margin
-                                margin-left: 15px
+                                margin-left: 10px
                     .left_side
                         flex: 0 0 48%
                         background-color: $white
                         .left_title
-                            sf_pro_bold(20px)
+                            sf_pro_bold(16px)
                             color: $black
-                            margin-bottom: 15px
+                            margin-bottom: 10px
                         .form_flex_radio
                             .form_radio
-                                margin-bottom: 15px
+                                margin-bottom: 10px
                         .form_main_group
-                            margin-top: 30px
+                            margin-top: 20px
                     .right_side
-                        flex: 0 0 48%
+                        flex: 0 0 49%
                         padding: 0
                         .breakdown_wrapper
                             border-top: 2px dashed $border
                             border-left: 2px dashed $border
                             border-right: 2px dashed $border
-                            padding: 20px 20px 80px
+                            padding: 10px 10px 60px
                             height: 100%
-                            min-height: 300px
-                            max-height: 400px
+                            min-height: 200px
+                            max-height: 300px
                             overflow-y: auto
                             overflow-x: hidden
                             .breakdown_table
                                 thead
                                     th
-                                        sf_pro_regular(16px)
+                                        sf_pro_regular(14px)
                                         color: $border_alt2
                                         text-align: left
                                         font-weight: normal
@@ -1044,14 +1044,14 @@ table
                                         color: $black
                                         padding: 5px 0
                                         &.item_name
-                                            sf_pro_semibold(16px)
+                                            sf_pro_semibold(14px)
                                         &.item_price
                                             position: relative
-                                            sf_pro_regular(16px)
+                                            sf_pro_regular(14px)
                                             .prev_price
                                                 position: absolute
                                                 top: 0
-                                                sf_pro_medium(13px)
+                                                sf_pro_medium(12px)
                                                 color: $red
                                                 text-decoration: line-through
                                             p
@@ -1060,9 +1060,11 @@ table
                                             margin-right: 20px
                                             .default_text
                                                 padding: 10px 15px
+                                                &.number
+                                                    padding: 10px 5px
                                 .no_results
                                     background-color: $white
-                                    sf_pro_regular(16px)
+                                    sf_pro_regular(14px)
                                     color: $black
                                     padding: 20px 35px
                                     text-align: center
@@ -1073,13 +1075,13 @@ table
                             justify-content: space-between
                             background-color: $white
                             box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.09)
-                            padding: 20px
+                            padding: 10px 10px 20px
                             &.alternate
                                 .total_title
-                                    sf_pro_regular(20px)
+                                    sf_pro_regular(16px)
                                     color: $black
                                 .total_price
-                                    sf_pro_bold(25px)
+                                    sf_pro_bold(20px)
                                     color: $red
                             .promo
                                 display: flex
@@ -1090,10 +1092,10 @@ table
                                     flex: 1 0 30%
                                     margin-bottom: 0
                                     input
-                                        padding: 12px 15px
+                                        padding: 10px 15px
                                 .action_btn
                                     width: auto
-                                    padding: 12px 17px
+                                    padding: 10px 15px
                             .total_wrapper
                                 display: flex
                                 flex-flow: row wrap
@@ -1101,11 +1103,11 @@ table
                                 flex: 0 0 auto
                                 padding-bottom: 5px
                                 .total_title
-                                    sf_pro_regular(20px)
+                                    sf_pro_regular(16px)
                                     color: $black
                                     padding-right: 10px
                                 .total_price
-                                    sf_pro_bold(25px)
+                                    sf_pro_bold(20px)
                                     color: $red
                     .footer_side
                         flex: 1 0 100%
@@ -1119,7 +1121,7 @@ table
                                 margin-bottom: 0
                         .button_group
                             button
-                                padding: 14px
+                                padding: 10px 15px
                 .left_side
                     position: relative
                     flex: 0 0 25%
@@ -1150,6 +1152,7 @@ table
                         overflow-x: hidden
                         overflow-y: auto
                         .modal_tab_title
+                            cursor: pointer
                             position: relative
                             padding: 15px 20px
                             sf_pro_semibold(14px)
@@ -1180,8 +1183,9 @@ table
                         .tab_content_flex
                             display: flex
                             flex-flow: row wrap
+                            align-items: flex-end
                             justify-content: space-between
-                            margin-bottom: 20px
+                            margin-bottom: 0
                             &.alternate
                                 padding: 20px 0 30px
                             .form_flex
@@ -1209,15 +1213,15 @@ table
                         .no_results
                             sf_pro_regular(14px)
                             color: $black
-                            padding: 20px 35px
+                            padding: 20px
                             text-align: center
                         #default_form,
                         #custom_gift_form
                             .modal_wrapper
                                 .modal_main_group
                                     .form_main_group
-                                        padding: 20px 30px
-                                        margin: 0 30px
+                                        padding: 20px
+                                        margin: 0
                                         border-bottom: 2px dashed $border
                                         .form_group_disclaimer
                                             .form_disclaimer
@@ -1230,15 +1234,15 @@ table
                             display: flex
                             flex-flow: row wrap
                             align-items: center
-                            padding: 15px 0
+                            padding: 10px 0
                             border-bottom: 2px dashed $border
                             &.no_qty
-                                padding: 30px 0
+                                padding: 15px 0
                             .form_check
                                 flex: 1 0 40%
                             .total_price
                                 flex: 0 0 auto
-                                sf_pro_regular(15px)
+                                sf_pro_regular(14px)
                                 color: $black
                             .form_group
                                 flex: 0 0 15%
@@ -1247,7 +1251,7 @@ table
                                 align-items: center
                                 margin-bottom: 0
                                 label
-                                    sf_pro_semibold(15px)
+                                    sf_pro_semibold(14px)
                                     margin-bottom: 0
                                     margin-left: 10px
                                     margin-right: 10px
@@ -1683,7 +1687,7 @@ input::placeholder
                                     .table_action_cancel
                                         padding: 10px 20px
         .form_overview
-            padding: 40px 50px 50px
+            padding: 20px
             .wrapper
                 display: flex
                 flex-flow: row wrap
@@ -1693,10 +1697,10 @@ input::placeholder
                 &:last-child
                     margin-bottom: 0
                 label
-                    sf_pro_regular(16px)
+                    sf_pro_regular(14px)
                     color: $border_alt2
                 p
-                    sf_pro_regular(14px)
+                    sf_pro_regular(12px)
                     color: $black
                     &.alt
                         text-transform: capitalize
@@ -1958,7 +1962,7 @@ input::placeholder
     .up
         position: absolute
         top: 35%
-        right: calc(0px + 15px)
+        right: calc(0px + 10px)
         z-index: 0
         width: 0
         height: 0
@@ -1970,7 +1974,7 @@ input::placeholder
     .down
         position: absolute
         top: 65%
-        right: calc(0px + 15px)
+        right: calc(0px + 10px)
         z-index: 0
         width: 0
         height: 0
@@ -2159,7 +2163,7 @@ input::placeholder
             border-bottom: 2px dashed $border
             padding: 30px 15px
             &:first-child
-                padding: 0 15px 30px
+                padding: 0 0 20px
             &:last-child
                 border-bottom: 2px dashed transparent
             &.toggled
@@ -2177,12 +2181,12 @@ input::placeholder
                 flex-flow: row wrap
                 align-items: center
                 justify-content: space-between
-                sf_pro_semibold(16px)
+                sf_pro_semibold(14px)
                 transition: .3s ease-in-out
                 p
                     margin-bottom: 0
                 .id
-                    sf_pro_regular(14px)
+                    sf_pro_regular(12px)
                     color: $border_alt2
                     transition: .3s ease-in-out
                     &.alternate
@@ -2317,7 +2321,7 @@ input::placeholder
     .form_disclaimer
         display: flex
         align-items: flex-start
-        sf_pro_regular(14px)
+        sf_pro_regular(12px)
         color: $gray
         text-align: left
         span
@@ -2332,7 +2336,7 @@ input::placeholder
         pointer-events: none
         opacity: 0.5
     .limit
-        sf_pro_regular(14px)
+        sf_pro_regular(12px)
         color: $gray
         text-align: right
     &.margin
@@ -4067,9 +4071,8 @@ input::placeholder
             border-bottom: 1px solid $border_alt
             img
                 width: 100%
-                height: 200px
-                object-position: center;
-
+                height: 100px
+                object-position: center
                 filter: grayscale(0)
                 opacity: 1
                 transition: .3s ease-in-out
@@ -4080,11 +4083,11 @@ input::placeholder
             padding: 15px 20px
             h2
                 flex: 0 0 100%
-                sf_pro_regular(15px)
+                sf_pro_regular(14px)
                 color: $black
             p
                 flex: 0 0 100%
-                sf_pro_regular(15px)
+                sf_pro_regular(14px)
                 color: $border_alt2
         &:hover
             box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.09)
@@ -5780,7 +5783,7 @@ input::placeholder
 #admin
     #content
         &.main
-            padding: 60px 55px
+            padding: 30px
     &.user
         &.alt
             #content
@@ -5789,7 +5792,7 @@ input::placeholder
             #content
                 margin-bottom: 30px
                 #default_form
-                    max-width: 65%
+                    max-width: 75%
         &.alt_3
             #content
                 margin-bottom: 175px
@@ -5802,7 +5805,7 @@ input::placeholder
             align-items: flex-start
             background-color: $black
             box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.09)
-            padding: 20px 40px 60px
+            padding: 20px 40px 40px
             .action_back_btn
                 color: $border_alt2
                 &:hover
@@ -5813,21 +5816,20 @@ input::placeholder
                 flex-flow: row wrap
                 align-items: flex-start
                 img
-                    width: 90px
-                    height: 90px
+                    width: 70px
+                    height: 70px
                     border-radius: 90%
                     object-fit: cover
                     object-position: center
                 .user_image_default
                     position: relative
-                    sf_pro_bold(24px)
+                    sf_pro_bold(20px)
                     text-transform: uppercase
                     background-image: linear-gradient(137deg, $red, $orange)
                     border-radius: 50%
-                    padding: 30px
                     color: #fff
-                    width: 90px
-                    height: 90px
+                    width: 70px
+                    height: 70px
                     .overlay
                         position: absolute
                         top: 50%
@@ -5840,7 +5842,7 @@ input::placeholder
                     flex: 1 0 40%
                     padding-left: 20px
                     .user_name
-                        sf_pro_bold(26px)
+                        sf_pro_bold(20px)
                         color: $white
                     .user_contact
                         display: flex
@@ -5850,7 +5852,7 @@ input::placeholder
                         a
                             display: block
                             color: $white
-                            sf_pro_regular(16px)
+                            sf_pro_regular(14px)
                             background-position: left center
                             background-repeat: no-repeat
                             &.number
@@ -5869,7 +5871,7 @@ input::placeholder
                         align-items: center
                         margin-bottom: 30px
                         .summary
-                            sf_pro_regular(16px)
+                            sf_pro_regular(14px)
                             color: $border_alt2
                             margin-left: 20px
                             &.pending
@@ -5889,8 +5891,8 @@ input::placeholder
                 z-index: 1
                 .tab_title
                     position: relative
-                    padding: 20px 40px
-                    sf_pro_medium(18px)
+                    padding: 15px 20px
+                    sf_pro_medium(14px)
                     color: $black
                     background-color: $white
                     text-decoration: none
@@ -5923,22 +5925,22 @@ input::placeholder
                             transition: .3s ease-in-out
         #content
             width: 100%
-            max-width: 75%
+            max-width: 80%
             margin: 0 auto
-            padding: 80px 40px
-            margin-bottom: 80px
+            padding: 60px 40px
+            margin-bottom: 60px
             .cms_table_package
                 background-color: $white
                 border-radius: 5px
                 .no_results
                     background-color: #f8f8fb
                     text-align: center
-                    sf_pro_medium(50px)
+                    sf_pro_medium(35px)
                     color: $gray_alternate
                     text-align: center
                     padding: 50px 0
                 .table_package
-                    padding: 40px
+                    padding: 30px
                     border-bottom: 2px dashed $border
                     &:last-child
                         border-bottom: 2px dashed transparent
@@ -5946,7 +5948,7 @@ input::placeholder
                         display: flex
                         flex-flow: row wrap
                         align-items: center
-                        sf_pro_bold(22px)
+                        sf_pro_bold(18px)
                         color: $black
                         span
                             sf_pro_medium(12px)
@@ -5971,7 +5973,7 @@ input::placeholder
                         margin-top: 30px
                         label
                             display: block
-                            sf_pro_regular(16px)
+                            sf_pro_regular(14px)
                             color: $border_alt2
                             margin-top: 10px
                             a
@@ -6006,7 +6008,7 @@ input::placeholder
                                     text-align: center
                                     transform: translateY(-50%)
                                     p
-                                        sf_pro_medium(18px)
+                                        sf_pro_medium(16px)
                                         color: $black
                                         margin-bottom: 0
                                     label
@@ -6020,10 +6022,12 @@ input::placeholder
                                 &.margin
                                     margin-left: 60px
                                 p
-                                    sf_pro_medium(18px)
+                                    sf_pro_medium(16px)
                                     color: $black
                                     margin-bottom: 0
                         .package_action
+                            .action_success_btn
+                                width: 150px
                             .package_options
                                 position: relative
                                 &.toggled
@@ -6038,13 +6042,13 @@ input::placeholder
                                         transition: .3s ease-in-out
                                 .option_btn
                                     display: inline-block
-                                    width: 225px
-                                    sf_pro_medium(16px)
+                                    width: 150px
+                                    sf_pro_medium(12px)
                                     font-weight: normal
                                     text-decoration: none
                                     outline: none
                                     color: $green
-                                    padding: 17px
+                                    padding: 10px 20px
                                     background-color: #F6F6F6
                                     background-image: url('/icons/custom-select-icon.svg')
                                     background-position: calc(100% - 15px) center
@@ -6076,9 +6080,9 @@ input::placeholder
                                     transition: .3s ease-in-out
                                     .option_link
                                         display: block
-                                        sf_pro_regular(15px)
+                                        sf_pro_regular(12px)
                                         color: $black
-                                        padding: 15px 20px
+                                        padding: 10px 20px
                                         text-decoration: none
                                         background-color: transparent
                                         transition: .3s ease-in-out
@@ -6097,7 +6101,7 @@ input::placeholder
             neutra_text(26px)
             color: $black
             text-transform: capitalize
-            padding-left: 15px
+            padding-left: 0
             h1
                 neutra_text(26px)
                 text-transform: capitalize
@@ -6106,7 +6110,7 @@ input::placeholder
                 neutra_text(18px)
                 color: $border_alt2
         .header_subtitle
-            sf_pro_medium(16px)
+            sf_pro_medium(14px)
             color: $border_alt2
             margin-top: 5px
         &.booker
@@ -6610,6 +6614,29 @@ input::placeholder
     #content
         padding: 30px
         position: relative
+        .filter_flex
+            display: flex
+            flex-flow: row wrap
+            align-items: flex-end
+            justify-content: flex-start
+            margin-bottom: 20px
+            .filter_label
+                sf_pro_medium(14px)
+                color: $black
+                &.margin
+                    margin-left: 20px
+            .form_group
+                margin-bottom: 0
+                &.alternate
+                    .default_text
+                        width: 200px
+                .default_select,
+                .default_text
+                    width: 200px
+            .action_btn
+                display: inline-block
+                width: auto
+                padding: 10px 20px
         &.alternate
             padding: 0
         &.alternate_2

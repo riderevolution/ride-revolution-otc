@@ -32,19 +32,12 @@
                             </select>
                         </div>
                         <div class="form_group margin">
-                            <label for="range">Date Range</label>
-                            <no-ssr>
-                                <vc-date-picker
-                                    mode='range'
-                                    v-model="range"
-                                    :input-props='{
-                                        class: "vc-appearance-none default_select alternate",
-                                        id: "range",
-                                        name: "range",
-                                        readonly: true
-                                    }'
-                                />
-                            </no-ssr>
+                            <label for="start_date">Start Date</label>
+                            <input type="date" name="start_date" class="default_text date" />
+                        </div>
+                        <div class="form_group margin">
+                            <label for="end_date">End Date</label>
+                            <input type="date" name="end_date" class="default_text date" />
                         </div>
                         <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                     </form>
