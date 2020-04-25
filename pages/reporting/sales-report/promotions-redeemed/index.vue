@@ -13,8 +13,8 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                <a href="javascript:void(0)" class="action_btn">Print</a>
-                                <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                                <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                                <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                             </div>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div class="total">Grand Total: {{ totalCount(total_count) }}</div>
+                        <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
                     </div>
                     <table class="cms_table">
                         <thead>
@@ -108,6 +108,7 @@
                 const me = this
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
+                formData.append('studio_id', me.$store.state.user.current_studio_id)
                 me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -130,8 +131,9 @@
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
-                formData.append('start_date', me.$moment('2019-01-20').format('YYYY-MM-DD'))
+                formData.append('start_date', me.$moment().format('YYYY-MM-DD'))
                 formData.append('end_date', me.$moment().format('YYYY-MM-DD'))
+                formData.append('studio_id', me.$store.state.user.current_studio_id)
                 me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -158,10 +160,10 @@
         },
         mounted () {
             const me = this
-            me.fetchData()
             setTimeout( () => {
+                me.fetchData()
                 window.scrollTo({ top: 0, behavior: 'smooth' })
-            }, 300)
+            }, 750)
         }
     }
 </script>
