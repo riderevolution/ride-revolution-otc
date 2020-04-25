@@ -1,101 +1,91 @@
 <template>
     <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table">
-                <div class="action_wrapper">
-                    <div>
-                        <div class="header_title">
-                            <h1>Sales by Products</h1>
-                            <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+        <transition name="fade">
+            <div id="admin" class="cms_dashboard" v-if="loaded">
+                <section id="top_content" class="table">
+                    <div class="action_wrapper">
+                        <div>
+                            <div class="header_title">
+                                <h1>Sales by Products</h1>
+                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                            </div>
+                            <h2 class="header_subtitle">Income from products sold</h2>
                         </div>
-                        <h2 class="header_subtitle">Income from products sold</h2>
+                        <div class="actions">
+                            <div class="action_buttons">
+                                <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                                <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="actions">
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
+                            <div class="form_group">
+                                <label for="start_date">Start Date</label>
+                                <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
+                            </div>
+                            <div class="form_group margin">
+                                <label for="end_date">End Date</label>
+                                <input type="date" name="end_date" v-model="form.end_date"  class="default_text date" />
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
+                    </div>
+                </section>
+                <section id="content">
+                    <div class="cms_table_toggler">
                         <div class="total">Total: {{ totalItems(total_count) }}</div>
-                        <div class="toggler">
-                            <div :class="`status ${(status == 1) ? 'active' : ''}`" @click="toggleTab(1)">All</div>
-                            <div :class="`status ${(status == 2) ? 'active' : ''}`" @click="toggleTab(2)">Paid</div>
-                            <div :class="`status ${(status == 3) ? 'active' : ''}`" @click="toggleTab(3)">Pending</div>
-                        </div>
+                        <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
+                        <div :class="`status ${(status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
+                        <div :class="`status ${(status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
                     </div>
-                </div>
-                <div class="action_buttons">
-                    <a href="javascript:void(0)" class="action_btn">Print</a>
-                    <a href="javascript:void(0)" class="action_btn margin">Export</a>
-                </div>
-                <div class="filter_wrapper">
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
-                        <div class="form_group">
-                            <label for="studio">Branch</label>
-                            <select class="default_select alternate" name="studio">
-                                <option value="" selected>All Studios</option>
-                                <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="start_date">Start Date</label>
-                            <input type="date" name="start_date" class="default_text date" />
-                        </div>
-                        <div class="form_group margin">
-                            <label for="end_date">End Date</label>
-                            <input type="date" name="end_date" class="default_text date" />
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                </div>
-            </section>
-            <section id="content">
-                <table class="cms_table">
-                    <thead>
-                        <tr>
-                            <th class="sticky">Class Package</th>
-                            <th class="sticky">Sold</th>
-                            <th class="sticky">Returned</th>
-                            <th class="sticky">Comp</th>
-                            <th class="sticky">Discount</th>
-                            <th class="sticky">Taxes</th>
-                            <th class="sticky">Total Income</th>
-                            <th class="sticky">Comp Value</th>
-                            <th class="sticky">Cost</th>
-                            <th class="sticky">Profit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><b>Total</b></td>
-                            <td><b>500</b></td>
-                            <td><b>1</b></td>
-                            <td><b>4</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                        </tr>
-                        <tr v-for="(n, key) in 6" :key="key">
-                            <td>
-                                <nuxt-link class="table_data_link" :to="`${$route.path}/merchandise`">Merchandise</nuxt-link>
-                            </td>
-                            <td>100</td>
-                            <td>2</td>
-                            <td>3</td>
-                            <td>Php 321,925</td>
-                            <td>Php 321,925</td>
-                            <td>Php 321,925</td>
-                            <td>Php 321,925</td>
-                            <td>Php 321,925</td>
-                            <td>Php 321,925</td>
-                        </tr>
-                    </tbody>
-                    <!-- <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody> -->
-                </table>
-            </section>
-        </div>
+                    <table class="cms_table">
+                        <thead>
+                            <tr>
+                                <th class="sticky">Item</th>
+                                <th class="sticky">Sold</th>
+                                <th class="sticky">Returned</th>
+                                <th class="sticky">Comp</th>
+                                <th class="sticky">Discount</th>
+                                <th class="sticky">Taxes</th>
+                                <th class="sticky">Total Income</th>
+                                <th class="sticky">Comp Value</th>
+                                <th class="sticky">Cost</th>
+                                <th class="sticky">Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>{{ total.name }}</b></td>
+                                <td><b>{{ total.sold }}</b></td>
+                                <td><b>0</b></td>
+                                <td><b>{{ total.comp }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_income) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_cost) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_profit) }}</b></td>
+                            </tr>
+                            <tr v-for="(data, key) in res" :key="key">
+                                <td>
+                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`">{{ data.name }}</nuxt-link>
+                                </td>
+                                <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                                <td>0</td>
+                                <td>{{ (data.comp) ? data.comp : 0 }}</td>
+                                <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
+                                <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
+                                <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
+                                <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
+                                <td>Php {{ (data.total_cost) ? totalCount(data.total_cost) : 0 }}</td>
+                                <td :class="`${(data.total_profit) ? (data.total_profit <= 0 ? 'red' : 'green') : ''}`">Php {{ (data.total_profit) ? totalCount(data.total_profit) : 0 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
@@ -108,39 +98,83 @@
         },
         data () {
             return {
-                range: {
-                    start: new Date(),
-                    end: new Date()
-                },
+                loaded: false,
                 rowCount: 0,
-                status: 1,
+                status: 'all',
                 res: [],
-                studios: [],
-                total_count: 0
+                total: [],
+                total_count: 0,
+                form: {
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
+                }
             }
         },
         methods: {
             toggleTab (value) {
                 const me = this
                 me.status = value
+                me.fetchData(value)
+            },
+            submitFilter () {
+                const me = this
+                me.loader(true)
+                let formData = new FormData(document.getElementById('filter'))
+                formData.append('status', me.status)
+                formData.append('studio_id', me.$store.state.user.current_studio_id)
+                me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.total_count = res.data.total_count
+                            me.res = res.data.result
+                            me.total = res.data.total
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                        me.rowCount = document.getElementsByTagName('th').length
+                    }, 500)
+                })
             },
             fetchData (value) {
                 const me = this
-            },
-            fetchStudios () {
-                const me = this
-                me.$axios.get('api/studios').then(res => {
-                    me.studios = res.data.studios
+                me.loader(true)
+                let formData = new FormData()
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date',  me.form.end_date)
+                formData.append('status', value)
+                formData.append('studio_id', me.$store.state.user.current_studio_id)
+                me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
+                    if (res.data) {
+                        console.log(res.data);
+                        setTimeout( () => {
+                            me.loaded = true
+                            me.total_count = res.data.total_count
+                            me.res = res.data.result
+                            me.total = res.data.total
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                        me.rowCount = document.getElementsByTagName('th').length
+                    }, 500)
                 })
-            }
+            },
         },
         mounted () {
             const me = this
-            me.fetchStudios()
             setTimeout( () => {
+                me.fetchData('all')
                 window.scrollTo({ top: 0, behavior: 'smooth' })
-            }, 300)
-            me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 2]
+            }, 750)
         }
     }
 </script>
