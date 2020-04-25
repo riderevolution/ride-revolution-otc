@@ -19,7 +19,7 @@
                         </div>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
+                        <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
                                 <label for="promo_id">Promo</label>
                                 <select class="default_select alternate" name="promo_id">
@@ -60,7 +60,7 @@
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                                 <td>
-                                    <nuxt-link class="table_data_link" to="/customers" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</nuxt-link>
+                                    <nuxt-link class="table_data_link" :to="`/customers/${data.user.id}/packages`" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</nuxt-link>
                                     <div v-else>N/A</div>
                                 </td>
                                 <td>{{ data.promo.name }}</td>
@@ -104,7 +104,7 @@
             }
         },
         methods: {
-            submissionSuccess () {
+            submitFilter () {
                 const me = this
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))

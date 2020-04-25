@@ -19,7 +19,7 @@
                         </div>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
+                        <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
                                 <label for="start_date">Start Date</label>
                                 <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
@@ -92,7 +92,7 @@
             }
         },
         methods: {
-            submissionSuccess () {
+            submitFilter () {
                 const me = this
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
