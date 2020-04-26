@@ -1,116 +1,158 @@
 <template>
     <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table">
-                <div class="action_wrapper">
-                    <div>
-                        <div class="header_title">
-                            <h1>Sales &amp; Transactions</h1>
-                            <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+        <transition name="fade">
+            <div id="admin" class="cms_dashboard" v-if="loaded">
+                <section id="top_content" class="table">
+                    <div class="action_wrapper">
+                        <div>
+                            <div class="header_title">
+                                <h1>Sales &amp; Transactions</h1>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
-                    <div class="actions">
-                        <a href="javascript:void(0)" class="action_btn">Print</a>
-                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
+                            <div class="form_group">
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" name="studio_id">
+                                    <option value="" selected>All Studios</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="start_date">Start Date</label>
+                                <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
+                            </div>
+                            <div class="form_group margin">
+                                <label for="end_date">End Date</label>
+                                <input type="date" name="end_date" v-model="form.end_date"  class="default_text date" />
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
                     </div>
-                </div>
-                <div class="filter_wrapper">
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
-                        <div class="form_group">
-                            <label for="studio">Branch</label>
-                            <select class="default_select alternate" name="studio">
-                                <option value="" selected>All Studios</option>
-                                <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="start_date">Start Date</label>
-                            <input type="date" name="start_date" class="default_text date" />
-                        </div>
-                        <div class="form_group margin">
-                            <label for="end_date">End Date</label>
-                            <input type="date" name="end_date" class="default_text date" />
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                </div>
-            </section>
-            <section id="content">
-                <div class="cms_table_toggler">
-                    <div :class="`status ${(tabStatus == 1) ? 'active' : ''}`" @click="toggleTab(1)">Sales Summary</div>
-                    <div :class="`status ${(tabStatus == 2) ? 'active' : ''}`" @click="toggleTab(2)">Class Packages</div>
-                    <div :class="`status ${(tabStatus == 3) ? 'active' : ''}`" @click="toggleTab(3)">Food &amps; Beverages</div>
-                    <div :class="`status ${(tabStatus == 4) ? 'active' : ''}`" @click="toggleTab(4)">Merchandise</div>
-                    <div :class="`status ${(tabStatus == 5) ? 'active' : ''}`" @click="toggleTab(5)">Gift Cards</div>
-                    <div :class="`status ${(tabStatus == 6) ? 'active' : ''}`" @click="toggleTab(6)">Promotions</div>
-                    <div :class="`status ${(tabStatus == 7) ? 'active' : ''}`" @click="toggleTab(7)">Store Credits</div>
-                </div>
-                <table class="cms_table">
-                    <thead>
-                        <tr>
-                            <th colspan="3" class="cms_table_title">Sales Breakdown</th>
-                        </tr>
-                        <tr>
-                            <th>Name</th>
-                            <th>ITY</th>
-                            <th>ITD</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(n, key) in 5" :key="key">
-                            <td>Class Package</td>
-                            <td>Php 24,000</td>
-                            <td>Php 24,000</td>
-                        </tr>
-                        <tr>
-                            <td class="green">Total</td>
-                            <td class="green">Php 24,000</td>
-                            <td class="green">Php 24,000</td>
-                        </tr>
-                    </tbody>
-                    <!-- <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody> -->
-                </table>
-                <table class="cms_table">
-                    <thead>
-                        <tr>
-                            <th colspan="3" class="cms_table_title">Income Breakdown</th>
-                        </tr>
-                        <tr>
-                            <th>Payment Type</th>
-                            <th>ITY</th>
-                            <th>ITD</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(n, key) in 5" :key="key">
-                            <td>Payment Type</td>
-                            <td>Php 24,000</td>
-                            <td>Php 24,000</td>
-                        </tr>
-                        <tr>
-                            <td class="green">Total</td>
-                            <td class="green">Php 24,000</td>
-                            <td class="green">Php 24,000</td>
-                        </tr>
-                    </tbody>
-                    <!-- <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody> -->
-                </table>
-                <div class="table_notepad">
-                    <h2 class="footer_title">Notepad</h2>
-                    <div class="notepad_text">
-                        <textarea name="notepad" rows="10"></textarea>
+                </section>
+                <section id="content">
+                    <div class="cms_table_toggler">
+                        <div :class="`status ${(tabStatus == 'summary') ? 'active' : ''}`" @click="toggleTab('summary', 'sales-summary', 'api/reporting/sales/sales-and-transactions/sales-summary')">Sales Summary</div>
+                        <div :class="`status ${(tabStatus == 'packages') ? 'active' : ''}`" @click="toggleTab('packages', 'sales-summary-product', 'api/reporting/sales/sales-and-transactions/sales-summary/class-packages')">Class Packages</div>
+                        <div :class="`status ${(tabStatus == convertToSlug(category.name)) ? 'active' : ''}`" v-for="(category, key) in categories" :key="key" @click="toggleTab(convertToSlug(category.name), 'sales-summary-product', `api/reporting/sales/sales-and-transactions/sales-summary/product-categories/${category.id}`)">{{ category.name }}</div>
+                        <div :class="`status ${(tabStatus == 'gift-cards') ? 'active' : ''}`" @click="toggleTab('gift-cards', 'sales-summary-product', 'api/reporting/sales/sales-and-transactions/sales-summary/gift-cards')">Gift Cards</div>
+                        <div :class="`status ${(tabStatus == 'promos') ? 'active' : ''}`" @click="toggleTab('promos', 'sales-summary-product', 'api/reporting/sales/sales-and-transactions/sales-summary/promos')">Promotions</div>
+                        <div :class="`status ${(tabStatus == 'store-credits') ? 'active' : ''}`" @click="toggleTab('store-credits', 'sales-summary-product', 'api/reporting/sales/sales-and-transactions/sales-summary/store-credits')">Store Credits</div>
                     </div>
-                </div>
-            </section>
-        </div>
+                    <div v-if="slug == 'sales-summary'">
+                        <table class="cms_table">
+                            <thead>
+                                <tr>
+                                    <th colspan="3" class="cms_table_title">Sales Breakdown</th>
+                                </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>ITY</th>
+                                    <th>ITD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(data, key) in res.sales_breakdown" :key="key">
+                                    <td>{{ data.name }}</td>
+                                    <td>Php {{ totalCount(data.ITY) }}</td>
+                                    <td>Php {{ totalCount(data.ITD) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="green">Total</td>
+                                    <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITYTotal) }}</td>
+                                    <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITDTotal) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="cms_table">
+                            <thead>
+                                <tr>
+                                    <th colspan="3" class="cms_table_title">Income Breakdown</th>
+                                </tr>
+                                <tr>
+                                    <th>Payment Type</th>
+                                    <th>ITY</th>
+                                    <th>ITD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(data, key) in res.income_breakdown" :key="key">
+                                    <td>{{ data.name }}</td>
+                                    <td>Php {{ totalCount(data.ITY) }}</td>
+                                    <td>Php {{ totalCount(data.ITD) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="green">Total</td>
+                                    <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITYTotal) }}</td>
+                                    <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITDTotal) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- <div class="table_notepad">
+                            <h2 class="footer_title">Notepad</h2>
+                            <div class="notepad_text">
+                                <textarea name="notepad" rows="10"></textarea>
+                            </div>
+                        </div> -->
+                    </div>
+                    <div v-else>
+                        <table class="cms_table">
+                            <thead>
+                                <tr>
+                                    <th class="cms_table_title">Items</th>
+                                    <th colspan="3" class="cms_table_title">Income</th>
+                                    <th colspan="6" class="cms_table_title">Mode of Payment</th>
+                                </tr>
+                                <tr>
+                                    <th>Items</th>
+                                    <th>Qty</th>
+                                    <th>ITY</th>
+                                    <th>ITD</th>
+                                    <th>CA</th>
+                                    <th>CC</th>
+                                    <th>DC/EPS</th>
+                                    <th>CQ</th>
+                                    <th>PP</th>
+                                    <th>SC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(data, key) in res.items" :key="key">
+                                    <td>{{ (data.card_code) ? data.card_code : (data.variant ? data.variant : data.name) }}</td>
+                                    <td>{{ data.qty }}</td>
+                                    <td>Php {{ totalCount(data.ITY) }}</td>
+                                    <td>Php {{ totalCount(data.ITD) }}</td>
+                                    <td>{{ data.paymentModes.cash }}</td>
+                                    <td>{{ data.paymentModes.creditCard }}</td>
+                                    <td>{{ data.paymentModes.debitCard }}</td>
+                                    <td>{{ data.paymentModes.check }}</td>
+                                    <td>{{ data.paymentModes.paypal }}</td>
+                                    <td>{{ data.paymentModes.storeCredit }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="green">Total</td>
+                                    <td class="green">{{ res.item_total.totalQty }}</td>
+                                    <td class="green">Php {{ totalCount(res.item_total.totalITY) }}</td>
+                                    <td class="green">Php {{ totalCount(res.item_total.totalITD) }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.cash }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.creditCard }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.debitCard }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.check }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
@@ -123,50 +165,44 @@
         },
         data () {
             return {
-                range: {
-                    start: new Date(),
-                    end: new Date()
-                },
+                loaded: false,
                 rowCount: 0,
-                status: 1,
-                res: [],
-                total_count: 0,
+                tabStatus: 'summary',
+                res: {
+                    sales_breakdown: [],
+                    sales_breakdown_total: [],
+                    income_breakdown: [],
+                    income_breakdown_total: [],
+                    items: [],
+                    item_total: [],
+                    item_payment_mode_total: []
+                },
+                slug: 'sales-summary',
+                apiRoute: 'api/reporting/sales/sales-and-transactions/sales-summary',
                 studios: [],
-                tabStatus: 1
+                categories: [],
+                form: {
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
+                }
             }
         },
         methods: {
-            submissionSuccess () {
+            toggleTab (status, slug, apiRoute) {
                 const me = this
+                me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('enabled', me.status)
-                me.loader(true)
-                me.$axios.post(`api/staff/search`, formData).then(res => {
-                    me.res = res.data.roles
-                    me.rowCount = 4
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
-                        elements.forEach((element, index) => {
-                            element.querySelector('.accordion_table').style.height = 0
-                        })
-                    }, 500)
-                })
-            },
-            toggleTab (status) {
-                const me = this
-                me.tabStatus = status
-            },
-            fetchData (value) {
-                const me = this
-                me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
-                    me.res = res.data
-                    me.loaded = true
+                me.$axios.post(`${apiRoute}`, formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.res.items = res.data.items
+                            me.res.item_total = res.data.total
+                            me.res.item_payment_mode_total = res.data.paymentModesTotal
+                            me.slug = slug
+                            me.tabStatus = status
+                            me.apiRoute = apiRoute
+                        }, 500)
+                    }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
@@ -177,20 +213,72 @@
                     me.rowCount = document.getElementsByTagName('th').length
                 })
             },
-            fetchStudios () {
+            submitFilter () {
                 const me = this
-                me.$axios.get('api/studios').then(res => {
-                    me.studios = res.data.studios
+                me.loader(true)
+                let formData = new FormData(document.getElementById('filter'))
+                me.$axios.post(`${me.apiRoute}`, formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.res.sales_breakdown = res.data.salesBreakdown
+                            me.res.sales_breakdown_total = res.data.salesBreakdownTotal
+                            me.res.income_breakdown = res.data.incomeBreakdown
+                            me.res.income_breakdown_total = res.data.incomeBreakdownTotal
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                    me.rowCount = document.getElementsByTagName('th').length
+                })
+            },
+            fetchData () {
+                const me = this
+                me.loader(true)
+                let formData = new FormData()
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date',  me.form.end_date)
+                me.$axios.post(`${me.apiRoute}`, formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.res.sales_breakdown = res.data.salesBreakdown
+                            me.res.sales_breakdown_total = res.data.salesBreakdownTotal
+                            me.res.income_breakdown = res.data.incomeBreakdown
+                            me.res.income_breakdown_total = res.data.incomeBreakdownTotal
+                            me.$axios.get('api/studios?enabled=1').then(res => {
+                                if (res.data) {
+                                    me.studios = res.data.studios
+                                }
+                            })
+                            me.$axios.get('api/inventory/product-categories?enabled=1').then(res => {
+                                if (res.data) {
+                                    me.categories = res.data.productCategories
+                                }
+                            })
+                            me.loaded = true
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                    me.rowCount = document.getElementsByTagName('th').length
                 })
             }
         },
         mounted () {
             const me = this
-            me.fetchData(1)
-            me.fetchStudios()
             setTimeout( () => {
+                me.fetchData()
                 window.scrollTo({ top: 0, behavior: 'smooth' })
-            }, 300)
+            }, 500)
         }
     }
 </script>
