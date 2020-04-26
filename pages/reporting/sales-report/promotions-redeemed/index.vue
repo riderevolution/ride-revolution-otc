@@ -7,7 +7,7 @@
                         <div>
                             <div class="header_title">
                                 <h1>Promotions Redeemed</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">List of promos used by customers</h2>
                         </div>

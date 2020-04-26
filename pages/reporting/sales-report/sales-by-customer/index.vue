@@ -7,7 +7,7 @@
                         <div>
                             <div class="header_title">
                                 <h1>Sales by Customer</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Total sales from each Ride Revolution member</h2>
                         </div>
@@ -70,7 +70,7 @@
                                 <td>Php {{ totalCount(data.total_merchandise) }}</td>
                                 <td>{{ data.email }}</td>
                                 <td>{{ data.customer_details.co_contact_number }}</td>
-                                <td>{{ data.customer_details.pa_city }}</td>
+                                <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : 'N/A' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>

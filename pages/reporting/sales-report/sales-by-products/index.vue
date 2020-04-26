@@ -7,7 +7,7 @@
                         <div>
                             <div class="header_title">
                                 <h1>Sales by Products</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from products sold</h2>
                         </div>
