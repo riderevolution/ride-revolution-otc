@@ -1,100 +1,94 @@
 <template>
     <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table" v-if="loaded">
-                <div class="action_wrapper">
-                    <div>
-                        <div class="header_title">
-                            <h1>Inventory Value Report</h1>
+        <transition name="fade">
+            <div id="admin" class="cms_dashboard" v-if="loaded">
+                <section id="top_content" class="table">
+                    <div class="action_wrapper">
+                        <div>
+                            <div class="header_title">
+                                <h1>Inventory Value Report</h1>
+                            </div>
+                            <h2 class="header_subtitle">Expiration details of each product items</h2>
                         </div>
-                        <h2 class="header_subtitle">Expiration details of each class package</h2>
+                        <div class="actions">
+                            <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                        </div>
                     </div>
-                    <div class="actions">
-                        <a href="javascript:void(0)" class="action_btn">Print</a>
-                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
+                            <div class="form_group">
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" name="studio_id">
+                                    <option value="" selected>All Studios</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="value_as_of">Value as of</label>
+                                <input type="date" name="value_as_of" v-model="form.value_as_of" class="default_text date" />
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
                     </div>
-                </div>
-                <div class="filter_wrapper">
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
-                        <div class="form_group">
-                            <label for="type">Branch</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="start_date">Start Date</label>
-                            <input type="date" name="start_date" class="default_text date" />
-                        </div>
-                        <div class="form_group margin">
-                            <label for="end_date">End Date</label>
-                            <input type="date" name="end_date" class="default_text date" />
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                </div>
-            </section>
-            <section id="content" v-if="loaded">
-                <div class="cms_table_toggler">
-                    <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleStatus('all')">All: 800</div>
-                    <div :class="`status ${(status == 'merch') ? 'active' : ''}`" @click="toggleStatus('merch')">Merchandise: 100</div>
-                    <div :class="`status ${(status == 'food') ? 'active' : ''}`" @click="toggleStatus('food')">Food &amp; Beverage: 400</div>
-                    <div :class="`status ${(status == 'gift') ? 'active' : ''}`" @click="toggleStatus('gift')">Gift Cards: 100</div>
-                </div>
-                <table class="cms_table">
-                    <thead>
-                        <tr>
-                            <th class="stick">Product Name</th>
-                            <th class="stick">SKU ID</th>
-                            <th class="stick">In Stock</th>
-                            <th class="stick">Price (Per Piece)</th>
-                            <th class="stick">Total Cost of Good</th>
-                            <th class="stick">Retail Value</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="res.customers.data.length > 0">
-                        <tr v-for="(data, key) in 5" :key="key">
-                            <td>SAmple ASpmple</td>
-                            <td>123786123876</td>
-                            <td>12</td>
-                            <td>Php 24,000</td>
-                            <td>Php 24,000</td>
-                            <td>Php 24,000</td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
-            </section>
-        </div>
+                </section>
+                <section id="content">
+                    <div class="cms_table_toggler">
+                        <div :class="`status ${(tabStatus == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All: 800</div>
+                        <div :class="`status ${(tabStatus == 'merch') ? 'active' : ''}`" @click="toggleTab('merch')">Merchandise: 100</div>
+                        <div :class="`status ${(tabStatus == 'food') ? 'active' : ''}`" @click="toggleTab('food')">Food &amp; Beverage: 400</div>
+                        <div :class="`status ${(tabStatus == 'gift') ? 'active' : ''}`" @click="toggleTab('gift')">Gift Cards: 100</div>
+                    </div>
+                    <table class="cms_table">
+                        <thead>
+                            <tr>
+                                <th class="stick">Product Name</th>
+                                <th class="stick">SKU ID</th>
+                                <th class="stick">In Stock</th>
+                                <th class="stick">Price (Per Piece)</th>
+                                <th class="stick">Total Cost of Good</th>
+                                <th class="stick">Retail Value</th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="res.customers.data.length > 0">
+                            <tr v-for="(data, key) in 5" :key="key">
+                                <td>SAmple ASpmple</td>
+                                <td>123786123876</td>
+                                <td>12</td>
+                                <td>Php 24,000</td>
+                                <td>Php 24,000</td>
+                                <td>Php 24,000</td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td :colspan="rowCount">No Result(s) Found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
 
 <script>
     import Foot from '../../../components/Foot'
-    import Pagination from '../../../components/Pagination'
     export default {
         components: {
-            Foot,
-            Pagination
+            Foot
         },
         data () {
             return {
                 loaded: false,
-                id: 0,
-                type: 0,
                 rowCount: 0,
-                status: 'all',
+                tabStatus: 'all',
                 res: [],
-                types: [],
-                value_as_of: new Date(),
-                transaction: []
+                studios: [],
+                form: {
+                    value_as_of: this.$moment().format('YYYY-MM-DD')
+                }
             }
         },
         methods: {
@@ -104,10 +98,10 @@
                 me.$store.state.pendingTransactionsStatus = true
                 document.body.classList.add('no_scroll')
             },
-            submissionSuccess () {
+            submitFilter () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('enabled', me.status)
+                formData.append('enabled', me.tabStatus)
                 me.loader(true)
                 me.$axios.post(`api/customers/search`, formData).then(res => {
                     me.res = res.data
@@ -120,21 +114,9 @@
                     }, 500)
                 })
             },
-            toggleStatus (id, enabled, status) {
+            toggleTab (value) {
                 const me = this
-                me.$store.state.confirmStatus = true
-                setTimeout( () => {
-                    me.$refs.enabled.confirm.table_name = 'roles'
-                    me.$refs.enabled.confirm.id = id
-                    me.$refs.enabled.confirm.enabled = enabled
-                    me.$refs.enabled.confirm.status = status
-                    me.$refs.enabled.confirm.type = 'role'
-                }, 100)
-                document.body.classList.add('no_scroll')
-            },
-            toggleStatus (value) {
-                const me = this
-                me.status = value
+                me.tabStatus = value
             },
             fetchData (value) {
                 const me = this
@@ -154,8 +136,10 @@
             },
             fetchTypes () {
                 const me = this
-                me.$axios.get('api/extras/customer-types').then(res => {
-                    me.types = res.data.customerTypes
+                me.$axios.get('api/studios?enabled=1').then(res => {
+                    if (res.data) {
+                        me.studios = res.data.studios
+                    }
                 })
             }
         },
@@ -165,7 +149,7 @@
             me.fetchTypes()
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
-            }, 300)
+            }, 500)
         }
     }
 </script>
