@@ -44,14 +44,14 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>P.O. Number</th>
-                            <th>Supplier</th>
-                            <th>Studio</th>
-                            <th>Shipping Cost</th>
-                            <!-- <th>Additional Cost</th> -->
-                            <th>Total</th>
-                            <th>Requisition Date</th>
-                            <th>Status</th>
+                            <th class="stick">P.O. Number</th>
+                            <th class="stick">Supplier</th>
+                            <th class="stick">Studio</th>
+                            <th class="stick">Shipping Cost</th>
+                            <!-- <th class="stick">Additional Cost</th> -->
+                            <th class="stick">Total</th>
+                            <th class="stick">Requisition Date</th>
+                            <th class="stick">Status</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.purchaseOrders.data.length > 0">

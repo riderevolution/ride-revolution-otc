@@ -6,23 +6,33 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>Non Returning Customers</h1>
+                                <h1>Sales by Customer</h1>
                                 <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
-                            <h2 class="header_subtitle">Customers who only made 1 package purchase.</h2>
+                            <h2 class="header_subtitle">Total sales from each Ride Revolution member</h2>
                         </div>
                         <div class="actions">
-                            <a href="javascript:void(0)" class="action_btn alternate">Print</a>
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <div class="action_buttons">
+                                <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                                <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            </div>
                         </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
-                                <label for="class_package_id">Class Package</label>
-                                <select class="default_select alternate" name="class_package_id">
-                                    <option value="" selected>All Class Package</option>
-                                    <option :value="class_package.id" v-for="(class_package, key) in class_packages" :key="key">{{ class_package.name }}</option>
+                                <label for="customer_type_id">Customer Type</label>
+                                <select class="default_select alternate" name="customer_type_id">
+                                    <option value="" selected>All Customer Type</option>
+                                    <option :value="type.id" v-for="(type, index) in types">{{ type.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="gender">Gender</label>
+                                <select class="default_select alternate" name="gender">
+                                    <option value="" selected>All Gender</option>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
@@ -41,26 +51,26 @@
                     <table class="cms_table">
                         <thead>
                             <tr>
-                                <th class="stick">Customer</th>
-                                <th class="stick">Last Package Used</th>
-                                <th class="stick">Date Purchased/Date Activated</th>
-                                <th class="stick">Last Class</th>
-                                <th class="stick">Contact Number</th>
-                                <th class="stick">Email Address</th>
-                                <th class="stick">City</th>
+                                <th class="sticky">Full Name</th>
+                                <th class="sticky">Type</th>
+                                <th class="sticky">Class Package Total</th>
+                                <th class="sticky">Merchandise Total</th>
+                                <th class="sticky">Email</th>
+                                <th class="sticky">Contact Number</th>
+                                <th class="sticky">City</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.length > 0">
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
+                                    <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ `${data.first_name} ${data.last_name}` }}</nuxt-link>
                                 </td>
-                                <td>{{ data.userPackageCounts[0].class_package.name }}</td>
-                                <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment().format('MMMM DD, YYYY') : 'N/A' }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMMM DD, YYYY') : 'N/A' }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
+                                <td>{{ data.customer_details.customer_type.name }}</td>
+                                <td>Php {{ totalCount(data.total_class_package) }}</td>
+                                <td>Php {{ totalCount(data.total_merchandise) }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : 'N/A' }}</td>
+                                <td>{{ data.customer_details.co_contact_number }}</td>
+                                <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : 'N/A' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -77,7 +87,7 @@
 </template>
 
 <script>
-    import Foot from '../../../../components/Foot'
+    import Foot from '../../.././../components/Foot'
     export default {
         components: {
             Foot
@@ -86,10 +96,12 @@
             return {
                 loaded: false,
                 rowCount: 0,
+                status: 1,
                 res: [],
-                class_packages: [],
+                types: [],
+                total_count: 0,
                 form: {
-                    start_date: this.$moment('2020-01-01').format('YYYY-MM-DD'),
+                    start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
             }
@@ -99,10 +111,11 @@
                 const me = this
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
+                me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.customers
+                            me.total_count = res.data.grand_total
+                            me.res = res.data.result
                         }, 500)
                     }
                 }).catch(err => {
@@ -119,18 +132,19 @@
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
-                formData.append('start_date', me.form.start_date)
-                formData.append('end_date', me.form.end_date)
-                me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
+                formData.append('start_date', me.$moment().format('YYYY-MM-DD'))
+                formData.append('end_date', me.$moment().format('YYYY-MM-DD'))
+                me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.customers
-                            me.$axios.get('api/packages/class-packages?enabled=1').then(res => {
+                            me.loaded = true
+                            me.total_count = res.data.grand_total
+                            me.res = res.data.result
+                            me.$axios.get('api/extras/customer-types').then(res => {
                                 if (res.data) {
-                                    me.class_packages = res.data.classPackages.data
+                                    me.types = res.data.customerTypes
                                 }
                             })
-                            me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {

@@ -21,9 +21,9 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Package Type</th>
-                            <th>Description</th>
-                            <th>Action</th>
+                            <th class="stick">Package Type</th>
+                            <th class="stick">Description</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.packageTypes.data.length > 0">

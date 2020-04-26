@@ -17,9 +17,9 @@
                 <table class="cms_table" v-if="loaded">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Icon</th>
-                            <th>Action</th>
+                            <th class="stick">Name</th>
+                            <th class="stick">Icon</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.length > 0">

@@ -424,7 +424,11 @@
                     case 0:
                         me.products.forEach((product, index) => {
                             if (product.product) {
-                                product.isProductShow = true
+                                if (product.product.product_category_id == me.toCompare.product) {
+                                    product.isProductShow = true
+                                } else {
+                                    product.isProductShow = false
+                                }
                             } else {
                                 product.isGiftShow = false
                             }

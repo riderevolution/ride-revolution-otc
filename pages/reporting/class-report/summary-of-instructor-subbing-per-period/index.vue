@@ -32,19 +32,12 @@
                             </select>
                         </div>
                         <div class="form_group margin">
-                            <label for="range">Date Range</label>
-                            <no-ssr>
-                                <vc-date-picker
-                                    mode='range'
-                                    v-model="range"
-                                    :input-props='{
-                                        class: "vc-appearance-none default_select alternate",
-                                        id: "range",
-                                        name: "range",
-                                        readonly: true
-                                    }'
-                                />
-                            </no-ssr>
+                            <label for="start_date">Start Date</label>
+                            <input type="date" name="start_date" class="default_text date" />
+                        </div>
+                        <div class="form_group margin">
+                            <label for="end_date">End Date</label>
+                            <input type="date" name="end_date" class="default_text date" />
                         </div>
                         <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                     </form>
@@ -57,14 +50,14 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Class Type</th>
-                            <th>Schedule Released</th>
-                            <th>Branch</th>
-                            <th>Primary Instructor</th>
-                            <th>Substitute Instructor</th>
-                            <th>Remarks</th>
+                            <th class="stick">Date</th>
+                            <th class="stick">Time</th>
+                            <th class="stick">Class Type</th>
+                            <th class="stick">Schedule Released</th>
+                            <th class="stick">Branch</th>
+                            <th class="stick">Primary Instructor</th>
+                            <th class="stick">Substitute Instructor</th>
+                            <th class="stick">Remarks</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">

@@ -5,54 +5,21 @@
                 <div class="action_wrapper">
                     <div>
                         <div class="header_title">
-                            <h1>Attendance with Revenue</h1>
+                            <h1>Revenue Summary</h1>
                             <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
                         </div>
-                        <h2 class="header_subtitle">Revenue for each class schedule</h2>
+                        <h2 class="header_subtitle">Classifies gift cards and store credits as income. Excludes tax ad refunds</h2>
                     </div>
                     <div class="actions">
-                        <a href="javascript:void(0)" class="action_btn">Print</a>
-                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                        <div class="action_buttons">
+                            <a href="javascript:void(0)" class="action_btn">Print</a>
+                            <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                        </div>
                     </div>
                 </div>
                 <div class="filter_wrapper">
                     <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
                         <div class="form_group">
-                            <label for="type">Branch</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="type">Class Type</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="type">Class Package</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="type">Instructor</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="type">Customer Type</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
                             <label for="start_date">Start Date</label>
                             <input type="date" name="start_date" class="default_text date" />
                         </div>
@@ -65,28 +32,19 @@
                 </div>
             </section>
             <section id="content">
+                <div class="cms_table_toggler">
+                    <div class="total">Grand Total: {{ totalItems(total_count) }}</div>
+                </div>
                 <table class="cms_table_accordion">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Class Type</th>
-                            <th>Instructor</th>
-                            <th>Total Riders</th>
-                            <th>Total Revenue</th>
-                            <th>Total Discount</th>
-                            <th>Total Net Revenue</th>
+                            <th>Revenu</th>
+                            <th>Subtotal Revenue</th>
                         </tr>
                     </thead>
                     <tbody :class="`${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res" v-if="res.length > 0">
                         <tr class="parent">
-                            <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment().format('MMMM DD, YYYY') }}</td>
-                            <td>{{ $moment().format('h:mm A') }}</td>
-                            <td>Ride Rev</td>
-                            <td>Billie Capistrano</td>
-                            <td>4</td>
-                            <td>Php 3,000</td>
-                            <td>4</td>
+                            <td class="toggler" @click.self="toggleAccordion($event, key)">Revenue from Count-based Class Package</td>
                             <td>Php 3,000</td>
                         </tr>
                         <tr>
@@ -95,31 +53,21 @@
                                     <table class="cms_table">
                                         <thead>
                                             <tr>
-                                                <th>Spot</th>
-                                                <th>Customer</th>
-                                                <th>Status</th>
-                                                <th>Package Used</th>
-                                                <th>Revenue</th>
-                                                <th>Discount</th>
-                                                <th>Net Revenue</th>
+                                                <th>Branch  </th>
+                                                <th>Total</th>
                                             </tr>
                                         </thead>
-                                        <tbody v-if="role.staff_details.length > 0">
-                                            <tr v-for="(staff, key) in role.staff_details" :key="key">
-                                                <td>{{ key + 1 }}</td>
-                                                <td>Anna Walker</td>
-                                                <td>Paying</td>
-                                                <td>First Timer Package</td>
-                                                <td>Php 1,100</td>
-                                                <td>Php 0</td>
+                                        <tbody>
+                                            <tr v-for="(n, key) in 5" :key="key">
+                                                <td>Greenbelt 5</td>
                                                 <td>Php 1,100</td>
                                             </tr>
                                         </tbody>
-                                        <tbody class="no_results" v-else>
+                                        <!-- <tbody class="no_results" v-else>
                                             <tr>
                                                 <td :colspan="rowCount">No Result(s) Found.</td>
                                             </tr>
-                                        </tbody>
+                                        </tbody> -->
                                     </table>
                                 </div>
                             </td>
@@ -149,15 +97,10 @@
                     start: new Date(),
                     end: new Date()
                 },
-                isUser: 0,
-                id: 0,
-                type: 0,
                 rowCount: 0,
                 status: 1,
                 res: [],
-                total_count: 0,
-                studios: [],
-                types: [],
+                total_count: 0
             }
         },
         methods: {
@@ -183,27 +126,6 @@
                 })
             },
             /**
-             * Count Permissions per role
-             * @param  {[array]} values
-             * @return {[ctr]}
-             */
-            countPermissions (values) {
-                const me = this
-                if (values !== undefined) {
-                    let ctr = 0
-                    values.forEach((value, index) => {
-                        if (value.checked) {
-                            ctr++
-                        }
-                    })
-                    if (ctr == 16) {
-                        return 'All'
-                    } else {
-                        return ctr
-                    }
-                }
-            },
-            /**
              * Custom toggler for accordion
              * @param  {[object]} event
              * @param  {[int]} key
@@ -219,15 +141,7 @@
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
                 }
             },
-            toggleOnOff (value) {
-                const me = this
-                me.status = value
-                me.fetchData(value)
-                setTimeout( () => {
-                    me.rowCount = document.getElementsByTagName('th').length
-                }, 10)
-            },
-            async fetchData (value) {
+            fetchData (value) {
                 const me = this
                 me.loader(true)
                 me.rowCount = 4
@@ -260,18 +174,11 @@
                         }, 500)
                     })
                 }
-            },
-            async fetchStudios () {
-                const me = this
-                me.$axios.get('api/studios').then(res => {
-                    me.studios = res.data.studios
-                })
             }
         },
-        async mounted () {
+        mounted () {
             const me = this
             me.fetchData(1)
-            me.fetchStudios()
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

@@ -6,10 +6,10 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>Non Returning Customers</h1>
+                                <h1>Sales by Class Package</h1>
                                 <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
-                            <h2 class="header_subtitle">Customers who only made 1 package purchase.</h2>
+                            <h2 class="header_subtitle">Income from class package sold.</h2>
                         </div>
                         <div class="actions">
                             <a href="javascript:void(0)" class="action_btn alternate">Print</a>
@@ -19,13 +19,6 @@
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
-                                <label for="class_package_id">Class Package</label>
-                                <select class="default_select alternate" name="class_package_id">
-                                    <option value="" selected>All Class Package</option>
-                                    <option :value="class_package.id" v-for="(class_package, key) in class_packages" :key="key">{{ class_package.name }}</option>
-                                </select>
-                            </div>
-                            <div class="form_group margin">
                                 <label for="start_date">Start Date</label>
                                 <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
                             </div>
@@ -38,34 +31,46 @@
                     </div>
                 </section>
                 <section id="content">
+                    <div class="cms_table_toggler">
+                        <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
+                        <div :class="`status ${(status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
+                        <div :class="`status ${(status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
+                    </div>
                     <table class="cms_table">
                         <thead>
                             <tr>
-                                <th class="stick">Customer</th>
-                                <th class="stick">Last Package Used</th>
-                                <th class="stick">Date Purchased/Date Activated</th>
-                                <th class="stick">Last Class</th>
-                                <th class="stick">Contact Number</th>
-                                <th class="stick">Email Address</th>
-                                <th class="stick">City</th>
+                                <th>Class Package</th>
+                                <th>Sold</th>
+                                <th>Returned</th>
+                                <th>Comp</th>
+                                <th>Discount</th>
+                                <th>Taxes</th>
+                                <th>Total Income</th>
+                                <th>Comp Value</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
+                        <tbody>
+                            <tr>
+                                <td><b>{{ total.name }}</b></td>
+                                <td><b>{{ total.sold }}</b></td>
+                                <td><b>0</b></td>
+                                <td><b>{{ total.comp }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_income) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
+                            </tr>
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
+                                    <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native="toggleInnerReport('class-package', `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
                                 </td>
-                                <td>{{ data.userPackageCounts[0].class_package.name }}</td>
-                                <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment().format('MMMM DD, YYYY') : 'N/A' }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMMM DD, YYYY') : 'N/A' }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
-                                <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : 'N/A' }}</td>
-                            </tr>
-                        </tbody>
-                        <tbody class="no_results" v-else>
-                            <tr>
-                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                                <td>0</td>
+                                <td>{{ (data.comp) ? data.comp : 0 }}</td>
+                                <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
+                                <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
+                                <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
+                                <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -86,23 +91,36 @@
             return {
                 loaded: false,
                 rowCount: 0,
+                status: 'all',
                 res: [],
-                class_packages: [],
+                total: [],
                 form: {
-                    start_date: this.$moment('2020-01-01').format('YYYY-MM-DD'),
+                    start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
             }
         },
         methods: {
+            toggleInnerReport (type, path, id) {
+                const me = this
+                me.$router.push(`${path}?status=${me.status}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+            },
+            toggleTab (value) {
+                const me = this
+                me.status = value
+                me.fetchData(value)
+            },
             submitFilter () {
                 const me = this
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
+                formData.append('status', me.status)
+                formData.append('studio_id', me.$cookies.get('CSID'))
+                me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.customers
+                            me.res = res.data.result
+                            me.total = res.data.total
                         }, 500)
                     }
                 }).catch(err => {
@@ -115,21 +133,19 @@
                     }, 500)
                 })
             },
-            fetchData () {
+            fetchData (value) {
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
-                formData.append('end_date', me.form.end_date)
-                me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
+                formData.append('end_date',  me.form.end_date)
+                formData.append('status', value)
+                formData.append('studio_id', me.$cookies.get('CSID'))
+                me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.customers
-                            me.$axios.get('api/packages/class-packages?enabled=1').then(res => {
-                                if (res.data) {
-                                    me.class_packages = res.data.classPackages.data
-                                }
-                            })
+                            me.res = res.data.result
+                            me.total = res.data.total
                             me.loaded = true
                         }, 500)
                     }
@@ -147,7 +163,7 @@
         mounted () {
             const me = this
             setTimeout( () => {
-                me.fetchData()
+                me.fetchData('all')
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 500)
         }

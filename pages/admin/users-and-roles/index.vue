@@ -49,16 +49,16 @@
                             <td class="toggler" @click.self="toggleAccordion($event, key)">{{ role.display_name }}</td>
                             <td>{{ countActivatedUsers(role.staff_details) }}</td>
                             <td>{{ countPermissions(parser(role.permissions)) }}</td>
-                            <td>
+                            <td width="20%">
                                 <div class="table_actions">
-                                    <div class="table_action_edit link" @click="toggleForm(role.id, 1, 'role')">Edit Role</div>
-                                    <div class="table_action_cancel link" @click.self="toggleStatus(role.id, 0, 'Deactivated')" v-if="status == 1">Deactivate Role</div>
-                                    <div class="table_action_success link"  @click.self="toggleStatus(role.id, 1, 'Activated')" v-if="status == 0">Activate Role</div>
+                                    <div class="table_action_edit link" @click="toggleForm(role.id, 1, 'role')">Edit</div>
+                                    <div class="table_action_cancel link" @click.self="toggleStatus(role.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
+                                    <div class="table_action_success link"  @click.self="toggleStatus(role.id, 1, 'Activated')" v-if="status == 0">Activate</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td class="pads" colspan="8">
+                            <td class="pads" colspan="4">
                                 <div class="accordion_table">
                                     <table class="cms_table">
                                         <thead>
@@ -74,11 +74,11 @@
                                                 <td>{{ staff.user.email }}</td>
                                                 <td>{{ staff.user.first_name }}</td>
                                                 <td>{{ staff.user.last_name }}</td>
-                                                <td>
+                                                <td width="20%">
                                                     <div class="table_actions">
-                                                        <div class="table_action_edit link" @click="toggleForm(staff.user.id, 1, 'user')">Edit User</div>
-                                                        <div class="table_action_cancel link" @click.self="toggleUserStatus(staff.user.id, 0, 'Deactivated')" v-if="status == 1">Deactivate User</div>
-                                                        <div class="table_action_success link" @click.self="toggleUserStatus(staff.user.id, 1, 'Activated')" v-if="status == 0">Activate User</div>
+                                                        <div class="table_action_edit link" @click="toggleForm(staff.user.id, 1, 'user')">Edit</div>
+                                                        <div class="table_action_cancel link" @click.self="toggleUserStatus(staff.user.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
+                                                        <div class="table_action_success link" @click.self="toggleUserStatus(staff.user.id, 1, 'Activated')" v-if="status == 0">Activate</div>
                                                     </div>
                                                 </td>
                                             </tr>

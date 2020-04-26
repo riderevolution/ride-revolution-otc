@@ -48,11 +48,11 @@
                 <table class="cms_table" v-if="res.classPackages && package_status != 3">
                     <thead>
                         <tr>
-                            <th>Package Name</th>
-                            <th>Package ID</th>
-                            <th>Class Count</th>
-                            <th>Price</th>
-                            <th>Action</th>
+                            <th class="stick">Package Name</th>
+                            <th class="stick">Package ID</th>
+                            <th class="stick">Class Count</th>
+                            <th class="stick">Price</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.classPackages.data.length > 0">
@@ -79,11 +79,11 @@
                 <table class="cms_table" v-if="res.storeCredits && package_status == 3">
                     <thead>
                         <tr>
-                            <th>Package Name</th>
-                            <th>Package ID</th>
-                            <th>Credit Amount</th>
-                            <th>Created At</th>
-                            <th>Action</th>
+                            <th class="stick">Package Name</th>
+                            <th class="stick">Package ID</th>
+                            <th class="stick">Credit Amount</th>
+                            <th class="stick">Created At</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.storeCredits.data.length > 0">

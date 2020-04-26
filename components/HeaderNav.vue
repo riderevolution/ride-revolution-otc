@@ -23,14 +23,18 @@
         </div>
         <div :class="`header_select ${(isToggled) ? 'active' : ''}`" v-click-outside="closeMe">
             <div class="header_user" @click="showSelect()">
-                <div class="user_picture">{{ $store.state.user.first_name.charAt(0) }}</div>
-                <div class="user_name">Hello, {{ $store.state.user.first_name }}!</div>
+                <div class="user_picture">
+                    <div class="overlay">
+                        {{ user.first_name.charAt(0) }}{{ user.last_name.charAt(0) }}
+                    </div>
+                </div>
+                <div class="user_name">Hello, {{ user.first_name }}!</div>
             </div>
             <div class="user_select">
                 <div class="select_header">
                     <div class="select_info">
-                        <div class="header_name">{{ $store.state.user.first_name }}</div>
-                        <div class="header_role">{{ $store.state.user.staff_details.role.display_name }}</div>
+                        <div class="header_name">{{ user.first_name }}</div>
+                        <div class="header_role">{{ user.staff_details.role.display_name }}</div>
                     </div>
                     <div class="header_studio">
                         <a href="javascript:void(0)" class="action_btn white" @click="changeStudio()">Change Studio</a>
@@ -52,7 +56,16 @@
                 isToggled: false,
                 isToggledNotif: false,
                 res: [0],
-                notifications: []
+                notifications: [],
+                user: {
+                    first_name: '',
+                    last_name: '',
+                    staff_details: {
+                        role: {
+                            display_name: ''
+                        }
+                    }
+                }
             }
         },
         methods: {
@@ -89,9 +102,19 @@
         },
         mounted () {
             const me = this
+            let token = me.$cookies.get('token')
             me.$axios.get('api/logs').then(res => {
                 if (res.data) {
                     me.notifications = res.data.logs.data
+                }
+            })
+            me.$axios.get('api/user', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(res => {
+                if (res.data) {
+                    me.user = res.data.user
                 }
             })
         }

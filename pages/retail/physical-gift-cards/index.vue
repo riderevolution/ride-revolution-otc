@@ -36,10 +36,10 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Card Code</th>
-                            <th>Starting Value</th>
-                            <th>Date Created</th>
-                            <th>Action</th>
+                            <th class="stick">Card Code</th>
+                            <th class="stick">Starting Value</th>
+                            <th class="stick">Date Created</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.giftCards.data.length > 0">

@@ -73,6 +73,7 @@ Vue.mixin({
                 }
             }).then(res => {
                 this.$cookies.remove('token')
+                this.$cookies.remove('CSID')
                 this.$store.state.isAuth = false
                 this.$router.push('/login')
             }).catch(err => {
@@ -92,6 +93,7 @@ Vue.mixin({
                             this.$store.state.isAuth = true
                             this.$store.state.token = token
                             this.$store.state.user = res.data.user
+                            this.$cookies.set('CSID', res.data.user.current_studio_id)
                         } else {
                             this.logout()
                         }

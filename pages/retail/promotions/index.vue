@@ -29,12 +29,12 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Promo Name</th>
-                            <th>Discount</th>
-                            <th>Promo Code</th>
-                            <th>Start date</th>
-                            <th>End Date</th>
-                            <th>Action</th>
+                            <th class="stick">Promo Name</th>
+                            <th class="stick">Discount</th>
+                            <th class="stick">Promo Code</th>
+                            <th class="stick">Start date</th>
+                            <th class="stick">End Date</th>
+                            <th class="stick">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.promos.data.length > 0">

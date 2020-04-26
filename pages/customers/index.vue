@@ -36,12 +36,12 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Last Name</th>
-                            <th>First Name</th>
-                            <th>Type</th>
-                            <th>Email Address</th>
-                            <th>Contact No.</th>
-                            <th>Pending Payment</th>
+                            <th class="stick">Last Name</th>
+                            <th class="stick">First Name</th>
+                            <th class="stick">Type</th>
+                            <th class="stick">Email Address</th>
+                            <th class="stick">Contact No.</th>
+                            <th class="stick">Pending Payment</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">
@@ -50,7 +50,9 @@
                                 <div class="thumb">
                                     <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
                                     <div class="table_image_default" v-else>
-                                        {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                        <div class="overlay">
+                                            {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                        </div>
                                     </div>
                                     <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.last_name }}</nuxt-link>
                                 </div>

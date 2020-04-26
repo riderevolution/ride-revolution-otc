@@ -10,7 +10,7 @@
                                 <label for="studio_id">Studio</label>
                                 <select :class="`default_select alternate ${(!selectStudio) ? 'highlighted' : ''}`" name="studio_id" @change="getStudio($event)">
                                     <option value="" selected disabled>Select a Studio</option>
-                                    <option :value="studio.studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.studio.name }}</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                                 <transition name="slide"><span class="validation_errors alt" v-if="!selectStudio">Select Studio</span></transition>
                             </div>
@@ -27,7 +27,7 @@
                                                     {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                                 </div>
                                             </div>
-                                            <div class="customer_name">
+                                            <div class="customer_name" v-line-clamp="1">
                                                 {{ data.first_name }} {{ data.last_name }}
                                             </div>
                                         </div>
@@ -354,7 +354,7 @@
                 isPrev: false,
                 selectCustomer: true,
                 toggleCustomers: false,
-                zoomCtr: 0.55,
+                zoomCtr: 0.4,
                 customInstance: [],
                 customWidth: 0,
                 customHeight: 0,
@@ -582,7 +582,7 @@
                     }
                     setTimeout(() => {
                         me.$refs.plan.fetchSeats(data.id, me.studioID)
-                        document.querySelector('.plan_wrapper').style.transform = `matrix(0.55, 0, 0, 0.55, ${me.customWidth}, ${me.customHeight})`
+                        document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
                     }, 10)
                 } else {
                     me.selectStudio = false
@@ -689,7 +689,7 @@
             getSeats () {
                 const me = this
                 me.$refs.plan.fetchSeats(me.$store.state.scheduleID, me.studioID)
-                document.querySelector('.plan_wrapper').style.transform = `matrix(0.55, 0, 0, 0.55, ${me.customWidth}, ${me.customHeight})`
+                document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
             },
             getStudio (event) {
                 const me = this
@@ -700,7 +700,7 @@
                 })
                 setTimeout(() => {
                     me.$refs.plan.fetchSeats(null, me.studioID)
-                    document.querySelector('.plan_wrapper').style.transform = `matrix(0.55, 0, 0, 0.55, ${me.customWidth}, ${me.customHeight})`
+                    document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
                 }, 10)
                 me.selectStudio = true
             },
@@ -723,9 +723,9 @@
             panZoomInit (instance, id) {
                 const me = this
                 me.customInstance = instance
-                let planWidth = 1000
+                let planWidth = document.querySelector('.booker_wrapper .booker_content .booker_seats .vue-pan-zoom-scene').getBoundingClientRect().width
                 let planHeight = document.querySelector('.plan_wrapper').getBoundingClientRect().height
-                instance.zoomAbs(planWidth / 2, planHeight / 2, 0.55)
+                instance.zoomAbs(planWidth / 2, planHeight / 2, 0.4)
                 me.customWidth = instance.getTransform().x
                 me.customHeight = instance.getTransform().y
                 planWidth = instance.getTransform().x
@@ -738,15 +738,15 @@
                 })
                 document.getElementById('reset').addEventListener('click', function(e) {
                     if (me.zoomCtr >= 1) {
-                        me.zoomCtr = 0.55
+                        me.zoomCtr = 0.4
                     }
                     if (me.zoomCtr <= 0.99999) {
-                        me.zoomCtr = 1.35
+                        me.zoomCtr = 1.2
                     }
                     instance.getTransform().x = planWidth
                     instance.getTransform().y = planHeight
-                    instance.getTransform().scale = 0.55
-                    document.querySelector('.plan_wrapper').style.transform = `matrix(0.55, 0, 0, 0.55, ${planWidth}, ${planHeight})`
+                    instance.getTransform().scale = 0.4
+                    document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${planWidth}, ${planHeight})`
                 })
                 document.getElementById('reload').addEventListener('click', function(e) {
                     if (me.$store.state.scheduleID != 0) {
@@ -774,17 +774,17 @@
                 switch (type) {
                     case 'in':
                         if (me.zoomCtr <= 0.99999) {
-                            me.zoomCtr = 1.35
+                            me.zoomCtr = 1.2
                         }
                         instance.smoothZoom((planWidth / 2) + me.zoomCtr, (planHeight / 2) + me.zoomCtr, me.zoomCtr)
-                        me.zoomCtr += 0.25
+                        me.zoomCtr += 0.4
                         break
                     case 'out':
                         if (me.zoomCtr >= 1.0) {
-                            me.zoomCtr = 0.55
+                            me.zoomCtr = 0.4
                         }
                         instance.smoothZoom((planWidth / 2) + me.zoomCtr, (planHeight / 2) + me.zoomCtr, me.zoomCtr)
-                        me.zoomCtr -= 0.25
+                        me.zoomCtr -= 0.4
                         break
                 }
             },
@@ -970,7 +970,9 @@
                     me.$store.state.errorStatus = true
                 }).then(() => {
                     setTimeout( () => {
-                        me.studios = me.$store.state.user.staff_details.studio_access
+                        me.$axios.get('api/studios?enabled=1').then(res => {
+                            me.studios = res.data.studios
+                        })
                         me.notePad = me.$store.state.user.notepad
                     }, 200)
                     me.loaded = true

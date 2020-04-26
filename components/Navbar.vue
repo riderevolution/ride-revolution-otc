@@ -233,6 +233,10 @@
                                         link: '/reporting/sales-report/promotions-redeemed'
                                     },
                                     {
+                                        title: 'Gift Cards Redeemed',
+                                        link: '/reporting/sales-report/gift-cards-redeemed'
+                                    },
+                                    {
                                         title: 'Sales by Customer',
                                         link: '/reporting/sales-report/sales-by-customer'
                                     }
@@ -280,7 +284,7 @@
                     elements.forEach((element, index) => {
                         setTimeout( () => {
                             const length = element.querySelectorAll('.sub_nav_list').length
-                            const height = 59
+                            const height = 46
                             const currentHeight = height * length
                             element.style.height = `${currentHeight}px`
                         }, 300)

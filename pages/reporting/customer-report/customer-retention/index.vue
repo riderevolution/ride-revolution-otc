@@ -18,19 +18,12 @@
                 <div class="filter_wrapper">
                     <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
                         <div class="form_group">
-                            <label for="range">Date Range</label>
-                            <no-ssr>
-                                <vc-date-picker
-                                    mode='range'
-                                    v-model="range"
-                                    :input-props='{
-                                        class: "vc-appearance-none default_select alternate",
-                                        id: "range",
-                                        name: "range",
-                                        readonly: true
-                                    }'
-                                />
-                            </no-ssr>
+                            <label for="start_date">Start Date</label>
+                            <input type="date" name="start_date" class="default_text date" />
+                        </div>
+                        <div class="form_group margin">
+                            <label for="end_date">End Date</label>
+                            <input type="date" name="end_date" class="default_text date" />
                         </div>
                         <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                     </form>
@@ -49,11 +42,11 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th>Customer</th>
-                            <th>Sign Up</th>
-                            <th>First Class</th>
-                            <th>Last Class</th>
-                            <th>City</th>
+                            <th class="stick">Customer</th>
+                            <th class="stick">Sign Up</th>
+                            <th class="stick">First Class</th>
+                            <th class="stick">Last Class</th>
+                            <th class="stick">City</th>
                         </tr>
                     </thead>
                     <tbody v-if="res.customers.data.length > 0">
@@ -62,7 +55,9 @@
                                 <div class="thumb">
                                     <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
                                     <div class="table_image_default" v-else>
-                                        {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                        <div class="overlay">
+                                            {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                        </div>
                                     </div>
                                     <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                 </div>
