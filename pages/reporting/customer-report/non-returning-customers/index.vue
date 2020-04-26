@@ -1,92 +1,84 @@
 <template>
     <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table" v-if="loaded">
-                <div class="action_wrapper">
-                    <div>
-                        <div class="header_title">
-                            <h1>Non Returning Customers</h1>
-                            <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+        <transition name="fade">
+            <div id="admin" class="cms_dashboard" v-if="loaded">
+                <section id="top_content" class="table">
+                    <div class="action_wrapper">
+                        <div>
+                            <div class="header_title">
+                                <h1>Non Returning Customers</h1>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
+                            </div>
+                            <h2 class="header_subtitle">Customers who only made 1 package purchase.</h2>
                         </div>
-                        <h2 class="header_subtitle">Customers who only made 1 package purchase.</h2>
+                        <div class="actions">
+                            <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                        </div>
                     </div>
-                    <div class="actions">
-                        <a href="javascript:void(0)" class="action_btn">Print</a>
-                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
+                            <div class="form_group">
+                                <label for="class_package_id">Class Package</label>
+                                <select class="default_select alternate" name="class_package_id">
+                                    <option value="" selected>All Class Package</option>
+                                    <option :value="class_package.id" v-for="(class_package, key) in class_packages" :key="key">{{ class_package.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="start_date">Start Date</label>
+                                <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
+                            </div>
+                            <div class="form_group margin">
+                                <label for="end_date">End Date</label>
+                                <input type="date" name="end_date" v-model="form.end_date"  class="default_text date" />
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
                     </div>
-                </div>
-                <div class="filter_wrapper">
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
-                        <div class="form_group">
-                            <label for="type">Class Package</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="start_date">Start Date</label>
-                            <input type="date" name="start_date" class="default_text date" />
-                        </div>
-                        <div class="form_group margin">
-                            <label for="end_date">End Date</label>
-                            <input type="date" name="end_date" class="default_text date" />
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                </div>
-            </section>
-            <section id="content" v-if="loaded">
-                <table class="cms_table">
-                    <thead>
-                        <tr>
-                            <th class="stick">Customer</th>
-                            <th class="stick">Last Package Used</th>
-                            <th class="stick">Date Purchased/Date Activated</th>
-                            <th class="stick">Last Class</th>
-                            <th class="stick">Contact Number</th>
-                            <th class="stick">Email Address</th>
-                            <th class="stick">City</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="res.customers.data.length > 0">
-                        <tr v-for="(data, key) in res.customers.data" :key="key">
-                            <td>
-                                <div class="thumb">
-                                    <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
-                                    <div class="table_image_default" v-else>
-                                        <div class="overlay">
-                                            {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                </section>
+                <section id="content">
+                    <table class="cms_table">
+                        <thead>
+                            <tr>
+                                <th class="stick">Customer</th>
+                                <th class="stick">Last Package Used</th>
+                                <th class="stick">Date Purchased/Date Activated</th>
+                                <th class="stick">Last Class</th>
+                                <th class="stick">Contact Number</th>
+                                <th class="stick">Email Address</th>
+                                <th class="stick">City</th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="res.length > 0">
+                            <tr v-for="(data, key) in res" :key="key">
+                                <td>
+                                    <div class="thumb">
+                                        <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                            </div>
                                         </div>
+                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`" table_action_text>{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                     </div>
-                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.first_name }} {{ data.last_name }}</nuxt-link>
-                                </div>
-                            </td>
-                            <td>Single Class</td>
-                            <td>{{ $moment().format('MMMM DD, YYYY') }} / {{ $moment().format('MMMM DD, YYYY') }}</td>
-                            <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                            <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
-                            <td>{{ data.email }}</td>
-                            <td>Sample</td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
-            </section>
-        </div>
-        <transition name="fade">
-            <confirm-status v-if="$store.state.confirmStatus" ref="enabled" :status="status" />
-        </transition>
-        <transition name="fade">
-            <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
-        </transition>
-        <transition name="fade">
-            <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
+                                </td>
+                                <td>{{ data.userPackageCounts[0].class_package.name }}</td>
+                                <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment().format('MMMM DD, YYYY') : 'N/A' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMMM DD, YYYY') : 'N/A' }}</td>
+                                <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
+                                <td>{{ data.email }}</td>
+                                <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : 'N/A' }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td :colspan="rowCount">No Result(s) Found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
         </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
@@ -94,107 +86,78 @@
 
 <script>
     import Foot from '../../../../components/Foot'
-    import UserForm from '../../../../components/modals/UserForm'
-    import RoleForm from '../../../../components/modals/RoleForm'
-    import ConfirmStatus from '../../../../components/modals/ConfirmStatus'
-    import PendingTransactions from '../../../../components/modals/PendingTransactions'
-    import CustomerPendingQuickSale from '../../../../components/modals/CustomerPendingQuickSale'
-    import Pagination from '../../../../components/Pagination'
     export default {
         components: {
-            Foot,
-            UserForm,
-            RoleForm,
-            ConfirmStatus,
-            PendingTransactions,
-            CustomerPendingQuickSale,
-            Pagination
+            Foot
         },
         data () {
             return {
-                range: {
-                    start: new Date(),
-                    end: new Date()
-                },
                 loaded: false,
-                id: 0,
-                type: 0,
                 rowCount: 0,
-                status: 'all',
                 res: [],
-                types: [],
-                transaction: []
+                class_packages: [],
+                form: {
+                    start_date: this.$moment('2020-01-01').format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
+                }
             }
         },
         methods: {
-            togglePendingTransactions (id) {
+            submitFilter () {
                 const me = this
-                me.$store.state.pendingCustomerID = id
-                me.$store.state.pendingTransactionsStatus = true
-                document.body.classList.add('no_scroll')
-            },
-            submissionSuccess () {
-                const me = this
+                me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('enabled', me.status)
-                me.loader(true)
-                me.$axios.post(`api/customers/search`, formData).then(res => {
-                    me.res = res.data
+                me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.res = res.data.customers
+                        }, 500)
+                    }
                 }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
                 })
             },
-            toggleStatus (id, enabled, status) {
-                const me = this
-                me.$store.state.confirmStatus = true
-                setTimeout( () => {
-                    me.$refs.enabled.confirm.table_name = 'roles'
-                    me.$refs.enabled.confirm.id = id
-                    me.$refs.enabled.confirm.enabled = enabled
-                    me.$refs.enabled.confirm.status = status
-                    me.$refs.enabled.confirm.type = 'role'
-                }, 100)
-                document.body.classList.add('no_scroll')
-            },
-            toggleStatus (value) {
-                const me = this
-                me.status = value
-            },
-            fetchData (value) {
+            fetchData () {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
-                    me.res = res.data
-                    me.loaded = true
+                let formData = new FormData()
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.res = res.data.customers
+                            me.$axios.get('api/packages/class-packages?enabled=1').then(res => {
+                                if (res.data) {
+                                    me.class_packages = res.data.classPackages.data
+                                }
+                            })
+                            me.loaded = true
+                        }, 500)
+                    }
                 }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
-                    me.rowCount = document.getElementsByTagName('th').length
-                })
-            },
-            fetchTypes () {
-                const me = this
-                me.$axios.get('api/extras/customer-types').then(res => {
-                    me.types = res.data.customerTypes
                 })
             }
         },
-        async mounted () {
+        mounted () {
             const me = this
-            me.fetchData(1)
-            me.fetchTypes()
             setTimeout( () => {
+                me.fetchData()
                 window.scrollTo({ top: 0, behavior: 'smooth' })
-            }, 300)
+            }, 500)
         }
     }
 </script>
