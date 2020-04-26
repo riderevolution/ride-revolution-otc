@@ -99,7 +99,7 @@
                 formData.append('status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                formData.append('studio_id', me.$store.state.user.current_studio_id)
+                formData.append('studio_id', me.$cookies.get('CSID')
                 me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {

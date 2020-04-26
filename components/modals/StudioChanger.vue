@@ -94,6 +94,7 @@
                                 if (res.data) {
                                     setTimeout( () => {
                                         me.$store.state.user = res.data.user
+                                        this.$cookies.set('CSID', res.data.user.current_studio_id)
                                     }, 10)
                                 }
                             })
