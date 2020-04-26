@@ -27,7 +27,7 @@
                                                     {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                                 </div>
                                             </div>
-                                            <div class="customer_name">
+                                            <div class="customer_name" v-line-clamp="1">
                                                 {{ data.first_name }} {{ data.last_name }}
                                             </div>
                                         </div>
