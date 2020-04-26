@@ -19,6 +19,13 @@
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
+                                    <option value="" selected>All Studios</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
                                 <label for="start_date">Start Date</label>
                                 <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
                             </div>
@@ -62,7 +69,7 @@
                             </tr>
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.unique}`">{{ data.name }}</nuxt-link>
+                                    <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${data.unique}`" @click.native="toggleInnerReport(`${$route.path}/${data.unique}`)">{{ data.name }}</nuxt-link>
                                 </td>
                                 <td>{{ data.transaction_count }}</td>
                                 <td>Php {{ totalCount(data.gross_receipts) }}</td>
@@ -101,12 +108,12 @@
                                 <td><b>Php {{ totalCount(studio_total.total_income) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in studio_res" :key="key">
-                                <td>Greenbelt</td>
-                                <td>Php 24,000</td>
-                                <td>Php 24,000</td>
-                                <td>Php 24,000</td>
-                                <td>Php 24,000</td>
-                                <td>Php 24,000</td>
+                                <td>{{ data.name }}</td>
+                                <td>Php {{ (data.subtotal) ? totalCount(data.subtotal) : 0 }}</td>
+                                <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
+                                <td>Php 0</td>
+                                <td>Php 0</td>
+                                <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -128,17 +135,27 @@
                 loaded: false,
                 rowCount: 0,
                 status: 'all',
+                studios: [],
                 res: [],
                 studio_res: [],
                 payment_total: [],
                 studio_total: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    end_date: this.$moment().format('YYYY-MM-DD'),
+                    studio_id: ''
                 }
             }
         },
         methods: {
+            toggleInnerReport (path) {
+                const me = this
+                if (me.form.studio_id != '') {
+                    me.$router.push(`${path}?status=${me.status}&studio_id=${me.form.studio_id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                } else {
+                    me.$router.push(`${path}?status=${me.status}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                }
+            },
             toggleTab (value) {
                 const me = this
                 me.status = value
@@ -149,13 +166,13 @@
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('status', me.status)
-                formData.append('studio_id', me.$cookies.get('CSID'))
-                me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
+                me.$axios.post('api/reporting/sales/sales-by-payment-type', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.total_count = res.data.total_count
                             me.res = res.data.result
-                            me.total = res.data.total
+                            me.payment_total = res.data.payment_grand_total
+                            me.studio_res = res.data.studio_sales_summary
+                            me.studio_total = res.data.studio_grand_total
                         }, 500)
                     }
                 }).catch(err => {
@@ -175,7 +192,9 @@
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
                 formData.append('status', value)
-                formData.append('studio_id', me.$cookies.get('CSID'))
+                if (me.form.studio_id != '') {
+                    formData.append('studio_id', me.form.studio_id)
+                }
                 me.$axios.post('api/reporting/sales/sales-by-payment-type', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -183,6 +202,11 @@
                             me.payment_total = res.data.payment_grand_total
                             me.studio_res = res.data.studio_sales_summary
                             me.studio_total = res.data.studio_grand_total
+                            me.$axios.get('api/studios?enabled=1').then(res => {
+                                if (res.data) {
+                                    me.studios = res.data.studios
+                                }
+                            })
                             me.loaded = true
                         }, 500)
                         console.log(res.data);
