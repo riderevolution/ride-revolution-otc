@@ -127,7 +127,6 @@
             return {
                 loaded: false,
                 rowCount: 0,
-                studio_id: 0,
                 status: 'all',
                 res: [],
                 studio_res: [],
@@ -150,7 +149,7 @@
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('status', me.status)
-                formData.append('studio_id', me.$cookies.get('CSID')
+                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -169,7 +168,7 @@
                     }, 500)
                 })
             },
-            async fetchData (value) {
+            fetchData (value) {
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
@@ -199,9 +198,9 @@
                 })
             }
         },
-        async mounted () {
+        mounted () {
             const me = this
-            await setTimeout( () => {
+            setTimeout( () => {
                 me.fetchData('all')
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 750)
