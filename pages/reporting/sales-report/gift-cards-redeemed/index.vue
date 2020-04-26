@@ -96,7 +96,7 @@
                 const me = this
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('studio_id', me.$cookies.get('CSID')
+                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/gift-cards-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -120,7 +120,7 @@
                 let formData = new FormData()
                 formData.append('start_date', me.$moment().format('YYYY-MM-DD'))
                 formData.append('end_date', me.$moment().format('YYYY-MM-DD'))
-                formData.append('studio_id', me.$cookies.get('CSID')
+                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/gift-cards-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {

@@ -125,7 +125,7 @@
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('status', me.status)
-                formData.append('studio_id', me.$cookies.get('CSID')
+                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -151,7 +151,7 @@
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
                 formData.append('status', value)
-                formData.append('studio_id', me.$cookies.get('CSID')
+                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {

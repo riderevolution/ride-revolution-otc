@@ -102,7 +102,7 @@
                 formData.append('status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                formData.append('studio_id', me.$cookies.get('CSID')
+                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}/product/${me.$route.params.slug}`, formData).then(res => {
                     if (res.data) {
                         console.log(res.data);
