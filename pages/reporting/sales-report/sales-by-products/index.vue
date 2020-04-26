@@ -177,7 +177,7 @@
             setTimeout( () => {
                 me.fetchData('all')
                 window.scrollTo({ top: 0, behavior: 'smooth' })
-            }, 750)
+            }, 500)
         }
     }
 </script>

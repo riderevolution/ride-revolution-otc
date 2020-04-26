@@ -135,7 +135,7 @@
                 me.status = me.$route.query.status
                 me.fetchData(me.status)
                 window.scrollTo({ top: 0, behavior: 'smooth' })
-            }, 750)
+            }, 500)
         }
     }
 </script>

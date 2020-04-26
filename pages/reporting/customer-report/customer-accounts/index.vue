@@ -11,20 +11,20 @@
                         <h2 class="header_subtitle">Accounts of Ride Revolution members</h2>
                     </div>
                     <div class="actions">
-                        <a href="javascript:void(0)" class="action_btn">Print</a>
-                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                        <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                        <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                     </div>
                 </div>
                 <div class="action_buttons alt">
                     <div class="actions">
                         <div class="toggler">
-                            <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleStatus('all')">All</div>
-                            <div :class="`status ${(status == 'active') ? 'active' : ''}`" @click="toggleStatus('active')">Active</div>
-                            <div :class="`status ${(status == 'inactive') ? 'active' : ''}`" @click="toggleStatus('inactive')">Inactive</div>
-                            <div :class="`status ${(status == 'unused') ? 'active' : ''}`" @click="toggleStatus('unused')">Unused</div>
-                            <div :class="`status ${(status == 'deactivated') ? 'active' : ''}`" @click="toggleStatus('deactivated')">Deactivated</div>
+                            <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
+                            <div :class="`status ${(status == 'active') ? 'active' : ''}`" @click="toggleTab('active')">Active</div>
+                            <div :class="`status ${(status == 'inactive') ? 'active' : ''}`" @click="toggleTab('inactive')">Inactive</div>
+                            <div :class="`status ${(status == 'unused') ? 'active' : ''}`" @click="toggleTab('unused')">Unused</div>
+                            <div :class="`status ${(status == 'deactivated') ? 'active' : ''}`" @click="toggleTab('deactivated')">Deactivated</div>
                         </div>
-                        <div class="total">Total: {{ totalItems(res.customers.total) }}</div>
+                        <div class="total">Total: {{ totalItems(total) }}</div>
                     </div>
                 </div>
             </section>
@@ -41,8 +41,8 @@
                             <th class="stick">City</th>
                         </tr>
                     </thead>
-                    <tbody v-if="res.customers.data.length > 0">
-                        <tr v-for="(data, key) in res.customers.data" :key="key">
+                    <tbody v-if="res.length > 0">
+                        <tr v-for="(data, key) in res" :key="key">
                             <td>
                                 <div class="thumb">
                                     <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -51,12 +51,12 @@
                                             {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                         </div>
                                     </div>
-                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.last_name }}</nuxt-link>
+                                    <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`" table_action_text>{{ data.last_name }}</nuxt-link>
                                 </div>
                             </td>
-                            <td><nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.first_name }}</nuxt-link></td>
+                            <td><nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`" table_action_text>{{ data.first_name }}</nuxt-link></td>
                             <td>Black</td>
-                            <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
+                            <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                             <td>{{ data.email }}</td>
                             <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
                             <td>Sample</td>
@@ -68,97 +68,46 @@
                         </tr>
                     </tbody>
                 </table>
-                <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
             </section>
         </div>
-        <transition name="fade">
-            <confirm-status v-if="$store.state.confirmStatus" ref="enabled" :status="status" />
-        </transition>
-        <transition name="fade">
-            <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
-        </transition>
-        <transition name="fade">
-            <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
-        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
 
 <script>
     import Foot from '../../../../components/Foot'
-    import UserForm from '../../../../components/modals/UserForm'
-    import RoleForm from '../../../../components/modals/RoleForm'
-    import ConfirmStatus from '../../../../components/modals/ConfirmStatus'
-    import PendingTransactions from '../../../../components/modals/PendingTransactions'
-    import CustomerPendingQuickSale from '../../../../components/modals/CustomerPendingQuickSale'
-    import Pagination from '../../../../components/Pagination'
     export default {
         components: {
-            Foot,
-            UserForm,
-            RoleForm,
-            ConfirmStatus,
-            PendingTransactions,
-            CustomerPendingQuickSale,
-            Pagination
+            Foot
         },
         data () {
             return {
                 loaded: false,
-                id: 0,
-                type: 0,
                 rowCount: 0,
                 status: 'all',
                 res: [],
-                types: [],
-                transaction: []
+                total: 0
             }
         },
         methods: {
-            togglePendingTransactions (id) {
-                const me = this
-                me.$store.state.pendingCustomerID = id
-                me.$store.state.pendingTransactionsStatus = true
-                document.body.classList.add('no_scroll')
-            },
-            submissionSuccess () {
-                const me = this
-                let formData = new FormData(document.getElementById('filter'))
-                formData.append('enabled', me.status)
-                me.loader(true)
-                me.$axios.post(`api/customers/search`, formData).then(res => {
-                    me.res = res.data
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                    }, 500)
-                })
-            },
-            toggleStatus (id, enabled, status) {
-                const me = this
-                me.$store.state.confirmStatus = true
-                setTimeout( () => {
-                    me.$refs.enabled.confirm.table_name = 'roles'
-                    me.$refs.enabled.confirm.id = id
-                    me.$refs.enabled.confirm.enabled = enabled
-                    me.$refs.enabled.confirm.status = status
-                    me.$refs.enabled.confirm.type = 'role'
-                }, 100)
-                document.body.classList.add('no_scroll')
-            },
-            toggleStatus (value) {
+            toggleTab (value) {
                 const me = this
                 me.status = value
+                me.fetchData(value)
             },
             fetchData (value) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
-                    me.res = res.data
-                    me.loaded = true
+                let formData = new FormData()
+                formData.append('status', value)
+                me.$axios.post('api/reporting/customers/customer-accounts', formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.res = res.data.customers
+                            me.total = me.res.length
+                            me.loaded = true
+                        }, 500)
+                    }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
@@ -168,21 +117,14 @@
                     }, 500)
                     me.rowCount = document.getElementsByTagName('th').length
                 })
-            },
-            fetchTypes () {
-                const me = this
-                me.$axios.get('api/extras/customer-types').then(res => {
-                    me.types = res.data.customerTypes
-                })
             }
         },
-        async mounted () {
+        mounted () {
             const me = this
-            me.fetchData(1)
-            me.fetchTypes()
             setTimeout( () => {
+                me.fetchData('all')
                 window.scrollTo({ top: 0, behavior: 'smooth' })
-            }, 300)
+            }, 500)
         }
     }
 </script>
