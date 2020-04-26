@@ -173,6 +173,7 @@
                             me.payment_total = res.data.payment_grand_total
                             me.studio_res = res.data.studio_sales_summary
                             me.studio_total = res.data.studio_grand_total
+                            console.log(res.data);
                         }, 500)
                     }
                 }).catch(err => {
@@ -209,7 +210,6 @@
                             })
                             me.loaded = true
                         }, 500)
-                        console.log(res.data);
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data
