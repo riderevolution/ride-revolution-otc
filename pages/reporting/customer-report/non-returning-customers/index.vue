@@ -53,15 +53,7 @@
                         <tbody v-if="res.length > 0">
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <div class="thumb">
-                                        <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
-                                        <div class="table_image_default" v-else>
-                                            <div class="overlay">
-                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
-                                            </div>
-                                        </div>
-                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`" table_action_text>{{ data.first_name }} {{ data.last_name }}</nuxt-link>
-                                    </div>
+                                    <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                 </td>
                                 <td>{{ data.userPackageCounts[0].class_package.name }}</td>
                                 <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment().format('MMMM DD, YYYY') : 'N/A' }}</td>
