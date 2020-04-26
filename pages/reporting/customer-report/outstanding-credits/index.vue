@@ -42,7 +42,9 @@
                                 <div class="thumb">
                                     <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
                                     <div class="table_image_default" v-else>
-                                        {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                        <div class="overlay">
+                                            {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                        </div>
                                     </div>
                                     <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                 </div>
