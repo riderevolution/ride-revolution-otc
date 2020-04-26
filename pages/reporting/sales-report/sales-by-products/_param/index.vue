@@ -1,70 +1,80 @@
 <template>
     <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table">
-                <nuxt-link to="/reporting/sales-report/sales-by-products" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Products</span></nuxt-link>
-                <div class="action_wrapper">
-                    <div>
-                        <div class="header_title">
-                            <h1>{{ replacer($route.params.param) }} (Paid)</h1>
-                            <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+        <transition name="fade">
+            <div id="admin" class="cms_dashboard" v-if="loaded">
+                <section id="top_content" class="table">
+                    <nuxt-link to="/reporting/sales-report/sales-by-products" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Products</span></nuxt-link>
+                    <div class="action_wrapper">
+                        <div>
+                            <div class="header_title">
+                                <h1>{{ category.name }} ({{ status }})</h1>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
+                            </div>
+                            <h2 class="header_subtitle">Income from {{ category.name }}.</h2>
                         </div>
-                        <h2 class="header_subtitle">Income from {{ replacer($route.params.param) }}.</h2>
+                        <div class="actions">
+                            <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                        </div>
                     </div>
-                    <div class="actions">
-                        <a href="javascript:void(0)" class="action_btn">Print</a>
-                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
-                    </div>
-                </div>
-            </section>
-            <section id="content">
-                <table class="cms_table">
-                    <thead>
-                        <tr>
-                            <th class="sticky">Product Name</th>
-                            <th class="sticky">Item Price</th>
-                            <th class="sticky">Sold</th>
-                            <th class="sticky">Discount</th>
-                            <th class="sticky">Taxes</th>
-                            <th class="sticky">Total Income</th>
-                            <th class="sticky">Comp Value</th>
-                            <th class="sticky">Cost</th>
-                            <th class="sticky">Profit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="2"><b>Total</b></td>
-                            <td><b>214</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                            <td><b>Php 321,925</b></td>
-                        </tr>
-                        <tr v-for="(n, key) in 6" :key="key">
-                            <td>
-                                <nuxt-link class="table_data_link" :to="`${$route.path}/product/hope-in-the-bottle`">Hope in the Bottle</nuxt-link>
-                            </td>
-                            <td>Php 1,000</td>
-                            <td>39</td>
-                            <td>Php 1,000</td>
-                            <td>Php 1,000</td>
-                            <td>Php 1,000</td>
-                            <td>Php 1,000</td>
-                            <td>Php 1,000</td>
-                            <td>Php 1,000</td>
-                        </tr>
-                    </tbody>
-                    <!-- <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody> -->
-                </table>
-            </section>
-        </div>
+                </section>
+                <section id="content">
+                    <table class="cms_table">
+                        <thead>
+                            <tr>
+                                <th class="sticky">Product Name</th>
+                                <th class="sticky">Item Price</th>
+                                <th class="sticky">Sold</th>
+                                <th class="sticky">Discount</th>
+                                <th class="sticky">Taxes</th>
+                                <th class="sticky">Total Income</th>
+                                <th class="sticky">Comp Value</th>
+                                <th class="sticky">Cost</th>
+                                <th class="sticky">Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="res.length > 0">
+                            <tr>
+                                <td colspan="2"><b>{{ total.name }}</b></td>
+                                <td><b>{{ total.sold }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_income) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_cost) }}</b></td>
+                                <td :class="`${(total.total_profit) ? (total.total_profit <= 0 ? 'red' : 'green') : ''}`"><b>Php {{ totalCount(total.total_profit) }}</b></td>
+                            </tr>
+                            <tr v-for="(data, key) in res" :key="key">
+                                <td>
+                                    <nuxt-link v-if="form.slug == 'product-variant'" :event="''" class="table_data_link" :to="`${$route.path}/product/${convertToSlug(data.variant)}`" @click.native="toggleInnerReport(`${(form.slug == 'gift-card') ? 'gift-card' : 'product-variant'}`, `${$route.path}/product/${convertToSlug(data.variant)}`, data.id)">{{ data.variant }}</nuxt-link>
+                                    <div v-else>{{ data.card_code }}</div>
+                                </td>
+                                <td>
+                                    <div v-if="form.slug == 'product-variant'">
+                                        Php {{ totalCount(data.sale_price) }}
+                                    </div>
+                                    <div v-else>
+                                        Php {{ totalCount(data.class_package.price) }}
+                                    </div>
+                                </td>
+                                <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                                <td>Php {{ (totalCount(data.total_discount)) ? totalCount(data.total_discount) : 0 }}</td>
+                                <td>Php {{ (totalCount(data.total_tax)) ? totalCount(data.total_tax) : 0 }}</td>
+                                <td>Php {{ (totalCount(data.total_income)) ? totalCount(data.total_income) : 0 }}</td>
+                                <td>Php {{ (totalCount(data.total_comp)) ? totalCount(data.total_comp) : 0 }}</td>
+                                <td>Php {{ (totalCount(data.total_cost)) ? totalCount(data.total_cost) : 0 }}</td>
+                                <td :class="`${(data.total_profit) ? (data.total_profit <= 0 ? 'red' : 'green') : ''}`">Php {{ (totalCount(data.total_profit)) ? totalCount(data.total_profit) : 0 }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td :colspan="rowCount">No Result(s) Found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
@@ -77,74 +87,66 @@
         },
         data () {
             return {
-                range: {
-                    start: new Date(),
-                    end: new Date()
-                },
+                loaded: false,
                 rowCount: 0,
-                status: 1,
+                status: 'all',
                 res: [],
-                total_count: 0,
-                studios: [],
-                tabStatus: 1
+                total: [],
+                category: [],
+                form: {
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD'),
+                    slug: '',
+                    id: 0
+                }
             }
         },
         methods: {
-            submissionSuccess () {
+            toggleInnerReport (type, path, id) {
                 const me = this
-                let formData = new FormData(document.getElementById('filter'))
-                formData.append('enabled', me.status)
-                me.loader(true)
-                me.$axios.post(`api/staff/search`, formData).then(res => {
-                    me.res = res.data.roles
-                    me.rowCount = 4
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
-                        elements.forEach((element, index) => {
-                            element.querySelector('.accordion_table').style.height = 0
-                        })
-                    }, 500)
-                })
-            },
-            toggleTab (status) {
-                const me = this
-                me.tabStatus = status
+                me.$router.push(`${path}?status=${me.status}&slug=${type}&id=${me.form.id}&variant_id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             fetchData (value) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
-                    me.res = res.data
-                    me.loaded = true
+                let formData = new FormData()
+                formData.append('slug', me.form.slug)
+                formData.append('id', me.form.id)
+                formData.append('status', value)
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                formData.append('studio_id', me.$store.state.user.current_studio_id)
+                me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}`, formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.res = res.data.result
+                            me.total = res.data.total
+                            me.category = res.data.category
+                            me.loaded = true
+                        }, 500)
+                    }
                 }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
-                    me.rowCount = document.getElementsByTagName('th').length
-                })
-            },
-            fetchStudios () {
-                const me = this
-                me.$axios.get('api/studios').then(res => {
-                    me.studios = res.data.studios
                 })
             }
         },
         mounted () {
             const me = this
-            me.fetchData(1)
-            me.fetchStudios()
             setTimeout( () => {
+                me.form.start_date = me.$route.query.start_date
+                me.form.end_date = me.$route.query.end_date
+                me.form.slug = me.$route.query.slug
+                me.form.id = me.$route.query.id
+                me.status = me.$route.query.status
+                me.fetchData(me.status)
                 window.scrollTo({ top: 0, behavior: 'smooth' })
-            }, 300)
+            }, 750)
         }
     }
 </script>

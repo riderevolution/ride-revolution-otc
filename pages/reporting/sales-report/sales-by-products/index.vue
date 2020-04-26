@@ -65,11 +65,11 @@
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_cost) }}</b></td>
-                                <td><b>Php {{ totalCount(total.total_profit) }}</b></td>
+                                <td :class="`${(total.total_profit) ? (total.total_profit <= 0 ? 'red' : 'green') : ''}`"><b>Php {{ totalCount(total.total_profit) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`">{{ data.name }}</nuxt-link>
+                                    <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native="toggleInnerReport(`${(data.name == 'Gift Cards') ? 'gift-card' : 'product-variant'}`, `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
                                 </td>
                                 <td>{{ (data.sold) ? data.sold : 0 }}</td>
                                 <td>0</td>
@@ -111,6 +111,10 @@
             }
         },
         methods: {
+            toggleInnerReport (type, path, id) {
+                const me = this
+                me.$router.push(`${path}?status=${me.status}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+            },
             toggleTab (value) {
                 const me = this
                 me.status = value
@@ -150,12 +154,11 @@
                 formData.append('studio_id', me.$store.state.user.current_studio_id)
                 me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
                     if (res.data) {
-                        console.log(res.data);
                         setTimeout( () => {
-                            me.loaded = true
                             me.total_count = res.data.total_count
                             me.res = res.data.result
                             me.total = res.data.total
+                            me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {
@@ -167,7 +170,7 @@
                         me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
                 })
-            },
+            }
         },
         mounted () {
             const me = this
