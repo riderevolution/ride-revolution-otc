@@ -96,8 +96,8 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
-                    me.rowCount = document.getElementsByTagName('th').length
                 })
             }
         },
