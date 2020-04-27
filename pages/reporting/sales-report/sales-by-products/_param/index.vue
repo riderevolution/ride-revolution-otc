@@ -25,24 +25,24 @@
                                 <th class="sticky">Product Name</th>
                                 <th class="sticky">Item Price</th>
                                 <th class="sticky">Sold</th>
+                                <th class="sticky">Comp Value</th>
                                 <th class="sticky">Discount</th>
                                 <th class="sticky">Taxes</th>
-                                <th class="sticky">Total Income</th>
-                                <th class="sticky">Comp Value</th>
-                                <th class="sticky">Cost</th>
                                 <th class="sticky">Profit</th>
+                                <th class="sticky">Cost</th>
+                                <th class="sticky">Total Income</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.length > 0">
                             <tr>
                                 <td colspan="2"><b>{{ total.name }}</b></td>
                                 <td><b>{{ total.sold }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
-                                <td><b>Php {{ totalCount(total.total_income) }}</b></td>
-                                <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
-                                <td><b>Php {{ totalCount(total.total_cost) }}</b></td>
                                 <td :class="`${(total.total_profit) ? (total.total_profit <= 0 ? 'red' : 'green') : ''}`"><b>Php {{ totalCount(total.total_profit) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_cost) }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
@@ -58,12 +58,12 @@
                                     </div>
                                 </td>
                                 <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                                <td>Php {{ (totalCount(data.total_comp)) ? totalCount(data.total_comp) : 0 }}</td>
                                 <td>Php {{ (totalCount(data.total_discount)) ? totalCount(data.total_discount) : 0 }}</td>
                                 <td>Php {{ (totalCount(data.total_tax)) ? totalCount(data.total_tax) : 0 }}</td>
-                                <td>Php {{ (totalCount(data.total_income)) ? totalCount(data.total_income) : 0 }}</td>
-                                <td>Php {{ (totalCount(data.total_comp)) ? totalCount(data.total_comp) : 0 }}</td>
-                                <td>Php {{ (totalCount(data.total_cost)) ? totalCount(data.total_cost) : 0 }}</td>
                                 <td :class="`${(data.total_profit) ? (data.total_profit <= 0 ? 'red' : 'green') : ''}`">Php {{ (totalCount(data.total_profit)) ? totalCount(data.total_profit) : 0 }}</td>
+                                <td>Php {{ (totalCount(data.total_cost)) ? totalCount(data.total_cost) : 0 }}</td>
+                                <td>Php {{ (totalCount(data.total_income)) ? totalCount(data.total_income) : 0 }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>

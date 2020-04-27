@@ -24,21 +24,21 @@
                             <tr>
                                 <th class="sticky">Date of Purchase</th>
                                 <th class="sticky">Full Name</th>
+                                <th class="sticky">Qty.</th>
                                 <th class="sticky">Payment</th>
                                 <th class="sticky">Comp Reason</th>
-                                <th class="sticky">Qty.</th>
+                                <th class="sticky">Comp Value</th>
                                 <th class="sticky">Discount</th>
                                 <th class="sticky">Total Income</th>
-                                <th class="sticky">Comp Value</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.length > 0">
                             <tr>
-                                <td colspan="4"><b>{{ total.name }}</b></td>
-                                <td><b>{{ total.qty }}</b></td>
+                                <td colspan="2"><b>{{ total.name }}</b></td>
+                                <td colspan="3"><b>{{ total.qty }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
-                                <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
@@ -46,12 +46,12 @@
                                     <nuxt-link class="table_data_link" :to="`/customers/${data.payment.user.id}/packages`" v-if="data.payment.user != null">{{ `${data.payment.user.first_name} ${data.payment.user.last_name}` }}</nuxt-link>
                                     <div v-else>N/A</div>
                                 </td>
+                                <td>{{ data.quantity }}</td>
                                 <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
                                 <td>{{ (data.payment.payment_method.method == 'comp') ? data.payment.payment_method.comp_reason : 'N/A' }}</td>
-                                <td>{{ data.quantity }}</td>
+                                <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
                                 <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
                                 <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
-                                <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
