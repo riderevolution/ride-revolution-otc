@@ -975,10 +975,12 @@ table
                     transform: rotate(-45deg)
             .modal_main_group
                 padding: 20px
-                max-height: 400px
-                overflow-x: hidden
-                overflow-y: auto
                 margin-right: 5px
+                &.scrollable
+                    height: 100%
+                    max-height: 300px
+                    overflow-x: hidden
+                    overflow-y: auto
                 .form_footer_wrapper
                     margin-top: 40px
                     margin-bottom: 0
@@ -1483,7 +1485,7 @@ input::placeholder
                         box-shadow: 20px 20px 40px rgba(0,0,0,0.16)
                         &.scrollable
                             .customer_selection_list
-                                height: 350px
+                                height: 200px
                                 overflow-x: hidden
                                 overflow-y: auto
                                 .customer_wrapper
