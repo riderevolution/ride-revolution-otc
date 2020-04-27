@@ -43,10 +43,10 @@
                                 <th>Sold</th>
                                 <th>Returned</th>
                                 <th>Comp</th>
+                                <th>Comp Value</th>
                                 <th>Discount</th>
                                 <th>Taxes</th>
                                 <th>Total Income</th>
-                                <th>Comp Value</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,10 +55,10 @@
                                 <td><b>{{ total.sold }}</b></td>
                                 <td><b>0</b></td>
                                 <td><b>{{ total.comp }}</b></td>
+                                <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
-                                <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
@@ -67,10 +67,10 @@
                                 <td>{{ (data.sold) ? data.sold : 0 }}</td>
                                 <td>0</td>
                                 <td>{{ (data.comp) ? data.comp : 0 }}</td>
+                                <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
                                 <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
                                 <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
                                 <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
-                                <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
                             </tr>
                         </tbody>
                     </table>
