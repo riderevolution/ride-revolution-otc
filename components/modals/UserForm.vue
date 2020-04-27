@@ -5,7 +5,7 @@
             <div class="modal_wrapper">
                 <h2 class="form_title">Add a New User</h2>
                 <div class="form_close" @click="toggleClose()"></div>
-                <div class="modal_main_group alternate">
+                <div class="modal_main_group alternate scrollable">
                     <div class="form_group">
                         <label for="name">Choose a Role <span>*</span></label>
                         <select class="default_select alternate" name="role_id" v-validate="'required'" v-model="form.role">
@@ -81,7 +81,7 @@
             <div class="modal_wrapper">
                 <h2 class="form_title">Update {{ res.first_name }} {{ res.last_name }}</h2>
                 <div class="form_close" @click="toggleClose()"></div>
-                <div class="modal_main_group">
+                <div class="modal_main_group scrollable">
                     <div class="form_group">
                         <label for="name">Choose a Role <span>*</span></label>
                         <select class="default_select alternate" name="role_id" v-validate="'required'" v-model="form.role">

@@ -5,7 +5,7 @@
             <div class="modal_wrapper">
                 <h2 class="form_title">Add a New Role</h2>
                 <div class="form_close" @click="toggleClose()"></div>
-                <div class="modal_main_group alternate">
+                <div class="modal_main_group alternate scrollable">
                     <div class="form_group">
                         <label for="display_name">Role Name <span>*</span></label>
                         <input type="text" name="display_name" autocomplete="off" autofocus class="default_text" v-validate="'required|max:100'">
@@ -41,7 +41,7 @@
             <div class="modal_wrapper">
                 <h2 class="form_title">Update {{ res.display_name }}</h2>
                 <div class="form_close" @click="toggleClose()"></div>
-                <div class="modal_main_group">
+                <div class="modal_main_group scrollable">
                     <div class="form_group">
                         <label for="display_name">Role Name <span>*</span></label>
                         <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required|max:100'" v-model="res.display_name">
