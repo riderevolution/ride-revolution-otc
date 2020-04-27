@@ -125,15 +125,15 @@
                             <tbody>
                                 <tr v-for="(data, key) in res.items" :key="key">
                                     <td>{{ (data.card_code) ? data.card_code : (data.variant ? data.variant : data.name) }}</td>
-                                    <td>{{ data.qty }}</td>
+                                    <td>{{ (data.qty) ? data.qty : 0 }}</td>
                                     <td>Php {{ totalCount(data.ITY) }}</td>
                                     <td>Php {{ totalCount(data.ITD) }}</td>
-                                    <td>{{ data.paymentModes.cash }}</td>
-                                    <td>{{ data.paymentModes.creditCard }}</td>
-                                    <td>{{ data.paymentModes.debitCard }}</td>
-                                    <td>{{ data.paymentModes.check }}</td>
-                                    <td>{{ data.paymentModes.paypal }}</td>
-                                    <td>{{ data.paymentModes.storeCredit }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.cash : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.creditCard : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.debitCard : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.paypal : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
                                 </tr>
                                 <tr>
                                     <td class="green">Total</td>
@@ -193,6 +193,7 @@
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post(`${apiRoute}`, formData).then(res => {
+                    console.log(res.data);
                     if (res.data) {
                         setTimeout( () => {
                             me.res.items = res.data.items
@@ -220,10 +221,16 @@
                 me.$axios.post(`${me.apiRoute}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res.sales_breakdown = res.data.salesBreakdown
-                            me.res.sales_breakdown_total = res.data.salesBreakdownTotal
-                            me.res.income_breakdown = res.data.incomeBreakdown
-                            me.res.income_breakdown_total = res.data.incomeBreakdownTotal
+                            if (me.slug == 'sales-summary') {
+                                me.res.sales_breakdown = res.data.salesBreakdown
+                                me.res.sales_breakdown_total = res.data.salesBreakdownTotal
+                                me.res.income_breakdown = res.data.incomeBreakdown
+                                me.res.income_breakdown_total = res.data.incomeBreakdownTotal
+                            } else {
+                                me.res.items = res.data.items
+                                me.res.item_total = res.data.total
+                                me.res.item_payment_mode_total = res.data.paymentModesTotal
+                            }
                         }, 500)
                     }
                 }).catch(err => {
