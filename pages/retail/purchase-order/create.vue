@@ -200,10 +200,11 @@
         methods: {
             tickPaid (event) {
                 const me = this
-                let value = event.target.value
-                if (value) {
+                if (event.target.checked) {
+                    event.target.checked = false
                     me.message = 'Are you sure that this has been paid? Please confirm.'
                 } else {
+                    event.target.checked = true
                     me.message = 'Are you sure that this is unpaid? Please confirm.'
                 }
                 me.$store.state.promptValidateStatus = true

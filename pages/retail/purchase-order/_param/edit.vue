@@ -161,10 +161,12 @@
         methods: {
             tickPaid (status) {
                 const me = this
-                if (status != 1) {
-                    me.message = 'Are you sure that this has been paid? Please confirm.'
-                } else {
+                if (status) {
+                    event.target.checked = true
                     me.message = 'Are you sure that this is unpaid? Please confirm.'
+                } else {
+                    event.target.checked = false
+                    me.message = 'Are you sure that this has been paid? Please confirm.'
                 }
                 me.$store.state.promptValidateStatus = true
                 document.body.classList.add('no_scroll')

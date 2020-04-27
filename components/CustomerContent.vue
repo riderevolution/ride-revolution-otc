@@ -235,8 +235,8 @@
                                             <td>{{ (item.product_variant) ? item.product_variant.product.category.name : 'N/A' }}</td>
                                             <td>{{ item.quantity }}</td>
                                             <td class="price">
-                                                <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" >PHP {{ totalCount(item.total) }}</p>
-                                                <p v-if="data.promo_code_used !== null">PHP {{ totalCount(item.originalTotal) }}</p>
+                                                <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.originalTotal) }}</p>
+                                                <p>PHP {{ totalCount(item.total) }}</p>
                                             </td>
                                         </tr>
                                     </tbody>
