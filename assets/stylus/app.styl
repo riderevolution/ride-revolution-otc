@@ -1311,12 +1311,12 @@ table
                 background-color: $border_alt2
                 transform: rotate(-45deg)
         .confirmation_title
-            neutra_text(25px)
+            neutra_text(18px)
             color: $black
             text-align: center
             margin-bottom: 20px
         .confirmation_text
-            neutra_text(25px)
+            neutra_text(18px)
             color: $black
             text-align: center
             .text
@@ -1326,18 +1326,18 @@ table
         .confirmation_default
             user-select: none
             display: block
-            sf_pro_regular(16px)
+            sf_pro_regular(14px)
             color: $border_alt2
             text-align: center
         .button_group
-            margin-top: 50px
+            margin-top: 20px
             justify-content: center
             &.alternate
                 .form_group
                     flex: 1 0 30%
                     margin-bottom: 0
                     input
-                        padding: 17px 15px
+                        padding: 10px 15px
                 .action_success_btn
                     width: auto
 /**
@@ -2612,9 +2612,9 @@ input::placeholder
 .form_disclaimer
     user-select: none
     display: block
-    sf_pro_regular(16px)
+    sf_pro_regular(14px)
     color: $black
-    margin-bottom: 40px
+    margin-bottom: 20px
     text-align: center
 
 .button_group
@@ -3070,15 +3070,15 @@ input::placeholder
                 sf_pro_semibold(14px)
                 color: $gray
                 text-align: left
-                padding: 15px 20px
+                padding: 10px 20px
                 background-color: transparent
                 transition: .3s ease-in-out
                 &.cms_table_title
-                    sf_pro_semibold(18px)
+                    sf_pro_semibold(16px)
                     color: #383D40
                     .date
                         margin-left: 10px
-                        neutra_text(18px)
+                        neutra_text(16px)
                         color: $border_alt2
     tbody
         border-radius: 3px
@@ -3097,7 +3097,7 @@ input::placeholder
             td
                 sf_pro_regular(14px)
                 color: $black
-                padding: 15px 20px
+                padding: 10px 20px
                 &.alt
                     text-transform: uppercase
                 &.alt_2
@@ -3656,7 +3656,7 @@ input::placeholder
             sf_pro_semibold(14px)
             color: $gray
             text-align: left
-            padding: 15px 20px
+            padding: 10px 20px
             background-color: transparent
             &:first-child
                 border-radius: 10px 0 0 0
@@ -3671,7 +3671,7 @@ input::placeholder
             td
                 sf_pro_regular(14px)
                 color: $black
-                padding: 15px 20px
+                padding: 10px 20px
                 .table_actions
                     display: flex
                     flex-flow: row wrap
@@ -3739,11 +3739,11 @@ input::placeholder
     margin-bottom: 60px
     thead
         &.sticky
-            th
+            .stick
                 background-color: $green
                 position: sticky
                 z-index: 1
-                top: calc(0% + 80px)
+                top: calc(0% + 55px)
                 color: $white
                 transition: .3s ease-in-out
         tr
@@ -3884,7 +3884,12 @@ input::placeholder
                             td
                                 sf_pro_regular(14px)
                                 color: $black
-                                padding: 15px 20px
+                                padding: 10px 20px
+                                &.price
+                                    .prev_price
+                                        sf_pro_medium(12px)
+                                        color: $red
+                                        text-decoration: line-through
         &.no_results
             background-color: $white
             padding: 20px 35px
