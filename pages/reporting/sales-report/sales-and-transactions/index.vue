@@ -196,12 +196,19 @@
                     console.log(res.data);
                     if (res.data) {
                         setTimeout( () => {
-                            me.res.items = res.data.items
-                            me.res.item_total = res.data.total
-                            me.res.item_payment_mode_total = res.data.paymentModesTotal
                             me.slug = slug
                             me.tabStatus = status
                             me.apiRoute = apiRoute
+                            if (me.slug == 'sales-summary') {
+                                me.res.sales_breakdown = res.data.salesBreakdown
+                                me.res.sales_breakdown_total = res.data.salesBreakdownTotal
+                                me.res.income_breakdown = res.data.incomeBreakdown
+                                me.res.income_breakdown_total = res.data.incomeBreakdownTotal
+                            } else {
+                                me.res.items = res.data.items
+                                me.res.item_total = res.data.total
+                                me.res.item_payment_mode_total = res.data.paymentModesTotal
+                            }
                         }, 500)
                     }
                 }).catch(err => {

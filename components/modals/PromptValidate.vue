@@ -84,8 +84,6 @@
                                                     document.getElementById('validate').checked = true
                                                     me.$parent.res.paid = 1
                                                 }
-                                                me.$store.state.promptValidateStatus = false
-                                                document.body.classList.remove('no_scroll')
                                             }, 500)
                                         }
                                     }).catch(err => {
@@ -95,6 +93,8 @@
                                         me.$store.state.errorStatus = true
                                     }).then(() => {
                                         setTimeout( () => {
+                                            me.$store.state.promptValidateStatus = false
+                                            document.body.classList.remove('no_scroll')
                                             me.loader(false)
                                         }, 500)
                                     })
