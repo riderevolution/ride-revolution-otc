@@ -185,8 +185,8 @@
                                     <div class="form_flex_input">
                                         <select class="default_select alternate" name="expiry_type">
                                             <option value="" disabled>Choose a Type</option>
-                                            <option value="day" :selected="res.expiry_type == 'day' || (!isUnlimited) ? true : false" :disabled="(isUnlimited || res.expiry_type == 'month') ? true : false">Days</option>
-                                            <option value="month" :selected="(res.expiry_type == 'month' || isUnlimited) ? true : false">Months</option>
+                                            <option value="day" :selected="res.expiry_type == 'day'">Days</option>
+                                            <option value="month" :selected="res.expiry_type == 'month'">Months</option>
                                         </select>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('expiry_type')">{{ errors.first('expiry_type') | properFormat }}</span></transition>
                                     </div>
