@@ -125,14 +125,9 @@
                         </div>
                         <div class="form_main_group">
                             <div class="form_group">
-                                <label for="pa_address_1">Address Line 1 <span>*</span></label>
-                                <input type="text" name="pa_address_1" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.pa_address_1">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_1')">{{ errors.first('pa_address_1') | properFormat }}</span></transition>
-                            </div>
-                            <div class="form_group">
-                                <label for="pa_address_2">Address Line 2 <span>*</span></label>
-                                <input type="text" name="pa_address_2" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.pa_address_2">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_2')">{{ errors.first('pa_address_2') | properFormat }}</span></transition>
+                                <label for="pa_address">Address <span>*</span></label>
+                                <input type="text" name="pa_address" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.pa_address">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address')">{{ errors.first('pa_address') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="pa_city">City <span>*</span></label>
@@ -151,14 +146,9 @@
                         </div>
                         <div class="form_main_group">
                             <div class="form_group">
-                                <label for="ba_address_1">Address Line 1 <span>*</span></label>
-                                <input type="text" name="ba_address_1" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.ba_address_1">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address_1')">{{ errors.first('ba_address_1') | properFormat }}</span></transition>
-                            </div>
-                            <div class="form_group">
-                                <label for="ba_address_2">Address Line 2 <span>*</span></label>
-                                <input type="text" name="ba_address_2" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.ba_address_2">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address_2')">{{ errors.first('ba_address_2') | properFormat }}</span></transition>
+                                <label for="ba_address">Address <span>*</span></label>
+                                <input type="text" name="ba_address" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.ba_address">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address')">{{ errors.first('ba_address') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="ba_city">City <span>*</span></label>
@@ -306,17 +296,15 @@
                 prevRoute: '',
                 form: {
                     toggled: false,
-                    pa_address_1: '',
-                    pa_address_2: '',
+                    pa_address: '',
                     pa_city: '',
-                    ba_address_1: '',
-                    ba_address_2: '',
+                    ba_address: '',
                     ba_city: '',
                     medical_history: []
                 },
                 histories: [],
                 types: [],
-                professions: ['Accounting/Finance', 'Admin/Human Resources', 'Arts/Media/Communications', 'Building/Construction', 'Compute', 'Education/Training', 'Engineering', 'Healthcare', 'Hotel/Restaurant', 'Manufacturing', 'Sales/Marketing', 'Sciences', 'Services', 'Others']
+                professions: ['Accounting/Finance', 'Admin/Human Resources', 'Arts/Media/Communications', 'Building/Construction', 'Information Technology', 'Education/Training', 'Engineering', 'Healthcare', 'Hotel/Restaurant', 'Manufacturing', 'Sales/Marketing', 'Sciences', 'Services', 'Others']
             }
         },
         computed: {
@@ -404,12 +392,10 @@
             copyPersonal (status) {
                 const me = this
                 if (status) {
-                    me.form.ba_address_1 = me.form.pa_address_1
-                    me.form.ba_address_2 = me.form.pa_address_2
+                    me.form.ba_address = me.form.pa_address
                     me.form.ba_city = me.form.pa_city
                 } else {
-                    me.form.ba_address_1 = ''
-                    me.form.ba_address_2 = ''
+                    me.form.ba_address = ''
                     me.form.ba_city = ''
                 }
             },
