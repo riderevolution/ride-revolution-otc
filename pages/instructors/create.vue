@@ -170,7 +170,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form_wrapper">
+                    <!-- <div class="form_wrapper">
                         <div class="form_header_wrapper">
                             <h2 class="form_title">Instuctor Management</h2>
                         </div>
@@ -184,7 +184,7 @@
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('studio_id')">{{ errors.first('studio_id') | properFormat }}</span></transition>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="form_wrapper">
                         <div class="form_header_wrapper">
                             <h2 class="form_title">Health Waiver <span>*</span></h2>
@@ -463,9 +463,9 @@
                     })
                 }
             })
-            me.$axios.get('api/studios?enabled=1').then(res => {
-                me.studios = res.data.studios
-            })
+            // me.$axios.get('api/studios?enabled=1').then(res => {
+            //     me.studios = res.data.studios
+            // })
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 2]
             me.prevRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
         }
