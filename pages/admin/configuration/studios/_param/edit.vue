@@ -27,9 +27,9 @@
                                 </div>
                             </div>
                             <div class="form_group">
-                                <label for="address_line_1">Address Line 1<span>*</span></label>
-                                <input type="text" name="address_line_1" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.address_line_1">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('address_line_1')">{{ errors.first('address_line_1') | properFormat }}</span></transition>
+                                <label for="address">Address <span>*</span></label>
+                                <input type="text" name="address" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.address">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('address')">{{ errors.first('address') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group">
