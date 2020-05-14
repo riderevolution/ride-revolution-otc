@@ -141,6 +141,11 @@
                                 <textarea name="summary" rows="4" id="summary" class="default_text" v-validate="'required|max:500'"></textarea>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('summary')">{{ errors.first('summary') | properFormat }}</span></transition>
                             </div>
+                            <div class="form_group">
+                                <label for="gift_card_description">Gift Card Description <span>*</span></label>
+                                <textarea name="gift_card_description" rows="2" id="gift_card_description" class="default_text" v-validate="'required|max:200'"></textarea>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('gift_card_description')">{{ errors.first('gift_card_description') | properFormat }}</span></transition>
+                            </div>
                             <div class="form_flex">
                                 <div class="form_group flex">
                                     <label>Class Count <span>*</span></label>
@@ -410,9 +415,7 @@
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Updated')
-                                } else {
-                                    me.$store.state.errorList.push('Sorry, Something went wrong')
-                                    me.$store.state.errorStatus = true
+                                    me.$router.push(`/admin/${me.prevRoute}/${me.lastRoute}`)
                                 }
                             }, 500)
                         }).catch(err => {
@@ -420,9 +423,6 @@
                             me.$store.state.errorStatus = true
                         }).then(() => {
                             setTimeout( () => {
-                                if (!me.$store.state.errorStatus) {
-                                    me.$router.push(`/admin/${me.prevRoute}/${me.lastRoute}`)
-                                }
                                 me.loader(false)
                             }, 500)
                         })
@@ -455,6 +455,12 @@
                         tabsize: 4,
                         height: 400,
                         followingToolbar: false,
+                        toolbar: [
+                            [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                            [ 'color', [ 'color' ] ],
+                            [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                            [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                        ],
                         codemirror: {
                             lineNumbers: true,
                             htmlMode: true,
@@ -468,6 +474,31 @@
                         height: 200,
                         followingToolbar: false,
                         disableResizeEditor: true,
+                        toolbar: [
+                            [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                            [ 'color', [ 'color' ] ],
+                            [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                            [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                        ],
+                        codemirror: {
+                            lineNumbers: true,
+                            htmlMode: true,
+                            mode: "text/html",
+                            tabMode: 'indent',
+                            lineWrapping: true
+                        }
+                    })
+                    $('#gift_card_description').summernote({
+                        tabsize: 4,
+                        height: 100,
+                        followingToolbar: false,
+                        disableResizeEditor: true,
+                        toolbar: [
+                            [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                            [ 'color', [ 'color' ] ],
+                            [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                            [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                        ],
                         codemirror: {
                             lineNumbers: true,
                             htmlMode: true,
@@ -478,6 +509,7 @@
                     })
                     $('#description').summernote('code', me.res.description)
                     $('#summary').summernote('code', me.res.summary)
+                    $('#gift_card_description').summernote('code', me.res.gift_card_description)
                 }, 100)
                 me.res = res.data.classPackage
                 me.form.purchaseLimit = me.res.por_purchase_limit
