@@ -360,7 +360,7 @@
                 me.$axios.get('api/packages/class-types').then(res => {
                     me.classTypes = res.data.classTypes.data
                 })
-                me.$axios.get(`api/instructors?enabled=1&studio_id=${me.$store.state.user.current_studio_id}`).then(res => {
+                me.$axios.get(`api/instructors?enabled=1`).then(res => {
                     me.instructors = res.data.instructors.data
                 })
             }

@@ -38,6 +38,11 @@
                             link: '/admin/configuration/studios'
                         },
                         {
+                            label: 'Booking Restrictions',
+                            imgSrc: '/icons/studio-icon.svg',
+                            link: '/admin/configuration/booking-restrictions'
+                        },
+                        {
                             label: 'Customer Types',
                             imgSrc: '/icons/types-icon.svg',
                             link: '/admin/configuration/customer-types'

@@ -94,6 +94,36 @@ table
 .hidden
     display: none
 
+.error_page
+    &.alternate
+        height: 50vh
+        .container
+            .header_title
+                sf_pro_bold(30px)
+    height: 100vh
+    position: relative
+    animation: slide_up 1s
+    .container
+        position: absolute
+        top: 50%
+        left: 0
+        right: 0
+        text-align: center
+        transform: translateY(-50%)
+        .logo
+            filter: grayscale(1)
+            opacity: 0.5
+            img
+                width: 80px
+                height: auto
+        .header_title
+            sf_pro_bold(30px)
+            margin: 20px 0
+        .header_subtitle
+            sf_pro_light(20px)
+        .action_btn
+            margin-top: 40px
+
 .note-editor
     &.note-frame
             border: 1px solid #ccc
@@ -106,7 +136,7 @@ table
             background-color: #F8F8FB
         .note-editing-area
             .note-editable
-                sf_pro_regular(18px)
+                sf_pro_regular(14px)
                 padding: 20px 25px
 
 /**
@@ -2631,18 +2661,34 @@ input::placeholder
 .note-tooltip
     sf_pro_regular(14px)
 
+.form_group
+    .action_image_label
+        width: 100%
+        background-color: #fff
+        border: 1px solid #ccc
+        padding: 10px 15px
+        sf_pro_regular(14px)
+        color: #000
+        outline: none
+        transition: 0.3s ease-in-out
+        &:hover,
+        &:focus
+            border: 1px solid #383D40
+            transition: 0.3s ease-in-out
+
 .form_image_group
     margin-bottom: 20px
     label
         user-select: none
         display: block
-        sf_pro_regular(16px)
+        sf_pro_regular(14px)
         font-weight: normal
         color: $black
         margin-bottom: 10px
+        span
+            color: $green
       strong
-        sf_pro_semibold(14px)
-        font-weight: normal
+        color: #000
     .action_image
         position: absolute
         bottom: 10px
@@ -2653,36 +2699,36 @@ input::placeholder
         cursor: pointer
         &::before
             content: 'Browse'
-            color: $blue
+            color: $green
             position: absolute
             top: 50%
             right: 0
-            padding: 15px 25px
-            border-radius: 0 3px 3px 0
-            background-color: $light_blue
-            border-left: 1px solid $border
-            transform: translateY(-51%)
+            padding: 10px 20px
+            background-color: #E2FDF9
+            border-left: 1px solid #ccc
+            transform: translateY(-50%)
             transition: .3s ease-in-out
         &:hover,
         &:focus
             &::before
-                color: $white
-                background-color: $blue
-                border-left: 1px solid $black
+                color: #E2FDF9
+                background-color: #33B09D
+                border-left: 1px solid #000
                 transition: .3s ease-in-out
             & ~ .action_image_remove
-                border-left: 1px solid $black
-                border-right: 1px solid $black
+                border-left: 1px solid #000
+                border-right: 1px solid #000
                 transition: .3s ease-in-out
         & ~ .action_image_remove
-            sf_pro_regular(18px)
+            cursor: pointer
+            sf_pro_regular(14px)
             color: $red
             position: absolute
             top: 50%
             right: 0
-            padding: 20px 25px
+            padding: 10px 20px
             background-color: #FFE5E6
-            transform: translateY(-51%)
+            transform: translateY(-50%)
             border-left: 1px solid #ccc
             border-right: 1px solid #ccc
             border-top: none
@@ -2691,17 +2737,17 @@ input::placeholder
             transition: 0.3s ease-in-out
             &:hover,
             &:focus
-                background-color: $red
+                background-color: #F3525C
                 color: #FFE5E6
                 transition: .3s ease-in-out
     .action_image_add
         display: inline-block
-        width: 150px
+        width: auto
         text-decoration: none
         outline: none
-        sf_pro_regular(16px)
+        sf_pro_regular(14px)
         color: #295AAE
-        padding: 17px
+        padding: 10px 20px
         background-color: #d3e3ff
         border: 1px solid #295AAE
         position: relative
@@ -2716,16 +2762,15 @@ input::placeholder
     .form_tags_group
         display: flex
         flex-flow: row wrap
-        align-items: center
+        align-items: flex-start
         justify-content: space-between
         margin-bottom: 20px
         .preview_group
             flex: 0 0 30%
             img
                 width: 100%
-                height: 200px
-                background-color: $white
-                border-left: 1px solid #ccc
+                height: 150px
+                background-color: #fff
                 object-fit: cover
         .tags_group
             flex: 0 0 68%
@@ -4304,17 +4349,17 @@ input::placeholder
 .cms_alert
     &#success
         position: fixed
-        top: 50px
+        top: 40px
         right: 0
         left: 0
         z-index: 999
         margin: 0 auto
-        width: 300px
+        width: 220px
         text-align: center
-        sf_pro_regular(18px)
+        sf_pro_regular(14px)
         color: $white
         background-image: linear-gradient(to right, $red, $orange)
-        padding: 20px
+        padding: 15px 20px
         border-radius: 5px
         box-shadow: 0px 10px 12px rgba(0,0,0,0.15)
 
@@ -6484,6 +6529,7 @@ input::placeholder
                             stroke-miterlimit: 10
                             transition: .3s ease-in-out
             .action_wrapper
+                margin-top: 10px
                 flex: 0 0 100%
                 display: flex
                 justify-content: space-between

@@ -23,8 +23,7 @@
                         <tr>
                             <th class="stick">Color</th>
                             <th class="stick">Studio</th>
-                            <th class="stick">Purchases Email Sender</th>
-                            <th class="stick">Reservations Email Sender</th>
+                            <th class="stick">Phone</th>
                             <th class="stick">Action</th>
                         </tr>
                     </thead>
@@ -34,8 +33,7 @@
                                 <div class="table_color_code" :style="`background-color: ${data.color_code}`"></div>
                             </td>
                             <td>{{ data.name }}</td>
-                            <td>{{ data.purchase_email }}</td>
-                            <td>{{ data.reservations_email }}</td>
+                            <td>{{ data.phone }}</td>
                             <td>
                                 <div class="table_actions">
                                     <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>

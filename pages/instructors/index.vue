@@ -31,7 +31,6 @@
                         <tr>
                             <th class="stick">Last Name</th>
                             <th class="stick">First Name</th>
-                            <th class="stick">Studio</th>
                             <th class="stick">Nickname</th>
                             <th class="stick">Email Address</th>
                             <th class="stick">Contact No.</th>
@@ -51,7 +50,6 @@
                                 </div>
                             </td>
                             <td><nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/class-schedules`">{{ data.first_name }}</nuxt-link></td>
-                            <td>{{ data.instructor_details.studio.name }}</td>
                             <td>{{ data.instructor_details.nickname }}</td>
                             <td>{{ data.email }}</td>
                             <td>{{ (data.instructor_details != null) ? data.instructor_details.io_contact_number : '-' }}</td>

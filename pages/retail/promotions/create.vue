@@ -45,7 +45,7 @@
                             </div>
                             <div class="form_group">
                                 <label for="promo_code">Promo Code <span>*</span></label>
-                                <input type="text" name="promo_code" autocomplete="off" class="default_text" v-validate="'required|max:25'">
+                                <input type="text" name="promo_code" autocomplete="off" class="default_text" v-validate="'required|min:6|max:8'">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_code')">{{ errors.first('promo_code') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
