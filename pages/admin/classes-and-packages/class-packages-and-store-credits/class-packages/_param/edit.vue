@@ -196,6 +196,14 @@
                     </div>
                     <div class="form_wrapper">
                         <div class="form_header_wrapper">
+                            <h2 class="form_title">Image Upload</h2>
+                        </div>
+                        <div class="form_main_group">
+                            <image-handler-container ref="image_handler" :dimension="imageDimensions" :multiple="false" :data="res.images" :parent="res.id" />
+                        </div>
+                    </div>
+                    <div class="form_wrapper">
+                        <div class="form_header_wrapper">
                             <h2 class="form_title">Activation Options</h2>
                         </div>
                         <div class="form_main_group">
@@ -260,12 +268,18 @@
 
 <script>
     import Foot from '../../../../../../components/Foot'
+    import ImageHandlerContainer from '../../../../../../components/ImageHandlerContainer'
     export default {
         components: {
-            Foot
+            Foot,
+            ImageHandlerContainer
         },
         data () {
             return {
+                imageDimensions: {
+                    imageWidth: 674,
+                    imageHeight: 385
+                },
                 isUnlimited: false,
                 isComplimentary: true,
                 isNotActivated: false,
