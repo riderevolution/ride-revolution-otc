@@ -141,6 +141,11 @@
                                 <textarea name="summary" rows="4" id="summary" class="default_text" v-validate="'required|max:500'"></textarea>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('summary')">{{ errors.first('summary') | properFormat }}</span></transition>
                             </div>
+                            <div class="form_group">
+                                <label for="gift_card_description">Gift Card Description <span>*</span></label>
+                                <textarea name="gift_card_description" rows="2" id="gift_card_description" class="default_text" v-validate="'required|max:200'"></textarea>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('gift_card_description')">{{ errors.first('gift_card_description') | properFormat }}</span></transition>
+                            </div>
                             <div class="form_flex">
                                 <div class="form_group flex">
                                     <label for="class_count">Class Count <span>*</span></label>
@@ -192,6 +197,14 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="form_wrapper">
+                        <div class="form_header_wrapper">
+                            <h2 class="form_title">Image Upload</h2>
+                        </div>
+                        <div class="form_main_group">
+                            <image-handler-container ref="image_handler" :dimension="imageDimensions" :multiple="false" />
                         </div>
                     </div>
                     <div class="form_wrapper">
@@ -261,12 +274,18 @@
 
 <script>
     import Foot from '../../../../../components/Foot'
+    import ImageHandlerContainer from '../../../../../components/ImageHandlerContainer'
     export default {
         components: {
-            Foot
+            Foot,
+            ImageHandlerContainer
         },
         data () {
             return {
+                imageDimensions: {
+                    imageWidth: 674,
+                    imageHeight: 385
+                },
                 isUnlimited: false,
                 isComplimentary: true,
                 isNotActivated: false,
@@ -286,16 +305,21 @@
             }
         },
         filters: {
-            properFormat: function (value) {
+            properFormat (value) {
                 let newValue = value.split('The ')[1].split(' field')[0].split('[]')
                 if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
+                    let nextValue = newValue[0].split('_')
+                    if (nextValue.length > 1) {
+                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                    } else {
+                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                    }
+                } else {
                     newValue = value.split('The ')[1].split(' field')[0].split('_')
                     if (newValue.length > 1) {
                         let firstValue = ''
                         let lastValue = ''
-                        if (newValue[0] != 'ao' && newValue[0] != 'por') {
+                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
                             firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
                         for (let i = 1; i < newValue.length; i++) {
@@ -313,7 +337,12 @@
                     message = message[1]
                     return `The ${newValue} field${message}`
                 } else {
-                    return `The ${newValue}`
+					if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
                 }
             }
         },
@@ -385,9 +414,7 @@
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Added')
-                                } else {
-                                    me.$store.state.errorList.push('Sorry, Something went wrong')
-                                    me.$store.state.errorStatus = true
+                                    me.$router.push(`/admin/${me.prevRoute}/${me.lastRoute}`)
                                 }
                             }, 500)
                         }).catch(err => {
@@ -395,9 +422,6 @@
                             me.$store.state.errorStatus = true
                         }).then(() => {
                             setTimeout( () => {
-                                if (!me.$store.state.errorStatus) {
-                                    me.$router.push(`/admin/${me.prevRoute}/${me.lastRoute}`)
-                                }
                                 me.loader(false)
                             }, 500)
                         })
@@ -431,6 +455,12 @@
                     tabsize: 4,
                     height: 400,
                     followingToolbar: false,
+                    toolbar: [
+                        [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                        [ 'color', [ 'color' ] ],
+                        [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                        [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                    ],
                     codemirror: {
                         lineNumbers: true,
                         htmlMode: true,
@@ -444,6 +474,31 @@
                     height: 200,
                     followingToolbar: false,
                     disableResizeEditor: true,
+                    toolbar: [
+                        [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                        [ 'color', [ 'color' ] ],
+                        [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                        [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                    ],
+                    codemirror: {
+                        lineNumbers: true,
+                        htmlMode: true,
+                        mode: "text/html",
+                        tabMode: 'indent',
+                        lineWrapping: true
+                    }
+                })
+                $('#gift_card_description').summernote({
+                    tabsize: 4,
+                    height: 100,
+                    followingToolbar: false,
+                    disableResizeEditor: true,
+                    toolbar: [
+                        [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                        [ 'color', [ 'color' ] ],
+                        [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                        [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                    ],
                     codemirror: {
                         lineNumbers: true,
                         htmlMode: true,
