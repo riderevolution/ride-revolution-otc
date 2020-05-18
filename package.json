@@ -11,15 +11,9 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@nuxtjs/axios": "^5.9.5",
-    "cross-env": "^5.2.1",
-    "nuxt": "^2.11.0",
-=======
-    "@nuxtjs/axios": "^5.6.0",
     "cross-env": "^5.2.0",
     "nuxt": "^2.12.2",
->>>>>>> 90016fa7cf4d5e3a844cc22c94bdd4fb4a1e6b78
     "url-breadcrumb": "^1.0.2",
     "v-click-outside": "^2.1.5",
     "v-calendar": "^1.0.1",
@@ -33,11 +27,7 @@
     "vue-scrollto": "^2.17.1"
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "nodemon": "^1.19.4",
-=======
     "nodemon": "^2.0.4",
->>>>>>> 90016fa7cf4d5e3a844cc22c94bdd4fb4a1e6b78
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2"
   }
