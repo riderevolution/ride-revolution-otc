@@ -282,7 +282,7 @@
         data () {
             return {
                 imageDimensions: {
-                    imageWidth: 674,
+                    imageWidth: 675,
                     imageHeight: 385
                 },
                 isUnlimited: false,
