@@ -2191,6 +2191,10 @@ input::placeholder
                 left: 17px
                 z-index: 1
     &.alternate
+        &.new
+            .form_radio
+                &:first-child
+                    padding: 30px 15px
         .form_radio
             flex: 0 0 100%
             border-bottom: 2px dashed $border
@@ -5915,6 +5919,13 @@ input::placeholder
                     .user_name
                         sf_pro_bold(20px)
                         color: $white
+                        .violator
+                            background-image: linear-gradient(77deg, #7B53FF, #AE83FF)
+                            border-radius: 2px
+                            padding: 5px
+                            sf_pro_regular(14px)
+                            color: $white
+                            margin-left: 15px
                     .user_contact
                         display: flex
                         flex-flow: row wrap
