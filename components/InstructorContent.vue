@@ -1,85 +1,94 @@
 <template>
     <div class="instructor_tab_content">
-        <div v-if="type == 'class-schedules'">
-            <div class="calendar_wrapper">
-                <div class="calendar_actions">
-                    <div class="action_flex alt">
-                        <a href="javascript:void(0)" class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</a>
-                        <a href="javascript:void(0)" class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</a>
-                        <div class="schedule_info">
-                            <img id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg" />
-                            <div class="overlay">
-                                <div class="type"><span class="color alt"></span><span class="type_title">Completed Class</span></div>
-                                <div class="studios">
-                                    <label>Studios</label>
-                                    <div class="type" v-for="(data, key) in studios" :key="key"><span class="color" :style="`background-color: ${data.color_code}`"></span><span class="type_title">{{ data.name }}</span></div>
+        <transition name="fade">
+            <div v-if="type == 'class-schedules'">
+                <div class="calendar_wrapper">
+                    <div class="calendar_actions">
+                        <div class="action_flex alt">
+                            <a href="javascript:void(0)" class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</a>
+                            <a href="javascript:void(0)" class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</a>
+                            <div class="schedule_info">
+                                <img id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg" />
+                                <div class="overlay">
+                                    <div class="type"><span class="color alt"></span><span class="type_title">Completed Class</span></div>
+                                    <div class="studios">
+                                        <label>Studios</label>
+                                        <div class="type" v-for="(data, key) in studios" :key="key"><span class="color" :style="`background-color: ${data.color_code}`"></span><span class="type_title">{{ data.name }}</span></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="calendar_header">
-                    <div class="calendar_prev" @click="generatePrevCalendar()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                    <div class="calendar_header">
+                        <div class="calendar_prev" @click="generatePrevCalendar()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                        </div>
+                        <h2 class="calendar_title">{{ monthName }} {{ yearName }}</h2>
+                        <div class="calendar_next" @click="generateNextCalendar()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                        </div>
                     </div>
-                    <h2 class="calendar_title">{{ monthName }} {{ yearName }}</h2>
-                    <div class="calendar_next" @click="generateNextCalendar()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                    <div class="cms_table_calendar_wrapper">
+                        <table class="cms_table_calendar">
+                            <thead>
+                                <tr>
+                                    <th v-for="(dayLabel, key) in dayLabels" :key="key">{{ dayLabel }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-                <div class="cms_table_calendar_wrapper">
-                    <table class="cms_table_calendar">
-                        <thead>
-                            <tr>
-                                <th v-for="(dayLabel, key) in dayLabels" :key="key">{{ dayLabel }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
                 </div>
             </div>
-        </div>
-        <div v-if="type == 'class-history'">
-            <div class="actions">
-                <div class="total">Total: 4</div>
-                <div class="cms_table_toggler">
-                    <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory(1)">All</div>
-                    <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory(2)">Completed</div>
-                    <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">Missed</div>
-                    <div :class="`status ${(classesHistoryStatus == 4) ? 'active' : ''}`" @click="toggleClassesHistory(4)">Cancelled</div>
+        </transition>
+        <transition name="fade">
+            <div v-if="type == 'class-history'">
+                <div class="actions">
+                    <div class="total">Total: 4</div>
+                    <div class="cms_table_toggler">
+                        <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory(1)">All</div>
+                        <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory(2)">Completed</div>
+                        <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">Missed</div>
+                        <div :class="`status ${(classesHistoryStatus == 4) ? 'active' : ''}`" @click="toggleClassesHistory(4)">Cancelled</div>
+                    </div>
                 </div>
-            </div>
-            <table class="cms_table">
-                <thead>
-                    <tr>
-                        <th>Date &amp; Time</th>
-                        <th>Class</th>
-                        <th>Studio</th>
-                        <th>No. of Riders</th>
-                        <th>Status</th>
-                        <th>Sub Instructor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(n, key) in 3"  :key="key">
-                        <td>{{ formatClassDate('January 01, 2020 12:00', true) }}</td>
-                        <td>Ride Rev</td>
-                        <td>Greenbelt 5</td>
-                        <td>28</td>
-                        <td>Completed</td>
-                        <td>-</td>
-                    </tr>
+                <table class="cms_table">
+                    <thead>
+                        <tr>
+                            <th>Date &amp; Time</th>
+                            <th>Class</th>
+                            <th>Studio</th>
+                            <th>No. of Riders</th>
+                            <th>Status</th>
+                            <th>Sub Instructor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(n, key) in 3" :key="key">
+                            <td>{{ formatClassDate('January 01, 2020 12:00', true) }}</td>
+                            <td>Ride Rev</td>
+                            <td>Greenbelt 5</td>
+                            <td>28</td>
+                            <td>Completed</td>
+                            <td>-</td>
+                        </tr>
 
-                </tbody>
-                <!-- <tbody class="no_results" v-else>
-                    <tr>
-                        <td :colspan="rowCount">No Result(s) Found.</td>
-                    </tr>
-                </tbody> -->
-            </table>
-            <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
-        </div>
+                    </tbody>
+                    <!-- <tbody class="no_results" v-else>
+                        <tr>
+                            <td :colspan="rowCount">No Result(s) Found.</td>
+                        </tr>
+                    </tbody> -->
+                </table>
+                <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
+            </div>
+        </transition>
+        <transition name="fade">
+            <div v-if="'class-statistics'">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </div>
+        </transition>
     </div>
 </template>
 
