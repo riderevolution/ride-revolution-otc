@@ -49,6 +49,7 @@ const createStore = () => {
             resetStatus: false,
             deleteStatus: false,
             deleteImageStatus: false,
+            errorOverlayStatus: false,
             errorStatus: false,
             errorList: [],
             confirmStatus: false,

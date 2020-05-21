@@ -285,12 +285,29 @@
                     if (res.data) {
                         setTimeout( () => {
                             if (res.data.customer.user_package_counts.length > 0) {
-                                me.res = res.data.customer.user_package_counts
-                                me.res.forEach((data, index) => {
-                                    if (me.$store.state.classPackageID == data.class_package.id) {
-                                        me.old_package_count_id = data.id
+                                res.data.customer.user_package_counts.forEach((data, index) => {
+                                    if (parseInt(me.$moment(data.class_package.computed_expiration_date).diff(me.$moment(), 'days')) > 0) {
+                                        me.res.push(data)
                                     }
                                 })
+                                if (me.res.length > 0) {
+                                    me.res.forEach((data, index) => {
+                                        if (me.$store.state.classPackageID == data.class_package.id) {
+                                            me.old_package_count_id = data.id
+                                        }
+                                    })
+                                } else {
+                                    me.$store.state.customerPackageStatus = false
+                                    setTimeout( () => {
+                                        me.$parent.$refs.plan.message = 'Please buy a class package first'
+                                    }, 10)
+                                    me.$parent.buyCredits = true
+                                    document.getElementById('credits').classList.add('active')
+                                    me.$scrollTo('#credits', {
+                                        offset: -250
+                                    })
+                                    me.$store.state.promptBookerStatus = true
+                                }
                             } else {
                                 me.$store.state.customerPackageStatus = false
                                 setTimeout( () => {

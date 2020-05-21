@@ -129,12 +129,12 @@
                     </div>
                     <div class="form_group" v-if="type == 0">
                         <label for="email">Email Address <span>*</span></label>
-                        <input type="email" name="email" autocomplete="off" class="default_text" v-validate="'required|email'">
+                        <input type="email" name="email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') }}</span></transition>
                     </div>
                     <div class="form_group" v-else>
                         <label for="guest_email">Email Address <span>*</span></label>
-                        <input type="email" name="guest_email" autocomplete="off" class="default_text" v-validate="'required|email'">
+                        <input type="email" name="guest_email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_email')">{{ errors.first('guest_email') }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
@@ -163,17 +163,60 @@
                 default: 0
             }
         },
+        filters: {
+            properFormat (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    let nextValue = newValue[0].split('_')
+                    if (nextValue.length > 1) {
+                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                    } else {
+                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                    }
+                } else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = ''
+                        let lastValue = ''
+                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
+                        for (let i = 1; i < newValue.length; i++) {
+                            if (newValue[i] != 'id') {
+                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            }
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                    return `The ${newValue} field${message}`
+                } else {
+					if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
+                }
+            }
+        },
         data () {
             return {
                 findCustomer: false,
                 form: {
                     comp: '',
-                    assign: 'member'
+                    assign: 'member',
+                    email: ''
                 },
                 toggleCustomers: false,
                 customers: [],
                 customer: '',
-                customerLength: 0
+                customerLength: 0,
             }
         },
         computed: {
@@ -233,6 +276,7 @@
                             let formData2 = new FormData()
                             formData2.append('scheduled_date_id', me.$store.state.scheduleID)
                             formData2.append('user_id', me.$store.state.customerID)
+                            formData2.append('email', me.form.email)
                             me.$axios.post('api/extras/check-user-booking', formData2).then(res => {
                                 if (res.data) {
                                     if (me.customer != '' && me.form.assign == 'member') {
@@ -251,6 +295,7 @@
                                         }
                                     }).catch(err => {
                                         me.$store.state.errorList = err.response.data.errors
+                                        me.$store.state.errorOverlayStatus = true
                                         me.$store.state.errorStatus = true
                                     }).then(() => {
                                         me.$store.state.assignStatus = false
@@ -264,6 +309,7 @@
                                 }
                             }).catch(err => {
                                 me.$store.state.errorList = err.response.data.errors
+                                me.$store.state.errorOverlayStatus = true
                                 me.$store.state.errorStatus = true
                             })
                         }

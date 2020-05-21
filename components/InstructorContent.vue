@@ -86,7 +86,9 @@
         </transition>
         <transition name="fade">
             <div v-if="'class-statistics'">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <no-ssr>
+                    <apexchart :options="chartOptions" :series="series"></apexchart>
+                </no-ssr>
             </div>
         </transition>
     </div>
@@ -113,7 +115,156 @@
                 monthName: '',
                 yearName: '',
                 dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                studios: []
+                studios: [],
+                series: [
+                    {
+                        name: 'Ride Count',
+                        data: [10, 5, 44, 0, 57, 56, 0, 58, 20, 63, 0, 200]
+                    }
+                ],
+                chartOptions: {
+                    responsive: [
+                        {
+                            breakpoint: 767,
+                            options: {
+                                plotOptions: {
+                                    bar: {
+                                        columnWidth: '100%'
+                                    }
+                                },
+                                dataLabels: {
+                                    formatter: function (val) {
+                                        return `${val}`
+                                    },
+                                    offsetY: -10,
+                                    style: {
+                                        colors: ["#171717"],
+                                        fontSize: '8px',
+                                        fontFamily: 'Brandon-Regular'
+                                    }
+                                },
+                                xaxis: {
+                                    labels: {
+                                        style: {
+                                            colors: ['#000'],
+                                            fontSize: '8px',
+                                            fontFamily: 'Brandon-Regular'
+                                        }
+                                    },
+                                },
+                                yaxis: {
+                                    labels: {
+                                        style: {
+                                            colors: ['#000'],
+                                            fontSize: '8px',
+                                            fontFamily: 'Brandon-Regular'
+                                        }
+                                    },
+                                    title: {
+                                        text: 'Rides',
+                                        offsetX: 0,
+                                        style: {
+                                            colors: ['#000'],
+                                            fontSize: '8px',
+                                            cssClass: 'apexchart_uppercase'
+                                        }
+                                    }
+                                },
+                            },
+                        }
+                    ],
+                    chart: {
+                        type: 'bar',
+                        height: 350
+                    },
+                    colors: ['#9E558B'],
+                    plotOptions: {
+                        bar: {
+                            dataLabels: {
+                                position: 'top'
+                            },
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function (val) {
+                            return `${val}`
+                        },
+                        offsetY: -15,
+                        style: {
+                            fontFamily: 'Brandon-Bold',
+                            fontSize: '14px',
+                            colors: ["#171717"]
+                        }
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    grid: {
+                        show: false
+                    },
+                    xaxis: {
+                        labels: {
+                            show: true,
+                            style: {
+                                colors: ['#000'],
+                                fontSize: '14px',
+                                fontFamily: 'Brandon-Regular'
+                            }
+                        },
+                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                    },
+                    yaxis: {
+                        labels: {
+                            show: true,
+                            style: {
+                                colors: ['#000'],
+                                fontSize: '14px',
+                                fontFamily: 'Brandon-Regular'
+                            }
+                        },
+                        title: {
+                            text: 'Rides',
+                            offsetX: -10,
+                            style: {
+                                color: '#000',
+                                fontSize: '12px',
+                                fontFamily: 'Brandon-Bold',
+                                cssClass: 'apexchart_uppercase'
+                            }
+                        }
+                    },
+                    fill: {
+                        type: "gradient",
+                        gradient: {
+                            type: 'vertical',
+                            shadeIntensity: 1,
+                            opacityFrom: 0.7,
+                            opacityTo: 0.9,
+                            colorStops: [
+                                {
+                                    offset: 0,
+                                    color: "#FD649C",
+                                    opacity: 1
+                                },
+                                {
+                                    offset: 100,
+                                    color: "#9E558B",
+                                    opacity: 1
+                                }
+                            ]
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val
+                            }
+                        }
+                    }
+                }
             }
         },
         methods: {

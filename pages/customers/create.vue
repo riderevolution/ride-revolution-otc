@@ -28,6 +28,12 @@
                             </div>
                         </div>
                         <div class="form_main_group">
+                            <div class="form_group">
+                                <label for="username">Username <span>*</span></label>
+                                <input type="text" @keyup="checkValidity('username', $event)" name="username" autocomplete="off" class="default_text uppercase" v-validate="{required: true, regex: '^[a-zA-Z0-9|\@|\#|\_|\.]*$', min: 6, max: 15}">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('username') && !checkUsernameValidity">{{ errors.first('username') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="checkUsernameValidity">Username is already taken</span></transition>
+                            </div>
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="first_name">First Name <span>*</span></label>
@@ -43,7 +49,7 @@
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="email">Email Address <span>*</span></label>
-                                    <input type="email" name="email" autocomplete="off" class="default_text" v-validate="{required: true, email: true, regex: '^[a-zA-Z0-9-@-_-.]*$', max: 70}">
+                                    <input type="email" name="email" autocomplete="off" class="default_text" v-validate="{required: true, email: true, max: 70}">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
@@ -288,6 +294,7 @@
         },
         data () {
             return {
+                checkUsernameValidity: false,
                 tooltip: false,
                 error: false,
                 previewImage: false,
@@ -320,11 +327,16 @@
             }
         },
         filters: {
-            properFormat: function (value) {
+            properFormat (value) {
                 let newValue = value.split('The ')[1].split(' field')[0].split('[]')
                 if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
+                    let nextValue = newValue[0].split('_')
+                    if (nextValue.length > 1) {
+                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                    } else {
+                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                    }
+                } else {
                     newValue = value.split('The ')[1].split(' field')[0].split('_')
                     if (newValue.length > 1) {
                         let firstValue = ''
@@ -347,11 +359,45 @@
                     message = message[1]
                     return `The ${newValue} field${message}`
                 } else {
-                    return `The ${newValue}`
+					if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
                 }
             }
         },
         methods: {
+            checkValidity (type, event) {
+                const me = this
+                let value = event.target.value
+                let formData = new FormData()
+                formData.append('type', type)
+                formData.append('value', value)
+                setTimeout( () => {
+                    me.$axios.post('api/check-data-validity', formData).then(res => {
+                        if (res.data) {
+                            if (res.data.exists) {
+                                if (type == 'email') {
+                                    me.checkEmailValidity = true
+                                } else {
+                                    me.checkUsernameValidity = true
+                                }
+                            } else {
+                                if (type == 'email') {
+                                    me.checkEmailValidity = false
+                                } else {
+                                    me.checkUsernameValidity = false
+                                }
+                            }
+                        }
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorPromptStatus = true
+                    })
+                }, 250)
+            },
             getFile (event) {
                 const me = this
                 let element = event.target
