@@ -6,7 +6,7 @@
                 <h2 class="form_title">Pending Transactions</h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
-                    <div class="form_flex_radio alternate margin">
+                    <div class="form_flex_radio alternate margin new">
                         <div class="form_radio" v-for="(data, key) in res" :key="key">
                             <input type="radio" :id="`transaction_${key}`" :value="data.id" name="transactions" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`transaction_${key}`">

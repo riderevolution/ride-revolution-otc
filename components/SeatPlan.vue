@@ -55,6 +55,7 @@
                     me.loader(true)
                     me.$axios.get(`api/seats?studio_id=${id}&scheduled_date_id=${schedule_id}`).then(res => {
                         if (res.data) {
+                            console.log(me.temp);
                             me.temp = res.data.seats
                             me.temp.forEach((seat , index) => {
                                 switch (seat.position) {

@@ -42,6 +42,7 @@
                     //     toggled: false
                     // },
                     {
+                        id: 0,
                         name: 'Block',
                         status: 'open',
                         forPast: false,
@@ -56,6 +57,7 @@
                     //     toggled: false
                     // },
                     {
+                        id: 1,
                         name: 'Make Vacant',
                         status: 'blocked',
                         forPast: false,
@@ -63,6 +65,7 @@
                         toggled: false
                     },
                     {
+                        id: 2,
                         name: 'Switch Package',
                         status: 'reserved',
                         forPast: false,
@@ -70,6 +73,7 @@
                         toggled: false
                     },
                     {
+                        id: 3,
                         name: 'Switch Seat',
                         status: 'reserved',
                         forPast: false,
@@ -77,6 +81,7 @@
                         toggled: false
                     },
                     {
+                        id: 4,
                         name: 'Cancel Seat',
                         status: 'reserved',
                         forPast: false,
@@ -84,6 +89,49 @@
                         toggled: false
                     },
                     {
+                        id: 5,
+                        name: 'No Show',
+                        status: 'reserved',
+                        forPast: true,
+                        class: 'alt',
+                        toggled: false
+                    }
+                ],
+                altItems: [
+                    {
+                        id: 0,
+                        name: 'Block',
+                        status: 'open',
+                        forPast: false,
+                        class: 'alt',
+                        toggled: false
+                    },
+                    {
+                        id: 1,
+                        name: 'Make Vacant',
+                        status: 'blocked',
+                        forPast: false,
+                        class: '',
+                        toggled: false
+                    },
+                    {
+                        id: 2,
+                        name: 'Switch Seat',
+                        status: 'reserved',
+                        forPast: false,
+                        class: '',
+                        toggled: false
+                    },
+                    {
+                        id: 3,
+                        name: 'Cancel Seat',
+                        status: 'reserved',
+                        forPast: false,
+                        class: 'alt',
+                        toggled: false
+                    },
+                    {
+                        id: 4,
                         name: 'No Show',
                         status: 'reserved',
                         forPast: true,
@@ -97,8 +145,23 @@
             populateItems () {
                 const me = this
                 let results = []
-                if (me.seat != '') {
+                console.log(me.seat);
+                if (me.seat != '' && me.$parent.customer != '') {
                     me.items.forEach((item, index) => {
+                        if (me.seat.bookings[0].original_booker_id == me.$parent.customer.id) {
+                            if (item.status == 'reserved') {
+                                if (me.seat.status =='signed-in' || me.seat.status == 'reserved-guest') {
+                                    item.status = me.seat.status
+                                    if (me.seat.status == 'reserved-guest' && item.name == 'Cancel Seat') {
+                                        item.name = 'Cancel Guest'
+                                    }
+                                }
+                            }
+                            results.push(item)
+                        }
+                    })
+                } else {
+                    me.altItems.forEach((item, index) => {
                         if (item.status == 'reserved') {
                             if (me.seat.status =='signed-in' || me.seat.status == 'reserved-guest') {
                                 item.status = me.seat.status
@@ -107,8 +170,6 @@
                                 }
                             }
                         }
-                        // item.status = (item.status == 'reserved') ? (me.seat.status == 'signed-in' ? 'signed-in' : item.status) : item.status
-
                         results.push(item)
                     })
                 }
@@ -126,13 +187,23 @@
                 me.selectedMenu = false
                 me.selectedCount += 1
                 me.selectedType = me.convertToSlug(item.name)
-                me.items.forEach((element, index) => {
-                    if (unique == index) {
-                        element.toggled = true
-                    } else {
-                        element.toggled = false
-                    }
-                })
+                if (me.$parent.customer != '') {
+                    me.items.forEach((element, index) => {
+                        if (item.id == element.id) {
+                            element.toggled = true
+                        } else {
+                            element.toggled = false
+                        }
+                    })
+                } else {
+                    me.altItems.forEach((element, index) => {
+                        if (item.id == element.id) {
+                            element.toggled = true
+                        } else {
+                            element.toggled = false
+                        }
+                    })
+                }
             },
             toggleProceed () {
                 const me = this

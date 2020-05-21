@@ -1,11 +1,11 @@
 <template>
     <div :class="`seat_boxes ${position} ${layout}`" v-if="data.length > 0">
-        <div :class="`seat_position ${(seat.status == 'open' && $store.state.disableBookerUI) ? 'available' : ''} ${(seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id == $parent.$parent.$parent.customer.id)) ? 'highlight' : ''} ${(seat.status == 'open') ? '' : (seat.status == 'comp' ? (seat.comp.length > 0 ? 'comp' : '') : (seat.status == 'reserved') ? 'sign_in' : (seat.status == 'blocked' ? 'comp blocked' : (!$store.state.disableBookerUI && seat.status == 'signed-in' ? 'sign_out' : (seat.status == 'no-show' ? 'no_show' : (seat.status == 'reserved-guest') ? 'sign_in_guest' : ''))))}`" v-for="(seat, lkey) in data">
+        <div :class="`seat_position ${addSeatClass(seat)}`" v-for="(seat, lkey) in data">
 
             <div class="seat_available" @click="toggleSwitchSeat(seat)" v-if="seat.status == 'open' && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
             <div class="seat_action" @click.self="toggleAction(seat.status, (seat.bookings.length > 0) ? seat.bookings[0].id : null)"></div>
             <div class="seat_pending" @click.self="checkPending((seat.bookings.length > 0) ? seat.bookings[0].user_id : null)" v-if="!$store.state.disableBookerUI && seat.userPendingPayments > 0 && seat.status != 'no-show' && seat.past == 0"></div>
-            <div :class="`seat_overlay ${($store.state.disableBookerUI) ? 'disabled' : ''}`" @click="toggleMenu(seat, seat.status)">
+            <div class="seat_overlay" @click="toggleMenu(seat, seat.status)">
                 <div class="seat_number">{{ seat.number }}</div>
                 <div class="seat_info" v-if="seat.comp.length > 0 || seat.bookings.length > 0">
                     <div class="info_image" v-if="seat.comp.length > 0 && seat.comp[0].user_id != null">
@@ -49,6 +49,49 @@
             }
         },
         methods: {
+            addSeatClass (seat) {
+                const me = this
+                let result = ''
+                if (me.$parent.hasCustomer) {
+                    if (seat.bookings.length > 0 && (seat.bookings[0].original_booker_id == me.$parent.$parent.$parent.customer.id)) {
+                        result += 'highlight '
+                    } else {
+                        if (seat.status != 'open' && seat.status != 'comp' && seat.status != 'blocked') {
+                            result += 'disabled '
+                        }
+                    }
+                }
+                if (me.$store.state.disableBookerUI) {
+                    if (seat.status == 'open') {
+                        result += 'available '
+                    } else {
+                        result += 'disabled '
+                    }
+                }
+                switch (seat.status) {
+                    case 'comp':
+                        if (seat.comp.length > 0) {
+                            result += 'comp'
+                        }
+                        break
+                    case 'reserved':
+                        result += 'sign_in'
+                        break
+                    case 'reserved-guest':
+                        result += 'sign_in_guest'
+                        break
+                    case 'blocked':
+                        result += 'comp blocked'
+                        break
+                    case 'signed-in':
+                        result += 'sign_out'
+                        break
+                    case 'no-show':
+                        result += 'no_show'
+                        break
+                }
+                return result
+            },
             toggleMenu (seat, status) {
                 const me = this
                 me.$store.state.compID = (seat.comp.length > 0) ? seat.comp[0].id : 0

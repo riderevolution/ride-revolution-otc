@@ -4748,6 +4748,13 @@ input::placeholder
                             padding: 60px 20px
                             background-color: $white
                             transition: .3s ease-in-out
+                            &.disabled
+                                cursor: not-allowed
+                                pointer-events: none
+                                .seat_action
+                                    pointer-events: none
+                                    opacity: 0 !important
+                                    transition: .3s ease-in-out
                             &.available
                                 .seat_overlay
                                     border: 1.5px solid $blue
@@ -4756,6 +4763,8 @@ input::placeholder
                                         transition: .3s ease-in-out
                                 .seat_action
                                     pointer-events: none
+                                    opacity: 0
+                                    transition: .3s ease-in-out
                             &.comp
                                 .seat_overlay
                                     background-image: url('/icons/blocked-seat.svg')
@@ -4817,6 +4826,21 @@ input::placeholder
                                         .seat_number
                                             color: rgba(132, 143, 159, 0.4)
                                             transition: .3s ease-in-out
+                                &.highlight
+                                    .seat_overlay
+                                        box-shadow: 0px 0px 40px rgba(51, 176, 157, 0.75)
+                                        border: 1.5px solid $green
+                                        transition: .3s ease-in-out
+                                        .seat_number
+                                            color: $green
+                                            transition: .3s ease-in-out
+                                        &:hover
+                                            box-shadow: 0px 0px 40px rgba(51, 176, 157, 0.75)
+                                            border: 1.5px solid $green
+                                            transition: .3s ease-in-out
+                                            .seat_number
+                                                color: $green
+                                                transition: .3s ease-in-out
                                 .seat_action
                                     background-image: url('/icons/sign-in.svg')
                                     opacity: 1
@@ -4842,6 +4866,8 @@ input::placeholder
                                     background-color: #EDEDED
                                     border: 1.5px solid $gray_alternate
                                     transition: .3s ease-in-out
+                                    .seat_number
+                                        color: rgba(132, 143, 159, 0.4)
                                     &:hover
                                         background-color: #EDEDED
                                         border: 1.5px solid $gray_alternate
@@ -4867,8 +4893,6 @@ input::placeholder
                                     opacity: 1
                                     visibility: visible
                                     transition: .3s ease-in-out
-                                .seat_number
-                                    color: rgba(132, 143, 159, 0.4)
                             &.blocked
                                 .seat_info_blocked
                                     opacity: 1
