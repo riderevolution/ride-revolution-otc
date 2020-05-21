@@ -171,7 +171,7 @@
         </div>
         <foot v-if="$store.state.isAuth" />
         <transition name="fade">
-            <Prompt v-if="$store.state.promptStatus" :hasCancel="true" :message="'Still repeat this schedule? Existing schedules will be replaced by the updated schedule.'" />
+            <Prompt v-if="$store.state.promptStatus" :hasCancel="true" :message="'Still repeat this schedule?'" />
         </transition>
     </div>
 </template>
@@ -377,8 +377,8 @@
                     me.form.start.mins = me.res.start_time.split(':')[1].split(' ')[0]
                     me.form.start.convention = me.res.start_time.split(':')[1].split(' ')[1]
                     me.customerTypes = res.data.schedule.customer_types
-                    me.isRepeat = (me.res.repeat == 1) ? true : false
-                    me.prompt = (me.res.repeat == 1) ? true : false
+                    // me.isRepeat = (me.res.repeat == 1) ? true : false
+                    // me.prompt = (me.res.repeat == 1) ? true : false
                     me.isPrivate = (me.res.private_class == 1) ? true : false
                     me.form.instructor_id = me.res.instructor_schedules[0].user_id
                     me.loaded = true
