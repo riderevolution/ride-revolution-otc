@@ -275,7 +275,7 @@
                         } else {
                             let formData2 = new FormData()
                             formData2.append('scheduled_date_id', me.$store.state.scheduleID)
-                            formData2.append('user_id', me.$store.state.customerID)
+                            formData2.append('user_id', me.customer.id)
                             formData2.append('email', me.form.email)
                             me.$axios.post('api/extras/check-user-booking', formData2).then(res => {
                                 if (res.data) {
@@ -311,6 +311,7 @@
                                 me.$store.state.errorList = err.response.data.errors
                                 me.$store.state.errorOverlayStatus = true
                                 me.$store.state.errorStatus = true
+                                me.loader(false)
                             })
                         }
                     } else {
