@@ -357,27 +357,26 @@
                         formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
                         formData.append('studio_id', me.$store.state.user.current_studio_id)
                         formData.append('class_length', me.form.classLength)
-                        // me.loader(true)
+                        me.loader(true)
                         me.$axios.post('api/schedules', formData).then(res => {
-                            console.log(res.data);
-                        //     setTimeout( () => {
-                        //         if (res.data) {
-                        //             me.notify('Content has been Added')
-                        //         } else {
-                        //             me.$store.state.errorList.push('Sorry, Something went wrong')
-                        //             me.$store.state.errorStatus = true
-                        //         }
-                        //     }, 500)
-                        // }).catch(err => {
-                        //     me.$store.state.errorList = err.response.data.errors
-                        //     me.$store.state.errorStatus = true
-                        // }).then(() => {
-                        //     setTimeout( () => {
-                        //         if (!me.$store.state.errorStatus) {
-                        //             me.$router.push(`/${me.lastRoute}`)
-                        //         }
-                        //         me.loader(false)
-                        //     }, 500)
+                            setTimeout( () => {
+                                if (res.data) {
+                                    me.notify('Content has been Added')
+                                } else {
+                                    me.$store.state.errorList.push('Sorry, Something went wrong')
+                                    me.$store.state.errorStatus = true
+                                }
+                            }, 500)
+                        }).catch(err => {
+                            me.$store.state.errorList = err.response.data.errors
+                            me.$store.state.errorStatus = true
+                        }).then(() => {
+                            setTimeout( () => {
+                                if (!me.$store.state.errorStatus) {
+                                    me.$router.push(`/${me.lastRoute}`)
+                                }
+                                me.loader(false)
+                            }, 500)
                         })
                     } else {
                         me.$scrollTo('.validation_errors', {
