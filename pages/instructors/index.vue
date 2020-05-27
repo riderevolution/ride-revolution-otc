@@ -26,7 +26,7 @@
                 </div>
             </section>
             <section id="content" v-if="loaded">
-                <table class="cms_table">
+                <table class="cms_table fixed">
                     <thead>
                         <tr>
                             <th class="stick">Last Name</th>
