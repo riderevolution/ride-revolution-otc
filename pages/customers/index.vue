@@ -33,6 +33,14 @@
                 </div>
             </section>
             <section id="content" v-if="loaded">
+                <form id="paginate_form">
+                    <div class="form_group">
+                        <label for="paginate">Items per page</label>
+                        <select class="default_select alternate" v-model="pagination" name="paginate" @change="submitPaginate()">
+                            <option :value="data" v-for="(data, key) in paginateValues" :key="key">{{ data }}</option>
+                        </select>
+                    </div>
+                </form>
                 <table class="cms_table">
                     <thead>
                         <tr>
@@ -78,7 +86,6 @@
                         </tr>
                     </tbody>
                 </table>
-                <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
             </section>
         </div>
         <transition name="fade">
@@ -101,7 +108,6 @@
     import ConfirmStatus from '../../components/modals/ConfirmStatus'
     import PendingTransactions from '../../components/modals/PendingTransactions'
     import CustomerPendingQuickSale from '../../components/modals/CustomerPendingQuickSale'
-    import Pagination from '../../components/Pagination'
     export default {
         components: {
             Foot,
@@ -109,11 +115,12 @@
             RoleForm,
             ConfirmStatus,
             PendingTransactions,
-            CustomerPendingQuickSale,
-            Pagination
+            CustomerPendingQuickSale
         },
         data () {
             return {
+                pagination: 10,
+                paginateValues: [10, 25, 50, 100, 200, 300, 500],
                 loaded: false,
                 id: 0,
                 type: 0,
@@ -125,6 +132,10 @@
             }
         },
         methods: {
+            submitPaginate () {
+                const me = this
+                me.fetchData(me.status)
+            },
             togglePendingTransactions (id) {
                 const me = this
                 me.$store.state.pendingCustomerID = id
@@ -135,6 +146,7 @@
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('enabled', me.status)
+                formData.append('pagination', me.pagination)
                 me.loader(true)
                 me.$axios.post(`api/customers/search`, formData).then(res => {
                     me.res = res.data
@@ -167,7 +179,7 @@
             fetchData (value) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
+                me.$axios.get(`api/customers?enabled=${value}&pagination=${me.pagination}`).then(res => {
                     me.res = res.data
                     me.loaded = true
                 }).catch(err => {

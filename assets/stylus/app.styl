@@ -91,6 +91,9 @@ table
     width: 100%
     border-collapse: collapse
 
+.apexcharts-toolbar
+    z-index: 1
+
 .hidden
     display: none
 
@@ -1458,6 +1461,19 @@ input::placeholder
 
 #custom_gift_form
     margin: 20px auto 0
+
+#paginate_form
+    .form_group
+        display: flex
+        flex-flow: row wrap
+        align-items: center
+        justify-content: flex-end
+        label
+            margin-bottom: 0
+            margin-right: 10px
+        .default_text,
+        .default_select
+            width: 150px
 
 #default_form,
 #custom_gift_form
@@ -6035,6 +6051,84 @@ input::placeholder
             margin: 0 auto
             padding: 60px 40px
             margin-bottom: 60px
+            .stat_monthly
+                display: flex
+                flex-flow: row wrap
+                .stat
+                    background-color: $white
+                    .top
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        justify-content: space-between
+                        border-bottom: 1px solid $border
+                        .title
+                            sf_pro_bold(20px)
+                            color: $black
+                            &.alt
+                                color: $border_alt2
+                    .top,
+                    .bottom
+                        padding: 30px
+                .graph
+                    border-radius: 3px 0 0 3px
+                    flex: 1 0 20%
+                    width: 70%
+                    border-right: 1px solid $border
+                .this_month
+                    border-radius: 0 3px 3px 0
+                    flex: 0 0 30%
+                    ul
+                        list-style: none
+                        padding: 0
+                        margin: 0
+                        li
+                            padding: 20px 15px
+                            border-bottom: 1.5px dashed $border
+                            .item
+                                display: flex
+                                flex-flow: row wrap
+                                align-items: center
+                                justify-content: space-between
+                                span
+                                    sf_pro_regular(20px)
+                                    color: $black
+                                b
+                                    sf_pro_bold(20px)
+                                    color: $black
+            .overall_stat
+                margin-top: 30px
+                display: flex
+                flex-flow: row wrap
+                align-items: flex-start
+                justify-content: space-between
+                .stat
+                    background-color: $white
+                    .top
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        justify-content: space-between
+                        border-bottom: 1px solid $border
+                        .title
+                            sf_pro_bold(20px)
+                            color: $black
+                            &.alt
+                                color: $border_alt2
+                    .top,
+                    .bottom
+                        padding: 30px
+                .taught
+                    .bottom
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: flex-start
+                        padding: 30px 20px
+                        .box
+                            border: 1px solid $border_alt2
+                .taught,
+                .top_rides
+                    flex: 0 0 48.33%
             .cms_table_package
                 background-color: $white
                 border-radius: 5px

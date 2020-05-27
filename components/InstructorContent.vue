@@ -85,17 +85,189 @@
             </div>
         </transition>
         <transition name="fade">
-            <div v-if="'class-statistics'">
-                <no-ssr>
-                    <apexchart :options="chartOptions" :series="series"></apexchart>
-                </no-ssr>
+            <div v-if="type == 'class-statistics'">
+                <div class="stat_monthly">
+                    <div class="stat graph">
+                        <div class="top">
+                            <div class="title">Average Class Occupancy Rate (Monthly)</div>
+                        </div>
+                        <div class="bottom">
+                            <no-ssr>
+                                <apexchart :options="chartOptions" height="350px" :series="series"></apexchart>
+                            </no-ssr>
+                        </div>
+                    </div>
+                    <div class="stat this_month">
+                        <div class="top">
+                            <div class="title">This Month</div>
+                        </div>
+                        <div class="bottom">
+                            <ul>
+                                <li>
+                                    <div class="item"><span>Greenbelt 5</span> <b>25%</b></div>
+                                </li>
+                                <li>
+                                    <div class="item"><span>Shangri-la Plaza</span> <b>25%</b></div>
+                                </li>
+                                <li>
+                                    <div class="item"><span>Kerry Sports BGC</span> <b>25%</b></div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="overall_stat">
+                    <div class="stat taught">
+                        <div class="top">
+                            <div class="title">No. of Classes Taught</div>
+                            <div class="title alt">Total: 204</div>
+                        </div>
+                        <div class="bottom">
+                            <div class="box">
+                                <div class="count">5</div>
+                                <div class="label">This Week</div>
+                            </div>
+                            <div class="box">
+                                <div class="count">20</div>
+                                <div class="label">This Month</div>
+                            </div>
+                            <div class="box">
+                                <div class="count">100</div>
+                                <div class="label">This Year</div>
+                            </div>
+                            <div class="violator">Missed Classes: <b>3</b></div>
+                        </div>
+                    </div>
+                    <div class="stat top_rides">
+                        <div class="top">
+                            <div class="title">Top Rides</div>
+                        </div>
+                        <div class="bottom">
+                            <div class="left">
+                                <ul>
+                                    <li>
+                                        <div class="count">1</div>
+                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                        <!-- <div class="image">
+                                            <div class="overlay">
+                                                AB
+                                            </div>
+                                        </div> -->
+                                        <div class="name">Sample Sample</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="right">
+                                <ul>
+                                    <li>
+                                        <div class="count">6</div>
+                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                        <!-- <div class="image">
+                                            <div class="overlay">
+                                                AB
+                                            </div>
+                                        </div> -->
+                                        <div class="name">Sample Sample</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </transition>
+        <transition name="fade">
+            <div v-if="type == 'details'">
+                <div id="default_form">
+                    <div class="form_wrapper">
+                        <div class="form_header_wrapper">
+                            <h2 class="form_title">Customer Overview</h2>
+                            <div class="form_check toggler">
+                                <input type="hidden" id="enabled" name="enabled" class="action_check" :value="(value.enabled) ? 1 : 0">
+                                <div :class="`toggle alt ${(value.enabled) ? 'active' : ''}`" @click="toggledPrompt(value)"></div>
+                                <label for="enabled">{{ (value.enabled) ? 'Activated' : 'Deactivated' }}</label>
+                            </div>
+                        </div>
+                        <div class="form_overview">
+                            <div class="wrapper">
+                                <label>Name</label>
+                                <p>{{ value.first_name }} {{ value.last_name }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>Email</label>
+                                <p>{{ value.email }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>Phone Number</label>
+                                <p>{{ value.instructor_details.io_contact_number }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>Birthdate</label>
+                                <p>{{ formatClassDate(value.instructor_details.io_birthdate, false) }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>Gender</label>
+                                <p class="alt">{{ value.instructor_details.io_sex }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>Occupation</label>
+                                <p>{{ value.instructor_details.profession }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form_wrapper">
+                        <div class="form_header_wrapper">
+                            <h2 class="form_title">Personal Address</h2>
+                        </div>
+                        <div class="form_overview">
+                            <div class="wrapper">
+                                <label>Address</label>
+                                <p>{{ value.instructor_details.pa_address }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>City</label>
+                                <p>{{ value.instructor_details.pa_city }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form_wrapper">
+                        <div class="form_header_wrapper">
+                            <h2 class="form_title">Billing Address</h2>
+                        </div>
+                        <div class="form_overview">
+                            <div class="wrapper">
+                                <label>Address</label>
+                                <p>{{ value.instructor_details.ba_address }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>City</label>
+                                <p>{{ value.instructor_details.ba_city }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form_footer_wrapper">
+                        <div class="form_flex">
+                            <div class="form_check"></div>
+                            <div class="button_group">
+                                <nuxt-link :to="`/instructors/${$route.params.param}/update`" class="action_btn alternate">Edit</nuxt-link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+        <transition name="fade">
+            <customer-prompt :status="promptMessage" ref="enabled" v-if="$store.state.customerPromptStatus" />
         </transition>
     </div>
 </template>
 
 <script>
+    import CustomerPrompt from '../components/modals/CustomerPrompt'
     export default {
+        components: {
+            CustomerPrompt
+        },
         props: {
             type: {
                 type: String,
@@ -107,6 +279,7 @@
         },
         data () {
             return {
+                promptMessage: '',
                 classesHistoryStatus: 1,
                 loaded: false,
                 currentDate: 0,
@@ -114,12 +287,11 @@
                 currentYear: 0,
                 monthName: '',
                 yearName: '',
-                dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 studios: [],
                 series: [
                     {
                         name: 'Ride Count',
-                        data: [10, 5, 44, 0, 57, 56, 0, 58, 20, 63, 0, 200]
+                        data: [10, 5, 44, 300, 57, 56, 25, 58, 20, 63, 80, 200]
                     }
                 ],
                 chartOptions: {
@@ -138,33 +310,33 @@
                                     },
                                     offsetY: -10,
                                     style: {
-                                        colors: ["#171717"],
+                                        colors: ["#383D40"],
                                         fontSize: '8px',
-                                        fontFamily: 'Brandon-Regular'
+                                        fontFamily: 'SFProDisplay-Regular'
                                     }
                                 },
                                 xaxis: {
                                     labels: {
                                         style: {
-                                            colors: ['#000'],
+                                            colors: ['#383D40'],
                                             fontSize: '8px',
-                                            fontFamily: 'Brandon-Regular'
+                                            fontFamily: 'SFProDisplay-Regular'
                                         }
                                     },
                                 },
                                 yaxis: {
                                     labels: {
                                         style: {
-                                            colors: ['#000'],
+                                            colors: ['#383D40'],
                                             fontSize: '8px',
-                                            fontFamily: 'Brandon-Regular'
+                                            fontFamily: 'SFProDisplay-Regular'
                                         }
                                     },
                                     title: {
                                         text: 'Rides',
                                         offsetX: 0,
                                         style: {
-                                            colors: ['#000'],
+                                            colors: ['#383D40'],
                                             fontSize: '8px',
                                             cssClass: 'apexchart_uppercase'
                                         }
@@ -175,9 +347,9 @@
                     ],
                     chart: {
                         type: 'bar',
-                        height: 350
+                        height: 300
                     },
-                    colors: ['#9E558B'],
+                    colors: ['#5686FB'],
                     plotOptions: {
                         bar: {
                             dataLabels: {
@@ -186,15 +358,15 @@
                         }
                     },
                     dataLabels: {
-                        enabled: true,
+                        enabled: false,
                         formatter: function (val) {
                             return `${val}`
                         },
                         offsetY: -15,
                         style: {
-                            fontFamily: 'Brandon-Bold',
+                            fontFamily: 'SFProDisplay-Bold',
                             fontSize: '14px',
-                            colors: ["#171717"]
+                            colors: ["#383D40"]
                         }
                     },
                     stroke: {
@@ -203,15 +375,15 @@
                         colors: ['transparent']
                     },
                     grid: {
-                        show: false
+                        show: true
                     },
                     xaxis: {
                         labels: {
                             show: true,
                             style: {
-                                colors: ['#000'],
+                                colors: ['#383D40'],
                                 fontSize: '14px',
-                                fontFamily: 'Brandon-Regular'
+                                fontFamily: 'SFProDisplay-Regular'
                             }
                         },
                         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -220,18 +392,18 @@
                         labels: {
                             show: true,
                             style: {
-                                colors: ['#000'],
+                                colors: ['#383D40'],
                                 fontSize: '14px',
-                                fontFamily: 'Brandon-Regular'
+                                fontFamily: 'SFProDisplay-Regular'
                             }
                         },
                         title: {
-                            text: 'Rides',
-                            offsetX: -10,
+                            text: 'No. of Riders',
+                            offsetX: 0,
                             style: {
-                                color: '#000',
+                                color: '#8A93A8',
                                 fontSize: '12px',
-                                fontFamily: 'Brandon-Bold',
+                                fontFamily: 'SFProDisplay-Bold',
                                 cssClass: 'apexchart_uppercase'
                             }
                         }
@@ -246,12 +418,7 @@
                             colorStops: [
                                 {
                                     offset: 0,
-                                    color: "#FD649C",
-                                    opacity: 1
-                                },
-                                {
-                                    offset: 100,
-                                    color: "#9E558B",
+                                    color: "#5686FB",
                                     opacity: 1
                                 }
                             ]
@@ -268,6 +435,24 @@
             }
         },
         methods: {
+            toggledPrompt (data) {
+                const me = this
+                if (data.enabled) {
+                    me.promptMessage = 'Deactivate'
+                } else {
+                    me.promptMessage = 'Activate'
+                }
+                data.enabled ^= 1
+                me.$store.state.customerPromptStatus = true
+                setTimeout( () => {
+                    me.$refs.enabled.confirm.table_name = 'users'
+                    me.$refs.enabled.confirm.id = data.id
+                    me.$refs.enabled.confirm.enabled = data.enabled
+                    me.$refs.enabled.confirm.status = (data.enabled) ? 'activated' : 'deactivated'
+                    me.$refs.enabled.confirm.type = 'user'
+                }, 100)
+                document.body.classList.add('no_scroll')
+            },
             toggleClassesHistory (status) {
                 const me = this
                 return me.classesHistoryStatus = status

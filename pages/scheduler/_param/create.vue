@@ -74,37 +74,6 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('occassion')">{{ errors.first('occassion') | properFormat }}</span></transition>
                                 </div>
                             </transition>
-                            <transition name="fade">
-                                <div class="form_flex select_all" v-if="!isPrivate">
-                                    <label class="flex_label alternate">Restrict class to customer types: <span>*</span></label>
-                                    <div class="form_check select_all">
-                                        <div :class="`custom_action_check ${(checkData) ? 'checked' : ''}`" @click.prevent="toggleSelectAll($event)">Select All</div>
-                                    </div>
-                                    <div class="form_check" v-for="(customerType, key) in customerTypes" :key="key">
-                                        <input type="checkbox" :id="`data_${key}`" name="customer_type_restriction" class="action_check" v-model="customerType.checked">
-                                        <label :for="`data_${key}`">{{ customerType.name }}</label>
-                                    </div>
-                                    <transition name="slide"><span class="validation_errors" v-if="hasCustomerTypes">The Type field is required</span></transition>
-                                </div>
-                            </transition>
-                            <div class="form_flex">
-                                <div class="form_group">
-                                    <label for="instructor_id">Instructor <span>*</span></label>
-                                    <select class="default_select alternate" name="instructor_id" v-validate="'required'" v-model="form.instructor_id">
-                                        <option value="" selected disabled>Select an Instructor</option>
-                                        <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
-                                    </select>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('instructor_id')">{{ errors.first('instructor_id') | properFormat }}</span></transition>
-                                </div>
-                                <div class="form_group">
-                                    <label for="substitute_instructor_id">Substitute Instructor <span>*</span></label>
-                                    <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="substitute_instructor_id" v-validate="'required'">
-                                        <option value="" selected disabled>Select an Instructor</option>
-                                        <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
-                                    </select>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('substitute_instructor_id')">{{ errors.first('substitute_instructor_id') | properFormat }}</span></transition>
-                                </div>
-                            </div>
                             <div class="form_flex">
                                 <div class="form_group" v-if="isPrivate">
                                     <label for="no_of_riders">No. of Riders <span>*</span></label>
@@ -147,11 +116,64 @@
                                     </div>
                                     <div class="form_group">
                                         <label for="end_date">End Date <span>*</span></label>
-                                        <input type="date" name="end_date" autocomplete="off" class="default_text date" :min="$moment().add(1, 'd').format('YYYY-MM-DD')" v-validate="'required'">
+                                        <input type="date" name="end_date" autocomplete="off" class="default_text date" :min="$moment(parseInt($route.params.param)).add(1, 'd').format('YYYY-MM-DD')" v-validate="'required'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                             </transition>
+                        </div>
+                    </div>
+                    <div class="form_wrapper">
+                        <div class="form_header_wrapper">
+                            <h2 class="form_title">Instructor</h2>
+                        </div>
+                        <div class="form_main_group">
+                            <div class="form_flex">
+                                <div class="form_group">
+                                    <label for="instructor_id">Instructor <span>*</span></label>
+                                    <select class="default_select alternate" name="instructor_id" v-validate="'required'" v-model="form.instructor_id">
+                                        <option value="" selected disabled>Select an Instructor</option>
+                                        <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                                    </select>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('instructor_id')">{{ errors.first('instructor_id') | properFormat }}</span></transition>
+                                </div>
+                                <div class="form_group">
+                                    <label for="substitute_instructor_id">Substitute Instructor <span>*</span></label>
+                                    <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="substitute_instructor_id" v-validate="'required'">
+                                        <option value="" selected disabled>Select an Instructor</option>
+                                        <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                                    </select>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('substitute_instructor_id')">{{ errors.first('substitute_instructor_id') | properFormat }}</span></transition>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <transition name="fade">
+                        <div class="form_wrapper" v-if="!isPrivate">
+                            <div class="form_header_wrapper">
+                                <h2 class="form_title">Restrictions</h2>
+                            </div>
+                            <div class="form_main_group">
+                                <div class="form_flex select_all">
+                                    <label class="flex_label alternate">Restrict class to customer types: <span>*</span></label>
+                                    <div class="form_check select_all">
+                                        <div :class="`custom_action_check ${(checkData) ? 'checked' : ''}`" @click.prevent="toggleSelectAll($event)">Select All</div>
+                                    </div>
+                                    <div class="form_check" v-for="(customerType, key) in customerTypes" :key="key">
+                                        <input type="checkbox" :id="`data_${key}`" name="customer_type_restriction" class="action_check" v-model="customerType.checked">
+                                        <label :for="`data_${key}`">{{ customerType.name }}</label>
+                                    </div>
+                                    <transition name="slide"><span class="validation_errors" v-if="hasCustomerTypes">The Type field is required</span></transition>
+                                </div>
+                            </div>
+                        </div>
+                    </transition>
+                    <div class="form_wrapper">
+                        <div class="form_header_wrapper">
+                            <h2 class="form_title">Image Upload</h2>
+                        </div>
+                        <div class="form_main_group">
+                            <image-handler-container ref="image_handler" :multiple="false" />
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
@@ -179,9 +201,11 @@
 <script>
     import SchedulerRepeatPrompt from '../../../components/modals/SchedulerRepeatPrompt'
     import Foot from '../../../components/Foot'
+    import ImageHandlerContainer from '../../../components/ImageHandlerContainer'
     export default {
         components: {
             SchedulerRepeatPrompt,
+            ImageHandlerContainer,
             Foot
         },
         data () {
@@ -208,15 +232,23 @@
             }
         },
         filters: {
-            properFormat: function (value) {
+            properFormat (value) {
                 let newValue = value.split('The ')[1].split(' field')[0].split('[]')
                 if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
+                    let nextValue = newValue[0].split('_')
+                    if (nextValue.length > 1) {
+                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                    } else {
+                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                    }
+                } else {
                     newValue = value.split('The ')[1].split(' field')[0].split('_')
                     if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let firstValue = ''
                         let lastValue = ''
+                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
                         for (let i = 1; i < newValue.length; i++) {
                             if (newValue[i] != 'id') {
                                 lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
@@ -227,8 +259,18 @@
                         newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
                     }
                 }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                    return `The ${newValue} field${message}`
+                } else {
+					if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
+                }
             }
         },
         computed: {

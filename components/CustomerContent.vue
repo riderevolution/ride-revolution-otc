@@ -265,9 +265,9 @@
                     <div class="form_header_wrapper">
                         <h2 class="form_title">Customer Overview</h2>
                         <div class="form_check toggler">
-                            <input type="hidden" id="is_promo" name="is_promo" class="action_check" :value="(value.enabled) ? 1 : 0">
+                            <input type="hidden" id="enabled" name="enabled" class="action_check" :value="(value.enabled) ? 1 : 0">
                             <div :class="`toggle alt ${(value.enabled) ? 'active' : ''}`" @click="toggledPrompt(value)"></div>
-                            <label for="is_promo">{{ (value.enabled) ? 'Activated' : 'Deactivated' }}</label>
+                            <label for="enabled">{{ (value.enabled) ? 'Activated' : 'Deactivated' }}</label>
                         </div>
                     </div>
                     <div class="form_overview">

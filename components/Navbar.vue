@@ -336,6 +336,7 @@
                 const me = this
                 me.hasToggleThirdLevel = false
                 me.thirdNavItems = null
+                me.checkHeightViewport()
             },
             checkHeightViewport () {
                 const me = this
