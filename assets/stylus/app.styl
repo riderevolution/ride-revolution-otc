@@ -6104,6 +6104,7 @@ input::placeholder
                 justify-content: space-between
                 .stat
                     background-color: $white
+                    border-radius: 3px
                     .top
                         display: flex
                         flex-flow: row wrap
@@ -6123,12 +6124,82 @@ input::placeholder
                         display: flex
                         flex-flow: row wrap
                         align-items: flex-start
+                        justify-content: space-between
                         padding: 30px 20px
+                        margin: 0 10px
                         .box
+                            border-radius: 3px
+                            text-align: center
+                            flex: 0 0 calc(33.33% - 20px)
                             border: 1px solid $border_alt2
+                            padding: 30px 10px
+                            .count
+                                sf_pro_bold(30px)
+                                color: $black
+                            .label
+                                sf_pro_regular(18px)
+                                color: $border_alt2
+                                margin-top: 5px
+                        .violator
+                            margin-top: 20px
+                            flex: 0 0 100%
+                            text-align: center
+                            color: $black
+                            sf_pro_regular(16px)
+                            b
+                                color: $red
+                .top_rides
+                    .bottom
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: flex-start
+                        justify-content: space-between
+                        .left,
+                        .right
+                            flex: 0 0 47.33%
+                            ul
+                                list-style: none
+                                padding: 0
+                                margin: 0
+                                li
+                                    display: flex
+                                    flex-flow: row wrap
+                                    align-items: center
+                                    padding: 20px 15px
+                                    border-bottom: 1.5px dashed $border
+                                    .count
+                                        sf_pro_medium(20px)
+                                        color: $black
+                                        padding-right: 15px
+                                    img
+                                        width: 35px
+                                        height: 35px
+                                        border-radius: 50%
+                                        object-fit: cover
+                                        object-position: center
+                                    .image
+                                        position: relative
+                                        text-transform: uppercase
+                                        background-image: linear-gradient(137deg, $red, $orange)
+                                        sf_pro_regular(14px)
+                                        border-radius: 50%
+                                        color: $white
+                                        width: 35px
+                                        height: 35px
+                                        .overlay
+                                            position: absolute
+                                            top: 50%
+                                            left: 0
+                                            right: 0
+                                            text-align: center
+                                            transform: translateY(-50%)
+                                    .name
+                                        padding-left: 15px
+                                        sf_pro_regular(16px)
+                                        color: $black
                 .taught,
                 .top_rides
-                    flex: 0 0 48.33%
+                    flex: 0 0 calc(50% - 15px)
             .cms_table_package
                 background-color: $white
                 border-radius: 5px

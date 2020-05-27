@@ -145,8 +145,8 @@
                         <div class="bottom">
                             <div class="left">
                                 <ul>
-                                    <li>
-                                        <div class="count">1</div>
+                                    <li v-for="(n, key) in 5" :key="key">
+                                        <div class="count">{{ n }}</div>
                                         <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
                                         <!-- <div class="image">
                                             <div class="overlay">
@@ -159,14 +159,14 @@
                             </div>
                             <div class="right">
                                 <ul>
-                                    <li>
-                                        <div class="count">6</div>
-                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
-                                        <!-- <div class="image">
+                                    <li v-for="(n, key) in 5" :key="key">
+                                        <div class="count">{{ n + 5 }}</div>
+                                        <!-- <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" /> -->
+                                        <div class="image">
                                             <div class="overlay">
                                                 AB
                                             </div>
-                                        </div> -->
+                                        </div>
                                         <div class="name">Sample Sample</div>
                                     </li>
                                 </ul>
