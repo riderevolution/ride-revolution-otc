@@ -410,7 +410,7 @@
         },
         mounted () {
             const me = this
-            me.$axios.get(`api/schedules/${me.$route.params.id}`).then(res => {
+            me.$axios.get(`api/schedules/${me.$route.query.i}`).then(res => {
                 if (res.data) {
                     me.res = res.data.schedule
                     me.form.classLengthTemp = me.res.class_length_unformatted
