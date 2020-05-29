@@ -8,6 +8,7 @@ $blue = #00B1FF
 $blue_alt = #7AD1F7
 $orange = #FFA069
 $red = #FC565F
+$red_alt = #FF6A6A
 $light_red = #FFE5E6
 $white = #FFF
 $black = #383D40
@@ -19,6 +20,7 @@ $yellow = #FFC917
 $border = #DEDEDE
 $border_alt = #EDEEF0
 $border_alt2 = #9C9EAA
+$violet = #7E79FF
 
 image_default =
     height: auto
@@ -1480,6 +1482,19 @@ input::placeholder
     width: 100%
     max-width: 65%
     margin: 0 auto
+    &.cld
+        max-width: 100%
+        .form_group
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            justify-content: flex-start
+            margin-bottom: 30px
+            label
+                margin-bottom: 0
+                padding-right: 10px
+            .default_select
+                width: auto
     &.alternate
         max-width: 100%
         .form_flex_wrapper
@@ -3351,9 +3366,102 @@ input::placeholder
 
 /**
  * Table Calendar **/
+.availability
+    display: flex
+    flex-flow: row wrap
+    .cld
+        flex: 0 0 100%
+    .calendar_wrapper
+        flex: 1 0 10%
+        margin-right: 30px
+        border-radius: 5px
+    .schedule
+        flex: 0 0 30%
+        background-color: $white
+        border-radius: 5px
+        .top
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            justify-content: space-between
+            border-bottom: 1px solid $border
+            .title
+                sf_pro_bold(20px)
+                color: $black
+                &.alt
+                    color: $border_alt2
+        .top,
+        .bottom
+            padding: 30px
+        .bottom
+            ul
+                list-style: none
+                padding: 0
+                margin: 0
+                display: flex
+                flex-flow: row wrap
+                align-items: flex-start
+                justify-content: space-between
+                li
+                    flex: 0 0 48.33%
+                    .item
+                        margin-bottom: 30px
+                        .date
+                            display: flex
+                            flex-flow: row wrap
+                            align-items: center
+                            sf_pro_semibold(18px)
+                            color: $black
+                            margin-bottom: 10px
+                            span
+                                sf_pro_regular(12px)
+                                padding-right: 10px
+                            &.green
+                                span
+                                    color: $green
+                            &.yellow
+                                span
+                                    color: $yellow
+                            &.red
+                                span
+                                    color: $red_alt
+                            &.violet
+                                span
+                                    color: $violet
+                        .label
+                            sf_pro_regular(16px)
+                            color: $border_alt2
+                            padding-left: 18px
+
 .calendar_wrapper
     margin-bottom: 30px
     background-color: $white
+    .legends_wrapper
+        display: flex
+        flex-flow: row wrap
+        align-items: center
+        padding: 20px
+        border-top: 1px solid $border
+        .legend_title
+            sf_pro_regular(14px)
+            color: $black
+            span
+                sf_pro_regular(14px)
+                padding-right: 10px
+            &.margin
+                margin-left: 20px
+            &.green
+                span
+                    color: $green
+            &.yellow
+                span
+                    color: $yellow
+            &.red
+                span
+                    color: $red_alt
+            &.violet
+                span
+                    color: $violet
     .calendar_actions
         padding: 20px
         display: flex
@@ -3526,6 +3634,99 @@ input::placeholder
                         transition: .3s ease-in-out
     .cms_table_calendar_wrapper
         padding: 0 70px 20px 20px
+        &.alt
+            padding: 0 20px 20px
+            .cms_table_calendar
+                tbody
+                    tr
+                        .day_wrapper
+                            border: none
+                            .header_wrapper
+                                position: relative
+                                justify-content: center
+                                margin: 10px 0
+                                padding: 20px
+                                &.alt
+                                    padding: 30px
+                                    &.start
+                                        .header_day_wrapper
+                                            border-radius: 50% 0 0 50%
+                                        &::after
+                                            opacity: 1
+                                            visibility: visible
+                                            transition: .3s ease-in-out
+                                    &.middle
+                                        .header_day_wrapper
+                                            border-radius: 0
+                                        &::before,
+                                        &::after
+                                            opacity: 1
+                                            width: 55px
+                                            visibility: visible
+                                            transition: .3s ease-in-out
+                                    &.end
+                                        .header_day_wrapper
+                                            border-radius: 0 50% 50% 0
+                                        &::before
+                                            opacity: 1
+                                            visibility: visible
+                                            transition: .3s ease-in-out
+                                    &::before
+                                        content: ''
+                                        position: absolute
+                                        top: 50%
+                                        left: -2px
+                                        width: 55px
+                                        height: 50px
+                                        background-color: $white
+                                        border-top: 1px solid $black
+                                        border-bottom: 1px solid $black
+                                        z-index: 1
+                                        opacity: 0
+                                        visibility: hidden
+                                        transform: translateY(-50%)
+                                        transition: .3s ease-in-out
+                                    &::after
+                                        content: ''
+                                        position: absolute
+                                        top: 50%
+                                        right: -2px
+                                        width: 55px
+                                        height: 50px
+                                        background-color: $white
+                                        border-top: 1px solid $black
+                                        border-bottom: 1px solid $black
+                                        z-index: 1
+                                        opacity: 0
+                                        visibility: hidden
+                                        transform: translateY(-50%)
+                                        transition: .3s ease-in-out
+                                .header_day_wrapper
+                                    position: absolute
+                                    top: 50%
+                                    left: 0
+                                    right: 0
+                                    text-align: center
+                                    margin: 0 auto
+                                    width: 50px
+                                    height: 50px
+                                    background-color: transparent
+                                    border: 1px solid transparent
+                                    border-radius: 50%
+                                    transform: translateY(-50%)
+                                    transition: .3s ease-in-out
+                                    cursor: pointer
+                                    &.single
+                                        background-color: $white
+                                        border: 1px solid $black
+                                        transition: .3s ease-in-out
+                                    .header_day
+                                        position: absolute
+                                        top: 50%
+                                        left: 0
+                                        right: 0
+                                        text-align: center
+                                        transform: translateY(-50%)
         .cms_table_calendar
             table-layout: fixed
             thead

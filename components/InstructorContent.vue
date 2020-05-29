@@ -177,6 +177,11 @@
             </div>
         </transition>
         <transition name="fade">
+            <div v-if="type == 'calendar-of-availability'">
+                <calendar-of-availability />
+            </div>
+        </transition>
+        <transition name="fade">
             <div v-if="type == 'details'">
                 <div id="default_form">
                     <div class="form_wrapper">
@@ -263,9 +268,11 @@
 </template>
 
 <script>
+    import CalendarOfAvailability from '../components/CalendarOfAvailability'
     import CustomerPrompt from '../components/modals/CustomerPrompt'
     export default {
         components: {
+            CalendarOfAvailability,
             CustomerPrompt
         },
         props: {
@@ -287,6 +294,7 @@
                 currentYear: 0,
                 monthName: '',
                 yearName: '',
+                dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 studios: [],
                 series: [
                     {
@@ -659,8 +667,12 @@
                 let target = e.target
                 let element = document.getElementById(`legend_toggler`)
                 if (element !== target) {
-                    if (element.nextElementSibling.classList.contains('active')) {
-                        element.nextElementSibling.classList.remove('active')
+                    if (element != null) {
+                        if (element.nextElementSibling != null) {
+                            if (element.nextElementSibling.classList.contains('active')) {
+                                element.nextElementSibling.classList.remove('active')
+                            }
+                        }
                     }
                 }
             }
