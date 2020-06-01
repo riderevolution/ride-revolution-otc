@@ -10,7 +10,11 @@
             </div>
         </form>
         <div class="calendar_wrapper">
-            <div class="calendar_actions"></div>
+            <div class="calendar_actions">
+                <div class="action_flex">
+                    <div class="action_calendar_btn red" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">Clear Plot</div>
+                </div>
+            </div>
             <div class="calendar_header">
                 <div class="calendar_prev" @click="generatePrevCalendar()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
@@ -107,7 +111,9 @@
                 monthName: '',
                 yearName: '',
                 dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                studios: []
+                studios: [],
+                firstDate: '',
+                lastDate: ''
             }
         },
         methods: {
@@ -243,19 +249,57 @@
                         elementDay.addEventListener('click', function(e) {
                             let target = this
                             if (target.classList.contains('single')) {
+                                target.classList.remove('single')
+                                /**
+                                 * check target end date if has end class and parent */
+                                if (target.parentNode.classList.contains('end')) {
+                                    target.parentNode.classList.remove('end', 'parent')
+
+                                    let newEndDate = document.getElementById(`day_${parseInt(target.id.split('_')[1]) - 1}`)
+                                    newEndDate.parentNode.classList.remove('middle')
+                                    newEndDate.parentNode.classList.add('end', 'parent')
+                                }
+                                /**
+                                 * check target start date if has start class and parent */
+                                if (target.parentNode.classList.contains('start')) {
+                                    target.parentNode.classList.remove('start', 'parent')
+
+                                    let newStartDate = document.getElementById(`day_${parseInt(target.id.split('_')[1]) + 1}`)
+                                    newStartDate.parentNode.classList.remove('middle')
+                                    newStartDate.parentNode.classList.add('start', 'parent')
+                                }
+                                /**
+                                 * check target middle date if has middle class */
                                 if (target.parentNode.classList.contains('middle')) {
-                                    let days = document.querySelectorAll('.header_day_wrapper')
-                                    days.forEach((data, index) => {
-                                        data.parentNode.classList.remove('start')
-                                        data.parentNode.classList.remove('end')
-                                        data.parentNode.classList.remove('middle')
-                                        data.parentNode.classList.remove('parent')
-                                        data.classList.remove('single')
-                                    })
-                                    target.classList.remove('single')
-                                } else {
-                                    target.classList.remove('single')
-                                    target.parentNode.classList.remove('start', 'end', 'parent', 'middle')
+                                    /**
+                                     * Adjust the range when clicked in the middle */
+                                    if (me.firstDate < parseInt(target.innerText)) {
+
+                                        target.parentNode.classList.remove('middle')
+                                        target.classList.add('single')
+                                        target.parentNode.classList.add('start', 'parent')
+
+                                        for (let i = parseInt(target.innerText) - 1; i >= me.firstDate; i--) {
+                                            document.getElementById(`day_${i}`).classList.remove('single')
+                                            document.getElementById(`day_${i}`).parentNode.classList.remove('middle')
+                                            document.getElementById(`day_${i}`).parentNode.classList.remove('start')
+                                            document.getElementById(`day_${i}`).parentNode.classList.remove('parent')
+                                        }
+                                    }
+                                    // if (me.lastDate > parseInt(target.innerText)) {
+                                    //
+                                    //     target.parentNode.classList.remove('middle')
+                                    //     target.classList.add('single')
+                                    //     target.parentNode.classList.add('end', 'parent')
+                                    //
+                                    //     for (let i = parseInt(target.innerText) - 1; i >= me.firstDate; i--) {
+                                    //         document.getElementById(`day_${i}`).classList.remove('single')
+                                    //         document.getElementById(`day_${i}`).parentNode.classList.remove('middle')
+                                    //         document.getElementById(`day_${i}`).parentNode.classList.remove('end')
+                                    //         document.getElementById(`day_${i}`).parentNode.classList.remove('parent')
+                                    //     }
+                                    // }
+                                    target.parentNode.classList.remove('middle')
                                 }
                             } else {
                                 target.classList.add('single')
@@ -265,6 +309,12 @@
                     }
                 } while (startNum < endNum + firstDayExcess)
             },
+            /**
+             * check each date if available, partial or not
+             * @param  {[integer]} startNum       first date of calendar
+             * @param  {[integer]} endNum         end date of calendar
+             * @param  {[integer]} firstDayExcess excess dates (past or future)
+             */
             checkClickDates (startNum, endNum, firstDayExcess) {
                 const me = this
                 let month = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('M')
@@ -283,14 +333,24 @@
                         }
                     }
                 } while (startNum < endNum + firstDayExcess)
+
                 let first = ''
                 let last = ''
+
+                /**
+                 * check if the clicked dates is more than 1 */
                 if (ctr > 1) {
+                    /**
+                     * add class for the start and end */
                     first = dates[0].id.split('_')[1]
+                    me.firstDate = dates[0].id.split('_')[1]
                     last = dates[dates.length - 1].id.split('_')[1]
+                    me.lastDate = dates[dates.length - 1].id.split('_')[1]
                     dates[0].parentNode.classList.add('start', 'parent')
                     dates[dates.length - 1].parentNode.classList.add('end', 'parent')
                 } else {
+                    /**
+                     * removed the start and end class */
                     if (dates[0] != undefined) {
                         dates[0].parentNode.classList.remove('start', 'parent')
                     }
@@ -298,13 +358,20 @@
                         dates[dates.length - 1].parentNode.classList.remove('end', 'parent')
                     }
                 }
+
+                /**
+                 * check if the clicked dates is between 1 and 2 */
                 if (ctr > 1 && ctr <= 2) {
                     for (let i = last - 1; i != first; i--) {
                         document.getElementById(`day_${i}`).classList.add('single')
                         document.getElementById(`day_${i}`).parentNode.classList.add('middle')
                     }
                 } else {
+                    /**
+                     * check if the clicked dates is more than 2 */
                     if (ctr > 2) {
+                        /**
+                         * iterates each dates, if the dates has no parent class. add middle if in between */
                         dates.forEach((data, index) => {
                             if (!data.parentNode.classList.contains('parent')) {
                                 data.parentNode.classList.add('middle')
