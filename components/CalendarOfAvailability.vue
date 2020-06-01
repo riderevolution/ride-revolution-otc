@@ -12,7 +12,8 @@
         <div class="calendar_wrapper">
             <div class="calendar_actions">
                 <div class="action_flex">
-                    <div class="action_calendar_btn red" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">Clear Plot</div>
+                    <div :class="`action_calendar_btn green ${(targetDates.length > 0) ? '' : 'disabled'}`" @click="toggleMenuPrompt()">Choose Availability</div>
+                    <div :class="`action_calendar_btn margin red ${(targetDates.length > 0) ? '' : 'disabled'}`" @click="generateCalendar(currentYear, currentMonth, 0, 0)">Reset Calendar</div>
                 </div>
             </div>
             <div class="calendar_header">
@@ -98,11 +99,28 @@
                 </ul>
             </div>
         </div>
+        <transition name="fade">
+            <calendar-availability-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
+        </transition>
+        <transition name="fade">
+            <calendar-availability-available-prompt v-if="$store.state.calendarAvailabilityAvailablePromptStatus" />
+        </transition>
+        <transition name="fade">
+            <calendar-availability-success v-if="$store.state.calendarAvailabilitySuccessStatus" :title="title" :message="message" />
+        </transition>
     </div>
 </template>
 
 <script>
+    import CalendarAvailabilityMenuPrompt from './modals/CalendarAvailabilityMenuPrompt'
+    import CalendarAvailabilityAvailablePrompt from './modals/CalendarAvailabilityAvailablePrompt'
+    import CalendarAvailabilitySuccess from './modals/CalendarAvailabilitySuccess'
     export default {
+        components: {
+            CalendarAvailabilityMenuPrompt,
+            CalendarAvailabilityAvailablePrompt,
+            CalendarAvailabilitySuccess
+        },
         data () {
             return {
                 currentDate: 0,
@@ -113,10 +131,22 @@
                 dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 studios: [],
                 firstDate: '',
-                lastDate: ''
+                lastDate: '',
+                targetDates: [],
+                title: '',
+                message: ''
             }
         },
         methods: {
+            /**
+             * toggle menu prompt for list of options */
+            toggleMenuPrompt () {
+                const me = this
+                me.$store.state.bookerMenuPromptStatus = true
+                document.body.classList.add('no_scroll')
+            },
+            /**
+             * toggle prev month based on the current month and year */
             generatePrevCalendar () {
                 const me = this
                 me.currentMonth = me.currentMonth - 1
@@ -126,6 +156,8 @@
                 }
                 me.generateCalendar(me.currentYear, me.currentMonth, 0, 0)
             },
+            /**
+             * toggle next month based on the current month and year */
             generateNextCalendar () {
                 const me = this
                 me.currentMonth = me.currentMonth + 1
@@ -135,11 +167,21 @@
                 }
                 me.generateCalendar(me.currentYear, me.currentMonth, 0, 0)
             },
+            /**
+             * clear the table rows when generateCalendar() is called */
             clearTableRows () {
                 document.querySelectorAll('.cms_table_calendar tbody tr').forEach(function(e){e.remove()})
             },
+            /**
+             * generate calendar based on the current date
+             * @param  {[integer]}  year      current year
+             * @param  {[integer]}  month     current month
+             * @param  {[boolean]}  highlight status
+             * @return {HTML}              table of calendar
+             */
             async generateCalendar (year, month, highlight) {
                 const me = this
+                me.targetDates = []
                 me.clearTableRows()
                 me.currentDate = me.$moment().date()
                 me.monthName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('MMMM')
@@ -286,19 +328,6 @@
                                             document.getElementById(`day_${i}`).parentNode.classList.remove('parent')
                                         }
                                     }
-                                    // if (me.lastDate > parseInt(target.innerText)) {
-                                    //
-                                    //     target.parentNode.classList.remove('middle')
-                                    //     target.classList.add('single')
-                                    //     target.parentNode.classList.add('end', 'parent')
-                                    //
-                                    //     for (let i = parseInt(target.innerText) - 1; i >= me.firstDate; i--) {
-                                    //         document.getElementById(`day_${i}`).classList.remove('single')
-                                    //         document.getElementById(`day_${i}`).parentNode.classList.remove('middle')
-                                    //         document.getElementById(`day_${i}`).parentNode.classList.remove('end')
-                                    //         document.getElementById(`day_${i}`).parentNode.classList.remove('parent')
-                                    //     }
-                                    // }
                                     target.parentNode.classList.remove('middle')
                                 }
                             } else {
@@ -321,6 +350,7 @@
                 let year = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('YYYY')
                 let ctr = 0
                 let dates = []
+                me.targetDates = []
                 do {
                     startNum++
                     let elementDay = (document.getElementById(`day_${startNum}`) != null) ? document.getElementById(`day_${startNum}`) : null
@@ -377,6 +407,36 @@
                                 data.parentNode.classList.add('middle')
                             }
                         })
+                    }
+                }
+
+                if (ctr > 1) {
+                    for (let i = 0; i < endNum + firstDayExcess; i++) {
+                        let elementDay = (document.getElementById(`day_${i}`) != null) ? document.getElementById(`day_${i}`) : null
+                        /**
+                         * Day **/
+                        if (elementDay != null) {
+                            if (elementDay.classList.contains('single')) {
+                                me.targetDates.push(me.$moment(`${me.currentYear}-${me.currentMonth}-${i}`, 'YYYY-MM-D').format('YYYY-MM-DD'))
+                            } else {
+                                if (ctr > 1) {
+                                    elementDay.parentNode.parentNode.classList.add('disabled_day')
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if (dates[0] != undefined) {
+                        me.targetDates.push(me.$moment(`${me.currentYear}-${me.currentMonth}-${dates[0].id.split('_')[1]}`, 'YYYY-MM-D').format('YYYY-MM-DD'))
+                    }
+                    for (let i = 0; i < endNum + firstDayExcess; i++) {
+                        let elementDay = (document.getElementById(`day_${i}`) != null) ? document.getElementById(`day_${i}`) : null
+
+                        /**
+                         * Day **/
+                        if (elementDay != null) {
+                            elementDay.parentNode.parentNode.classList.remove('disabled_day')
+                        }
                     }
                 }
             },
