@@ -3,7 +3,7 @@
         <div class="background" @click.once="toggleClose(false)"></div>
         <div class="confirmation_wrapper">
             <div class="confirmation_text">
-                Are you sure you want to add this to your schedule?
+                {{ message }}
             </div>
             <div class="button_group">
                 <a href="javascript:void(0)" class="action_cancel_btn" @click.once="toggleClose(false)">Go Back</a>
@@ -15,15 +15,29 @@
 
 <script>
     export default {
+        props: {
+            message: {
+                default : 'Are you sure you want to add this to your schedule?'
+            }
+        },
         methods: {
             toggleClose (status) {
                 const me = this
                 if (status) {
+                    me.$parent.title = 'Success!'
+                    switch (me.$parent.availabilityStatus) {
+                        case 'available':
+                            me.$parent.message = 'You have added your available dates.'
+                            break
+                        case 'unavailable':
+                            me.$parent.message = 'You have added your unavailable dates.'
+                            break
+                    }
                     me.$store.state.calendarAvailabilitySuccessStatus = true
                 } else {
-                    me.$store.state.calendarAvailabilityAvailablePromptStatus = false
                     document.body.classList.remove('no_scroll')
                 }
+                me.$store.state.calendarAvailabilityPromptStatus = false
             }
         }
     }

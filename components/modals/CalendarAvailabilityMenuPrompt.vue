@@ -63,17 +63,12 @@
                 me.selectedMenu = false
                 me.selectedCount += 1
                 me.selectedType = type
+                me.$parent.availabilityStatus = type
             },
             toggleProceed () {
                 const me = this
                 if (me.selectedCount > 0) {
-                    switch (me.selectedType) {
-                        case 'available':
-                            me.$parent.title = 'Success!'
-                            me.$parent.message = 'You have added your available dates.'
-                            me.$store.state.calendarAvailabilitySuccessStatus = true
-                            break
-                    }
+                    me.$store.state.calendarAvailabilityActionStatus = true
                     me.$store.state.bookerMenuPromptStatus = false
                 } else {
                     me.selectedMenu = true

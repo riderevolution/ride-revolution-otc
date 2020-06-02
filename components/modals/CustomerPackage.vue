@@ -17,7 +17,7 @@
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="button_group">
-                            <a href="javascript:void(0)" class="action_cancel_btn" @click="toggleClose()">Cancel</a>
+                            <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                             <button type="submit" name="submit" class="action_success_btn margin alternate">Select</button>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="button_group">
-                            <a href="javascript:void(0)" class="action_cancel_btn" @click="toggleClose()">Cancel</a>
+                            <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                             <button type="submit" name="submit" class="action_success_btn margin alternate">Select</button>
                         </div>
                     </div>

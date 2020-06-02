@@ -1,6 +1,6 @@
 <template>
     <div class="availability">
-        <form id="default_form" class="cld" @submit.prevent>
+        <form id="filter" class="cld" @submit.prevent>
             <div class="form_group">
                 <label for="studio_id">Studio</label>
                 <select class="default_select alternate" name="studio_id">
@@ -12,8 +12,8 @@
         <div class="calendar_wrapper">
             <div class="calendar_actions">
                 <div class="action_flex">
-                    <div :class="`action_calendar_btn green ${(targetDates.length > 0) ? '' : 'disabled'}`" @click="toggleMenuPrompt()">Choose Availability</div>
-                    <div :class="`action_calendar_btn margin red ${(targetDates.length > 0) ? '' : 'disabled'}`" @click="generateCalendar(currentYear, currentMonth, 0, 0)">Reset Calendar</div>
+                    <div :class="`action_calendar_btn green ${(targetDate.length > 0) ? '' : 'disabled'}`" @click="toggleMenuPrompt()">Choose Availability</div>
+                    <div :class="`action_calendar_btn margin red ${(targetDate.length > 0) ? '' : 'disabled'}`" @click="generateCalendar(currentYear, currentMonth, 0, 0)">Reset Calendar</div>
                 </div>
             </div>
             <div class="calendar_header">
@@ -103,7 +103,10 @@
             <calendar-availability-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
         </transition>
         <transition name="fade">
-            <calendar-availability-available-prompt v-if="$store.state.calendarAvailabilityAvailablePromptStatus" />
+            <calendar-availability-prompt v-if="$store.state.calendarAvailabilityPromptStatus" />
+        </transition>
+        <transition name="fade">
+            <calendar-availability-action-prompt v-if="$store.state.calendarAvailabilityActionStatus" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
         </transition>
         <transition name="fade">
             <calendar-availability-success v-if="$store.state.calendarAvailabilitySuccessStatus" :title="title" :message="message" />
@@ -113,12 +116,14 @@
 
 <script>
     import CalendarAvailabilityMenuPrompt from './modals/CalendarAvailabilityMenuPrompt'
-    import CalendarAvailabilityAvailablePrompt from './modals/CalendarAvailabilityAvailablePrompt'
+    import CalendarAvailabilityPrompt from './modals/CalendarAvailabilityPrompt'
+    import CalendarAvailabilityActionPrompt from './modals/CalendarAvailabilityActionPrompt'
     import CalendarAvailabilitySuccess from './modals/CalendarAvailabilitySuccess'
     export default {
         components: {
             CalendarAvailabilityMenuPrompt,
-            CalendarAvailabilityAvailablePrompt,
+            CalendarAvailabilityPrompt,
+            CalendarAvailabilityActionPrompt,
             CalendarAvailabilitySuccess
         },
         data () {
@@ -132,9 +137,11 @@
                 studios: [],
                 firstDate: '',
                 lastDate: '',
-                targetDates: [],
+                targetDate: [],
+                availabilityStatus: '',
                 title: '',
-                message: ''
+                message: '',
+                selectedType: ''
             }
         },
         methods: {
@@ -181,7 +188,7 @@
              */
             async generateCalendar (year, month, highlight) {
                 const me = this
-                me.targetDates = []
+                me.targetDate = []
                 me.clearTableRows()
                 me.currentDate = me.$moment().date()
                 me.monthName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('MMMM')
@@ -292,48 +299,48 @@
                             let target = this
                             if (target.classList.contains('single')) {
                                 target.classList.remove('single')
-                                /**
-                                 * check target end date if has end class and parent */
-                                if (target.parentNode.classList.contains('end')) {
-                                    target.parentNode.classList.remove('end', 'parent')
-
-                                    let newEndDate = document.getElementById(`day_${parseInt(target.id.split('_')[1]) - 1}`)
-                                    newEndDate.parentNode.classList.remove('middle')
-                                    newEndDate.parentNode.classList.add('end', 'parent')
-                                }
-                                /**
-                                 * check target start date if has start class and parent */
-                                if (target.parentNode.classList.contains('start')) {
-                                    target.parentNode.classList.remove('start', 'parent')
-
-                                    let newStartDate = document.getElementById(`day_${parseInt(target.id.split('_')[1]) + 1}`)
-                                    newStartDate.parentNode.classList.remove('middle')
-                                    newStartDate.parentNode.classList.add('start', 'parent')
-                                }
-                                /**
-                                 * check target middle date if has middle class */
-                                if (target.parentNode.classList.contains('middle')) {
-                                    /**
-                                     * Adjust the range when clicked in the middle */
-                                    if (me.firstDate < parseInt(target.innerText)) {
-
-                                        target.parentNode.classList.remove('middle')
-                                        target.classList.add('single')
-                                        target.parentNode.classList.add('start', 'parent')
-
-                                        for (let i = parseInt(target.innerText) - 1; i >= me.firstDate; i--) {
-                                            document.getElementById(`day_${i}`).classList.remove('single')
-                                            document.getElementById(`day_${i}`).parentNode.classList.remove('middle')
-                                            document.getElementById(`day_${i}`).parentNode.classList.remove('start')
-                                            document.getElementById(`day_${i}`).parentNode.classList.remove('parent')
-                                        }
-                                    }
-                                    target.parentNode.classList.remove('middle')
-                                }
+                                // /**
+                                //  * check target end date if has end class and parent */
+                                // if (target.parentNode.classList.contains('end')) {
+                                //     target.parentNode.classList.remove('end', 'parent')
+                                //
+                                //     let newEndDate = document.getElementById(`day_${parseInt(target.id.split('_')[1]) - 1}`)
+                                //     newEndDate.parentNode.classList.remove('middle')
+                                //     newEndDate.parentNode.classList.add('end', 'parent')
+                                // }
+                                // /**
+                                //  * check target start date if has start class and parent */
+                                // if (target.parentNode.classList.contains('start')) {
+                                //     target.parentNode.classList.remove('start', 'parent')
+                                //
+                                //     let newStartDate = document.getElementById(`day_${parseInt(target.id.split('_')[1]) + 1}`)
+                                //     newStartDate.parentNode.classList.remove('middle')
+                                //     newStartDate.parentNode.classList.add('start', 'parent')
+                                // }
+                                // /**
+                                //  * check target middle date if has middle class */
+                                // if (target.parentNode.classList.contains('middle')) {
+                                //     /**
+                                //      * Adjust the range when clicked in the middle */
+                                //     if (me.firstDate < parseInt(target.innerText)) {
+                                //
+                                //         target.parentNode.classList.remove('middle')
+                                //         target.classList.add('single')
+                                //         target.parentNode.classList.add('start', 'parent')
+                                //
+                                //         for (let i = parseInt(target.innerText) - 1; i >= me.firstDate; i--) {
+                                //             document.getElementById(`day_${i}`).classList.remove('single')
+                                //             document.getElementById(`day_${i}`).parentNode.classList.remove('middle')
+                                //             document.getElementById(`day_${i}`).parentNode.classList.remove('start')
+                                //             document.getElementById(`day_${i}`).parentNode.classList.remove('parent')
+                                //         }
+                                //     }
+                                //     target.parentNode.classList.remove('middle')
+                                // }
                             } else {
                                 target.classList.add('single')
                             }
-                            me.checkClickDates(tempStart, tempEnd, tempExcess)
+                            me.checkClickDates(tempStart, tempEnd, tempExcess, target)
                         })
                     }
                 } while (startNum < endNum + firstDayExcess)
@@ -344,19 +351,22 @@
              * @param  {[integer]} endNum         end date of calendar
              * @param  {[integer]} firstDayExcess excess dates (past or future)
              */
-            checkClickDates (startNum, endNum, firstDayExcess) {
+            checkClickDates (startNum, endNum, firstDayExcess, target) {
                 const me = this
                 let month = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('M')
                 let year = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('YYYY')
                 let ctr = 0
                 let dates = []
-                me.targetDates = []
+                me.targetDate = []
                 do {
                     startNum++
                     let elementDay = (document.getElementById(`day_${startNum}`) != null) ? document.getElementById(`day_${startNum}`) : null
                     /**
                      * Day **/
                     if (elementDay != null) {
+                        if (target != elementDay) {
+                            elementDay.classList.remove('single')
+                        }
                         if (elementDay.classList.contains('single')) {
                             ctr++
                             dates.push(elementDay)
@@ -364,81 +374,86 @@
                     }
                 } while (startNum < endNum + firstDayExcess)
 
-                let first = ''
-                let last = ''
-
-                /**
-                 * check if the clicked dates is more than 1 */
-                if (ctr > 1) {
-                    /**
-                     * add class for the start and end */
-                    first = dates[0].id.split('_')[1]
-                    me.firstDate = dates[0].id.split('_')[1]
-                    last = dates[dates.length - 1].id.split('_')[1]
-                    me.lastDate = dates[dates.length - 1].id.split('_')[1]
-                    dates[0].parentNode.classList.add('start', 'parent')
-                    dates[dates.length - 1].parentNode.classList.add('end', 'parent')
-                } else {
-                    /**
-                     * removed the start and end class */
-                    if (dates[0] != undefined) {
-                        dates[0].parentNode.classList.remove('start', 'parent')
-                    }
-                    if (dates[dates.length - 1] != undefined) {
-                        dates[dates.length - 1].parentNode.classList.remove('end', 'parent')
-                    }
+                if (ctr > 0) {
+                    me.targetDate = me.$moment(`${me.currentYear}-${me.currentMonth}-${target.id.split('_')[1]}`, 'YYYY-MM-D').format('YYYY-MM-DD')
                 }
 
-                /**
-                 * check if the clicked dates is between 1 and 2 */
-                if (ctr > 1 && ctr <= 2) {
-                    for (let i = last - 1; i != first; i--) {
-                        document.getElementById(`day_${i}`).classList.add('single')
-                        document.getElementById(`day_${i}`).parentNode.classList.add('middle')
-                    }
-                } else {
-                    /**
-                     * check if the clicked dates is more than 2 */
-                    if (ctr > 2) {
-                        /**
-                         * iterates each dates, if the dates has no parent class. add middle if in between */
-                        dates.forEach((data, index) => {
-                            if (!data.parentNode.classList.contains('parent')) {
-                                data.parentNode.classList.add('middle')
-                            }
-                        })
-                    }
-                }
+                // let first = ''
+                // let last = ''
 
-                if (ctr > 1) {
-                    for (let i = 0; i < endNum + firstDayExcess; i++) {
-                        let elementDay = (document.getElementById(`day_${i}`) != null) ? document.getElementById(`day_${i}`) : null
-                        /**
-                         * Day **/
-                        if (elementDay != null) {
-                            if (elementDay.classList.contains('single')) {
-                                me.targetDates.push(me.$moment(`${me.currentYear}-${me.currentMonth}-${i}`, 'YYYY-MM-D').format('YYYY-MM-DD'))
-                            } else {
-                                if (ctr > 1) {
-                                    elementDay.parentNode.parentNode.classList.add('disabled_day')
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    if (dates[0] != undefined) {
-                        me.targetDates.push(me.$moment(`${me.currentYear}-${me.currentMonth}-${dates[0].id.split('_')[1]}`, 'YYYY-MM-D').format('YYYY-MM-DD'))
-                    }
-                    for (let i = 0; i < endNum + firstDayExcess; i++) {
-                        let elementDay = (document.getElementById(`day_${i}`) != null) ? document.getElementById(`day_${i}`) : null
-
-                        /**
-                         * Day **/
-                        if (elementDay != null) {
-                            elementDay.parentNode.parentNode.classList.remove('disabled_day')
-                        }
-                    }
-                }
+                // /**
+                //  * check if the clicked dates is more than 1 */
+                // if (ctr > 1) {
+                //     /**
+                //      * add class for the start and end */
+                //     first = dates[0].id.split('_')[1]
+                //     me.firstDate = dates[0].id.split('_')[1]
+                //     last = dates[dates.length - 1].id.split('_')[1]
+                //     me.lastDate = dates[dates.length - 1].id.split('_')[1]
+                //     dates[0].parentNode.classList.add('start', 'parent')
+                //     dates[dates.length - 1].parentNode.classList.add('end', 'parent')
+                // } else {
+                //     /**
+                //      * removed the start and end class */
+                //     if (dates[0] != undefined) {
+                //         dates[0].parentNode.classList.remove('start', 'parent')
+                //     }
+                //     if (dates[dates.length - 1] != undefined) {
+                //         dates[dates.length - 1].parentNode.classList.remove('end', 'parent')
+                //     }
+                // }
+                //
+                // /**
+                //  * check if the clicked dates is between 1 and 2 */
+                // if (ctr > 1 && ctr <= 2) {
+                //     for (let i = last - 1; i != first; i--) {
+                //         document.getElementById(`day_${i}`).classList.add('single')
+                //         document.getElementById(`day_${i}`).parentNode.classList.add('middle')
+                //     }
+                // } else {
+                //     /**
+                //      * check if the clicked dates is more than 2 */
+                //     if (ctr > 2) {
+                //         /**
+                //          * iterates each dates, if the dates has no parent class. add middle if in between */
+                //         dates.forEach((data, index) => {
+                //             if (!data.parentNode.classList.contains('parent')) {
+                //                 data.parentNode.classList.add('middle')
+                //             }
+                //         })
+                //     }
+                // }
+                //
+                // if (ctr > 1) {
+                //     for (let i = 0; i < endNum + firstDayExcess; i++) {
+                //         let elementDay = (document.getElementById(`day_${i}`) != null) ? document.getElementById(`day_${i}`) : null
+                //         /**
+                //          * Day **/
+                //         if (elementDay != null) {
+                //             if (elementDay.classList.contains('single')) {
+                //                 me.targetDates.push(me.$moment(`${me.currentYear}-${me.currentMonth}-${i}`, 'YYYY-MM-D').format('YYYY-MM-DD'))
+                //             } else {
+                //                 if (ctr > 1) {
+                //                     elementDay.parentNode.parentNode.classList.add('disabled_day')
+                //                 }
+                //             }
+                //         }
+                //     }
+                // } else {
+                //     if (dates[0] != undefined) {
+                //         me.targetDates.push(me.$moment(`${me.currentYear}-${me.currentMonth}-${dates[0].id.split('_')[1]}`, 'YYYY-MM-D').format('YYYY-MM-DD'))
+                //     }
+                //     for (let i = 0; i < endNum + firstDayExcess; i++) {
+                //         let elementDay = (document.getElementById(`day_${i}`) != null) ? document.getElementById(`day_${i}`) : null
+                //
+                //         /**
+                //          * Day **/
+                //         if (elementDay != null) {
+                //             elementDay.parentNode.parentNode.classList.remove('disabled_day')
+                //         }
+                //     }
+                // }
+                console.log(me.targetDate);
             },
             /**
              * Populate the Scheduler

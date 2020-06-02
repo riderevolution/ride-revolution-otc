@@ -18,7 +18,7 @@
                 <transition name="slide"><span class="validation_errors" v-if="selectedMenu">Please select an action</span></transition>
             </ul>
             <div class="button_group">
-                <div href="javascript:void(0)" class="action_cancel_btn" @click="toggleClose()">Cancel</div>
+                <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                 <div class="action_success_btn confirm margin alternate" @click="toggleProceed()">Proceed</div>
             </div>
         </div>

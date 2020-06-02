@@ -493,6 +493,22 @@ table
     cursor: pointer
     user-select: none
     transition: .3s ease-in-out
+    svg
+        margin-right: 10px
+        .add,
+        .cart
+            fill: $blue
+            transition: .3s ease-in-out
+        .add_sign
+            fill: transparent
+            stroke: $white
+            transition: .3s ease-in-out
+        .cart_sign
+            fill: transparent
+            stroke: $blue
+            stroke-linecap: round
+            stroke-miterlimit: 10
+            transition: .3s ease-in-out
     &.white
         sf_pro_medium(14px)
         width: auto
@@ -533,6 +549,20 @@ table
         background-color: $blue
         color: $white
         transition: .3s ease-in-out
+        .add,
+        .cart
+            fill: $white
+            transition: .3s ease-in-out
+        .add_sign
+            fill: transparent
+            stroke: $blue
+            transition: .3s ease-in-out
+        .cart_sign
+            fill: transparent
+            stroke: $white
+            stroke-linecap: round
+            stroke-miterlimit: 10
+            transition: .3s ease-in-out
     &:focus
         border: 1px solid $blue_alt
         background-color: $blue_alt
@@ -1024,6 +1054,9 @@ table
                 span
                     sf_pro_regular(14px)
                     color: $border_alt2
+                &.alt
+                    text-align: center
+                    sf_pro_bold(22px)
             .form_close
                 cursor: pointer
                 position: absolute
@@ -1031,6 +1064,17 @@ table
                 height: 20px
                 top: calc(0% + 10px)
                 right: calc(0% + 10px)
+                z-index: 2
+                &.alternate
+                    width: 25px
+                    height: 25px
+                    background-color: $red
+                    border-radius: 50%
+                    &::before,
+                    &::after
+                        top: 2px
+                        right: calc(0% + 11px)
+                        background-color: $white
                 &::before
                     content: ''
                     position: absolute
@@ -1054,7 +1098,7 @@ table
                 margin-right: 5px
                 &.scrollable
                     height: 100%
-                    max-height: 300px
+                    max-height: 400px
                     overflow-x: hidden
                     overflow-y: auto
                 .form_footer_wrapper
@@ -1519,6 +1563,7 @@ input::placeholder
             width: 150px
 
 #default_form,
+#filter,
 #custom_gift_form
     width: 100%
     max-width: 65%
@@ -1564,7 +1609,7 @@ input::placeholder
     &.overlay
         position: fixed
         width: 100%
-        max-width: 50%
+        max-width: 700px
         top: 50%
         z-index: 4
         left: 50%
@@ -1904,6 +1949,17 @@ input::placeholder
             .form_check
                 margin-bottom: 0px
 
+.form_btn_action
+    text-align: center
+    margin: 20px 0
+    .btn
+        display: inline-block
+        .action_btn
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            justify-content: center
+
 .form_flex_button
     display: flex
     flex-flow: row wrap
@@ -1942,7 +1998,16 @@ input::placeholder
             background-color: $blue
             transition: .3s ease-in-out
 
+.form_time_group
+    .form_flex
+        margin-bottom: 20px
+        padding: 25px 20px
+        box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.09)
+        .form_group
+            margin-bottom: 0
+
 .form_flex
+    position: relative
     display: flex
     flex-flow: row wrap
     align-items: flex-end
@@ -3416,6 +3481,7 @@ input::placeholder
         flex: 1 0 10%
         margin-right: 30px
         border-radius: 5px
+        margin-bottom: 0
     .schedule
         flex: 0 0 30%
         background-color: $white
@@ -5598,38 +5664,6 @@ input::placeholder
                     justify-content: center
                     align-items: center
                     margin-right: 20px
-                    svg
-                        margin-right: 10px
-                        .add,
-                        .cart
-                            fill: $blue
-                            transition: .3s ease-in-out
-                        .add_sign
-                            fill: transparent
-                            stroke: $white
-                            transition: .3s ease-in-out
-                        .cart_sign
-                            fill: transparent
-                            stroke: $blue
-                            stroke-linecap: round
-                            stroke-miterlimit: 10
-                            transition: .3s ease-in-out
-                    &:hover,
-                    &:focus
-                        .add,
-                        .cart
-                            fill: $white
-                            transition: .3s ease-in-out
-                        .add_sign
-                            fill: transparent
-                            stroke: $blue
-                            transition: .3s ease-in-out
-                        .cart_sign
-                            fill: transparent
-                            stroke: $white
-                            stroke-linecap: round
-                            stroke-miterlimit: 10
-                            transition: .3s ease-in-out
                     &:last-child
                         margin-right: 0
         .header_select
