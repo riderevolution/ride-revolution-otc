@@ -14,8 +14,8 @@
             </div>
             <div class="form_flex_input">
                 <input type="text" name="start_convention[]" class="default_text number no_click" readonly autocomplete="off" v-model="form.start.convention" v-validate="'required'">
-                <div class="up" @click="changeConvention()"></div>
-                <div class="down" @click="changeConvention()"></div>
+                <div class="up" @click="changeConvention('start')"></div>
+                <div class="down" @click="changeConvention('start')"></div>
                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_convention[]')">{{ errors.first('start_convention[]') | properFormat }}</span></transition>
             </div>
         </div>
@@ -32,8 +32,8 @@
             </div>
             <div class="form_flex_input">
                 <input type="text" name="end_convention[]" class="default_text number no_click" readonly autocomplete="off" v-model="form.end.convention" v-validate="'required'">
-                <div class="up" @click="changeConvention()"></div>
-                <div class="down" @click="changeConvention()"></div>
+                <div class="up" @click="changeConvention('end')"></div>
+                <div class="down" @click="changeConvention('end')"></div>
                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_convention[]')">{{ errors.first('end_convention[]') | properFormat }}</span></transition>
             </div>
         </div>
