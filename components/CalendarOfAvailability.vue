@@ -1,6 +1,6 @@
 <template>
     <div class="availability">
-        <form id="filter" class="cld" @submit.prevent>
+        <form id="filter_alt" class="cld" @submit.prevent>
             <div class="form_group">
                 <label for="studio_id">Studio</label>
                 <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
@@ -216,7 +216,7 @@
 
                 me.loader(true)
 
-                me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.$route.params.slug}&date=${me.$moment(`${year}-${month}`, 'YYYY-MM').format('YYYY-MM-DD')}`).then(res => {
+                me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.$route.params.slug}&year=${me.currentYear}&month=${me.currentMonth}`).then(res => {
                     console.log(res.data);
                 })
 
@@ -529,7 +529,7 @@
                     if (res.data) {
                         me.studios = res.data.studios
                         me.form.studio_id = me.studios[0].id
-                        
+
                         me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
                     }
                 })
