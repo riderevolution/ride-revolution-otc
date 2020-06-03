@@ -3,7 +3,7 @@
         <form id="filter_alt" class="cld" @submit.prevent>
             <div class="form_group">
                 <label for="studio_id">Studio</label>
-                <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
+                <select class="default_select alternate" name="studio_id" v-model="form.studio_id" @change="generateCalendar(currentYear, currentMonth, 0, 0)">
                     <option value="" disabled>Choose a Studio</option>
                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                 </select>
@@ -49,50 +49,20 @@
             </div>
             <div class="bottom">
                 <ul>
-                    <li>
+                    <li v-for="(data, key) in schedules" :key="key">
                         <div class="item">
-                            <div class="date green">
+                            <div :class="`date ${checkClass(data)}`">
                                 <span>&#x25CF;</span>
-                                {{ $moment().format('MMM DD, YYYY') }}
+                                {{ $moment(data.date).format('MMM DD, YYYY') }}
                             </div>
-                            <div class="label">
+                            <div class="label" v-if="data.status == 'available'">
                                 Available All Day
                             </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="item">
-                            <div class="date yellow">
-                                <span>&#x25CF;</span>
-                                {{ $moment().format('MMM DD, YYYY') }}
+                            <div class="label" v-else-if="data.status == 'unavailable'">
+                                Unavailable All Day
                             </div>
-                            <div class="label">
-                                12:00pm - 2:00pm
-                            </div>
-                            <div class="label">
-                                4:00pm - 6:00pm
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="item">
-                            <div class="date green">
-                                <span>&#x25CF;</span>
-                                {{ $moment().format('MMM DD, YYYY') }}
-                            </div>
-                            <div class="label">
-                                Available All Day
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="item">
-                            <div class="date green">
-                                <span>&#x25CF;</span>
-                                {{ $moment().format('MMM DD, YYYY') }}
-                            </div>
-                            <div class="label">
-                                Available All Day
+                            <div class="label" v-else-if="data.status == 'partially-available'" v-for="(time, key) in data.times" :key="key">
+                                {{ time.time_from }} - {{ time.time_to }}
                             </div>
                         </div>
                     </li>
@@ -101,9 +71,6 @@
         </div>
         <transition name="fade">
             <calendar-availability-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
-        </transition>
-        <transition name="fade">
-            <calendar-availability-prompt v-if="$store.state.calendarAvailabilityPromptStatus" />
         </transition>
         <transition name="fade">
             <calendar-availability-action-prompt v-if="$store.state.calendarAvailabilityActionStatus" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
@@ -116,6 +83,9 @@
         </transition>
         <transition name="fade">
             <calendar-availability-success v-if="$store.state.calendarAvailabilitySuccessStatus" :title="title" :message="message" />
+        </transition>
+        <transition name="fade">
+            <calendar-availability-prompt v-if="$store.state.calendarAvailabilityPromptStatus" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
         </transition>
     </div>
 </template>
@@ -145,6 +115,7 @@
                 yearName: '',
                 dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 studios: [],
+                schedules: [],
                 firstDate: '',
                 lastDate: '',
                 targetDate: [],
@@ -158,6 +129,22 @@
             }
         },
         methods: {
+            checkClass (data) {
+                const me = this
+                let result = ''
+                switch (data.status) {
+                    case 'available':
+                        result = 'green'
+                        break
+                    case 'unavailable':
+                        result = 'red'
+                        break
+                    case 'partially-available':
+                        result = 'yellow'
+                        break
+                }
+                return result
+            },
             /**
              * toggle menu prompt for list of options */
             toggleMenuPrompt () {
@@ -216,8 +203,8 @@
 
                 me.loader(true)
 
-                me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.$route.params.param}&year=${me.currentYear}&month=${me.currentMonth}`).then(res => {
-                    console.log(res.data);
+                await me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.$route.params.param}&year=${me.currentYear}&month=${me.currentMonth}`).then(res => {
+                    me.schedules = res.data.schedules
                 })
 
                 /**
@@ -240,12 +227,9 @@
                                 tableRow.innerHTML += `
                                     <td id="col_${i}" class='day_wrapper fade_in'>
                                         <div class='header_wrapper alt'>
-                                            <div id="day_${startDate}" class="header_day_wrapper">
+                                            <div id="day_${startDate}" class="header_day_wrapper ${me.populateScheduler(startDate)}">
                                                 <div class='header_day'>${startDate}</div>
                                             </div>
-                                        </div>
-                                        <div class="classes" id="class_${startDate}">
-                                            ${me.populateScheduler(startDate)}
                                         </div>
                                     </td>`
                                 startDate++
@@ -471,7 +455,6 @@
                 //         }
                 //     }
                 // }
-                console.log(me.targetDate);
             },
             /**
              * Populate the Scheduler
@@ -479,30 +462,12 @@
             populateScheduler (date) {
                 const me = this
                 let result = ''
-                // let scheduleCurrent = me.$moment(data.date).format('D')
-                // let currentDate = me.$moment(`${me.currentYear}-${me.currentMonth}-${date} ${data.schedule.start_time}`)
-                let scheduleDate = me.$moment()
-                // let unixTimestamp = me.$moment(`${me.currentYear}-${me.currentMonth}-${scheduleCurrent}`, 'YYYY-MM-D').valueOf()
-                // result += `
-                //     <a href="javascript:void(0)" class="class_wrapper completed">
-                //         <div class="class_text margin"><span>10:00 AM</span></div>
-                //         <div class="class_text">Ride Rev (50 mins.)</div>
-                //     </a>`
-                // result += `
-                //     <a href="javascript:void(0)" class="class_wrapper" style="background-color: #6EC5A4">
-                //         <div class="class_text margin"><span>10:00 AM</span></div>
-                //         <div class="class_text">Ride Rev (50 mins.)</div>
-                //     </a>`
-                // result += `
-                //     <a href="javascript:void(0)" class="class_wrapper" style="background-color: #FD649C">
-                //         <div class="class_text margin"><span>10:00 AM</span></div>
-                //         <div class="class_text">Ride Rev (50 mins.)</div>
-                //     </a>`
-                // result += `
-                //     <a href="javascript:void(0)" class="class_wrapper" style="background-color: #5686FB">
-                //         <div class="class_text margin"><span>10:00 AM</span></div>
-                //         <div class="class_text">Ride Rev (50 mins.)</div>
-                //     </a>`
+                me.schedules.forEach((data, index) => {
+                    let scheduleCurrent = me.$moment(data.date).format('D')
+                    if (date == scheduleCurrent) {
+                        result = data.status
+                    }
+                })
                 return result
             },
             getFirstDayofWeek (startDate, excess) {

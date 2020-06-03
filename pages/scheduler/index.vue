@@ -37,8 +37,8 @@
                 <div class="calendar_wrapper">
                     <div class="calendar_actions">
                         <div class="action_flex">
-                            <a href="javascript:void(0)" class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</a>
-                            <a href="javascript:void(0)" class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</a>
+                            <div class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</div>
+                            <div class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</div>
                         </div>
                         <div :class="`action_flex ${(schedules.length <= 0) ? 'disabled_gear' : '' }`">
                             <div class="gear_action">

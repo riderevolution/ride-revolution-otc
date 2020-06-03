@@ -117,7 +117,7 @@
             },
             changeConvention (type) {
                 const me = this
-                if (type == ' start') {
+                if (type == 'start') {
                     me.form.start.convention = (me.form.start.convention == 'AM') ? 'PM' : 'AM'
                 } else {
                     me.form.end.convention = (me.form.end.convention == 'AM') ? 'PM' : 'AM'

@@ -3520,6 +3520,10 @@ input::placeholder
         .bottom
             padding: 30px
         .bottom
+            height: 100%
+            max-height: 670px
+            overflow-y: auto
+            overflow-x: hidden
             ul
                 list-style: none
                 padding: 0
@@ -3853,6 +3857,33 @@ input::placeholder
                                         background-color: $white
                                         border: 1px solid $black
                                         transition: .3s ease-in-out
+                                    &.available
+                                        background-color: $green
+                                        border: 1px solid $green
+                                        transition: .3s ease-in-out
+                                        &.single
+                                            border: 2px solid $black
+                                            transition: .3s ease-in-out
+                                        .header_day
+                                            color: $white
+                                    &.unavailable
+                                        background-color: $red
+                                        border: 1px solid $red
+                                        transition: .3s ease-in-out
+                                        &.single
+                                            border: 2px solid $black
+                                            transition: .3s ease-in-out
+                                        .header_day
+                                            color: $white
+                                    &.partially-available
+                                        background-color: $yellow
+                                        border: 1px solid $yellow
+                                        transition: .3s ease-in-out
+                                        &.single
+                                            border: 2px solid $black
+                                            transition: .3s ease-in-out
+                                        .header_day
+                                            color: $white
                                     .header_day
                                         position: absolute
                                         top: 50%

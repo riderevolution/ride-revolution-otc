@@ -138,16 +138,7 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
-                        let formData = new FormData(document.getElementById('default_form'))
-                        formData.append('studio_id', me.$store.state.user.current_studio_id)
-                        formData.append('instructor_id', me.$route.params.param)
-                        formData.append('target_date', me.targetDate)
-                        formData.append('availability_status', me.availabilityStatus)
-                        me.$axios.post('api/instructor-availabilities', formData).then(res => {
-                            console.log(res.data);
-                        })
-                        // me.$store.state.calendarAvailabilityPromptStatus = true
-                        // me.$store.state.calendarAvailabilityActionStatus = false
+                        me.$store.state.calendarAvailabilityPromptStatus = true
                     } else {
                         me.$scrollTo('.validation_errors', {
                             container: '.default_modal',
