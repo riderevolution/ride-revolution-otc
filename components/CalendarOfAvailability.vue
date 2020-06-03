@@ -109,6 +109,12 @@
             <calendar-availability-action-prompt v-if="$store.state.calendarAvailabilityActionStatus" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
         </transition>
         <transition name="fade">
+            <calendar-availability-marked v-if="$store.state.calendarAvailabilityMarkedStatus" :schedules="[]" />
+        </transition>
+        <transition name="fade">
+            <calendar-availability-unmarked v-if="!$store.state.calendarAvailabilityUnmarkedStatus" :schedules="[]" />
+        </transition>
+        <transition name="fade">
             <calendar-availability-success v-if="$store.state.calendarAvailabilitySuccessStatus" :title="title" :message="message" />
         </transition>
     </div>
@@ -118,12 +124,16 @@
     import CalendarAvailabilityMenuPrompt from './modals/CalendarAvailabilityMenuPrompt'
     import CalendarAvailabilityPrompt from './modals/CalendarAvailabilityPrompt'
     import CalendarAvailabilityActionPrompt from './modals/CalendarAvailabilityActionPrompt'
+    import CalendarAvailabilityMarked from './modals/CalendarAvailabilityMarked'
+    import CalendarAvailabilityUnmarked from './modals/CalendarAvailabilityUnmarked'
     import CalendarAvailabilitySuccess from './modals/CalendarAvailabilitySuccess'
     export default {
         components: {
             CalendarAvailabilityMenuPrompt,
             CalendarAvailabilityPrompt,
             CalendarAvailabilityActionPrompt,
+            CalendarAvailabilityMarked,
+            CalendarAvailabilityUnmarked,
             CalendarAvailabilitySuccess
         },
         data () {
