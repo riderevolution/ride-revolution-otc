@@ -3,7 +3,7 @@
         <form id="filter" class="cld" @submit.prevent>
             <div class="form_group">
                 <label for="studio_id">Studio</label>
-                <select class="default_select alternate" name="studio_id">
+                <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
                     <option value="" disabled>Choose a Studio</option>
                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                 </select>
@@ -112,7 +112,7 @@
             <calendar-availability-marked v-if="$store.state.calendarAvailabilityMarkedStatus" :schedules="[]" />
         </transition>
         <transition name="fade">
-            <calendar-availability-unmarked v-if="!$store.state.calendarAvailabilityUnmarkedStatus" :schedules="[]" />
+            <calendar-availability-unmarked v-if="$store.state.calendarAvailabilityUnmarkedStatus" :schedules="[]" />
         </transition>
         <transition name="fade">
             <calendar-availability-success v-if="$store.state.calendarAvailabilitySuccessStatus" :title="title" :message="message" />
@@ -151,7 +151,10 @@
                 availabilityStatus: '',
                 title: '',
                 message: '',
-                selectedType: ''
+                selectedType: '',
+                form: {
+                    studio_id: 0
+                }
             }
         },
         methods: {
@@ -212,6 +215,11 @@
                 let excess = 0
 
                 me.loader(true)
+
+                me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.$route.params.slug}&date=${me.$moment(`${year}-${month}`, 'YYYY-MM').format('YYYY-MM-DD')}`).then(res => {
+                    console.log(res.data);
+                })
+
                 /**
                  * Generate Rows **/
                 for (let i = 0; i < 6; i++) {
@@ -520,9 +528,11 @@
                 me.$axios.get('api/studios?enabled=1').then(res => {
                     if (res.data) {
                         me.studios = res.data.studios
+                        me.form.studio_id = me.studios[0].id
+                        
+                        me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
                     }
                 })
-                me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
             }
         },
         mounted () {

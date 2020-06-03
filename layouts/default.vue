@@ -94,6 +94,9 @@
                 me.$store.state.waitlistID = 0
                 me.$store.state.pendingCustomerID = 0
                 me.$store.state.errorList = []
+                if (me.$store.state.user.type != 0) {
+                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                }
             }
         },
         data () {
@@ -121,6 +124,9 @@
         },
         mounted () {
             const me = this
+            if (me.$store.state.user.type != 0) {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             if (!me.routes.includes(me.$route.path)) {
                 me.validateToken()
             }
