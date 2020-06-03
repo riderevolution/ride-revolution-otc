@@ -216,7 +216,7 @@
 
                 me.loader(true)
 
-                me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.$route.params.slug}&year=${me.currentYear}&month=${me.currentMonth}`).then(res => {
+                me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.$route.params.param}&year=${me.currentYear}&month=${me.currentMonth}`).then(res => {
                     console.log(res.data);
                 })
 
