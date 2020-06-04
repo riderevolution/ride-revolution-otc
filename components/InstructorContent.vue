@@ -295,6 +295,7 @@
                 monthName: '',
                 yearName: '',
                 dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                schedules: [],
                 studios: [],
                 series: [
                     {
@@ -519,6 +520,11 @@
                 let excess = 0
 
                 me.loader(true)
+
+                await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&instructor_id=${me.$route.params.param}`).then(res => {
+                    me.schedules = res.data.schedules
+                })
+
                 /**
                  * Generate Rows **/
                 for (let i = 0; i < 6; i++) {
@@ -607,30 +613,18 @@
             populateScheduler (date) {
                 const me = this
                 let result = ''
-                // let scheduleCurrent = me.$moment(data.date).format('D')
-                // let currentDate = me.$moment(`${me.currentYear}-${me.currentMonth}-${date} ${data.schedule.start_time}`)
-                let scheduleDate = me.$moment()
-                // let unixTimestamp = me.$moment(`${me.currentYear}-${me.currentMonth}-${scheduleCurrent}`, 'YYYY-MM-D').valueOf()
-                result += `
-                    <a href="javascript:void(0)" class="class_wrapper completed">
-                        <div class="class_text margin"><span>10:00 AM</span></div>
-                        <div class="class_text">Ride Rev (50 mins.)</div>
-                    </a>`
-                result += `
-                    <a href="javascript:void(0)" class="class_wrapper" style="background-color: #6EC5A4">
-                        <div class="class_text margin"><span>10:00 AM</span></div>
-                        <div class="class_text">Ride Rev (50 mins.)</div>
-                    </a>`
-                result += `
-                    <a href="javascript:void(0)" class="class_wrapper" style="background-color: #FD649C">
-                        <div class="class_text margin"><span>10:00 AM</span></div>
-                        <div class="class_text">Ride Rev (50 mins.)</div>
-                    </a>`
-                result += `
-                    <a href="javascript:void(0)" class="class_wrapper" style="background-color: #5686FB">
-                        <div class="class_text margin"><span>10:00 AM</span></div>
-                        <div class="class_text">Ride Rev (50 mins.)</div>
-                    </a>`
+                me.schedules.forEach((data, index) => {
+                    let scheduleCurrent = me.$moment(data.date).format('D')
+                    let currentDate = me.$moment(`${me.currentYear}-${me.currentMonth}-${date} ${data.schedule.start_time}`)
+                    let scheduleDate = me.$moment()
+                    if (date == scheduleCurrent) {
+                        result += `
+                            <div class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : ''}" ${(currentDate.diff(scheduleDate) < 0) ? '' : `style="background-color: ${data.schedule.studio.color_code}"`}>
+                                <div class="class_text margin">${data.schedule.start_time}</div>
+                                <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
+                            </div>`
+                    }
+                })
                 return result
             },
             getFirstDayofWeek (startDate, excess) {
