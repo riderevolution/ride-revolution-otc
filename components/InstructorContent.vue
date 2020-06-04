@@ -598,15 +598,15 @@
                 }
                 setTimeout( () => {
                     me.loader(false)
-                    me.clickDates(0, endDate, excess)
+                    // me.clickDates(0, endDate, excess)
                 }, 300)
             },
-            clickDates (startNum, endNum, firstDayExcess) {
-                const me = this
-                do {
-                    startNum++
-                } while (startNum < endNum + firstDayExcess)
-            },
+            // clickDates (startNum, endNum, firstDayExcess) {
+            //     const me = this
+            //     do {
+            //         startNum++
+            //     } while (startNum < endNum + firstDayExcess)
+            // },
             /**
              * Populate the Scheduler
              */
