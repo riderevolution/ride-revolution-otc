@@ -1384,7 +1384,7 @@ table
      * Modal Confirmation **/
     .confirmation_wrapper
         position: fixed
-        width: 450px
+        width: 550px
         z-index: 6
         top: 50%
         left: 50%
@@ -2448,6 +2448,8 @@ input::placeholder
         border-bottom: 2px dashed $border
         padding: 20px
         margin-bottom: 0
+        & > label
+            sf_pro_bold(16px)
     &:last-child
         margin-bottom: 0
     label
@@ -3853,6 +3855,21 @@ input::placeholder
                                     transform: translateY(-50%)
                                     transition: .3s ease-in-out
                                     cursor: pointer
+                                    .circle
+                                        position: absolute
+                                        top: 70%
+                                        left: 0
+                                        right: 0
+                                        text-align: center
+                                        margin: 0 auto
+                                        border-radius: 50%
+                                        background-color: $white
+                                        z-index: 2
+                                        width: 8px
+                                        height: 8px
+                                        transform: translateY(0%)
+                                        &.open
+                                            background-color: $violet
                                     &.single
                                         background-color: $white
                                         border: 1px solid $black

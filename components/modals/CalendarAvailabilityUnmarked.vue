@@ -6,11 +6,11 @@
                 <h2 class="form_title alt">{{ $moment().format('ddd, MMM DD, YYYY') }}</h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
-                    <div class="form_flex_radio_alternate new" v-for="(n, key) in 3" :key="key">
-                        <label>Test</label>
+                    <div class="form_flex_radio_alternate new" v-for="(data, key) in schedules" :key="key">
+                        <label>{{ data.schedule.start_time }} - {{ data.schedule.class_type.name }}</label>
                         <div class="radio_wrapper">
                             <div class="form_radio">
-                                <input type="radio" :id="`status_${key}_av`" value="Yes" :name="`status_${key}`" class="action_radio">
+                                <input type="radio" :id="`status_${key}_av`" value="Yes" :name="`status_${key}`" class="action_radio" checked>
                                 <label :for="`status_${key}_av`">Available</label>
                             </div>
                             <div class="form_radio">

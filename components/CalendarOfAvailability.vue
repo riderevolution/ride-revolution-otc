@@ -13,7 +13,7 @@
             <div class="calendar_actions">
                 <div class="action_flex">
                     <div :class="`action_calendar_btn green ${(targetDate.length > 0) ? '' : 'disabled'}`" @click="toggleMenuPrompt()">Choose Availability</div>
-                    <div :class="`action_calendar_btn margin red ${(targetDate.length > 0) ? '' : 'disabled'}`" @click="generateCalendar(currentYear, currentMonth, 0, 0)">Reset Calendar</div>
+                    <!-- <div :class="`action_calendar_btn margin red ${(targetDate.length > 0) ? '' : 'disabled'}`" @click="generateCalendar(currentYear, currentMonth, 0, 0)">Reset Calendar</div> -->
                 </div>
             </div>
             <div class="calendar_header">
@@ -64,6 +64,9 @@
                             <div class="label" v-else-if="data.status == 'partially-available'" v-for="(time, key) in data.times" :key="key">
                                 {{ time.time_from }} - {{ time.time_to }}
                             </div>
+                            <div class="label" v-else-if="data.status == 'open'" v-for="(scheduledDate, key) in data.scheduledDates" :key="key">
+                                {{ scheduledDate.schedule.start_time }} - {{ scheduledDate.schedule.end_time }}
+                            </div>
                         </div>
                     </li>
                 </ul>
@@ -76,10 +79,10 @@
             <calendar-availability-action-prompt v-if="$store.state.calendarAvailabilityActionStatus" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
         </transition>
         <transition name="fade">
-            <calendar-availability-marked v-if="$store.state.calendarAvailabilityMarkedStatus" :schedules="[]" />
+            <calendar-availability-marked v-if="$store.state.calendarAvailabilityMarkedStatus" :schedules="targetSchedules" />
         </transition>
         <transition name="fade">
-            <calendar-availability-unmarked v-if="$store.state.calendarAvailabilityUnmarkedStatus" :schedules="[]" />
+            <calendar-availability-unmarked v-if="$store.state.calendarAvailabilityUnmarkedStatus" :schedules="targetSchedules" />
         </transition>
         <transition name="fade">
             <calendar-availability-success v-if="$store.state.calendarAvailabilitySuccessStatus" :title="title" :message="message" />
@@ -116,6 +119,7 @@
                 dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 studios: [],
                 schedules: [],
+                targetSchedules: [],
                 firstDate: '',
                 lastDate: '',
                 targetDate: [],
@@ -141,6 +145,9 @@
                         break
                     case 'partially-available':
                         result = 'yellow'
+                        break
+                    case 'open':
+                        result = 'violet'
                         break
                 }
                 return result
@@ -205,7 +212,6 @@
 
                 await me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.$route.params.param}&year=${me.currentYear}&month=${me.currentMonth}`).then(res => {
                     me.schedules = res.data.schedules
-                    console.log(me.schedules);
                 })
 
                 /**
@@ -228,8 +234,9 @@
                                 tableRow.innerHTML += `
                                     <td id="col_${i}" class='day_wrapper fade_in'>
                                         <div class='header_wrapper alt'>
-                                            <div id="day_${startDate}" class="header_day_wrapper ${me.populateScheduler(startDate)}">
+                                            <div id="day_${startDate}" class="header_day_wrapper ${me.populateClass(startDate)}">
                                                 <div class='header_day'>${startDate}</div>
+                                                ${me.populateScheduler(startDate)}
                                             </div>
                                         </div>
                                     </td>`
@@ -341,6 +348,22 @@
                                 //     target.parentNode.classList.remove('middle')
                                 // }
                             } else {
+                                me.schedules.forEach((data, index) => {
+                                    let scheduleCurrent = me.$moment(data.date).format('D')
+                                    if (target.id.split('_')[1] == scheduleCurrent) {
+                                        if (data.scheduledDates.length > 0) {
+                                            if (data.status == 'available' || data.status == 'partially-available') {
+                                                me.targetSchedules = data.scheduledDates
+                                                me.$store.state.calendarAvailabilityMarkedStatus = true
+                                                document.body.classList.add('no_scroll')
+                                            } else if (data.status == 'open') {
+                                                me.targetSchedules = data.scheduledDates
+                                                me.$store.state.calendarAvailabilityUnmarkedStatus = true
+                                                document.body.classList.add('no_scroll')
+                                            }
+                                        }
+                                    }
+                                })
                                 target.classList.add('single')
                             }
                             me.checkClickDates(tempStart, tempEnd, tempExcess, target)
@@ -371,8 +394,10 @@
                             elementDay.classList.remove('single')
                         }
                         if (elementDay.classList.contains('single')) {
-                            ctr++
-                            dates.push(elementDay)
+                            if (!elementDay.querySelector('.circle')) {
+                                ctr++
+                                dates.push(elementDay)
+                            }
                         }
                     }
                 } while (startNum < endNum + firstDayExcess)
@@ -458,6 +483,20 @@
                 // }
             },
             /**
+             * Populate the Class
+             */
+            populateClass (date) {
+                const me = this
+                let result = ''
+                me.schedules.forEach((data, index) => {
+                    let scheduleCurrent = me.$moment(data.date).format('D')
+                    if (date == scheduleCurrent) {
+                        result = data.status
+                    }
+                })
+                return result
+            },
+            /**
              * Populate the Scheduler
              */
             populateScheduler (date) {
@@ -466,7 +505,13 @@
                 me.schedules.forEach((data, index) => {
                     let scheduleCurrent = me.$moment(data.date).format('D')
                     if (date == scheduleCurrent) {
-                        result = data.status
+                        if (data.scheduledDates.length > 0) {
+                            if (data.status == 'open') {
+                                result += `<div class="circle open"></div>`
+                            } else {
+                                result += `<div class="circle"></div>`
+                            }
+                        }
                     }
                 })
                 return result

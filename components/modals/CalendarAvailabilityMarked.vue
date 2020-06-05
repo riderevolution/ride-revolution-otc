@@ -8,11 +8,8 @@
             </div>
             <div class="confirmation_marked">
                 <div class="label">Your classes:</div>
-                <div class="marked_dates">
-                    <div class="date">Greenbelt 5, 10:00 AM - Ride Rev (50 mins.)</div>
-                </div>
-                <div class="marked_dates">
-                    <div class="date">Greenbelt 5, 10:00 AM - Ride Rev (50 mins.)</div>
+                <div class="marked_dates" v-for="(data, key) in schedules" :key="key">
+                    <div class="date">{{ data.schedule.studio.name }}, {{ data.schedule.start_time }} - {{ data.schedule.class_type.name }}</div>
                 </div>
             </div>
             <div class="button_group">
