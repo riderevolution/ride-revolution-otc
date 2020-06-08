@@ -5,8 +5,7 @@
 </template>
 
 <script>
-
     export default {
-        layout: 'instructor'
+        layout: 'ins'
     }
 </script>

@@ -30,7 +30,7 @@
                 <div class="select_header">
                     <div class="select_info">
                         <div class="header_name">{{ user.first_name }}</div>
-                        <div class="header_role">{{ user.staff_details.role.display_name }}</div>
+                        <div class="header_role" v-if="user.type == 0">{{ user.staff_details.role.display_name }}</div>
                     </div>
                     <div class="header_studio"></div>
                 </div>

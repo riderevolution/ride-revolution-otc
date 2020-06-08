@@ -14,11 +14,11 @@
                         <div v-if="step == 1">
                             <div class="button_label">Please choose a user type</div>
                             <div class="buttons">
-                                <div :class="`site_btn alternate ${(userType == 1) ? 'active' : ''}`" @click="toggleUserType(1)"><span>Staff</span></div>
+                                <div :class="`site_btn alternate ${(userType == 0) ? 'active' : ''}`" @click="toggleUserType(0)"><span>Staff</span></div>
                                 <div :class="`site_btn alternate ${(userType == 2) ? 'active' : ''}`" @click="toggleUserType(2)"><span>Instructor</span></div>
                             </div>
                             <div class="button_group">
-                                <button type="button" :class="`action_success_btn alternate ${(userType == 0) ? 'disabled' : ''}`" @click="toggleStep('next')"><span>Continue</span></button>
+                                <button type="button" :class="`action_success_btn alternate ${(userType == null) ? 'disabled' : ''}`" @click="toggleStep('next')"><span>Continue</span></button>
                             </div>
                         </div>
                     </transition>
@@ -26,7 +26,7 @@
                 <div id="step_2" :class="`step ${(step != 2) ? 'overlay' : ''}`">
                     <transition name="slide">
                         <div v-if="step == 2">
-                            <div class="form_group" v-if="userType == 1">
+                            <div class="form_group" v-if="userType == 0">
                                 <label for="studio_id">Studio <span>*</span></label>
                                 <select class="default_select alternate" name="studio_id" v-validate="'required'" @change="selectStudio($event)">
                                     <option value="" selected disabled>Choose a Studio</option>
@@ -65,11 +65,11 @@
     export default {
         data () {
             return {
-                userType: 0,
+                userType: null,
                 step: 1,
                 form: {
-                    email: 'superadmin@admin.com',
-                    password: '@F1r33x1t',
+                    email: (this.userType == 0) ? 'superadmin@admin.com' : 'bea@riderevolution.ph',
+                    password: (this.userType == 0) ? '@F1r33x1t' : 'password',
                     type: 0,
                     studio_id: 0
                 },
@@ -90,7 +90,7 @@
                         break
                     case 'prev':
                         me.step = 1
-                        me.userType = 0
+                        me.userType = null
                         break
                 }
             },
@@ -104,13 +104,14 @@
                 me.$validator.validateAll().then(res => {
                     if (res) {
                         me.loader(true)
+                        me.form.type = me.userType
                         me.$axios.post('api/login', me.form).then(res => {
                             if (res.data) {
                                 me.$cookies.set('token', res.data.token)
                                 me.$store.state.isAuth = true
                                 me.$store.state.token = res.data.token
                                 me.validateToken()
-                                if (me.userType == 1) {
+                                if (me.userType == 0) {
                                     me.$router.push('/')
                                 } else {
                                     me.$router.push('/instructor')

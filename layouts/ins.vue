@@ -6,11 +6,11 @@
             </div>
         </transition>
         <transition name="fade">
-            <navbar v-if="$store.state.isAuth" />
+            <navbar-instructor v-if="$store.state.isAuth" />
         </transition>
         <div class="admin_flex">
             <transition name="fade">
-                <headerNav v-if="$store.state.isAuth" />
+                <header-nav-instructor v-if="$store.state.isAuth" />
             </transition>
             <nuxt />
         </div>
@@ -21,22 +21,10 @@
             <error-status v-if="$store.state.errorStatus" />
         </transition>
         <transition name="fade">
-            <error-quick-sale v-if="$store.state.errorQuickSaleStatus" />
-        </transition>
-        <transition name="fade">
             <password-sent v-if="$store.state.resetStatus" />
         </transition>
         <transition name="fade">
             <reset-successful v-if="$store.state.resetSuccessfulStatus" />
-        </transition>
-        <transition name="fade">
-            <quick-sale v-if="$store.state.quickSaleStatus" />
-        </transition>
-        <transition name="fade">
-            <customer-credit-quick-sale v-if="$store.state.customerCreditQuickSaleStatus" />
-        </transition>
-        <transition name="fade">
-            <customer-product-quick-sale v-if="$store.state.customerProductQuickSaleStatus" />
         </transition>
         <transition name="fade">
             <successful v-if="$store.state.successfulStatus" />
@@ -44,14 +32,11 @@
         <transition name="fade">
             <successful-later v-if="$store.state.successfulLaterStatus" />
         </transition>
-        <transition name="fade">
-            <studio-changer v-if="$store.state.changeStudioStatus" />
-        </transition>
     </div>
 </template>
 
 <script>
-    import Navbar from '../components/Navbar'
+    import NavbarInstructor from '../components/NavbarInstructor'
     import Loading from '../components/Loading'
     import HeaderNavInstructor from '../components/HeaderNavInstructor'
     import ErrorStatus from '../components/modals/Error'
@@ -60,7 +45,7 @@
     import Successful from '../components/modals/Successful'
     export default {
         components: {
-            Navbar,
+            NavbarInstructor,
             Loading,
             HeaderNavInstructor,
             ErrorStatus,
@@ -105,15 +90,12 @@
                     Authorization: `Bearer ${token}`
                 }
             }).then(res => {
-                if (res.data.user.type != 0) {
-                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                if (!me.routes.includes(me.$route.path)) {
+                    me.validateToken()
                 }
             }).catch(err => {
                 console.log(err);
             })
-            if (!me.routes.includes(me.$route.path)) {
-                me.validateToken()
-            }
             document.addEventListener('contextmenu', event => event.preventDefault())
             document.body.classList.add('cms')
         },

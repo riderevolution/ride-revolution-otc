@@ -728,8 +728,8 @@ table
     z-index: 1
     width: 100%
     height: 100%
-    padding-left: 70px
-    padding-top: 79px
+    padding-left: 49px
+    padding-top: 55px
     .background
         position: absolute
         z-index: 0
@@ -739,11 +739,11 @@ table
         height: 100%
         background-color: #F8F8FB
     .action_back_btn
-        margin: 40px 60px 20px
+        margin: 60px 40px 20px
     .class_layout
         position: relative
         z-index: 1
-        margin: 20px 60px
+        margin: 20px 40px
         background-color: $white
         border-radius: 5px
         box-shadow: 5px 5px 40px rgba(0, 0, 0, 0.05)
@@ -752,7 +752,7 @@ table
             flex-flow: row wrap
             align-items: center
             justify-content: space-between
-            padding: 15px 30px 15px 40px
+            padding: 15px 30px
             border-bottom: 1px solid $border
             h2
                 sf_pro_semibold(22px)
@@ -782,12 +782,30 @@ table
                     left: 50%
                     text-align: center
                     transform: translateX(-50%)
+                    img
+                        width: 100px
+                        height: 100px
+                        border-radius: 50%
+                        object-fit: cover
+                        object-position: center
                     .header_image
+                        position: relative
+                        sf_pro_bold(20px)
+                        text-transform: uppercase
+                        background-color: $green
+                        border-radius: 50%
+                        color: #fff
                         margin: 0 auto
                         width: 100px
                         height: 100px
-                        background-color: $green
-                        border-radius: 50%
+                        .overlay
+                            position: absolute
+                            top: 50%
+                            left: 0
+                            right: 0
+                            margin: 0 auto
+                            text-align: center
+                            transform: translateY(-50%)
                     h3
                         sf_pro_regular(15px)
                         color: $black
@@ -861,7 +879,8 @@ table
                     &.left
                         align-items: flex-start
                         top: calc(0% + 40px)
-                        left: calc(15% + 65px)
+                        left: calc(50% - 335px)
+                        transform: translateX(-50%)
                         .seat_position
                             flex: 0 0 calc(50% - 52.5px)
                             &:nth-child(2)
@@ -872,7 +891,8 @@ table
                         align-items: flex-start
                         justify-content: flex-end
                         top: calc(0% + 40px)
-                        right: calc(20% + 31px)
+                        right: calc(50% - 525px)
+                        transform: translateX(-50%)
                         .seat_position
                             flex: 0 0 calc(50% - 52.5px)
                             &:first-child
@@ -887,8 +907,8 @@ table
                         justify-content: center
                         width: 100%
                         .seat_position
-                            flex: 0 0 calc(10% - 6.33%)
-                            margin: 10px 20px
+                            flex: 0 0 calc(63.5px)
+                            margin: 10px
 
 .default_modal_side
     position: fixed
@@ -3430,6 +3450,7 @@ input::placeholder
                     .table_data_link
                         margin-left: 15px
                 .table_data_link
+                    cursor: pointer
                     sf_pro_regular(14px)
                     color: $blue
                     text-decoration: none
