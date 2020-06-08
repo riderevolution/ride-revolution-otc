@@ -9,32 +9,53 @@
                 </div>
             </div>
             <form id="login_form" class="login_form" @submit.prevent="submissionSuccess()">
-                <div class="form_group">
-                    <label for="studio_id">Studio <span>*</span></label>
-                    <select class="default_select alternate" name="studio_id" v-validate="'required'" @change="selectStudio($event)">
-                        <option value="" selected disabled>Choose a Studio</option>
-                        <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                    </select>
-                    <transition name="slide"><span class="validation_errors" v-if="errors.has('studio_id')">{{ errors.first('studio_id') }}</span></transition>
+                <div id="step_1" :class="`step ${(step != 1) ? 'overlay' : ''}`">
+                    <transition name="slide">
+                        <div v-if="step == 1">
+                            <div class="button_label">Please choose a user type</div>
+                            <div class="buttons">
+                                <div :class="`site_btn alternate ${(userType == 1) ? 'active' : ''}`" @click="toggleUserType(1)"><span>Staff</span></div>
+                                <div :class="`site_btn alternate ${(userType == 2) ? 'active' : ''}`" @click="toggleUserType(2)"><span>Instructor</span></div>
+                            </div>
+                            <div class="button_group">
+                                <button type="button" :class="`action_success_btn alternate ${(userType == 0) ? 'disabled' : ''}`" @click="toggleStep('next')"><span>Continue</span></button>
+                            </div>
+                        </div>
+                    </transition>
                 </div>
-                <transition name="fade">
-                    <div v-if="hasStudio">
-                        <div class="form_group">
-                            <label for="email">Email Address</label>
-                            <input type="text" name="email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') }}</span></transition>
+                <div id="step_2" :class="`step ${(step != 2) ? 'overlay' : ''}`">
+                    <transition name="slide">
+                        <div v-if="step == 2">
+                            <div class="form_group" v-if="userType == 1">
+                                <label for="studio_id">Studio <span>*</span></label>
+                                <select class="default_select alternate" name="studio_id" v-validate="'required'" @change="selectStudio($event)">
+                                    <option value="" selected disabled>Choose a Studio</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('studio_id')">{{ errors.first('studio_id') }}</span></transition>
+                            </div>
+                            <transition name="fade">
+                                <div v-if="hasStudio || userType == 2">
+                                    <div class="form_group">
+                                        <label for="email">Email Address</label>
+                                        <input type="text" name="email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="password">Password</label>
+                                        <input type="password" name="password" autocomplete="off" class="default_text" v-model="form.password" v-validate="'required'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') }}</span></transition>
+                                        <nuxt-link to="/forgot-password" class="action_forgot_text">Forgot your password?</nuxt-link>
+                                    </div>
+                                </div>
+                            </transition>
+                            <div class="button_group alternate">
+                                <div class="action_cancel_btn" @click="toggleStep('prev')">Back</div>
+                                <button type="submit" name="submit" :class="`action_success_btn alternate ${(hasStudio || userType == 2) ? '' : 'disabled'}`"><span>Login</span></button>
+                            </div>
                         </div>
-                        <div class="form_group">
-                            <label for="password">Password</label>
-                            <input type="password" name="password" autocomplete="off" class="default_text" v-model="form.password" v-validate="'required'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') }}</span></transition>
-                            <nuxt-link to="/forgot-password" class="action_forgot_text">Forgot your password?</nuxt-link>
-                        </div>
-                        <div class="button_group">
-                            <button type="submit" name="submit" class="action_success_btn"><span>Login</span></button>
-                        </div>
-                    </div>
-                </transition>
+                    </transition>
+                </div>
             </form>
         </div>
     </div>
@@ -42,9 +63,10 @@
 
 <script>
     export default {
-        layout: 'admin',
         data () {
             return {
+                userType: 0,
+                step: 1,
                 form: {
                     email: 'superadmin@admin.com',
                     password: '@F1r33x1t',
@@ -56,6 +78,22 @@
             }
         },
         methods: {
+            toggleUserType (value) {
+                const me = this
+                me.userType = value
+            },
+            toggleStep (type) {
+                const me = this
+                switch (type) {
+                    case 'next':
+                        me.step = 2
+                        break
+                    case 'prev':
+                        me.step = 1
+                        me.userType = 0
+                        break
+                }
+            },
             selectStudio (event) {
                 const me = this
                 me.hasStudio = true
@@ -72,7 +110,11 @@
                                 me.$store.state.isAuth = true
                                 me.$store.state.token = res.data.token
                                 me.validateToken()
-                                me.$router.push('/')
+                                if (me.userType == 1) {
+                                    me.$router.push('/')
+                                } else {
+                                    me.$router.push('/instructor')
+                                }
                             } else {
                                 me.$store.state.errorList.push('Sorry, Something went wrong')
                                 me.$store.state.errorStatus = true

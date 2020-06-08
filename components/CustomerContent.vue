@@ -8,7 +8,7 @@
                 <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
             </div>
             <div class="cms_table_package">
-                <div v-if="res.user_package_counts.length > 0">
+                <div v-if="packageCount > 0">
                     <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="data.count > 0 && !data.expired">
                         <h2 class="package_title">
                             {{ data.class_package.name }}
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="no_results" v-if="res.user_package_counts.length == 0">
+                <div class="no_results" v-if="packageCount == 0">
                     No Package(s) Found.
                 </div>
             </div>
@@ -439,6 +439,7 @@
         },
         data () {
             return {
+                packageCount: 0,
                 tempData: null,
                 methodType: '',
                 packageActionType: '',
@@ -473,6 +474,7 @@
                         if (parseInt(expiry.diff(current, 'days')) > 0) {
                             element.expired = false
                         } else {
+                            me.packageCount++
                             element.expired = true
                         }
                         result.push(element)

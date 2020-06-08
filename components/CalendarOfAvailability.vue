@@ -290,6 +290,12 @@
                     me.clickDates(0, endDate, excess)
                 }, 300)
             },
+            /**
+             * add event listener for each date
+             * @param  {[integer]} startNum       start date of the month
+             * @param  {[integer]} endNum         end date of the month
+             * @param  {[integer]} firstDayExcess excess count of the month
+             */
             clickDates (startNum, endNum, firstDayExcess) {
                 const me = this
                 let tempStart = startNum
@@ -307,6 +313,8 @@
                         * Toggle Day Overlay **/
                         elementDay.addEventListener('click', function(e) {
                             let target = this
+                            /**
+                             * check classlist */
                             if (target.classList.contains('single')) {
                                 target.classList.remove('single')
                                 // /**
@@ -348,16 +356,26 @@
                                 //     target.parentNode.classList.remove('middle')
                                 // }
                             } else {
+                                /**
+                                 * iterate each schedule */
                                 me.schedules.forEach((data, index) => {
                                     let scheduleCurrent = me.$moment(data.date).format('D')
+                                    /**
+                                     * check same date */
                                     if (target.id.split('_')[1] == scheduleCurrent) {
+                                        /**
+                                         * check the date status */
                                         if (data.scheduledDates.length > 0) {
                                             if (data.status == 'available' || data.status == 'partially-available') {
                                                 me.targetSchedules = data.scheduledDates
+
+                                                /** toggle marked prompt status */
                                                 me.$store.state.calendarAvailabilityMarkedStatus = true
                                                 document.body.classList.add('no_scroll')
                                             } else if (data.status == 'open') {
                                                 me.targetSchedules = data.scheduledDates
+
+                                                /** toggle unmarked prompt status */
                                                 me.$store.state.calendarAvailabilityUnmarkedStatus = true
                                                 document.body.classList.add('no_scroll')
                                             }
@@ -484,6 +502,7 @@
             },
             /**
              * Populate the Class
+             * adding class in the header_day_wrapper
              */
             populateClass (date) {
                 const me = this
@@ -498,6 +517,7 @@
             },
             /**
              * Populate the Scheduler
+             * adding circle if the date has no availability status or have
              */
             populateScheduler (date) {
                 const me = this
@@ -516,6 +536,12 @@
                 })
                 return result
             },
+            /**
+             * check the past first week of the current month
+             * @param  {[integer]} startDate start number of the month
+             * @param  {[integer]} excess    excess count of the month
+             * @return {[$moment]}           date
+             */
             getFirstDayofWeek (startDate, excess) {
                 const me = this
                 let firstDayofWeek = parseInt(me.$moment(`${me.currentYear}-${me.currentMonth}-${startDate}`, 'YYYY-MM-D').startOf('week').format('D')) + parseInt(excess)
@@ -526,6 +552,11 @@
                 }
                 return me.$moment(`${me.currentYear}-${me.currentMonth}-${firstDayofWeek}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
             },
+            /**
+             * check the past first week of the current month
+             * @param  {[integer]} startDate start number of the month
+             * @return {[$moment]}           date
+             */
             getLastDayofWeek (startDate) {
                 const me = this
                 let lastDayofWeek = me.$moment(`${me.currentYear}-${me.currentMonth}-${startDate}`, 'YYYY-MM-D').endOf('week').format('D')

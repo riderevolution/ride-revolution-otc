@@ -7,7 +7,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <transition name="fade">
                     <div class="modal_main_group" v-if="type == 'day'">
-                        <div class="form_flex">
+                        <div class="form_flex check">
                             <div class="form_group check">
                                 <input type="date" name="target_date" autocomplete="off" class="default_text date" v-validate="'required'">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('target_date')">{{ errors.first('target_date') }}</span></transition>
@@ -21,7 +21,7 @@
                         </div>
                         <div class="form_footer_wrapper">
                             <div class="button_group">
-                                <a href="javascript:void(0)" class="action_cancel_btn" @click="toggleClose()">Cancel</a>
+                                <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                                 <button type="submit" name="submit" class="action_success_btn margin alternate">Duplicate</button>
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                         </div>
                         <div class="form_footer_wrapper">
                             <div class="button_group">
-                                <a href="javascript:void(0)" class="action_cancel_btn" @click="toggleClose()">Cancel</a>
+                                <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                                 <button type="submit" name="submit" class="action_success_btn margin alternate">Duplicate</button>
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                         </div>
                         <div class="form_footer_wrapper">
                             <div class="button_group">
-                                <a href="javascript:void(0)" class="action_cancel_btn" @click="toggleClose()">Cancel</a>
+                                <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                                 <button type="submit" name="submit" class="action_success_btn margin alternate">Duplicate</button>
                             </div>
                         </div>

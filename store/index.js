@@ -85,7 +85,8 @@ const createStore = () => {
                     role: {
                         display_name: '',
                     }
-                }
+                },
+                instructor_details: {}
             }
         })
     })
