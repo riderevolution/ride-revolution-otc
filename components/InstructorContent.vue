@@ -263,7 +263,8 @@
                         <div class="form_flex">
                             <div class="form_check"></div>
                             <div class="button_group">
-                                <nuxt-link :to="`/instructors/${$route.params.param}/update`" class="action_btn alternate">Edit</nuxt-link>
+                                <nuxt-link :to="`/instructors/${$route.params.param}/update`" class="action_btn alternate" v-if="!isDashboard">Edit</nuxt-link>
+                                <nuxt-link :to="`/instructor/${value.id}/update`" class="action_btn alternate" v-else>Edit</nuxt-link>
                             </div>
                         </div>
                     </div>
@@ -291,6 +292,10 @@
             },
             value: {
                 default: null
+            },
+            isDashboard: {
+                type: Boolean,
+                default: false
             }
         },
         data () {

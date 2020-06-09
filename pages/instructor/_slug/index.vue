@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <section id="content" class="ins">
-                    <instructor-content :value="user" :type="$route.params.slug" />
+                    <instructor-content :value="user" :type="$route.params.slug" :isDashboard="true" />
                     <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
                 </section>
             </div>
@@ -85,7 +85,7 @@
                 const me = this
                 let token = me.$cookies.get('token')
                 if (me.$route.params.slug == undefined) {
-                    me.$nuxt.error({ statusCode: 404, message: 'Page Not Found' })
+                    // me.$nuxt.error({ statusCode: 404, message: 'Page Not Found' })
                 } else {
                     me.loader(true)
                     me.$axios.get('api/user', {

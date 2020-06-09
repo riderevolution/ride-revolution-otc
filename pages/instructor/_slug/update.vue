@@ -3,7 +3,7 @@
         <transition name="fade">
             <div id="admin" class="cms_dashboard" v-if="loaded">
                 <section id="top_content" class="table">
-                    <nuxt-link :to="`/instructors/${lastRoute}/details`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Instructors</span></nuxt-link>
+                    <nuxt-link to="/instructor/details" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Instructors</span></nuxt-link>
                     <div class="action_wrapper">
                         <h1 class="header_title">Update Instructor</h1>
                     </div>
@@ -192,11 +192,11 @@
                         <div class="form_footer_wrapper">
                             <div class="form_flex">
                                 <div class="form_check">
-                                    <input type="checkbox" id="enabled" name="enabled" class="action_check" :checked="res.enabled == 1">
+                                    <input type="checkbox" id="enabled" name="enabled" class="action_check" checked>
                                     <label for="enabled">Activate</label>
                                 </div>
                                 <div class="button_group">
-                                    <nuxt-link :to="`/${lastRoute}`" class="action_cancel_btn">Cancel</nuxt-link>
+                                    <nuxt-link to="/instructor/details" class="action_cancel_btn">Cancel</nuxt-link>
                                     <button type="submit" name="submit" class="action_btn alternate margin">Save</button>
                                 </div>
                             </div>
@@ -205,16 +205,12 @@
                 </section>
             </div>
         </transition>
-        <foot v-if="$store.state.isAuth" />
     </div>
 </template>
 
 <script>
-    import Foot from '../../../components/Foot'
     export default {
-        components: {
-            Foot
-        },
+        layout: 'ins',
         data () {
             return {
                 tooltip: false,
@@ -223,8 +219,6 @@
                 previewImage: false,
                 genderStatus: false,
                 hasImage: false,
-                lastRoute: '',
-                prevRoute: '',
                 form: {
                     toggled: false,
                     pa_address: '',
@@ -297,23 +291,6 @@
                     reader.readAsDataURL(element.files[0])
                 }
             },
-            toggleMedical (key, status) {
-                const me = this
-                let ctr = 0
-                me.form.medical_history = me.histories
-                me.form.medical_history[key].value = status
-                me.form.medical_history[key].checked = true
-                me.histories.forEach((history, index) => {
-                    if (history.checked) {
-                        ctr++
-                    }
-                })
-                if (ctr == me.histories.length) {
-                    me.error = false
-                } else {
-                    me.error = true
-                }
-            },
             copyPersonal (status) {
                 const me = this
                 if (status) {
@@ -331,13 +308,10 @@
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
                         me.loader(true)
-                        me.$axios.post(`api/instructors/${me.$route.params.param}`, formData).then(res => {
+                        me.$axios.post(`api/instructors/${me.res.id}`, formData).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Instructor has been Updated')
-                                } else {
-                                    me.$store.state.errorList.push('Sorry, Something went wrong')
-                                    me.$store.state.errorStatus = true
                                 }
                             }, 500)
                         }).catch(err => {
@@ -346,7 +320,7 @@
                         }).then(() => {
                             setTimeout( () => {
                                 if (!me.$store.state.errorStatus) {
-                                    me.$router.push(`/instructors/${me.lastRoute}/details`)
+                                    me.$router.push('/instructor/details')
                                 }
                                 me.loader(false)
                             }, 500)
@@ -361,34 +335,43 @@
         },
         async mounted () {
             const me = this
-            me.loader(true)
-            me.$axios.get(`api/instructors/${me.$route.params.param}`).then(res => {
-                setTimeout( () => {
-                    me.loaded = true
-                    me.previewImage = true
-                    me.res = res.data.user
-                    me.form.pa_address = me.res.instructor_details.pa_address
-                    me.form.pa_city = me.res.instructor_details.pa_city
-                    me.form.ba_address = me.res.instructor_details.ba_address
-                    me.form.ba_city = me.res.instructor_details.ba_city
-                }, 500)
-            }).catch(err => {
-                me.$store.state.errorList = err.response.data.errors
-                me.$store.state.errorStatus = true
-            }).then(() => {
-                setTimeout( () => {
-                    me.loader(false)
-                    if (me.res.instructor_details.images.length > 0) {
-                        me.hasImage = true
-                        document.getElementById('preview_image').src = me.res.instructor_details.images[0].path
+            let token = me.$cookies.get('token')
+            if (me.$route.params.slug == undefined) {
+                me.$nuxt.error({ statusCode: 404, message: 'Page Not Found' })
+            } else {
+                me.loader(true)
+                me.$axios.get('api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
                     }
-                }, 500)
-            })
-            // me.$axios.get('api/studios?enabled=1').then(res => {
-            //     me.studios = res.data.studios
-            // })
-            me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 2]
-            me.prevRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
+                }).then(res => {
+                    me.$axios.get(`api/instructors/${res.data.user.id}`).then(res => {
+                        setTimeout( () => {
+                            me.loaded = true
+                            me.previewImage = true
+                            me.res = res.data.user
+                            me.form.pa_address = me.res.instructor_details.pa_address
+                            me.form.pa_city = me.res.instructor_details.pa_city
+                            me.form.ba_address = me.res.instructor_details.ba_address
+                            me.form.ba_city = me.res.instructor_details.ba_city
+                        }, 500)
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    }).then(() => {
+                        setTimeout( () => {
+                            me.loader(false)
+                            if (me.res.instructor_details.images.length > 0) {
+                                me.hasImage = true
+                                document.getElementById('preview_image').src = me.res.instructor_details.images[0].path
+                            }
+                        }, 500)
+                    })
+                }).catch(err => {
+                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                    me.loader(false)
+                })
+            }
         }
     }
 </script>
