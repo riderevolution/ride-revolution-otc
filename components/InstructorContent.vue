@@ -610,15 +610,32 @@
                 }
                 setTimeout( () => {
                     me.loader(false)
-                    // me.clickDates(0, endDate, excess)
+                    me.clickDates(0, endDate, excess)
                 }, 300)
             },
-            // clickDates (startNum, endNum, firstDayExcess) {
-            //     const me = this
-            //     do {
-            //         startNum++
-            //     } while (startNum < endNum + firstDayExcess)
-            // },
+            clickDates (startNum, endNum, firstDayExcess) {
+                const me = this
+                let month = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('M')
+                let year = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('YYYY')
+                do {
+                    startNum++
+                    let classNode = (document.getElementById(`class_${startNum}`) != null) ? document.getElementById(`class_${startNum}`) : null
+
+                    if (classNode != null) {
+                        if (classNode.querySelectorAll('.class_wrapper').length > 0) {
+                            classNode.querySelectorAll('.class_wrapper').forEach((element, index) => {
+                                element.addEventListener('click', function(e) {
+                                    let values = this.getAttribute('s1He3DL').split('_')[1].split('+')
+                                    me.loader(true)
+                                    me.$parent.layout.studio = values[1]
+                                    me.$parent.layout.schedule = values[0]
+                                    me.$store.state.classScheduleLayoutStatus = true
+                                })
+                            })
+                        }
+                    }
+                } while (startNum < endNum + firstDayExcess)
+            },
             /**
              * Populate the Scheduler
              */
@@ -631,7 +648,7 @@
                     let scheduleDate = me.$moment()
                     if (date == scheduleCurrent) {
                         result += `
-                            <div class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : ''}" ${(currentDate.diff(scheduleDate) < 0) ? '' : `style="background-color: ${data.schedule.studio.color_code}"`}>
+                            <div s1He3DL="SwhGt2GF_${data.id}+${data.schedule.studio_id}" class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : ''}" ${(currentDate.diff(scheduleDate) < 0) ? '' : `style="background-color: ${data.schedule.studio.color_code}"`}>
                                 <div class="class_text margin">${data.schedule.start_time}</div>
                                 <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                             </div>`

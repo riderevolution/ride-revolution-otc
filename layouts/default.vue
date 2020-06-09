@@ -137,13 +137,12 @@
                     if (res.data.user.type != 0) {
                         me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
                     }
+                    if (!me.routes.includes(me.$route.path)) {
+                        me.validateToken()
+                    }
                 }).catch(err => {
                     console.log(err);
                 })
-            } else {
-                if (!me.routes.includes(me.$route.path)) {
-                    me.validateToken()
-                }
             }
             document.addEventListener('contextmenu', event => event.preventDefault())
             document.body.classList.add('cms')

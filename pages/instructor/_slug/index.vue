@@ -1,49 +1,60 @@
 <template>
     <div class="content">
-        <div id="admin" class="cms_dashboard user instructor" v-if="loaded">
-            <div id="ins_header">
-                <div class="left">
-                    <div class="info">
-                        <div class="image">
-                            <img :src="user.instructor_details.images[0].path_resized" v-if="user.instructor_details.images[0].path != null" />
-                            <div class="default" v-else>
-                                <div class="overlay">
-                                    {{ user.first_name.charAt(0) }}{{ user.last_name.charAt(0) }}
+        <transition name="fade">
+            <div id="admin" class="cms_dashboard user instructor" v-if="loaded">
+                <div id="ins_header">
+                    <div class="left">
+                        <div class="info">
+                            <div class="image">
+                                <img :src="user.instructor_details.images[0].path_resized" v-if="user.instructor_details.images[0].path != null" />
+                                <div class="default" v-else>
+                                    <div class="overlay">
+                                        {{ user.first_name.charAt(0) }}{{ user.last_name.charAt(0) }}
+                                    </div>
                                 </div>
+                                <div class="title">Hi, {{ user.first_name }}</div>
                             </div>
-                            <div class="title">Hi, {{ user.first_name }}</div>
+                            <div class="text">You have <b>3</b> upcoming classes this month!</div>
+                            <div class="text">Congratulations! You have taught your <span class="highlight">100th class.</span></div>
+                            <div class="text violator">Please settle your schedule for this month. Thank you!</div>
                         </div>
-                        <div class="text">You have <b>3</b> upcoming classes this month!</div>
-                        <div class="text">Congratulations! You have taught your <span class="highlight">100th class.</span></div>
-                        <div class="text violator">Please settle your schedule for this month. Thank you!</div>
+                    </div>
+                    <div class="right">
+                        <ul>
+                            <li v-for="(data, key) in tabs" :key="key" class="list_item">
+                                <nuxt-link :to="data.link" class="link">{{ data.name }}</nuxt-link>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div class="right">
-                    <ul>
-                        <li v-for="(data, key) in tabs" :key="key" class="list_item">
-                            <nuxt-link :to="data.link" class="link">{{ data.name }}</nuxt-link>
-                        </li>
-                    </ul>
-                </div>
+                <section id="content" class="ins">
+                    <instructor-content :value="user" :type="$route.params.slug" />
+                    <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
+                </section>
             </div>
-            <section id="ins_content">
-                <instructor-content :value="user" :type="$route.params.slug" />
-                <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
-            </section>
-        </div>
+        </transition>
+        <transition name="fade">
+            <class-schedule-layout :studio="layout.studio" :schedule="layout.schedule" v-if="$store.state.classScheduleLayoutStatus" />
+        </transition>
     </div>
 </template>
 
 <script>
     import InstructorContent from '../../../components/InstructorContent'
+    import ClassScheduleLayout from '../../../components/modals/ClassScheduleLayout'
     export default {
         layout: 'ins',
         components: {
-            InstructorContent
+            InstructorContent,
+            ClassScheduleLayout
         },
         data () {
             return {
                 loaded: false,
+                layout: {
+                    studio: null,
+                    schedule: null
+                },
                 user: [],
                 tabs: [
                     {

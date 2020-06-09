@@ -20,7 +20,7 @@
                             <h3>{{ scheduleDate.schedule.instructor_schedules[0].user.first_name }} {{ scheduleDate.schedule.instructor_schedules[0].user.last_name }}</h3>
                         </div>
                         <div :class="`seat_boxes ${parent.position} ${parent.layout}`" v-for="(parent, key) in seats" :key="key">
-                            <div :class="`seat_position ${(seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id == $route.params.param)) ? 'highlight' : ''} ${(seat.status == 'open') ? 'available' : (seat.status == 'blocked') ? 'comp blocked' : (seat.status == 'reserved') ? (seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.id != $route.params.param ? 'sign_in' : '') : ''}`" v-for="(seat, key) in parent.data" :key="key">
+                            <div :class="`seat_position ${addSeatClass(seat)}`" v-for="(seat, key) in parent.data" :key="key">
                                 <div class="seat_number">{{ seat.number }}</div>
                             </div>
                         </div>
@@ -71,6 +71,39 @@
             }
         },
         methods: {
+            addSeatClass (seat) {
+                const me = this
+                let result = ''
+                if (seat.bookings.length > 0 && (seat.bookings[0].user.id == me.$route.params.param)) {
+                    result += 'highlight '
+                }
+                switch (seat.status) {
+                    case 'open':
+                        result += 'available'
+                        break
+                    case 'comp':
+                        if (seat.comp.length > 0) {
+                            result += 'comp'
+                        }
+                        break
+                    case 'reserved':
+                    case 'reserved-guest':
+                        if (seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id != me.$route.params.param)) {
+                            result += 'sign_in'
+                        }
+                        break
+                    case 'blocked':
+                        result += 'comp blocked'
+                        break
+                    case 'signed-in':
+                        result += 'sign_out'
+                        break
+                    case 'no-show':
+                        result += 'no_show'
+                        break
+                }
+                return result
+            },
             toggleClose () {
                 const me = this
                 me.$store.state.upcomingClassesLayoutStatus = false

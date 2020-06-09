@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 const createStore = () => {
     return new Vuex.Store({
         state: () => ({
+            classScheduleLayoutStatus: false,
             calendarAvailabilityUnmarkedStatus: false,
             calendarAvailabilityMarkedStatus: false,
             calendarAvailabilityActionStatus: false,
