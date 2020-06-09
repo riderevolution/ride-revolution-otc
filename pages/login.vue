@@ -68,8 +68,8 @@
                 userType: null,
                 step: 1,
                 form: {
-                    email: (this.userType == 0) ? 'superadmin@admin.com' : 'bea@riderevolution.ph',
-                    password: (this.userType == 0) ? '@F1r33x1t' : 'password',
+                    email: '',
+                    password: '',
                     type: 0,
                     studio_id: 0
                 },
@@ -81,6 +81,13 @@
             toggleUserType (value) {
                 const me = this
                 me.userType = value
+                if (me.userType == 0) {
+                    me.form.email = 'superadmin@admin.com'
+                    me.form.password = '@F1r33x1t'
+                } else {
+                    me.form.email = 'bea@riderevolution.ph'
+                    me.form.password = 'password'
+                }
             },
             toggleStep (type) {
                 const me = this
@@ -114,7 +121,7 @@
                                 if (me.userType == 0) {
                                     me.$router.push('/')
                                 } else {
-                                    me.$router.push('/instructor')
+                                    me.$router.push('/instructor/class-schedules')
                                 }
                             } else {
                                 me.$store.state.errorList.push('Sorry, Something went wrong')

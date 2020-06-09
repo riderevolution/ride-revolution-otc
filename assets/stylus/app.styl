@@ -3630,6 +3630,13 @@ input::placeholder
         flex-flow: row wrap
         align-items: center
         justify-content: space-between
+        #filter_alt
+            &.cld
+                flex: 0 0 auto
+                margin: 0
+                width: auto
+                .form_group
+                    margin-bottom: 0
         .action_flex
             position: relative
             &.disabled_gear
@@ -5896,6 +5903,8 @@ input::placeholder
                         sf_pro_regular(14px)
                         color: $black_alternate
                         transition: .3s ease-in-out
+                        &.not
+                            pointer-events: none
                         &.account
                             padding: 10px 20px 10px 40px
                             &::before
@@ -6330,6 +6339,98 @@ input::placeholder
     #content
         &.main
             padding: 30px
+    &.instructor
+        #ins_header
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            background-color: $black
+            padding: 30px 50px
+            .left
+                flex: 0 0 25%
+                .info
+                    .image
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        margin-bottom: 20px
+                        img
+                            width: 70px
+                            height: 70px
+                            border-radius: 90%
+                            object-fit: cover
+                            object-position: center
+                        .default
+                            position: relative
+                            sf_pro_bold(20px)
+                            text-transform: uppercase
+                            background-color: $green
+                            border-radius: 50%
+                            color: #fff
+                            width: 70px
+                            height: 70px
+                            .overlay
+                                position: absolute
+                                top: 50%
+                                left: 0
+                                right: 0
+                                margin: 0 auto
+                                text-align: center
+                                transform: translateY(-50%)
+                        .title
+                            neutra_text(26px)
+                            color: $white
+                            padding-left: 20px
+                    .text
+                        sf_pro_regular(16px)
+                        color: $white
+                        margin-bottom: 5px
+                        b
+                            sf_pro_bold(16px)
+                        .highlight
+                            color: #ACA8FF
+                        &.violator
+                            color: #FF8B8B
+                            margin-bottom: 0
+            .right
+                flex: 1 0 10%
+                ul
+                    list-style: none
+                    margin: 0
+                    padding: 0
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    justify-content: flex-end
+                    .list_item
+                        .link
+                            sf_pro_bold(16px)
+                            padding: 20px
+                            border-right: 1px solid $border
+                            color: $white
+                            background-color: rgba(255, 255, 255, 0.5)
+                            text-decoration: none
+                            transition: .3s ease-in-out
+                            &.nuxt-link-exact-active
+                                color: $green
+                                background-color: $light_green
+                                transition: .3s ease-in-out
+                        &:hover
+                            .link
+                                color: $green
+                                background-color: $light_green
+                                transition: .3s ease-in-out
+                        &:first-child
+                            .link
+                                border-radius: 5px 0 0 5px
+                        &:last-child
+                            .link
+                                border-radius: 0 5px 5px 0
+                                border-right: 1px solid transparent
+        #ins_content
+            max-width: 100%
+            padding: 50px
+            margin-bottom: 0
     &.user
         &.alt
             #content
@@ -6476,322 +6577,323 @@ input::placeholder
                             opacity: 1
                             height: 3px
                             transition: .3s ease-in-out
-        #content
-            width: 100%
-            max-width: 80%
-            margin: 0 auto
-            padding: 60px 40px
-            margin-bottom: 60px
-            .stat_monthly
-                display: flex
-                flex-flow: row wrap
-                .stat
-                    background-color: $white
-                    .top
-                        display: flex
-                        flex-flow: row wrap
-                        align-items: center
-                        justify-content: space-between
-                        border-bottom: 1px solid $border
-                        .title
-                            sf_pro_bold(20px)
+    #content,
+    #ins_content
+        width: 100%
+        max-width: 80%
+        margin: 0 auto
+        padding: 60px 40px
+        margin-bottom: 60px
+        .stat_monthly
+            display: flex
+            flex-flow: row wrap
+            .stat
+                background-color: $white
+                .top
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    justify-content: space-between
+                    border-bottom: 1px solid $border
+                    .title
+                        sf_pro_bold(20px)
+                        color: $black
+                        &.alt
+                            color: $border_alt2
+                .top,
+                .bottom
+                    padding: 30px
+            .graph
+                border-radius: 3px 0 0 3px
+                flex: 1 0 20%
+                width: 70%
+                border-right: 1px solid $border
+            .this_month
+                border-radius: 0 3px 3px 0
+                flex: 0 0 30%
+                ul
+                    list-style: none
+                    padding: 0
+                    margin: 0
+                    li
+                        padding: 20px 15px
+                        border-bottom: 1.5px dashed $border
+                        .item
+                            display: flex
+                            flex-flow: row wrap
+                            align-items: center
+                            justify-content: space-between
+                            span
+                                sf_pro_regular(20px)
+                                color: $black
+                            b
+                                sf_pro_bold(20px)
+                                color: $black
+        .overall_stat
+            margin-top: 30px
+            display: flex
+            flex-flow: row wrap
+            align-items: flex-start
+            justify-content: space-between
+            .stat
+                background-color: $white
+                border-radius: 3px
+                .top
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    justify-content: space-between
+                    border-bottom: 1px solid $border
+                    .title
+                        sf_pro_bold(20px)
+                        color: $black
+                        &.alt
+                            color: $border_alt2
+                .top,
+                .bottom
+                    padding: 30px
+            .taught
+                .bottom
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: flex-start
+                    justify-content: space-between
+                    padding: 30px 20px
+                    margin: 0 10px
+                    .box
+                        border-radius: 3px
+                        text-align: center
+                        flex: 0 0 calc(33.33% - 20px)
+                        border: 1px solid $border_alt2
+                        padding: 30px 10px
+                        .count
+                            sf_pro_bold(30px)
                             color: $black
-                            &.alt
-                                color: $border_alt2
-                    .top,
-                    .bottom
-                        padding: 30px
-                .graph
-                    border-radius: 3px 0 0 3px
-                    flex: 1 0 20%
-                    width: 70%
-                    border-right: 1px solid $border
-                .this_month
-                    border-radius: 0 3px 3px 0
-                    flex: 0 0 30%
-                    ul
-                        list-style: none
-                        padding: 0
-                        margin: 0
-                        li
-                            padding: 20px 15px
-                            border-bottom: 1.5px dashed $border
-                            .item
+                        .label
+                            sf_pro_regular(18px)
+                            color: $border_alt2
+                            margin-top: 5px
+                    .violator
+                        margin-top: 20px
+                        flex: 0 0 100%
+                        text-align: center
+                        color: $black
+                        sf_pro_regular(16px)
+                        b
+                            color: $red
+            .top_rides
+                .bottom
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: flex-start
+                    justify-content: space-between
+                    .left,
+                    .right
+                        flex: 0 0 47.33%
+                        ul
+                            list-style: none
+                            padding: 0
+                            margin: 0
+                            li
                                 display: flex
                                 flex-flow: row wrap
                                 align-items: center
-                                justify-content: space-between
-                                span
-                                    sf_pro_regular(20px)
+                                padding: 20px 15px
+                                border-bottom: 1.5px dashed $border
+                                .count
+                                    sf_pro_medium(20px)
                                     color: $black
-                                b
-                                    sf_pro_bold(20px)
-                                    color: $black
-            .overall_stat
-                margin-top: 30px
-                display: flex
-                flex-flow: row wrap
-                align-items: flex-start
-                justify-content: space-between
-                .stat
-                    background-color: $white
-                    border-radius: 3px
-                    .top
-                        display: flex
-                        flex-flow: row wrap
-                        align-items: center
-                        justify-content: space-between
-                        border-bottom: 1px solid $border
-                        .title
-                            sf_pro_bold(20px)
-                            color: $black
-                            &.alt
-                                color: $border_alt2
-                    .top,
-                    .bottom
-                        padding: 30px
-                .taught
-                    .bottom
-                        display: flex
-                        flex-flow: row wrap
-                        align-items: flex-start
-                        justify-content: space-between
-                        padding: 30px 20px
-                        margin: 0 10px
-                        .box
-                            border-radius: 3px
-                            text-align: center
-                            flex: 0 0 calc(33.33% - 20px)
-                            border: 1px solid $border_alt2
-                            padding: 30px 10px
-                            .count
-                                sf_pro_bold(30px)
-                                color: $black
-                            .label
-                                sf_pro_regular(18px)
-                                color: $border_alt2
-                                margin-top: 5px
-                        .violator
-                            margin-top: 20px
-                            flex: 0 0 100%
-                            text-align: center
-                            color: $black
-                            sf_pro_regular(16px)
-                            b
-                                color: $red
-                .top_rides
-                    .bottom
-                        display: flex
-                        flex-flow: row wrap
-                        align-items: flex-start
-                        justify-content: space-between
-                        .left,
-                        .right
-                            flex: 0 0 47.33%
-                            ul
-                                list-style: none
-                                padding: 0
-                                margin: 0
-                                li
-                                    display: flex
-                                    flex-flow: row wrap
-                                    align-items: center
-                                    padding: 20px 15px
-                                    border-bottom: 1.5px dashed $border
-                                    .count
-                                        sf_pro_medium(20px)
-                                        color: $black
-                                        padding-right: 15px
-                                    img
-                                        width: 35px
-                                        height: 35px
-                                        border-radius: 50%
-                                        object-fit: cover
-                                        object-position: center
-                                    .image
-                                        position: relative
-                                        text-transform: uppercase
-                                        background-image: linear-gradient(137deg, $red, $orange)
-                                        sf_pro_regular(14px)
-                                        border-radius: 50%
-                                        color: $white
-                                        width: 35px
-                                        height: 35px
-                                        .overlay
-                                            position: absolute
-                                            top: 50%
-                                            left: 0
-                                            right: 0
-                                            text-align: center
-                                            transform: translateY(-50%)
-                                    .name
-                                        padding-left: 15px
-                                        sf_pro_regular(16px)
-                                        color: $black
-                .taught,
-                .top_rides
-                    flex: 0 0 calc(50% - 15px)
-            .cms_table_package
-                background-color: $white
-                border-radius: 5px
-                .no_results
-                    background-color: #f8f8fb
-                    text-align: center
-                    sf_pro_medium(35px)
-                    color: $gray_alternate
-                    text-align: center
-                    padding: 50px 0
-                .table_package
-                    padding: 30px
-                    border-bottom: 2px dashed $border
-                    &:last-child
-                        border-bottom: 2px dashed transparent
-                    .package_title
-                        display: flex
-                        flex-flow: row wrap
-                        align-items: center
-                        sf_pro_bold(18px)
-                        color: $black
-                        span
-                            sf_pro_medium(12px)
-                            border-radius: 5px
-                            padding: 5px
-                            margin-left: 10px
-                            text-transform: uppercase
-                            &.shared
-                                color: $blue
-                                background-color: $light_blue
-                            &.frozen
-                                color: $light_blue
-                                background-color: $blue
-                            &.warning
-                                color: $white
-                                background-color: $red
-                    .package_details
-                        display: flex
-                        flex-flow: row wrap
-                        align-items: center
-                        justify-content: space-between
-                        margin-top: 30px
-                        label
-                            display: block
-                            sf_pro_regular(14px)
-                            color: $border_alt2
-                            margin-top: 10px
-                            a
-                                padding: 3px 5px
-                                margin-left: 5px
-                                color: $green
-                                background-color: transparent
-                                border-radius: 4px
-                                text-decoration: none
-                                transition: .3s ease-in-out
-                                &:hover
-                                    background-color: $green
+                                    padding-right: 15px
+                                img
+                                    width: 35px
+                                    height: 35px
+                                    border-radius: 50%
+                                    object-fit: cover
+                                    object-position: center
+                                .image
+                                    position: relative
+                                    text-transform: uppercase
+                                    background-image: linear-gradient(137deg, $red, $orange)
+                                    sf_pro_regular(14px)
+                                    border-radius: 50%
                                     color: $white
-                                    transition: .3s ease-in-out
-                        .package_status
-                            display: flex
-                            flex-flow: row wrap
-                            align-items: center
-                            text-align: center
-                            .box
-                                position: relative
-                                width: 100px
-                                height: 100px
-                                border: 1px solid $border
-                                &.margin
-                                    margin-left: 15px
-                                .overlay
-                                    position: absolute
-                                    top: 50%
-                                    left: 0
-                                    right: 0
-                                    text-align: center
-                                    transform: translateY(-50%)
-                                    p
-                                        sf_pro_medium(16px)
-                                        color: $black
-                                        margin-bottom: 0
-                                    label
-                                        margin-top: 0
-                        .package_date
-                            display: flex
-                            flex-flow: row wrap
-                            align-items: center
-                            text-align: center
-                            .date
-                                &.margin
-                                    margin-left: 60px
+                                    width: 35px
+                                    height: 35px
+                                    .overlay
+                                        position: absolute
+                                        top: 50%
+                                        left: 0
+                                        right: 0
+                                        text-align: center
+                                        transform: translateY(-50%)
+                                .name
+                                    padding-left: 15px
+                                    sf_pro_regular(16px)
+                                    color: $black
+            .taught,
+            .top_rides
+                flex: 0 0 calc(50% - 15px)
+        .cms_table_package
+            background-color: $white
+            border-radius: 5px
+            .no_results
+                background-color: #f8f8fb
+                text-align: center
+                sf_pro_medium(35px)
+                color: $gray_alternate
+                text-align: center
+                padding: 50px 0
+            .table_package
+                padding: 30px
+                border-bottom: 2px dashed $border
+                &:last-child
+                    border-bottom: 2px dashed transparent
+                .package_title
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    sf_pro_bold(18px)
+                    color: $black
+                    span
+                        sf_pro_medium(12px)
+                        border-radius: 5px
+                        padding: 5px
+                        margin-left: 10px
+                        text-transform: uppercase
+                        &.shared
+                            color: $blue
+                            background-color: $light_blue
+                        &.frozen
+                            color: $light_blue
+                            background-color: $blue
+                        &.warning
+                            color: $white
+                            background-color: $red
+                .package_details
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    justify-content: space-between
+                    margin-top: 30px
+                    label
+                        display: block
+                        sf_pro_regular(14px)
+                        color: $border_alt2
+                        margin-top: 10px
+                        a
+                            padding: 3px 5px
+                            margin-left: 5px
+                            color: $green
+                            background-color: transparent
+                            border-radius: 4px
+                            text-decoration: none
+                            transition: .3s ease-in-out
+                            &:hover
+                                background-color: $green
+                                color: $white
+                                transition: .3s ease-in-out
+                    .package_status
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        text-align: center
+                        .box
+                            position: relative
+                            width: 100px
+                            height: 100px
+                            border: 1px solid $border
+                            &.margin
+                                margin-left: 15px
+                            .overlay
+                                position: absolute
+                                top: 50%
+                                left: 0
+                                right: 0
+                                text-align: center
+                                transform: translateY(-50%)
                                 p
                                     sf_pro_medium(16px)
                                     color: $black
                                     margin-bottom: 0
-                        .package_action
-                            .action_success_btn
-                                width: 150px
-                            .package_options
-                                position: relative
-                                &.toggled
-                                    .option_btn
-                                        background-color: $light_green
-                                        border: 1px solid $light_green
-                                        transition: .3s ease-in-out
-                                    .option_selector
-                                        top: calc(100% + 10px)
-                                        opacity: 1
-                                        visibility: visible
-                                        transition: .3s ease-in-out
+                                label
+                                    margin-top: 0
+                    .package_date
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        text-align: center
+                        .date
+                            &.margin
+                                margin-left: 60px
+                            p
+                                sf_pro_medium(16px)
+                                color: $black
+                                margin-bottom: 0
+                    .package_action
+                        .action_success_btn
+                            width: 150px
+                        .package_options
+                            position: relative
+                            &.toggled
                                 .option_btn
-                                    display: inline-block
-                                    width: 150px
-                                    sf_pro_medium(12px)
-                                    font-weight: normal
-                                    text-decoration: none
-                                    outline: none
-                                    color: $green
+                                    background-color: $light_green
+                                    border: 1px solid $light_green
+                                    transition: .3s ease-in-out
+                                .option_selector
+                                    top: calc(100% + 10px)
+                                    opacity: 1
+                                    visibility: visible
+                                    transition: .3s ease-in-out
+                            .option_btn
+                                display: inline-block
+                                width: 150px
+                                sf_pro_medium(12px)
+                                font-weight: normal
+                                text-decoration: none
+                                outline: none
+                                color: $green
+                                padding: 10px 20px
+                                background-color: #F6F6F6
+                                background-image: url('/icons/custom-select-icon.svg')
+                                background-position: calc(100% - 15px) center
+                                background-repeat: no-repeat
+                                border: 1px solid #F6F6F6
+                                border-radius: 3px
+                                position: relative
+                                text-align: center
+                                cursor: pointer
+                                user-select: none
+                                margin-top: 10px
+                                transition: 0.3s ease-in-out
+                                &:hover
+                                    background-color: $light_green
+                                    border: 1px solid $light_green
+                                    transition: .3s ease-in-out
+                            .option_selector
+                                position: absolute
+                                top: calc(100% + 30px)
+                                left: 0
+                                width: 100%
+                                background-color: $white
+                                border-radius: 3px
+                                padding: 10px 0
+                                z-index: 1
+                                opacity: 0
+                                visibility: hidden
+                                box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.16)
+                                transition: .3s ease-in-out
+                                .option_link
+                                    display: block
+                                    sf_pro_regular(12px)
+                                    color: $black
                                     padding: 10px 20px
-                                    background-color: #F6F6F6
-                                    background-image: url('/icons/custom-select-icon.svg')
-                                    background-position: calc(100% - 15px) center
-                                    background-repeat: no-repeat
-                                    border: 1px solid #F6F6F6
-                                    border-radius: 3px
-                                    position: relative
-                                    text-align: center
-                                    cursor: pointer
-                                    user-select: none
-                                    margin-top: 10px
-                                    transition: 0.3s ease-in-out
+                                    text-decoration: none
+                                    background-color: transparent
+                                    transition: .3s ease-in-out
                                     &:hover
                                         background-color: $light_green
-                                        border: 1px solid $light_green
+                                        color: $green
                                         transition: .3s ease-in-out
-                                .option_selector
-                                    position: absolute
-                                    top: calc(100% + 30px)
-                                    left: 0
-                                    width: 100%
-                                    background-color: $white
-                                    border-radius: 3px
-                                    padding: 10px 0
-                                    z-index: 1
-                                    opacity: 0
-                                    visibility: hidden
-                                    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.16)
-                                    transition: .3s ease-in-out
-                                    .option_link
-                                        display: block
-                                        sf_pro_regular(12px)
-                                        color: $black
-                                        padding: 10px 20px
-                                        text-decoration: none
-                                        background-color: transparent
-                                        transition: .3s ease-in-out
-                                        &:hover
-                                            background-color: $light_green
-                                            color: $green
-                                            transition: .3s ease-in-out
 
     #top_content
         display: flex

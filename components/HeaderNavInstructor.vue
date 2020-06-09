@@ -30,13 +30,13 @@
                 <div class="select_header">
                     <div class="select_info">
                         <div class="header_name">{{ user.first_name }}</div>
-                        <div class="header_role" v-if="user.type == 0">{{ user.staff_details.role.display_name }}</div>
+                        <div class="header_role">Instructor</div>
                     </div>
                     <div class="header_studio"></div>
                 </div>
                 <div class="select_footer">
-                    <nuxt-link to="/my-account" class="select_item account" @click.native.self="isToggled = false">My Account</nuxt-link>
-                    <a href="javascript:void(0)" class="select_item logout" @click="logout()">Sign Out</a>
+                    <div class="select_item account not"></div>
+                    <div class="select_item logout" @click="logout()">Sign Out</div>
                 </div>
             </div>
         </div>

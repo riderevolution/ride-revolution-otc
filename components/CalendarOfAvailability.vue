@@ -101,6 +101,11 @@
     import CalendarAvailabilityUnmarked from './modals/CalendarAvailabilityUnmarked'
     import CalendarAvailabilitySuccess from './modals/CalendarAvailabilitySuccess'
     export default {
+        props: {
+            instructor: {
+                default: null
+            }
+        },
         components: {
             CalendarAvailabilityMenuPrompt,
             CalendarAvailabilityPrompt,
@@ -210,7 +215,7 @@
 
                 me.loader(true)
 
-                await me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.$route.params.param}&year=${me.currentYear}&month=${me.currentMonth}`).then(res => {
+                await me.$axios.get(`api/instructor-availabilities?studio_id=${me.form.studio_id}&instructor_id=${me.instructor.id}&year=${me.currentYear}&month=${me.currentMonth}`).then(res => {
                     me.schedules = res.data.schedules
                 })
 

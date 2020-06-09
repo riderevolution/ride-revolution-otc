@@ -5,8 +5,8 @@
                 <div class="calendar_wrapper">
                     <div class="calendar_actions">
                         <div class="action_flex alt">
-                            <a href="javascript:void(0)" class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</a>
-                            <a href="javascript:void(0)" class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</a>
+                            <div class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</div>
+                            <div class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</div>
                             <div class="schedule_info">
                                 <img id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg" />
                                 <div class="overlay">
@@ -18,6 +18,15 @@
                                 </div>
                             </div>
                         </div>
+                        <form id="filter_alt" class="cld" @submit.prevent>
+                            <div class="form_group">
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" name="studio_id" v-model="form.studio_id" @change="generateCalendar(currentYear, currentMonth, 0, 0)">
+                                    <option value="" disabled>Choose a Studio</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                            </div>
+                        </form>
                     </div>
                     <div class="calendar_header">
                         <div class="calendar_prev" @click="generatePrevCalendar()">
@@ -178,7 +187,7 @@
         </transition>
         <transition name="fade">
             <div v-if="type == 'calendar-of-availability'">
-                <calendar-of-availability />
+                <calendar-of-availability :instructor="value" />
             </div>
         </transition>
         <transition name="fade">
@@ -297,6 +306,9 @@
                 dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 schedules: [],
                 studios: [],
+                form: {
+                    studio_id: 0
+                },
                 series: [
                     {
                         name: 'Ride Count',
@@ -521,7 +533,7 @@
 
                 me.loader(true)
 
-                await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&instructor_id=${me.$route.params.param}`).then(res => {
+                await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&instructor_id=${me.value.id}&studio_id=${me.form.studio_id}`).then(res => {
                     me.schedules = res.data.schedules
                 })
 
@@ -651,6 +663,7 @@
                     me.$axios.get('api/studios?enabled=1').then(res => {
                         if (res.data) {
                             me.studios = res.data.studios
+                            me.form.studio_id = me.studios[0].id
                         }
                     })
                 }

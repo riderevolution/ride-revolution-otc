@@ -89,7 +89,6 @@
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
                 }).then(() => {
-                    me.rowCount = document.getElementsByTagName('th').length
                     setTimeout( () => {
                         me.loader(false)
                     }, 500)

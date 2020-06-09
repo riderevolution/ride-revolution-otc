@@ -128,19 +128,22 @@
         mounted () {
             const me = this
             let token = me.$cookies.get('token')
-            me.$axios.get('api/user', {
-                headers: {
-                    Authorization: `Bearer ${token}`
+            if (token != null || token != undefined) {
+                me.$axios.get('api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data.user.type != 0) {
+                        me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                    }
+                }).catch(err => {
+                    console.log(err);
+                })
+            } else {
+                if (!me.routes.includes(me.$route.path)) {
+                    me.validateToken()
                 }
-            }).then(res => {
-                if (res.data.user.type != 0) {
-                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
-                }
-            }).catch(err => {
-                console.log(err);
-            })
-            if (!me.routes.includes(me.$route.path)) {
-                me.validateToken()
             }
             document.addEventListener('contextmenu', event => event.preventDefault())
             document.body.classList.add('cms')

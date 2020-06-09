@@ -29,9 +29,6 @@
         <transition name="fade">
             <successful v-if="$store.state.successfulStatus" />
         </transition>
-        <transition name="fade">
-            <successful-later v-if="$store.state.successfulLaterStatus" />
-        </transition>
     </div>
 </template>
 
@@ -85,17 +82,13 @@
         mounted () {
             const me = this
             let token = me.$cookies.get('token')
-            me.$axios.get('api/user', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(res => {
+            if (token != null || token != undefined) {
                 if (!me.routes.includes(me.$route.path)) {
                     me.validateToken()
                 }
-            }).catch(err => {
-                console.log(err);
-            })
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             document.addEventListener('contextmenu', event => event.preventDefault())
             document.body.classList.add('cms')
         },
