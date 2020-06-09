@@ -27,6 +27,7 @@
                 </div>
                 <div class="class_layout">
                     <div class="layout_header">
+                        <div class="etc"></div>
                         <div class="info">
                             <h2>{{ $moment(scheduleDate.date).format('MMM DD, YYYY (ddd)') }}</h2>
                             <label>{{ scheduleDate.schedule.start_time }} {{ scheduleDate.schedule.class_type.name }}</label>
