@@ -140,7 +140,7 @@
                     </div>
                     <div class="stat top_rides">
                         <div class="top">
-                            <div class="title">Top Rides</div>
+                            <div class="title">Top Riders</div>
                         </div>
                         <div class="bottom">
                             <div class="left">
