@@ -13,16 +13,14 @@
                     <div class="user_details">
                         <h1 class="user_name">
                             {{ instructor.first_name }} {{ instructor.last_name }}
-                            <span class="violator">100 Classes Taught</span>
+                            <span class="violator">{{ instructor.upcomingClassesCount }} Classes Taught</span>
                         </h1>
                         <div class="user_contact">
                             <a :href="`tel:${instructor.instructor_details.io_contact_number}`" class="number">{{ instructor.instructor_details.io_contact_number }}</a>
                             <a :href="`mailto:${instructor.email}`" class="email">{{ instructor.email }}</a>
                         </div>
                         <div class="user_summary">
-                            <div class="summary">Classes Taught: 89</div>
-                            <div class="summary">Store Credits: 100</div>
-                            <div class="summary pending">Pending Payment: Php {{ totalCount(0) }}</div>
+                            <div class="summary">Classes Taught: {{ instructor.upcomingClassesCount }}</div>
                         </div>
                     </div>
                 </div>

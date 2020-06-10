@@ -81,13 +81,8 @@
         },
         mounted () {
             const me = this
-            let token = me.$cookies.get('token')
-            if (token != null || token != undefined) {
-                if (!me.routes.includes(me.$route.path)) {
-                    me.validateToken()
-                }
-            } else {
-                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            if (!me.routes.includes(me.$route.path)) {
+                me.validateToken()
             }
             document.addEventListener('contextmenu', event => event.preventDefault())
             document.body.classList.add('cms')

@@ -14,8 +14,8 @@
                                 </div>
                                 <div class="title">Hi, {{ instructor.first_name }}</div>
                             </div>
-                            <div class="text">You have <b>3</b> upcoming classes this month!</div>
-                            <div class="text">Congratulations! You have taught your <span class="highlight">100th class.</span></div>
+                            <div class="text">You have <b>{{ instructor.upcomingClassesCount }}</b> upcoming classes this month!</div>
+                            <div class="text">Congratulations! You have taught your <span class="highlight">{{ instructor.upcomingClassesCount }} class.</span></div>
                             <div class="text violator">Please settle your schedule for this month. Thank you!</div>
                         </div>
                     </div>

@@ -25,13 +25,11 @@
                 </ul>
             </transition>
             <div class="nav_back" v-if="hasToggleThirdLevel" @click="back()">Back</div>
-            <transition name="slide_alt">
-                <ul class="nav_list alt" v-if="hasToggleThirdLevel">
-                    <li class="child_item_wrapper" v-for="(navItem, child_key) in thirdNavItems" :key="child_key">
-                        <nuxt-link class="nav_child_item" :to="navItem.link" @click.native.self="resetToggle()">{{ navItem.title }}</nuxt-link>
-                    </li>
-                </ul>
-            </transition>
+            <ul class="nav_list alt" v-if="hasToggleThirdLevel">
+                <li class="child_item_wrapper" v-for="(navItem, child_key) in thirdNavItems" :key="child_key">
+                    <nuxt-link class="nav_child_item" :to="navItem.link" @click.native.self="resetToggle()">{{ navItem.title }}</nuxt-link>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
