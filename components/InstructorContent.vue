@@ -54,12 +54,11 @@
         <transition name="fade">
             <div v-if="type == 'class-history'">
                 <div class="actions">
-                    <div class="total">Total: 4</div>
+                    <div class="total">Total: {{ value.classHistory.length }}</div>
                     <div class="cms_table_toggler">
                         <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory(1)">All</div>
                         <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory(2)">Completed</div>
-                        <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">Missed</div>
-                        <div :class="`status ${(classesHistoryStatus == 4) ? 'active' : ''}`" @click="toggleClassesHistory(4)">Cancelled</div>
+                        <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">Cancelled</div>
                     </div>
                 </div>
                 <table class="cms_table">
@@ -73,24 +72,22 @@
                             <th>Sub Instructor</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr v-for="(n, key) in 3" :key="key">
-                            <td>{{ formatClassDate('January 01, 2020 12:00', true) }}</td>
-                            <td>Ride Rev</td>
-                            <td>Greenbelt 5</td>
-                            <td>28</td>
+                    <tbody v-if="value.classHistory.length > 0">
+                        <tr v-for="(data, key) in value.classHistory" :key="key">
+                            <td>{{ formatClassDate(`${data.date} ${data.schedule.start_time}`, true) }}</td>
+                            <td>{{ data.schedule.class_type.name }}</td>
+                            <td>{{ data.schedule.studio.name }}</td>
+                            <td>{{ data.ridersCount }}</td>
                             <td>Completed</td>
-                            <td>-</td>
+                            <td>{{ data.subInstructor.first_name }} {{ data.subInstructor.last_name }}</td>
                         </tr>
-
                     </tbody>
-                    <!-- <tbody class="no_results" v-else>
+                    <tbody class="no_results" v-else>
                         <tr>
                             <td :colspan="rowCount">No Result(s) Found.</td>
                         </tr>
-                    </tbody> -->
+                    </tbody>
                 </table>
-                <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
             </div>
         </transition>
         <transition name="fade">
@@ -687,9 +684,9 @@
                             me.studios = res.data.studios
                             me.form.studio_id = me.studios[0].id
                         }
+                        me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
                     })
                 }
-                me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
             },
             toggleOverlays (e) {
                 const me = this

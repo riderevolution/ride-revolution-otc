@@ -17,9 +17,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(n, key) in 40" :key="key">
-                                    <td>{{ key + 1 }}</td>
-                                    <td class="name">Sample Name</td>
+                                <tr v-for="(data, key) in riders" :key="key">
+                                    <td>{{ data.booking.seat.number }}</td>
+                                    <td class="name">
+                                        <span @click="toggleRider(data.booking.seat)">{{ data.name }}</span>
+                                        <div class="type" v-if="data.guest">
+                                            <img src="/icons/guest-icon.svg" />
+                                        </div>
+                                        <div class="type" v-else>
+                                            <img :src="data.user.customer_details.customer_type.images[0].path" />
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -49,15 +57,15 @@
                                         <img src="/icons/pending-payment-icon.svg" />
                                         <div class="type_title">Pending Payment</div>
                                     </div>
-                                    <div class="type">
+                                    <!-- <div class="type">
                                         <img src="/icons/broken-bike-icon.svg" />
                                         <div class="type_title">Broken Bike</div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div :class="`layout_content layout_${studio}`">
+                    <div :class="`layout_content layout_${layout.studio}`">
                         <div class="seats">
                             <div class="seat_header">
                                 <img :src="scheduleDate.schedule.instructor_schedules[0].user.instructor_details.images[0].path" v-if="scheduleDate.schedule.instructor_schedules[0].user.instructor_details.images[0].path != null" />
@@ -69,7 +77,10 @@
                                 <h3>{{ scheduleDate.schedule.instructor_schedules[0].user.first_name }} {{ scheduleDate.schedule.instructor_schedules[0].user.last_name }}</h3>
                             </div>
                             <div :class="`seat_boxes ${parent.position} ${parent.layout}`" v-for="(parent, key) in seats" :key="key">
-                                <div :class="`seat_position ${addSeatClass(seat)}`" v-for="(seat, key) in parent.data" :key="key">
+                                <div :class="`seat_position ${(clickedRider.number == seat.number) ? 'highlight' : ''} ${addSeatClass(seat, false)}`" v-for="(seat, key) in parent.data" :key="key">
+                                    <transition name="slide">
+                                        <div class="highlighted" v-if="clickedRider.number == seat.number">I'm Here!</div>
+                                    </transition>
                                     <div class="seat_number">{{ seat.number }}</div>
                                 </div>
                             </div>
@@ -89,10 +100,7 @@
 <script>
     export default {
         props: {
-            studio: {
-                default: null
-            },
-            schedule: {
+            layout: {
                 default: null
             }
         },
@@ -100,8 +108,10 @@
             return {
                 loaded: false,
                 temp: [],
+                riders: [],
                 scheduleDate: [],
                 customerTypes: [],
+                clickedRider: [],
                 seats: {
                     left: {
                         position: 'left',
@@ -136,10 +146,14 @@
                     element.nextElementSibling.classList.add('active')
                 }
             },
-            addSeatClass (seat) {
+            toggleRider (seat) {
+                const me = this
+                me.clickedRider = seat
+            },
+            addSeatClass (seat, status) {
                 const me = this
                 let result = ''
-                if (seat.bookings.length > 0 && (seat.bookings[0].user.id == me.$route.params.param)) {
+                if (status) {
                     result += 'highlight '
                 }
                 switch (seat.status) {
@@ -153,9 +167,7 @@
                         break
                     case 'reserved':
                     case 'reserved-guest':
-                        if (seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id != me.$route.params.param)) {
-                            result += 'sign_in'
-                        }
+                        result += 'sign_in'
                         break
                     case 'blocked':
                         result += 'comp blocked'
@@ -178,18 +190,23 @@
                 let target = e.target
                 let element = document.getElementById(`legend_toggler_alt`)
                 if (element !== target) {
-                    if (element.nextElementSibling.classList.contains('active')) {
-                        element.nextElementSibling.classList.remove('active')
+                    if (element) {
+                        if (element.nextElementSibling) {
+                            if (element.nextElementSibling.classList.contains('active')) {
+                                element.nextElementSibling.classList.remove('active')
+                            }
+                        }
                     }
                 }
             }
         },
         mounted () {
             const me = this
-            let layout = `layout_${me.studio}`
+            let layout = `layout_${me.layout.studio}`
             me.seats = { left: { position: 'left', layout: layout, data: [] }, right: { position: 'right', layout: layout, data: [] }, bottom: { position: 'bottom', layout: layout, data: [] }, bottom_alt: { position: 'bottom_alt', layout: layout, data: [] }, bottom_alt_2: { position: 'bottom_alt_2', layout: layout, data: [] }, }
-            me.$axios.get(`/api/seats?studio_id=${me.studio}&scheduled_date_id=${me.schedule}`).then(res => {
+            me.$axios.get(`/api/seats?studio_id=${me.layout.studio}&scheduled_date_id=${me.layout.schedule}&instructor_id=${me.layout.instructor_id}`).then(res => {
                 if (res.data) {
+                    me.riders = res.data.ridersInThisClass
                     me.scheduleDate = res.data.scheduled_date
                     me.temp = res.data.seats
                     me.temp.forEach((seat, index) => {

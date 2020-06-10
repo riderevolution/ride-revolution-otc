@@ -82,6 +82,7 @@
                 me.loader(true)
                 me.$axios.get(`api/instructors/${me.$route.params.param}/${me.$route.params.slug}`).then(res => {
                     if (res.data) {
+                        console.log(me.instructor);
                         me.instructor = res.data.instructor
                         me.loaded = true
                     }

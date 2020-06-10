@@ -734,6 +734,7 @@ table
         .layout_parent
             display: flex
             flex-flow: row wrap
+            align-items: flex-start
             margin: 20px 40px
             .rider_layout
                 position: relative
@@ -750,7 +751,7 @@ table
                         color: $black
                 .rider_content
                     height: 100%
-                    max-height: 670px
+                    max-height: 650px
                     overflow-y: auto
                     overflow-x: hidden
                     table
@@ -768,7 +769,16 @@ table
                                     sf_pro_regular(16px)
                                     color: $black
                                     &.name
+                                        cursor: pointer
+                                        display: flex
+                                        flex-flow: row wrap
+                                        align-items: center
                                         color: $blue
+                                        .type
+                                            padding-left: 5px
+                                            img
+                                                width: 20px
+                                                height: 20px
             .class_layout
                 flex: 1 0 calc(10% - 30px)
                 margin: 0 0 0 30px
@@ -930,16 +940,45 @@ table
                             border: 1px solid $gray_alternate
                             .seat_number
                                 color: $gray_alternate
-                        &.highlight
-                            background-color: $light_green
-                            border: 1px solid $light_green
-                            .seat_number
-                                color: $green
+                                transition: .3s ease-in-out
                         &.sign_in
                             background-color: #EDEDED
                             border: 1px solid #EDEDED
                             .seat_number
                                 color: rgba(132, 143, 159, 0.21)
+                                transition: .3s ease-in-out
+                        &.highlight
+                            background-color: $light_green
+                            border: 1px solid $light_green
+                            .seat_number
+                                color: $green
+                                transition: .3s ease-in-out
+                        .highlighted
+                            position: absolute
+                            top: calc(0% - 45px)
+                            left: 0
+                            right: 0
+                            background-color: $green
+                            color: $white
+                            sf_pro_medium(12px)
+                            z-index: 1
+                            padding: 5px 10px
+                            border-radius: 5px
+                            user-select: none
+                            &::before
+                                content: ""
+                                position: absolute
+                                top: calc(100% - 1px)
+                                width: 0
+                                height: 0
+                                border-left: 7px solid transparent
+                                border-right: 7px solid transparent
+                                border-top: 7px solid $green
+                                left: 0
+                                right: 0
+                                text-align: center
+                                margin: 0 auto
+                                z-index: 1
                         .seat_number
                             position: absolute
                             top: 0
@@ -949,6 +988,7 @@ table
                             sf_pro_bold(25px)
                             color: rgba(56, 61, 64, 0.5)
                             padding: 16px 10px
+                            transition: .3s ease-in-out
                     &.layout_1
                         &.bottom
                             bottom: calc(0% + 220px)
@@ -2687,6 +2727,12 @@ input::placeholder
         text-align: left
         span
             margin-left: 10px
+
+.table_flex
+    display: flex
+    flex-flow: row wrap
+    align-items: center
+    justify-content: space-between
 
 .form_group
     position: relative

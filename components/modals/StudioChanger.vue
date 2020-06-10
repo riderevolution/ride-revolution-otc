@@ -94,7 +94,7 @@
                                 if (res.data) {
                                     setTimeout( () => {
                                         me.$store.state.user = res.data.user
-                                        this.$cookies.set('CSID', res.data.user.current_studio_id)
+                                        me.$cookies.set('CSID', res.data.user.current_studio_id)
                                     }, 10)
                                 }
                             })
@@ -119,7 +119,8 @@
         },
         mounted () {
             const me = this
-            me.$axios.get(`api/studios/${me.$store.state.user.current_studio_id}`, {
+            let studio_id = me.$cookies.get('CSID')
+            me.$axios.get(`api/studios/${studio_id}`, {
                 headers: {
                     Authorization: `Bearer ${me.$store.state.token}`
                 }

@@ -6,13 +6,13 @@
                     <div class="left">
                         <div class="info">
                             <div class="image">
-                                <img :src="user.instructor_details.images[0].path_resized" v-if="user.instructor_details.images[0].path != null" />
+                                <img :src="instructor.instructor_details.images[0].path_resized" v-if="instructor.instructor_details.images[0].path != null" />
                                 <div class="default" v-else>
                                     <div class="overlay">
-                                        {{ user.first_name.charAt(0) }}{{ user.last_name.charAt(0) }}
+                                        {{ instructor.first_name.charAt(0) }}{{ instructor.last_name.charAt(0) }}
                                     </div>
                                 </div>
-                                <div class="title">Hi, {{ user.first_name }}</div>
+                                <div class="title">Hi, {{ instructor.first_name }}</div>
                             </div>
                             <div class="text">You have <b>3</b> upcoming classes this month!</div>
                             <div class="text">Congratulations! You have taught your <span class="highlight">100th class.</span></div>
@@ -28,13 +28,13 @@
                     </div>
                 </div>
                 <section id="content" class="ins">
-                    <instructor-content :value="user" :type="$route.params.slug" :isDashboard="true" />
+                    <instructor-content :value="instructor" :type="$route.params.slug" :isDashboard="true" />
                     <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
                 </section>
             </div>
         </transition>
         <transition name="fade">
-            <class-schedule-layout :studio="layout.studio" :schedule="layout.schedule" v-if="$store.state.classScheduleLayoutStatus" />
+            <class-schedule-layout :layout="layout" v-if="$store.state.classScheduleLayoutStatus" />
         </transition>
     </div>
 </template>
@@ -53,9 +53,10 @@
                 loaded: false,
                 layout: {
                     studio: null,
-                    schedule: null
+                    schedule: null,
+                    instructor_id: null
                 },
-                user: [],
+                instructor: [],
                 tabs: [
                     {
                         name: 'Class Schedules',
@@ -85,7 +86,7 @@
                 const me = this
                 let token = me.$cookies.get('token')
                 if (me.$route.params.slug == undefined) {
-                    // me.$nuxt.error({ statusCode: 404, message: 'Page Not Found' })
+                    me.$nuxt.error({ statusCode: 404, message: 'Page Not Found' })
                 } else {
                     me.loader(true)
                     me.$axios.get('api/user', {
@@ -95,8 +96,9 @@
                     }).then(res => {
                         me.$axios.get(`api/instructors/${res.data.user.id}/${me.$route.params.slug}`).then(res => {
                             setTimeout( () => {
-                                me.user = res.data.instructor
+                                me.instructor = res.data.instructor
                                 me.loaded = true
+                                me.layout.instructor_id = me.instructor.id
                             }, 500)
                         }).catch(err => {
                             me.$store.state.errorList = err.response.data.errors

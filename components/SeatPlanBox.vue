@@ -20,11 +20,11 @@
                     <h2 v-line-clamp="1">{{ (seat.comp.length > 0) ? (seat.comp[0].user_id != null ? seat.comp[0].user.first_name : seat.comp[0].email) : (seat.bookings.length > 0 && seat.bookings[0].user != null ? seat.bookings[0].user.first_name : seat.bookings[0].guest_first_name) }} {{ (seat.comp.length > 0) ? (seat.comp[0].user_id != null ? seat.comp[0].user.last_name : '') : (seat.bookings.length > 0 && seat.bookings[0].user != null ? seat.bookings[0].user.last_name : seat.bookings[0].guest_last_name) }}</h2>
                 </div>
             </div>
-            <div class="seat_info_blocked">
+            <!-- <div class="seat_info_blocked">
                 <div class="info_image">
                     <img src="/icons/broken-bike-icon.svg" />
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
