@@ -48,8 +48,31 @@
                         <div :class="`status ${(tabStatus == 'weekdays') ? 'active' : ''}`" @click="toggleTab('weekdays')">Weekdays</div>
                         <div :class="`status ${(tabStatus == 'weekends') ? 'active' : ''}`" @click="toggleTab('weekends')">Weekends</div>
                     </div>
-                    <div>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    <div class="cms_five_row">
+                        <div class="column" v-for="(n, key) in 5" :key="key">
+                            <div class="column_header">
+                                <div class="day">{{ $moment().add(n, 'days').format('dddd') }}</div>
+                                <div class="avg">Avg. 9</div>
+                            </div>
+                            <div class="column_content">
+                                <table class="cms_table_alt">
+                                    <thead>
+                                        <tr>
+                                            <th>Time Slots</th>
+                                            <th>Avg. Total Riders</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(n, key) in 10" :key="key">
+                                            <td class="name">{{ $moment().format('h:mm A') }}</td>
+                                            <td>
+                                                {{ n }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>

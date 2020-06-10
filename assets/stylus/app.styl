@@ -754,31 +754,6 @@ table
                     max-height: 650px
                     overflow-y: auto
                     overflow-x: hidden
-                    table
-                        thead
-                            tr
-                                th
-                                    text-align: left
-                                    color: $gray_alternate
-                                    padding: 15px 30px
-                                    sf_pro_regular(14px)
-                        tbody
-                            tr
-                                td
-                                    padding: 10px 30px
-                                    sf_pro_regular(16px)
-                                    color: $black
-                                    &.name
-                                        cursor: pointer
-                                        display: flex
-                                        flex-flow: row wrap
-                                        align-items: center
-                                        color: $blue
-                                        .type
-                                            padding-left: 5px
-                                            img
-                                                width: 20px
-                                                height: 20px
             .class_layout
                 flex: 1 0 calc(10% - 30px)
                 margin: 0 0 0 30px
@@ -3471,6 +3446,33 @@ input::placeholder
         tbody
             td
                 padding: 10px 20px
+
+.cms_table_alt
+    thead
+        tr
+            th
+                text-align: left
+                color: $gray_alternate
+                padding: 15px 30px
+                sf_pro_regular(14px)
+    tbody
+        tr
+            td
+                padding: 10px 30px
+                sf_pro_regular(16px)
+                color: $black
+                &.name
+                    cursor: pointer
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    color: $blue
+                    .type
+                        padding-left: 5px
+                        img
+                            width: 20px
+                            height: 20px
+
 .cms_table
     border-collapse: collapse
     width: 100%
@@ -4613,6 +4615,35 @@ input::placeholder
 
 /**
  * Default Column */
+.cms_five_row
+    display: flex
+    flex-flow: row wrap
+    align-items: center
+    justify-content: space-between
+    margin-top: 30px
+    .column
+        flex: 0 0 calc((100% / 5) - 20px)
+        margin-right: 20px
+        background-color: $white
+        border-radius: 5px
+        .column_header
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            justify-content: space-between
+            padding: 20px 30px
+            border-bottom: 1px solid #E2E2E2
+            .day
+                sf_pro_bold(18px)
+                color: $black
+            .avg
+                sf_pro_regular(18px)
+                color: $black
+        .column_content
+            padding: 10px 0 20px
+        &:last-child
+            margin-right: 0
+
 .cms_col_alt_two
     display: flex
     flex-flow: row wrap

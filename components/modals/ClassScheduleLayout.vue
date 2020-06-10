@@ -9,7 +9,7 @@
                         <h2>Riders in this class</h2>
                     </div>
                     <div class="rider_content">
-                        <table>
+                        <table class="cms_table_alt">
                             <thead>
                                 <tr>
                                     <th>Bike No.</th>
