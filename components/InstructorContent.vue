@@ -109,14 +109,8 @@
                         </div>
                         <div class="bottom">
                             <ul>
-                                <li>
-                                    <div class="item"><span>Greenbelt 5</span> <b>25%</b></div>
-                                </li>
-                                <li>
-                                    <div class="item"><span>Shangri-la Plaza</span> <b>25%</b></div>
-                                </li>
-                                <li>
-                                    <div class="item"><span>Kerry Sports BGC</span> <b>25%</b></div>
+                                <li v-for="(data, key) in value.stats.currentMonthBookings" :key="key">
+                                    <div class="item"><span>{{ data.studio.name }}</span> <b>{{ data.count }}</b></div>
                                 </li>
                             </ul>
                         </div>
@@ -141,7 +135,7 @@
                                 <div class="count">100</div>
                                 <div class="label">This Year</div>
                             </div>
-                            <div class="violator">Missed Classes: <b>3</b></div>
+                            <div class="violator">Cancelled Classes: <b>3</b></div>
                         </div>
                     </div>
                     <div class="stat top_rides">
@@ -707,6 +701,20 @@
             const me = this
             if (me.type == 'class-schedules') {
                 me.fetchData()
+            }
+            if (me.type == 'class-statistics') {
+                me.series[0].data = me.value.stats.monthlyAverage
+                let currentMonth = me.$moment().month() + 1
+                let labels = []
+                labels.unshift(me.$moment(currentMonth, 'M').format('MMM'))
+                for (let i = 0; i < 11; i++) {
+                    currentMonth = currentMonth - 1
+                    if (currentMonth == 0) {
+                        currentMonth = 12
+                    }
+                    labels.unshift(me.$moment(currentMonth, 'M').format('MMM'))
+                }
+                me.chartOptions.xaxis.categories = labels
             }
         },
         beforeMount () {

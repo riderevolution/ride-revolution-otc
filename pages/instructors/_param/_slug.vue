@@ -35,21 +35,31 @@
                 <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
             </section>
         </div>
+        <transition name="fade">
+            <class-schedule-layout :layout="layout" v-if="$store.state.classScheduleLayoutStatus" />
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
 
 <script>
     import InstructorContent from '../../../components/InstructorContent'
+    import ClassScheduleLayout from '../../../components/modals/ClassScheduleLayout'
     import Foot from '../../../components/Foot'
     export default {
         components: {
             InstructorContent,
+            ClassScheduleLayout,
             Foot
         },
         data () {
             return {
                 loaded: false,
+                layout: {
+                    studio: null,
+                    schedule: null,
+                    instructor_id: null
+                },
                 lastRoute: '',
                 instructor: [],
                 tabs: [
@@ -82,9 +92,9 @@
                 me.loader(true)
                 me.$axios.get(`api/instructors/${me.$route.params.param}/${me.$route.params.slug}`).then(res => {
                     if (res.data) {
-                        console.log(me.instructor);
                         me.instructor = res.data.instructor
                         me.loaded = true
+                        me.layout.instructor_id = me.instructor.id
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors

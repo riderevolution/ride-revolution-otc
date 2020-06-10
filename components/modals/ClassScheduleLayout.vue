@@ -167,13 +167,11 @@
                         break
                     case 'reserved':
                     case 'reserved-guest':
+                    case 'signed-in':
                         result += 'sign_in'
                         break
                     case 'blocked':
                         result += 'comp blocked'
-                        break
-                    case 'signed-in':
-                        result += 'sign_out'
                         break
                     case 'no-show':
                         result += 'no_show'
