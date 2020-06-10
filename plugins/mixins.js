@@ -75,7 +75,7 @@ Vue.mixin({
                 this.$cookies.remove('token')
                 this.$cookies.remove('CSID')
                 this.$store.state.isAuth = false
-                this.$router.push('/login')
+                location.href = '/login'
             }).catch(err => {
                 console.log(err)
             })
