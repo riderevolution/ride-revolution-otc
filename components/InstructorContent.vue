@@ -61,7 +61,7 @@
                         <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">Cancelled</div>
                     </div>
                 </div>
-                <table class="cms_table">
+                <table class="cms_table alt">
                     <thead>
                         <tr>
                             <th>Date &amp; Time</th>
@@ -120,19 +120,19 @@
                     <div class="stat taught">
                         <div class="top">
                             <div class="title">No. of Classes Taught</div>
-                            <div class="title alt">Total: 204</div>
+                            <div class="title alt">Total: {{ value.stats.breakDown.total }}</div>
                         </div>
                         <div class="bottom">
                             <div class="box">
-                                <div class="count">5</div>
+                                <div class="count">{{ value.stats.breakDown.taughtThisWeek }}</div>
                                 <div class="label">This Week</div>
                             </div>
                             <div class="box">
-                                <div class="count">20</div>
+                                <div class="count">{{ value.stats.breakDown.taughtThisMonth }}</div>
                                 <div class="label">This Month</div>
                             </div>
                             <div class="box">
-                                <div class="count">100</div>
+                                <div class="count">{{ value.stats.breakDown.taughtThisYear }}</div>
                                 <div class="label">This Year</div>
                             </div>
                             <div class="violator">Cancelled Classes: <b>3</b></div>
@@ -145,29 +145,29 @@
                         <div class="bottom">
                             <div class="left">
                                 <ul>
-                                    <li v-for="(n, key) in 5" :key="key">
-                                        <div class="count">{{ n }}</div>
-                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
-                                        <!-- <div class="image">
+                                    <li v-for="(data, key) in ridersLeft" :key="key">
+                                        <div class="count">{{ key + 1 }}</div>
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="image" v-else>
                                             <div class="overlay">
-                                                AB
+                                                {{ data.first_name.charAt(0) }} {{ data.last_name.charAt(0) }}
                                             </div>
-                                        </div> -->
-                                        <div class="name">Sample Sample</div>
+                                        </div>
+                                        <div class="name">{{ data.first_name }} {{ data.last_name }}</div>
                                     </li>
                                 </ul>
                             </div>
                             <div class="right">
                                 <ul>
-                                    <li v-for="(n, key) in 5" :key="key">
-                                        <div class="count">{{ n + 5 }}</div>
-                                        <!-- <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" /> -->
-                                        <div class="image">
+                                    <li v-for="(data, key) in ridersRight" :key="key">
+                                        <div class="count">{{ key + 6 }}</div>
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="image" v-else>
                                             <div class="overlay">
-                                                AB
+                                                {{ data.first_name.charAt(0) }} {{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <div class="name">Sample Sample</div>
+                                        <div class="name">{{ data.first_name }} {{ data.last_name }}</div>
                                     </li>
                                 </ul>
                             </div>
@@ -450,6 +450,68 @@
                     }
                 }
             }
+        },
+        computed: {
+            ridersLeft () {
+                const me = this
+                let riders = []
+                let ctr = 0
+                me.value.stats.topRiders.forEach((data, index) => {
+                    if (ctr < 5) {
+                        riders.push(data)
+                        ctr++
+                    }
+                })
+                if (ctr < 5) {
+                    for (let i = 0; i < 5 - ctr; i++) {
+                        riders.push(
+                            {
+                                first_name: '-',
+                                last_name: '-',
+                                customer_details: {
+                                    images: [
+                                        {
+                                            path: null
+                                        }
+                                    ]
+                                }
+                            }
+                        )
+                    }
+                }
+                return riders
+            },
+            ridersRight () {
+                const me = this
+                let riders = []
+                let ctr = 0
+                let tempCtr = 0
+                me.value.stats.topRiders.forEach((data, index) => {
+                    if (ctr >= 5) {
+                        riders.push(data)
+                        tempCtr++
+                    }
+                    ctr++
+                })
+                if (tempCtr < 5) {
+                    for (let i = 0; i < 5 - tempCtr; i++) {
+                        riders.push(
+                            {
+                                first_name: '-',
+                                last_name: '-',
+                                customer_details: {
+                                    images: [
+                                        {
+                                            path: null
+                                        }
+                                    ]
+                                }
+                            }
+                        )
+                    }
+                }
+                return riders
+            },
         },
         methods: {
             toggledPrompt (data) {
