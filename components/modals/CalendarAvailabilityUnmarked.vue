@@ -1,7 +1,7 @@
 <template>
     <div class="default_modal">
         <div class="background" @click="toggleClose()"></div>
-        <form id="default_form" class="overlay" @submit.prevent="submissionCreateSuccess()">
+        <form id="default_form" class="overlay mrk" @submit.prevent="submit()">
             <div class="modal_wrapper">
                 <h2 class="form_title alt">{{ $moment().format('ddd, MMM DD, YYYY') }}</h2>
                 <div class="form_close" @click="toggleClose()"></div>
@@ -10,14 +10,20 @@
                         <label>{{ data.schedule.start_time }} - {{ data.schedule.class_type.name }}</label>
                         <div class="radio_wrapper">
                             <div class="form_radio">
-                                <input type="radio" :id="`status_${key}_av`" value="Yes" :name="`status_${key}`" class="action_radio" checked>
+                                <input type="radio" :id="`status_${key}_av`" value="1" name="status[]" class="action_radio" checked>
                                 <label :for="`status_${key}_av`">Available</label>
                             </div>
                             <div class="form_radio">
-                                <input type="radio" :id="`status_${key}_uav`" value="No" :name="`status_${key}`" class="action_radio">
+                                <input type="radio" :id="`status_${key}_uav`" value="0" name="status[]" class="action_radio">
                                 <label :for="`status_${key}_uav`">Unavailable</label>
                             </div>
                         </div>
+                        <div class="form_group full">
+                            <label for="remarks">Remarks <span>*</span></label>
+                            <textarea name="remarks[]" rows="2" id="remarks" class="default_text" v-validate="'required|max:500'" placeholder="Enter your remarks"></textarea>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('remarks')">{{ errors.first('remarks') | properFormat }}</span></transition>
+                        </div>
+                        <input type="hidden" name="scheduled_date_id[]" :value="data.id">
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="button_group">
@@ -38,7 +44,62 @@
                 default: null
             }
         },
+        filters: {
+            properFormat (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    let nextValue = newValue[0].split('_')
+                    if (nextValue.length > 1) {
+                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                    } else {
+                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                    }
+                } else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = ''
+                        let lastValue = ''
+                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
+                        for (let i = 1; i < newValue.length; i++) {
+                            if (newValue[i] != 'id') {
+                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            }
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                    return `The ${newValue} field${message}`
+                } else {
+					if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
+                }
+            }
+        },
         methods: {
+            submit () {
+                const me = this
+                me.$validator.validateAll().then(valid => {
+                    if (valid) {
+                        
+                    } else {
+                        me.$scrollTo('.validation_errors', {
+                            container: '.default_modal',
+                            offset: -250
+                        })
+                    }
+                })
+            },
             toggleClose () {
                 const me = this
                 me.$store.state.calendarAvailabilityUnmarkedStatus = false

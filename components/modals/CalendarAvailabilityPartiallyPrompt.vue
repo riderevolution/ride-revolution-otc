@@ -16,19 +16,16 @@
 <script>
     export default {
         props: {
-            targetDate: {
+            type: {
                 default: null
             },
             instructor: {
                 default: null
-            },
-            availabilityStatus: {
-                default: 'available'
             }
         },
         data () {
             return {
-                message: 'Are you sure you want to add this to your schedule?'
+                message: 'Are you sure you want to continue?'
             }
         },
         methods: {
@@ -36,11 +33,19 @@
                 const me = this
                 if (status) {
                     me.loader(true)
-                    let formData = new FormData(document.getElementById('default_form'))
-                    formData.append('studio_id', me.$parent.form.studio_id)
+                    switch (me.type) {
+                        case 'marked':
+                            let formData = new FormData()
+                            formData.append('remarks', document.querySelector('.confirmation_marked #remarks').value)
+                            break
+                        case 'unmarked':
+                            let formData = new FormData(document.querySelector('#default_form.mrk'))
+                            break
+                    }
+                    formData.append('_method', 'PATCH')
                     formData.append('instructor_id', me.instructor.id)
+                    formData.append('studio_id', me.$parent.form.studio_id)
                     formData.append('target_date', me.targetDate)
-                    formData.append('availability_status', me.availabilityStatus)
                     me.$axios.post('api/instructor-availabilities', formData).then(res => {
                         if (res.data) {
                             setTimeout( () => {
@@ -53,7 +58,11 @@
                                         me.$parent.message = 'You have added your unavailable dates.'
                                         break
                                 }
-                                me.$store.state.calendarAvailabilityActionStatus = false
+                                if (me.type == 'marked') {
+                                    me.$store.state.calendarAvailabilityMarkedStatus = false
+                                } else {
+                                    me.$store.state.calendarAvailabilityUnmarkedStatus = false
+                                }
                                 me.$store.state.calendarAvailabilitySuccessStatus = true
                             }, 500)
                         }
@@ -69,7 +78,7 @@
                 } else {
                     document.body.classList.remove('no_scroll')
                 }
-                me.$store.state.calendarAvailabilityPromptStatus = false
+                me.$store.state.calendarAvailabilityPartiallyPromptStatus = false
             }
         }
     }

@@ -88,7 +88,10 @@
             <calendar-availability-success v-if="$store.state.calendarAvailabilitySuccessStatus" :title="title" :message="message" />
         </transition>
         <transition name="fade">
-            <calendar-availability-prompt v-if="$store.state.calendarAvailabilityPromptStatus" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
+            <calendar-availability-prompt v-if="$store.state.calendarAvailabilityPromptStatus" :instructor="instructor" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
+        </transition>
+        <transition name="fade">
+            <calendar-availability-partially-prompt v-if="$store.state.calendarAvailabilityPartiallyPromptStatus" :type="partiallyType" :targetDate="targetDate" :instructor="instructor" />
         </transition>
     </div>
 </template>
@@ -116,6 +119,7 @@
         },
         data () {
             return {
+                partiallyType: 'marked',
                 currentDate: 0,
                 currentMonth: 0,
                 currentYear: 0,
@@ -376,11 +380,13 @@
 
                                                 /** toggle marked prompt status */
                                                 me.$store.state.calendarAvailabilityMarkedStatus = true
+                                                me.partiallyType = 'marked'
                                                 document.body.classList.add('no_scroll')
                                             } else if (data.status == 'open') {
                                                 me.targetSchedules = data.scheduledDates
 
                                                 /** toggle unmarked prompt status */
+                                                me.partiallyType = 'unmarked'
                                                 me.$store.state.calendarAvailabilityUnmarkedStatus = true
                                                 document.body.classList.add('no_scroll')
                                             }

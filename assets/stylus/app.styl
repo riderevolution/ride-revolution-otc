@@ -2643,6 +2643,7 @@ input::placeholder
         sf_pro_regular(14px)
         font-weight: normal
         color: $black
+        cursor: pointer
         span
             color: $green
     .validation_errors
@@ -2715,6 +2716,12 @@ input::placeholder
 .form_group
     position: relative
     margin-bottom: 20px
+    &.full
+        flex: 0 0 100%
+        margin-bottom: 0
+        margin-top: 10px
+        label
+            margin-bottom: 10px !important
     &.active
         pointer-events: all
     &.not_active

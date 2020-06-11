@@ -7,6 +7,7 @@ const createStore = () => {
             calendarAvailabilityUnmarkedStatus: false,
             calendarAvailabilityMarkedStatus: false,
             calendarAvailabilityActionStatus: false,
+            calendarAvailabilityPartiallyPromptStatus: false,
             calendarAvailabilityPromptStatus: false,
             calendarAvailabilitySuccessStatus: false,
             packageActionValidateStatus: false,
