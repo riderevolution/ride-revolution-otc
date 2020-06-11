@@ -48,7 +48,7 @@
                     <div class="cms_table_toggler">
                         <div class="total">Total Subbed Classes: {{ totalItems(res.customers.total) }}</div>
                     </div>
-                    <table class="cms_table">
+                    <table class="cms_table alt">
                         <thead>
                             <tr>
                                 <th class="stick">Date</th>

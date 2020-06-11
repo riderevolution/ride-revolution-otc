@@ -19,7 +19,7 @@
                     </div>
                 </section>
                 <section id="content">
-                    <table class="cms_table">
+                    <table class="cms_table alt">
                         <thead>
                             <tr>
                                 <th class="sticky">Date</th>

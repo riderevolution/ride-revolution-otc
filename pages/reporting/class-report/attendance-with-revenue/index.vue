@@ -93,7 +93,7 @@
                             <tr>
                                 <td class="pads" colspan="8">
                                     <div class="accordion_table">
-                                        <table class="cms_table">
+                                        <table class="cms_table alt">
                                             <thead>
                                                 <tr>
                                                     <th>Spot</th>

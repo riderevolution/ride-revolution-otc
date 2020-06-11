@@ -36,7 +36,7 @@
                     <div class="cms_table_toggler">
                         <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
                     </div>
-                    <table class="cms_table">
+                    <table class="cms_table alt">
                         <thead>
                             <tr>
                                 <th class="sticky">Card Code</th>

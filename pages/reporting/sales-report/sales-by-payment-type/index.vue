@@ -43,7 +43,7 @@
                         <div :class="`status ${(status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
                         <div :class="`status ${(status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
                     </div>
-                    <table class="cms_table">
+                    <table class="cms_table alt">
                         <thead>
                             <tr>
                                 <th>Payment</th>
@@ -81,7 +81,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <table class="cms_table">
+                    <table class="cms_table alt">
                         <thead>
                             <tr>
                                 <th colspan="3" class="cms_table_title">

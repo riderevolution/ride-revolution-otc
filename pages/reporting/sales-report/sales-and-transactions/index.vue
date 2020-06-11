@@ -46,7 +46,7 @@
                         <div :class="`status ${(tabStatus == 'store-credits') ? 'active' : ''}`" @click="toggleTab('store-credits', 'sales-summary-product', 'api/reporting/sales/sales-and-transactions/sales-summary/store-credits')">Store Credits</div>
                     </div>
                     <div v-if="slug == 'sales-summary'">
-                        <table class="cms_table">
+                        <table class="cms_table alt">
                             <thead>
                                 <tr>
                                     <th colspan="3" class="cms_table_title">Sales Breakdown</th>
@@ -70,7 +70,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <table class="cms_table">
+                        <table class="cms_table alt">
                             <thead>
                                 <tr>
                                     <th colspan="3" class="cms_table_title">Income Breakdown</th>
@@ -102,7 +102,7 @@
                         </div> -->
                     </div>
                     <div v-else>
-                        <table class="cms_table">
+                        <table class="cms_table alt">
                             <thead>
                                 <tr>
                                     <th class="cms_table_title">Items</th>
