@@ -31,9 +31,7 @@ export default {
   ** Global CSS
   */
   css: [
-      '~/assets/stylus/app.styl',
-      '~/assets/stylus/mobile.styl',
-      '~/assets/stylus/fonts.styl'
+      '~/assets/stylus/app.styl'
   ],
 
   /*

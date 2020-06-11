@@ -18,7 +18,7 @@
                                 </div>
                             </div>
                         </div>
-                        <form id="filter_alt" class="cld" @submit.prevent>
+                        <form id="filter_alt" class="cld">
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" name="studio_id" v-model="form.studio_id" @change="generateCalendar(currentYear, currentMonth, 0, 0)">

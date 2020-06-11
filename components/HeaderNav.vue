@@ -42,7 +42,7 @@
                 </div>
                 <div class="select_footer">
                     <nuxt-link to="/my-account" class="select_item account" @click.native.self="isToggled = false">My Account</nuxt-link>
-                    <a href="javascript:void(0)" class="select_item logout" @click="logout()">Sign Out</a>
+                    <div class="select_item logout" @click="logout()">Sign Out</div>
                 </div>
             </div>
         </div>
