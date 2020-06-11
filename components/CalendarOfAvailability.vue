@@ -380,13 +380,13 @@
 
                                                 /** toggle marked prompt status */
                                                 me.$store.state.calendarAvailabilityMarkedStatus = true
-                                                me.partiallyType = 'marked'
+                                                // me.partiallyType = 'marked'
                                                 document.body.classList.add('no_scroll')
                                             } else if (data.status == 'open') {
                                                 me.targetSchedules = data.scheduledDates
 
                                                 /** toggle unmarked prompt status */
-                                                me.partiallyType = 'unmarked'
+                                                // me.partiallyType = 'unmarked'
                                                 me.$store.state.calendarAvailabilityUnmarkedStatus = true
                                                 document.body.classList.add('no_scroll')
                                             }

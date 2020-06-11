@@ -33,8 +33,10 @@
             }
         },
         data () {
-            form: {
-                remarks: ''
+            return {
+                form: {
+                    remarks: ''
+                }
             }
         },
         filters: {
@@ -85,7 +87,6 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let token = me.$cookies.get('token')
-
 
                     } else {
                         me.$scrollTo('.validation_errors', {
