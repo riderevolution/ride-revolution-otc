@@ -135,7 +135,7 @@
                                 <div class="count">{{ value.stats.breakDown.taughtThisYear }}</div>
                                 <div class="label">This Year</div>
                             </div>
-                            <div class="violator">Cancelled Classes: <b>3</b></div>
+                            <div class="violator">Cancelled Classes: <b>{{ value.stats.breakDown.cancelledCount }}</b></div>
                         </div>
                     </div>
                     <div class="stat top_rides">
