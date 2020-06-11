@@ -1,5 +1,5 @@
 <template>
-    <div class="instructor_tab_content">
+    <div class="instructor_tab_content" v-if="loaded">
         <transition name="fade">
             <div v-if="type == 'class-schedules'">
                 <div class="calendar_wrapper">
@@ -54,11 +54,11 @@
         <transition name="fade">
             <div v-if="type == 'class-history'">
                 <div class="actions">
-                    <div class="total">Total: {{ value.classHistory.length }}</div>
+                    <div class="total">Total: {{ res.classHistory.length }}</div>
                     <div class="cms_table_toggler">
-                        <div :class="`status ${(classesHistoryStatus == 1) ? 'active' : ''}`" @click="toggleClassesHistory(1)">All</div>
-                        <div :class="`status ${(classesHistoryStatus == 2) ? 'active' : ''}`" @click="toggleClassesHistory(2)">Completed</div>
-                        <div :class="`status ${(classesHistoryStatus == 3) ? 'active' : ''}`" @click="toggleClassesHistory(3)">Cancelled</div>
+                        <div :class="`status ${(classesHistoryStatus == 'all') ? 'active' : ''}`" @click="toggleClassesHistory('all')">All</div>
+                        <div :class="`status ${(classesHistoryStatus == 'completed') ? 'active' : ''}`" @click="toggleClassesHistory('completed')">Completed</div>
+                        <div :class="`status ${(classesHistoryStatus == 'cancelled') ? 'active' : ''}`" @click="toggleClassesHistory('cancelled')">Cancelled</div>
                     </div>
                 </div>
                 <table class="cms_table alt">
@@ -72,13 +72,13 @@
                             <th>Sub Instructor</th>
                         </tr>
                     </thead>
-                    <tbody v-if="value.classHistory.length > 0">
-                        <tr v-for="(data, key) in value.classHistory" :key="key">
+                    <tbody v-if="res.classHistory.length > 0">
+                        <tr v-for="(data, key) in res.classHistory" :key="key">
                             <td>{{ formatClassDate(`${data.date} ${data.schedule.start_time}`, true) }}</td>
                             <td>{{ data.schedule.class_type.name }}</td>
                             <td>{{ data.schedule.studio.name }}</td>
                             <td>{{ data.ridersCount }}</td>
-                            <td>Completed</td>
+                            <td>{{ data.status.charAt(0).toUpperCase() }}{{ data.status.slice(1) }}</td>
                             <td>{{ data.subInstructor.first_name }} {{ data.subInstructor.last_name }}</td>
                         </tr>
                     </tbody>
@@ -292,7 +292,7 @@
         data () {
             return {
                 promptMessage: '',
-                classesHistoryStatus: 1,
+                classesHistoryStatus: 'all',
                 loaded: false,
                 currentDate: 0,
                 currentMonth: 0,
@@ -302,6 +302,7 @@
                 dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 schedules: [],
                 studios: [],
+                res: [],
                 form: {
                     studio_id: 0
                 },
@@ -534,7 +535,20 @@
             },
             toggleClassesHistory (status) {
                 const me = this
-                return me.classesHistoryStatus = status
+                me.loader(true)
+                me.classesHistoryStatus = status
+                me.$axios.get(`api/instructors/${me.value.id}/${me.$route.params.slug}?status=${status}`).then(res => {
+                    setTimeout( () => {
+                        me.res = res.data.instructor
+                    }, 500)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
             },
             formatClassDate (value, withTime) {
                 if (value) {
@@ -592,7 +606,6 @@
                 await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&instructor_id=${me.value.id}&studio_id=${me.form.studio_id}`).then(res => {
                     me.schedules = res.data.schedules
                 })
-
                 /**
                  * Generate Rows **/
                 for (let i = 0; i < 6; i++) {
@@ -759,6 +772,10 @@
         },
         mounted () {
             const me = this
+            me.loaded = true
+            if (me.type == 'class-history') {
+                me.res = me.value
+            }
             if (me.type == 'class-schedules') {
                 me.fetchData()
             }
