@@ -168,10 +168,10 @@
                                         title: 'Attendance by Month',
                                         link: '/reporting/class-report/attendance-by-month'
                                     },
-                                    {
-                                        title: 'Comped Attendance',
-                                        link: '/reporting/class-report/comped-attendance'
-                                    },
+                                    // {
+                                    //     title: 'Comped Attendance',
+                                    //     link: '/reporting/class-report/comped-attendance'
+                                    // },
                                     {
                                         title: 'Summary of Instructor Subbing per Period',
                                         link: '/reporting/class-report/summary-of-instructor-subbing-per-period'

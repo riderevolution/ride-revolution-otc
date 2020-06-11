@@ -242,7 +242,7 @@
                     calendarTable.appendChild(tableRow)
                 }
                 setTimeout( () => {
-                    me.clickDates(0, endDate, excess)
+                    // me.clickDates(0, endDate, excess)
                     me.loader(false)
                 }, 500)
             },
@@ -252,53 +252,25 @@
             populateScheduler (date) {
                 const me = this
                 let result = ''
-                // me.schedules.forEach((data, index) => {
-                //     let scheduleCurrent = me.$moment(data.date).format('D')
-                //     let currentDate = me.$moment(`${me.currentYear}-${me.currentMonth}-${date} ${data.schedule.start_time}`)
-                //     let scheduleDate = me.$moment()
-                //     let unixTimestamp = me.$moment(`${me.currentYear}-${me.currentMonth}-${scheduleCurrent}`, 'YYYY-MM-D').valueOf()
-                //     if (date == scheduleCurrent) {
-                //         if (data.schedule.private_class == 1) {
-                //             if (data.schedule.enabled == 1) {
-                //                 result += `
-                //                     <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper private">
-                //                         <div class="class_text margin"><img src="/icons/private-class.svg" /><span>${data.schedule.start_time}</span></div>
-                //                         <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
-                //                     </a>`
-                //             } else {
-                //                 result += `
-                //                     <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft private">
-                //                         <div class="class_text margin"><img src="/icons/private-class.svg" /><span>${data.schedule.start_time}</span></div>
-                //                         <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
-                //                     </a>`
-                //             }
-                //         } else {
-                //             if (data.schedule.enabled == 1) {
-                //                 result += `
-                //                     <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
-                //                         <div class="class_text margin">${data.schedule.start_time}</div>
-                //                         <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
-                //                     </a>`
-                //             } else {
-                //                 result += `
-                //                     <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft">
-                //                         <div class="class_text margin">${data.schedule.start_time}</div>
-                //                         <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
-                //                     </a>`
-                //             }
-                //         }
-                //     }
-                // })
+                result += `
+                    <div class="attendance">
+                        <div class="atd_left">
+                            <p>${me.$moment().format('h:mm A')}</p>
+                            <p>Sample Text</p>
+                        </div>
+                        <div class="atd_right">
+                            15
+                        </div>
+                    </div>
+                    `
                 return result
             },
-            clickDates (startNum, endNum, firstDayExcess) {
-                const me = this
-                // let month = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('M')
-                // let year = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('YYYY')
-                do {
-                    startNum++
-                } while (startNum < endNum + firstDayExcess)
-            },
+            // clickDates (startNum, endNum, firstDayExcess) {
+            //     const me = this
+            //     do {
+            //         startNum++
+            //     } while (startNum < endNum + firstDayExcess)
+            // },
             getFirstDayofWeek (startDate, excess) {
                 const me = this
                 let firstDayofWeek = parseInt(me.$moment(`${me.currentYear}-${me.currentMonth}-${startDate}`, 'YYYY-MM-D').startOf('week').format('D')) + parseInt(excess)
