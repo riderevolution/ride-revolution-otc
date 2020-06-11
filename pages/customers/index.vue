@@ -16,7 +16,7 @@
                     <nuxt-link :to="`${$route.path}/create`" class="action_btn"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add New Customer</nuxt-link>
                 </div>
                 <div class="filter_wrapper">
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                    <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                         <div class="form_group">
                             <label for="q">Find a Customer</label>
                             <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" class="default_text search_alternate">

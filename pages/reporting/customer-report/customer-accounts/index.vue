@@ -33,8 +33,7 @@
                     <table class="cms_table">
                         <thead>
                             <tr>
-                                <th class="stick">Last Name</th>
-                                <th class="stick">First Name</th>
+                                <th class="stick">Customer</th>
                                 <th class="stick">Rewards</th>
                                 <th class="stick">Sign Up Date</th>
                                 <th class="stick">Contact Number</th>
@@ -52,10 +51,9 @@
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`" table_action_text>{{ data.last_name }}</nuxt-link>
+                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.last_name }} {{ data.last_name }}</nuxt-link>
                                     </div>
                                 </td>
-                                <td><nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`" table_action_text>{{ data.first_name }}</nuxt-link></td>
                                 <td>Black</td>
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                                 <td>{{ data.email }}</td>

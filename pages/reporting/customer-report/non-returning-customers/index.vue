@@ -60,7 +60,7 @@
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`" table_action_text>{{ data.last_name }}</nuxt-link>
+                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.last_name }} {{ data.last_name }}</nuxt-link>
                                     </div>
                                 </td>
                                 <td>{{ data.userPackageCounts[0].class_package.name }}</td>

@@ -6,25 +6,29 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>Customer Retention</h1>
+                                <h1>Class Package Expiration</h1>
                                 <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
                             </div>
-                            <h2 class="header_subtitle">Returning Customers</h2>
+                            <h2 class="header_subtitle">Expiration details of each class package</h2>
                         </div>
                         <div class="actions">
-                            <a href="javascript:void(0)" class="action_btn">Print</a>
-                            <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                            <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
+                                <label for="q">Find a Customer</label>
+                                <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" class="default_text search_alternate">
+                            </div>
+                            <div class="form_group margin">
                                 <label for="start_date">Start Date</label>
-                                <input type="date" name="start_date" class="default_text date" />
+                                <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date</label>
-                                <input type="date" name="end_date" class="default_text date" />
+                                <input type="date" name="end_date" v-model="form.end_date"  class="default_text date" />
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -32,22 +36,20 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div class="total">Total: {{ totalItems(res.customers.total) }}</div>
-                        <div class="total">Total Riders: {{ totalItems(res.customers.total) }}</div>
-                        <div class="total">Retained: {{ totalItems(res.customers.total) }}</div>
-                        <div :class="`status ${(status == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First Stime</div>
-                        <div :class="`status ${(status == 'second') ? 'active' : ''}`" @click="toggleStatus('second')">Second Time</div>
-                        <div :class="`status ${(status == 'third') ? 'active' : ''}`" @click="toggleStatus('third')">Third Time</div>
-                        <div :class="`status ${(status == 'fourth') ? 'active' : ''}`" @click="toggleStatus('fourth')">Fourth Time</div>
+                        <div :class="`status ${(status == 'expiring') ? 'active' : ''}`" @click="toggleStatus('expiring')">Expiring</div>
+                        <div :class="`status ${(status == 'expired') ? 'active' : ''}`" @click="toggleStatus('expired')">Expired</div>
+                        <div :class="`status ${(status == 'classes-remaining') ? 'active' : ''}`" @click="toggleStatus('classes-remaining')">Classes Remaining</div>
                     </div>
                     <table class="cms_table">
                         <thead>
                             <tr>
                                 <th class="stick">Customer</th>
-                                <th class="stick">Sign Up</th>
-                                <th class="stick">First Class</th>
-                                <th class="stick">Last Class</th>
-                                <th class="stick">City</th>
+                                <th class="stick">Class Package</th>
+                                <th class="stick">Purchase Date</th>
+                                <th class="stick">Expiration Date</th>
+                                <th class="stick">Total Class Count</th>
+                                <th class="stick">Remaining Class Count</th>
+                                <th class="stick">Class Package Value</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.customers.data.length > 0">
@@ -63,10 +65,12 @@
                                         <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.last_name }} {{ data.last_name }}</nuxt-link>
                                     </div>
                                 </td>
+                                <td>Package</td>
                                 <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
                                 <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                                <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                                <td>Sample</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>Php 25.00</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -95,15 +99,14 @@
         },
         data () {
             return {
-                range: {
-                    start: new Date(),
-                    end: new Date()
+                form: {
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
                 },
                 loaded: false,
                 rowCount: 0,
-                status: 'first',
-                res: [],
-                types: []
+                status: 'expiring',
+                res: []
             }
         },
         methods: {
@@ -122,18 +125,6 @@
                         me.loader(false)
                     }, 500)
                 })
-            },
-            toggleStatus (id, enabled, status) {
-                const me = this
-                me.$store.state.confirmStatus = true
-                setTimeout( () => {
-                    me.$refs.enabled.confirm.table_name = 'roles'
-                    me.$refs.enabled.confirm.id = id
-                    me.$refs.enabled.confirm.enabled = enabled
-                    me.$refs.enabled.confirm.status = status
-                    me.$refs.enabled.confirm.type = 'role'
-                }, 100)
-                document.body.classList.add('no_scroll')
             },
             toggleStatus (value) {
                 const me = this
@@ -154,18 +145,11 @@
                     }, 500)
                     me.rowCount = document.getElementsByTagName('th').length
                 })
-            },
-            fetchTypes () {
-                const me = this
-                me.$axios.get('api/extras/customer-types').then(res => {
-                    me.types = res.data.customerTypes
-                })
             }
         },
         async mounted () {
             const me = this
             me.fetchData(1)
-            me.fetchTypes()
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)
