@@ -104,10 +104,6 @@
                         }).catch(err => {
                             me.$store.state.errorList = err.response.data.errors
                             me.$store.state.errorStatus = true
-                        }).then(() => {
-                            setTimeout( () => {
-                                me.loader(false)
-                            }, 500)
                         })
                     }).catch(err => {
                         me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

@@ -67,6 +67,7 @@ Vue.mixin({
         },
         logout () {
             let token = this.$cookies.get('token')
+            this.loader(true)
             this.$axios.post('api/logout', {}, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -74,10 +75,16 @@ Vue.mixin({
             }).then(res => {
                 this.$cookies.remove('token')
                 this.$cookies.remove('CSID')
-                this.$store.state.isAuth = false
-                location.href = '/login'
+                if (this.$store.state.isAuth) {
+                    setTimeout(() => {
+                        this.$store.state.isAuth = false
+                        this.loader(false)
+                    }, 500)
+                }
             }).catch(err => {
                 console.log(err)
+            }).then(() => {
+                window.location.assign('/login')
             })
         },
         validateToken () {

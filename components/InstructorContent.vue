@@ -589,8 +589,6 @@
                 let current = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d')
                 let excess = 0
 
-                me.loader(true)
-
                 await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&instructor_id=${me.value.id}&studio_id=${me.form.studio_id}`).then(res => {
                     me.schedules = res.data.schedules
                 })
@@ -778,6 +776,9 @@
                 }
                 me.chartOptions.xaxis.categories = labels
             }
+            setTimeout( () => {
+                me.loader(false)
+            }, 500)
         },
         beforeMount () {
             document.addEventListener('click', this.toggleOverlays)
