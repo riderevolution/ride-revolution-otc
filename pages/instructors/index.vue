@@ -29,8 +29,7 @@
                 <table class="cms_table fixed">
                     <thead>
                         <tr>
-                            <th class="stick">Last Name</th>
-                            <th class="stick">First Name</th>
+                            <th class="stick">Full Name</th>
                             <th class="stick">Nickname</th>
                             <th class="stick">Email Address</th>
                             <th class="stick">Contact No.</th>
@@ -46,10 +45,9 @@
                                             {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                         </div>
                                     </div>
-                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/class-schedules`">{{ data.last_name }}</nuxt-link>
+                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/class-schedules`">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                 </div>
                             </td>
-                            <td><nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/class-schedules`">{{ data.first_name }}</nuxt-link></td>
                             <td>{{ data.instructor_details.nickname }}</td>
                             <td>{{ data.email }}</td>
                             <td>{{ (data.instructor_details != null) ? data.instructor_details.io_contact_number : '-' }}</td>

@@ -15,7 +15,7 @@
                                 <div class="title">Hi, {{ instructor.first_name }}</div>
                             </div>
                             <div class="text">You have <b>{{ instructor.upcomingClassesCount }}</b> upcoming classes this month!</div>
-                            <div class="text">Congratulations! You have taught your <span class="highlight">{{ instructor.upcomingClassesCount }} class.</span></div>
+                            <div class="text">Congratulations! You have taught your <span class="highlight">{{ checkOrdinal(instructor.nthRide) }} class.</span></div>
                             <div class="text violator">Please settle your schedule for this month. Thank you!</div>
                         </div>
                     </div>
@@ -82,6 +82,25 @@
             }
         },
         methods: {
+            checkOrdinal (count) {
+                const me = this
+                let value = count.toString()
+                let lastDigit = value[value.length - 1]
+                switch (lastDigit) {
+                    case '1':
+                        value += 'st'
+                        break
+                    case '2':
+                        value += 'nd'
+                        break
+                    case '3':
+                        value += 'rd'
+                        break
+                    default:
+                        value += 'th'
+                }
+                return value
+            },
             initial () {
                 const me = this
                 let token = me.$cookies.get('token')

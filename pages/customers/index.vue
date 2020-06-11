@@ -44,8 +44,7 @@
                 <table class="cms_table">
                     <thead>
                         <tr>
-                            <th class="stick">Last Name</th>
-                            <th class="stick">First Name</th>
+                            <th class="stick">Full Name</th>
                             <th class="stick">Type</th>
                             <th class="stick">Email Address</th>
                             <th class="stick">Contact No.</th>
@@ -62,10 +61,9 @@
                                             {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                         </div>
                                     </div>
-                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.last_name }}</nuxt-link>
+                                    <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                 </div>
                             </td>
-                            <td><nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`" table_action_text>{{ data.first_name }}</nuxt-link></td>
                             <td>{{ data.customer_details.customer_type.name }}</td>
                             <td>{{ data.email }}</td>
                             <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>

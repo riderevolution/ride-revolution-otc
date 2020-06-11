@@ -13,7 +13,7 @@
                     <div class="user_details">
                         <h1 class="user_name">
                             {{ instructor.first_name }} {{ instructor.last_name }}
-                            <span class="violator">{{ instructor.upcomingClassesCount }} Classes Taught</span>
+                            <span class="violator">{{ checkOrdinal(instructor.nthRide) }} Classes Taught</span>
                         </h1>
                         <div class="user_contact">
                             <a :href="`tel:${instructor.instructor_details.io_contact_number}`" class="number">{{ instructor.instructor_details.io_contact_number }}</a>
@@ -85,6 +85,25 @@
             }
         },
         methods: {
+            checkOrdinal (count) {
+                const me = this
+                let value = count.toString()
+                let lastDigit = value[value.length - 1]
+                switch (lastDigit) {
+                    case '1':
+                        value += 'st'
+                        break
+                    case '2':
+                        value += 'nd'
+                        break
+                    case '3':
+                        value += 'rd'
+                        break
+                    default:
+                        value += 'th'
+                }
+                return value
+            },
             fetchData () {
                 const me = this
                 me.loader(true)
