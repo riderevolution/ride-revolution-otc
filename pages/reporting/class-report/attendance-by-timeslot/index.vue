@@ -1,7 +1,7 @@
 <template>
-    <div class="content">
-        <transition name="fade">
-            <div id="admin" class="cms_dashboard" v-if="loaded">
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
                     <div class="action_wrapper">
                         <div>
@@ -76,9 +76,11 @@
                     </div>
                 </section>
             </div>
-        </transition>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+            <transition name="fade">
+                <foot v-if="$store.state.isAuth" />
+            </transition>
+        </div>
+    </transition>
 </template>
 
 <script>

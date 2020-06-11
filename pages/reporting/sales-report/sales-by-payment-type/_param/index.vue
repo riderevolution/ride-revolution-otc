@@ -1,7 +1,7 @@
 <template>
-    <div class="content">
-        <transition name="fade">
-            <div id="admin" class="cms_dashboard" v-if="loaded">
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
                     <nuxt-link to="/reporting/sales-report/sales-by-payment-type" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Payment Type</span></nuxt-link>
                     <div class="action_wrapper">
@@ -53,9 +53,11 @@
                     </table>
                 </section>
             </div>
-        </transition>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+            <transition name="fade">
+                <foot v-if="$store.state.isAuth" />
+            </transition>
+        </div>
+    </transition>
 </template>
 
 <script>

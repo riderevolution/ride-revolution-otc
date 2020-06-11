@@ -1,88 +1,92 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table" v-if="loaded">
-                <div class="action_wrapper">
-                    <div>
-                        <div class="header_title">
-                            <h1>Summary of Instructor Subbing per Period</h1>
-                            <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <section id="top_content" class="table">
+                    <div class="action_wrapper">
+                        <div>
+                            <div class="header_title">
+                                <h1>Summary of Instructor Subbing per Period</h1>
+                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                            </div>
+                            <h2 class="header_subtitle">Instructor Subbing per class schedule.</h2>
                         </div>
-                        <h2 class="header_subtitle">Instructor Subbing per class schedule.</h2>
+                        <div class="actions">
+                            <a href="javascript:void(0)" class="action_btn">Print</a>
+                            <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                        </div>
                     </div>
-                    <div class="actions">
-                        <a href="javascript:void(0)" class="action_btn">Print</a>
-                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                            <div class="form_group">
+                                <label for="type">Branch</label>
+                                <select class="default_select alternate" name="type">
+                                    <option value="" selected>All Customer Types</option>
+                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="type">Instructor</label>
+                                <select class="default_select alternate" name="type">
+                                    <option value="" selected>All Instructor</option>
+                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="start_date">Start Date</label>
+                                <input type="date" name="start_date" class="default_text date" />
+                            </div>
+                            <div class="form_group margin">
+                                <label for="end_date">End Date</label>
+                                <input type="date" name="end_date" class="default_text date" />
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
                     </div>
-                </div>
-                <div class="filter_wrapper">
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
-                        <div class="form_group">
-                            <label for="type">Branch</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="type">Instructor</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Instructor</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="start_date">Start Date</label>
-                            <input type="date" name="start_date" class="default_text date" />
-                        </div>
-                        <div class="form_group margin">
-                            <label for="end_date">End Date</label>
-                            <input type="date" name="end_date" class="default_text date" />
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                </div>
-            </section>
-            <section id="content" v-if="loaded">
-                <div class="cms_table_toggler">
-                    <div class="total">Total Subbed Classes: {{ totalItems(res.customers.total) }}</div>
-                </div>
-                <table class="cms_table">
-                    <thead>
-                        <tr>
-                            <th class="stick">Date</th>
-                            <th class="stick">Time</th>
-                            <th class="stick">Class Type</th>
-                            <th class="stick">Schedule Released</th>
-                            <th class="stick">Branch</th>
-                            <th class="stick">Primary Instructor</th>
-                            <th class="stick">Substitute Instructor</th>
-                            <th class="stick">Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="res.customers.data.length > 0">
-                        <tr v-for="(data, key) in res.customers.data" :key="key">
-                            <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                            <td>{{ $moment().format('h:mm A') }}</td>
-                            <td>Sample</td>
-                            <td>Yes</td>
-                            <td>Malate</td>
-                            <td>Steve Kurt</td>
-                            <td>Young Steve</td>
-                            <td>HelLowszxc</td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
-            </section>
+                </section>
+                <section id="content">
+                    <div class="cms_table_toggler">
+                        <div class="total">Total Subbed Classes: {{ totalItems(res.customers.total) }}</div>
+                    </div>
+                    <table class="cms_table">
+                        <thead>
+                            <tr>
+                                <th class="stick">Date</th>
+                                <th class="stick">Time</th>
+                                <th class="stick">Class Type</th>
+                                <th class="stick">Schedule Released</th>
+                                <th class="stick">Branch</th>
+                                <th class="stick">Primary Instructor</th>
+                                <th class="stick">Substitute Instructor</th>
+                                <th class="stick">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="res.customers.data.length > 0">
+                            <tr v-for="(data, key) in res.customers.data" :key="key">
+                                <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
+                                <td>{{ $moment().format('h:mm A') }}</td>
+                                <td>Sample</td>
+                                <td>Yes</td>
+                                <td>Malate</td>
+                                <td>Steve Kurt</td>
+                                <td>Young Steve</td>
+                                <td>HelLowszxc</td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td :colspan="rowCount">No Result(s) Found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
+                </section>
+            </div>
+            <transition name="fade">
+                <foot v-if="$store.state.isAuth" />
+            </transition>
         </div>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>

@@ -1,140 +1,144 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table">
-                <div class="action_wrapper">
-                    <div>
-                        <div class="header_title">
-                            <h1>Attendance with Revenue</h1>
-                            <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <section id="top_content" class="table">
+                    <div class="action_wrapper">
+                        <div>
+                            <div class="header_title">
+                                <h1>Attendance with Revenue</h1>
+                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                            </div>
+                            <h2 class="header_subtitle">Revenue for each class schedule</h2>
                         </div>
-                        <h2 class="header_subtitle">Revenue for each class schedule</h2>
+                        <div class="actions">
+                            <a href="javascript:void(0)" class="action_btn">Print</a>
+                            <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                        </div>
                     </div>
-                    <div class="actions">
-                        <a href="javascript:void(0)" class="action_btn">Print</a>
-                        <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                            <div class="form_group">
+                                <label for="type">Branch</label>
+                                <select class="default_select alternate" name="type">
+                                    <option value="" selected>All Customer Types</option>
+                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="type">Class Type</label>
+                                <select class="default_select alternate" name="type">
+                                    <option value="" selected>All Customer Types</option>
+                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="type">Class Package</label>
+                                <select class="default_select alternate" name="type">
+                                    <option value="" selected>All Customer Types</option>
+                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="type">Instructor</label>
+                                <select class="default_select alternate" name="type">
+                                    <option value="" selected>All Customer Types</option>
+                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="type">Customer Type</label>
+                                <select class="default_select alternate" name="type">
+                                    <option value="" selected>All Customer Types</option>
+                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="start_date">Start Date</label>
+                                <input type="date" name="start_date" class="default_text date" />
+                            </div>
+                            <div class="form_group margin">
+                                <label for="end_date">End Date</label>
+                                <input type="date" name="end_date" class="default_text date" />
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
                     </div>
-                </div>
-                <div class="filter_wrapper">
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
-                        <div class="form_group">
-                            <label for="type">Branch</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="type">Class Type</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="type">Class Package</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="type">Instructor</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="type">Customer Type</label>
-                            <select class="default_select alternate" name="type">
-                                <option value="" selected>All Customer Types</option>
-                                <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="start_date">Start Date</label>
-                            <input type="date" name="start_date" class="default_text date" />
-                        </div>
-                        <div class="form_group margin">
-                            <label for="end_date">End Date</label>
-                            <input type="date" name="end_date" class="default_text date" />
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                </div>
-            </section>
-            <section id="content">
-                <table class="cms_table_accordion">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Class Type</th>
-                            <th>Instructor</th>
-                            <th>Total Riders</th>
-                            <th>Total Revenue</th>
-                            <th>Total Discount</th>
-                            <th>Total Net Revenue</th>
-                        </tr>
-                    </thead>
-                    <tbody :class="`${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res" v-if="res.length > 0">
-                        <tr class="parent">
-                            <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment().format('MMMM DD, YYYY') }}</td>
-                            <td>{{ $moment().format('h:mm A') }}</td>
-                            <td>Ride Rev</td>
-                            <td>Billie Capistrano</td>
-                            <td>4</td>
-                            <td>Php 3,000</td>
-                            <td>4</td>
-                            <td>Php 3,000</td>
-                        </tr>
-                        <tr>
-                            <td class="pads" colspan="8">
-                                <div class="accordion_table">
-                                    <table class="cms_table">
-                                        <thead>
-                                            <tr>
-                                                <th>Spot</th>
-                                                <th>Customer</th>
-                                                <th>Status</th>
-                                                <th>Package Used</th>
-                                                <th>Revenue</th>
-                                                <th>Discount</th>
-                                                <th>Net Revenue</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody v-if="role.staff_details.length > 0">
-                                            <tr v-for="(staff, key) in role.staff_details" :key="key">
-                                                <td>{{ key + 1 }}</td>
-                                                <td>Anna Walker</td>
-                                                <td>Paying</td>
-                                                <td>First Timer Package</td>
-                                                <td>Php 1,100</td>
-                                                <td>Php 0</td>
-                                                <td>Php 1,100</td>
-                                            </tr>
-                                        </tbody>
-                                        <tbody class="no_results" v-else>
-                                            <tr>
-                                                <td :colspan="rowCount">No Result(s) Found.</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
+                </section>
+                <section id="content">
+                    <table class="cms_table_accordion">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Class Type</th>
+                                <th>Instructor</th>
+                                <th>Total Riders</th>
+                                <th>Total Revenue</th>
+                                <th>Total Discount</th>
+                                <th>Total Net Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody :class="`${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res" v-if="res.length > 0">
+                            <tr class="parent">
+                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment().format('MMMM DD, YYYY') }}</td>
+                                <td>{{ $moment().format('h:mm A') }}</td>
+                                <td>Ride Rev</td>
+                                <td>Billie Capistrano</td>
+                                <td>4</td>
+                                <td>Php 3,000</td>
+                                <td>4</td>
+                                <td>Php 3,000</td>
+                            </tr>
+                            <tr>
+                                <td class="pads" colspan="8">
+                                    <div class="accordion_table">
+                                        <table class="cms_table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Spot</th>
+                                                    <th>Customer</th>
+                                                    <th>Status</th>
+                                                    <th>Package Used</th>
+                                                    <th>Revenue</th>
+                                                    <th>Discount</th>
+                                                    <th>Net Revenue</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody v-if="role.staff_details.length > 0">
+                                                <tr v-for="(staff, key) in role.staff_details" :key="key">
+                                                    <td>{{ key + 1 }}</td>
+                                                    <td>Anna Walker</td>
+                                                    <td>Paying</td>
+                                                    <td>First Timer Package</td>
+                                                    <td>Php 1,100</td>
+                                                    <td>Php 0</td>
+                                                    <td>Php 1,100</td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody class="no_results" v-else>
+                                                <tr>
+                                                    <td :colspan="rowCount">No Result(s) Found.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td :colspan="rowCount">No Result(s) Found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+            <transition name="fade">
+                <foot v-if="$store.state.isAuth" />
+            </transition>
         </div>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -158,6 +162,7 @@
                 total_count: 0,
                 studios: [],
                 types: [],
+                loaded: false
             }
         },
         methods: {
@@ -233,8 +238,11 @@
                 me.rowCount = 4
                 if (value != -1) {
                     me.$axios.get(`api/roles?enabled=${value}`).then(res => {
-                        me.res = res.data.roles
-                        me.total_count = me.res.length
+                        setTimeout( () => {
+                            me.loaded = true
+                            me.res = res.data.roles
+                            me.total_count = me.res.length
+                        }, 500)
                     }).catch(err => {
                         me.$store.state.errorList = err.response.data.errors
                         me.$store.state.errorStatus = true
@@ -249,8 +257,11 @@
                     })
                 } else {
                     me.$axios.get(`api/staff?enabled=0`).then(res => {
-                        me.res = res.data.staff.data
-                        me.total_count = me.res.length
+                        setTimeout( () => {
+                            me.loaded = true
+                            me.res = res.data.staff.data
+                            me.total_count = me.res.length
+                        }, 500)
                     }).catch(err => {
                         me.$store.state.errorList = err.response.data.errors
                         me.$store.state.errorStatus = true
