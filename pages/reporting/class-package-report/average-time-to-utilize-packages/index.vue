@@ -6,35 +6,14 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>Remaining Package Value</h1>
+                                <h1>Average Time to Utilize Packages</h1>
                                 <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
                             </div>
-                            <h2 class="header_subtitle">
-                                Summary of rider count and revenue per class schedule
-                                <ul>
-                                    <li>Classes which are after the cutoff date are excluded</li>
-                                    <li>Comps are excluded</li>
-                                    <li>The value of unlimiteds is calculated as a ratio of days that the series has been active over the total days to expire of the series</li>
-                                </ul>
-                            </h2>
                         </div>
                         <div class="actions">
                             <a href="javascript:void(0)" class="action_btn alternate">Print</a>
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
-                    </div>
-                    <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
-                            <div class="form_group">
-                                <label for="start_date">Start Date</label>
-                                <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
-                            </div>
-                            <div class="form_group margin">
-                                <label for="end_date">End Date</label>
-                                <input type="date" name="end_date" v-model="form.end_date"  class="default_text date" />
-                            </div>
-                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                        </form>
                     </div>
                 </section>
                 <section id="content">
@@ -42,26 +21,17 @@
                         <thead>
                             <tr>
                                 <th>Class Package</th>
-                                <th>Starting Class Count</th>
-                                <th>Starting Value</th>
-                                <th>Remaining Class Count</th>
-                                <th>Remaining Value</th>
+                                <th>Total Package Count</th>
+                                <th>Total Sales Amount</th>
+                                <th>Utilization Rate</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><b>Summary</b></td>
-                                <td><b>20,000</b></td>
-                                <td><b>Php 1,000,000</b></td>
-                                <td><b>777</b></td>
-                                <td><b>Php 10,000</b></td>
-                            </tr>
                             <tr v-for="(n, key) in 10" :key="key">
                                 <td>Package</td>
-                                <td>165</td>
-                                <td>Php 23</td>
-                                <td>23</td>
-                                <td>Php 23</td>
+                                <td>{{ n }}</td>
+                                <td>Php 23,000</td>
+                                <td>23 Days</td>
                             </tr>
                         </tbody>
                         <!-- <tbody class="no_results" v-else>
@@ -90,10 +60,6 @@
         },
         data () {
             return {
-                form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
-                },
                 loaded: false,
                 rowCount: 0,
                 res: []

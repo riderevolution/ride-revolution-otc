@@ -194,6 +194,10 @@
                                     {
                                         title: 'Class Package Expiration',
                                         link: '/reporting/class-package-report/class-package-expiration'
+                                    },
+                                    {
+                                        title: 'Average Time to Utilize Packages',
+                                        link: '/reporting/class-package-report/average-time-to-utilize-packages'
                                     }
                                 ]
                             },
