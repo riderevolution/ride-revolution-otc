@@ -3812,22 +3812,33 @@ input::placeholder
             sf_pro_regular(14px)
             color: $black
             span
-                sf_pro_regular(14px)
+                sf_pro_regular(18px)
                 padding-right: 10px
             &.margin
                 margin-left: 20px
             &.green
                 span
-                    color: $green
+                    color: #74f4da
             &.yellow
                 span
                     color: $yellow
             &.red
                 span
-                    color: $red_alt
+                    color: #fb9096
             &.violet
+                position: relative
                 span
-                    color: $violet
+                    position: absolute
+                    top: 50%
+                    left: 0
+                    border-radius: 50%
+                    width: 15px
+                    height: 15px
+                    transform: translateY(-50%)
+                    background-color: transparent
+                    border: 3px solid $gray
+                p
+                    padding-left: 30px
     .calendar_actions
         padding: 20px
         display: flex
@@ -4093,7 +4104,7 @@ input::placeholder
                                     width: 50px
                                     height: 50px
                                     background-color: transparent
-                                    border: 1px solid transparent
+                                    border: 6px solid transparent
                                     border-radius: 50%
                                     transform: translateY(-50%)
                                     transition: .3s ease-in-out
@@ -4115,35 +4126,35 @@ input::placeholder
                                             background-color: $violet
                                     &.single
                                         background-color: $white
-                                        border: 1px solid $black
+                                        border: 6px solid $black
                                         transition: .3s ease-in-out
                                     &.available
-                                        background-color: $green
-                                        border: 1px solid $green
+                                        background-color: #74f4da
+                                        border: 6px solid #74f4da
                                         transition: .3s ease-in-out
+                                        &.circle
+                                            background-color: transparent
+                                            border: 6px solid #74f4da
                                         &.single
-                                            border: 2px solid $black
+                                            border: 6px solid $black
                                             transition: .3s ease-in-out
-                                        .header_day
-                                            color: $white
                                     &.unavailable
-                                        background-color: $red
-                                        border: 1px solid $red
+                                        background-color: #fb9096
+                                        border: 6px solid #fb9096
                                         transition: .3s ease-in-out
                                         &.single
-                                            border: 2px solid $black
+                                            border: 6px solid $black
                                             transition: .3s ease-in-out
-                                        .header_day
-                                            color: $white
                                     &.partially-available
                                         background-color: $yellow
-                                        border: 1px solid $yellow
+                                        border: 6px solid $yellow
                                         transition: .3s ease-in-out
+                                        &.circle
+                                            background-color: transparent
+                                            border: 6px solid $yellow
                                         &.single
-                                            border: 2px solid $black
+                                            border: 6px solid $black
                                             transition: .3s ease-in-out
-                                        .header_day
-                                            color: $white
                                     .header_day
                                         position: absolute
                                         top: 50%

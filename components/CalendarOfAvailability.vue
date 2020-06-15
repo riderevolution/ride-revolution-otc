@@ -40,7 +40,7 @@
                 <div class="legend_title green"><span>&#x25CF;</span> Available</div>
                 <div class="legend_title margin yellow"><span>&#x25CF;</span> Partially Available</div>
                 <div class="legend_title margin red"><span>&#x25CF;</span> Unavailable</div>
-                <div class="legend_title margin violet"><span>&#x25CF;</span> You have a scheduled class</div>
+                <div class="legend_title margin violet"><span></span> <p>You have a scheduled class</p></div>
             </div>
         </div>
         <div class="schedule">
@@ -49,7 +49,7 @@
             </div>
             <div class="bottom">
                 <ul>
-                    <li v-for="(data, key) in schedules" :key="key">
+                    <li v-for="(data, key) in schedules" :key="key" v-if="data.status != 'open'">
                         <div class="item">
                             <div :class="`date ${checkClass(data)}`">
                                 <span>&#x25CF;</span>
@@ -78,21 +78,21 @@
         <transition name="fade">
             <calendar-availability-action-prompt v-if="$store.state.calendarAvailabilityActionStatus" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
         </transition>
-        <transition name="fade">
+        <!-- <transition name="fade">
             <calendar-availability-marked v-if="$store.state.calendarAvailabilityMarkedStatus" :schedules="targetSchedules" />
         </transition>
         <transition name="fade">
             <calendar-availability-unmarked v-if="$store.state.calendarAvailabilityUnmarkedStatus" :schedules="targetSchedules" />
-        </transition>
+        </transition> -->
         <transition name="fade">
             <calendar-availability-success v-if="$store.state.calendarAvailabilitySuccessStatus" :title="title" :message="message" />
         </transition>
         <transition name="fade">
             <calendar-availability-prompt v-if="$store.state.calendarAvailabilityPromptStatus" :instructor="instructor" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
         </transition>
-        <transition name="fade">
+        <!-- <transition name="fade">
             <calendar-availability-partially-prompt v-if="$store.state.calendarAvailabilityPartiallyPromptStatus" :type="partiallyType" :instructor="instructor" />
-        </transition>
+        </transition> -->
     </div>
 </template>
 
@@ -100,9 +100,9 @@
     import CalendarAvailabilityMenuPrompt from './modals/CalendarAvailabilityMenuPrompt'
     import CalendarAvailabilityPrompt from './modals/CalendarAvailabilityPrompt'
     import CalendarAvailabilityActionPrompt from './modals/CalendarAvailabilityActionPrompt'
-    import CalendarAvailabilityPartiallyPrompt from './modals/CalendarAvailabilityPartiallyPrompt'
-    import CalendarAvailabilityMarked from './modals/CalendarAvailabilityMarked'
-    import CalendarAvailabilityUnmarked from './modals/CalendarAvailabilityUnmarked'
+    // import CalendarAvailabilityPartiallyPrompt from './modals/CalendarAvailabilityPartiallyPrompt'
+    // import CalendarAvailabilityMarked from './modals/CalendarAvailabilityMarked'
+    // import CalendarAvailabilityUnmarked from './modals/CalendarAvailabilityUnmarked'
     import CalendarAvailabilitySuccess from './modals/CalendarAvailabilitySuccess'
     export default {
         props: {
@@ -114,9 +114,9 @@
             CalendarAvailabilityMenuPrompt,
             CalendarAvailabilityPrompt,
             CalendarAvailabilityActionPrompt,
-            CalendarAvailabilityPartiallyPrompt,
-            CalendarAvailabilityMarked,
-            CalendarAvailabilityUnmarked,
+            // CalendarAvailabilityPartiallyPrompt,
+            // CalendarAvailabilityMarked,
+            // CalendarAvailabilityUnmarked,
             CalendarAvailabilitySuccess
         },
         data () {
@@ -158,9 +158,9 @@
                     case 'partially-available':
                         result = 'yellow'
                         break
-                    case 'open':
-                        result = 'violet'
-                        break
+                    // case 'open':
+                    //     result = 'violet'
+                    //     break
                 }
                 return result
             },
@@ -246,9 +246,8 @@
                                 tableRow.innerHTML += `
                                     <td id="col_${i}" class='day_wrapper fade_in'>
                                         <div class='header_wrapper alt'>
-                                            <div id="day_${startDate}" class="header_day_wrapper ${me.populateClass(startDate)}">
+                                            <div id="day_${startDate}" class="header_day_wrapper ${me.populateClass(startDate)} ${me.populateScheduler(startDate)}">
                                                 <div class='header_day'>${startDate}</div>
-                                                ${me.populateScheduler(startDate)}
                                             </div>
                                         </div>
                                     </td>`
@@ -370,43 +369,42 @@
                             } else {
                                 /**
                                  * iterate each schedule */
-                                me.schedules.forEach((data, index) => {
-                                    let scheduleCurrent = me.$moment(data.date).format('D')
-                                    /**
-                                     * check same date */
-                                    if (target.id.split('_')[1] == scheduleCurrent) {
-                                        /**
-                                         * check the date status */
-                                        if (data.scheduledDates.length > 0) {
-                                            if (data.status == 'available' || data.status == 'partially-available') {
-                                                me.targetSchedules = data.scheduledDates
-
-                                                /** toggle marked prompt status */
-                                                me.$store.state.calendarAvailabilityMarkedStatus = true
-                                                me.partiallyType = 'marked'
-                                                document.body.classList.add('no_scroll')
-                                            } else if (data.status == 'open') {
-                                                me.targetSchedules = []
-
-                                                let formData = new FormData()
-                                                formData.append('studio_id', me.form.studio_id)
-                                                formData.append('instructor_id', me.instructor.id)
-                                                formData.append('date', data.date)
-                                                me.$axios.post('api/seats/schedules', formData).then(res => {
-                                                    res.data.scheduledDates.forEach((item, index) => {
-                                                        item.checked = true
-                                                        me.targetSchedules.push(item)
-                                                    })
-                                                })
-
-                                                /** toggle unmarked prompt status */
-                                                me.partiallyType = 'unmarked'
-                                                me.$store.state.calendarAvailabilityUnmarkedStatus = true
-                                                document.body.classList.add('no_scroll')
-                                            }
-                                        }
-                                    }
-                                })
+                                // me.schedules.forEach((data, index) => {
+                                //     let scheduleCurrent = me.$moment(data.date).format('D')
+                                //     /**
+                                //      * check same date */
+                                //     if (target.id.split('_')[1] == scheduleCurrent) {
+                                //         /**
+                                //          * check the date status */
+                                //         if (data.scheduledDates.length > 0) {
+                                //             if (data.status == 'available' || data.status == 'partially-available') {
+                                //                 me.targetSchedules = data.scheduledDates
+                                //
+                                //                 /** toggle marked prompt status */
+                                //                 me.$store.state.calendarAvailabilityMarkedStatus = true
+                                //                 me.partiallyType = 'marked'
+                                //                 document.body.classList.add('no_scroll')
+                                //             } else if (data.status == 'open') {
+                                //                 me.targetSchedules = []
+                                //
+                                //                 let formData = new FormData()
+                                //                 formData.append('studio_id', me.form.studio_id)
+                                //                 formData.append('instructor_id', me.instructor.id)
+                                //                 formData.append('date', data.date)
+                                //                 me.$axios.post('api/seats/schedules', formData).then(res => {
+                                //                     res.data.scheduledDates.forEach((item, index) => {
+                                //                         me.targetSchedules.push(item)
+                                //                     })
+                                //                 })
+                                //
+                                //                 /** toggle unmarked prompt status */
+                                //                 me.partiallyType = 'unmarked'
+                                //                 me.$store.state.calendarAvailabilityUnmarkedStatus = true
+                                //                 document.body.classList.add('no_scroll')
+                                //             }
+                                //         }
+                                //     }
+                                // })
                                 target.classList.add('single')
                             }
                             me.checkClickDates(tempStart, tempEnd, tempExcess, target)
@@ -552,9 +550,9 @@
                     if (date == scheduleCurrent) {
                         if (data.scheduledDates.length > 0) {
                             if (data.status == 'open') {
-                                result += `<div class="circle open"></div>`
+                                // result += `<div class="circle open"></div>`
                             } else {
-                                result += `<div class="circle"></div>`
+                                result += `circle`
                             }
                         }
                     }
