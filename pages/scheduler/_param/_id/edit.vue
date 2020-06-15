@@ -23,7 +23,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="start_time">Start Time <span>*</span></label>
-                                        <input type="time" name="start_time" :min="$moment().format('HH:mm')" v-model="res.start_time_military" v-validate="'required'" class="default_text">
+                                        <input type="time" name="start_time" :min="$moment().format('HH:mm')" v-model="res.start_time_military" v-validate="'required'" class="default_text" @change="getTime($event, 'dynamic')">
                                         <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -41,7 +41,7 @@
                                         <label for="class_type_id">Class Type <span>*</span></label>
                                         <select :class="`default_select alternate ${(form.hasTime) ? '' : 'disabled'}`" name="class_type_id" v-validate="'required'" @change="getClassLength($event)">
                                             <option value="" selected disabled>Select a Class Type</option>
-                                            <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key" :selected="me.form.class_type_id == classType.id">{{ classType.name }}</option>
+                                            <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key" :selected="form.class_type_id == classType.id">{{ classType.name }}</option>
                                         </select>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('class_type_id')">{{ errors.first('class_type_id') | properFormat }}</span></transition>
                                     </div>
@@ -212,6 +212,7 @@
                     hasTime: false,
                     classLengthTemp: '',
                     classLength: '',
+                    start_time: '',
                     instructor_id: '',
                     class_type_id: '',
                     credits: 0
@@ -302,6 +303,7 @@
                     if (res.data) {
                         me.form.classLength = res.data.classType.class_length
                         me.form.classLengthTemp = `${res.data.classType.class_length.split('+')[1].split(':')[0]} hrs, ${res.data.classType.class_length.split('+')[1].split(':')[1]} mins`
+                        me.getTime(me.form.start_time, 'static')
                     }
                 })
             },
@@ -394,6 +396,7 @@
                             me.isPrivate = (me.res.private_class == 1) ? true : false
                             me.form.instructor_id = me.res.instructor_schedules[0].user_id
                             me.form.class_type_id = me.res.class_type_id
+                            me.form.start_time = me.res.start_time_military
                             me.$axios.get('api/packages/class-types').then(res => {
                                 me.classTypes = res.data.classTypes.data
                             })
@@ -403,7 +406,7 @@
                                 let formData = new FormData()
                                 formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-MM-DD'))
                                 formData.append('start_time', me.res.start_time_military)
-                                formData.append('class_type_id', me.res.class_type_id)
+                                formData.append('class_type_id', me.form.class_type_id)
                                 formData.append('studio_id', me.res.studio_id)
                                 me.$axios.post(`api/available-instructors`, formData).then(res => {
                                     me.instructors = res.data.instructors
@@ -425,19 +428,30 @@
                     }, 500)
                 })
             },
-            getTime (event) {
+            getTime (event, type) {
                 const me = this
-                let target = event.target.value
+                let target
+                switch (type) {
+                    case 'static':
+                        target = me.form.start_time
+                        break
+                    case 'dynamic':
+                        target = event.target.value
+                        break
+                }
+                me.form.start_time = target
                 if (target) {
                     me.form.hasTime = true
-                    let formData = new FormData()
-                    formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-MM-DD'))
-                    formData.append('start_time', target)
-                    formData.append('class_type_id', me.form.class_type_id)
-                    formData.append('studio_id', me.$store.state.user.current_studio_id)
-                    me.$axios.post(`api/available-instructors`, formData).then(res => {
-                        me.instructors = res.data.instructors
-                    })
+                    if (me.form.class_type_id != '') {
+                        let formData = new FormData()
+                        formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-MM-DD'))
+                        formData.append('start_time', target)
+                        formData.append('class_type_id', me.form.class_type_id)
+                        formData.append('studio_id', me.$store.state.user.current_studio_id)
+                        me.$axios.post(`api/available-instructors`, formData).then(res => {
+                            me.instructors = res.data.instructors
+                        })
+                    }
                 } else {
                     me.form.hasTime = false
                 }
