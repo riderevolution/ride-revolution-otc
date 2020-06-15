@@ -82,17 +82,13 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
-                        let formData = new FormData(document.getElementById('default_form'))
-                        formData.append('scheduled_dates', JSON.stringify(me.$refs.options.options))
-                        formData.append('_method', 'PATCH')
-                        me.$axios.post('api/instructor-availabilities', formData).then(res => {
-                            console.log(res.data);
-                        })
+                        me.$store.state.calendarAvailabilityPartiallyPromptStatus = true
+                        me.$parent.options = me.$refs.options.options
                     } else {
-                        me.$scrollTo('.validation_errors', {
-                            container: '.default_modal',
-                            offset: -250
-                        })
+                        // me.$scrollTo('.validation_errors', {
+                        //     container: '.default_modal',
+                        //     offset: -250
+                        // })
                     }
                 })
             },

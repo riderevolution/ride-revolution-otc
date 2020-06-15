@@ -91,7 +91,7 @@
             <calendar-availability-prompt v-if="$store.state.calendarAvailabilityPromptStatus" :instructor="instructor" :targetDate="targetDate" :availabilityStatus="availabilityStatus" />
         </transition>
         <transition name="fade">
-            <calendar-availability-partially-prompt v-if="$store.state.calendarAvailabilityPartiallyPromptStatus" :type="partiallyType" :targetDate="targetDate" :instructor="instructor" />
+            <calendar-availability-partially-prompt v-if="$store.state.calendarAvailabilityPartiallyPromptStatus" :type="partiallyType" :instructor="instructor" />
         </transition>
     </div>
 </template>
@@ -100,6 +100,7 @@
     import CalendarAvailabilityMenuPrompt from './modals/CalendarAvailabilityMenuPrompt'
     import CalendarAvailabilityPrompt from './modals/CalendarAvailabilityPrompt'
     import CalendarAvailabilityActionPrompt from './modals/CalendarAvailabilityActionPrompt'
+    import CalendarAvailabilityPartiallyPrompt from './modals/CalendarAvailabilityPartiallyPrompt'
     import CalendarAvailabilityMarked from './modals/CalendarAvailabilityMarked'
     import CalendarAvailabilityUnmarked from './modals/CalendarAvailabilityUnmarked'
     import CalendarAvailabilitySuccess from './modals/CalendarAvailabilitySuccess'
@@ -113,6 +114,7 @@
             CalendarAvailabilityMenuPrompt,
             CalendarAvailabilityPrompt,
             CalendarAvailabilityActionPrompt,
+            CalendarAvailabilityPartiallyPrompt,
             CalendarAvailabilityMarked,
             CalendarAvailabilityUnmarked,
             CalendarAvailabilitySuccess
@@ -129,6 +131,7 @@
                 studios: [],
                 schedules: [],
                 targetSchedules: [],
+                options: [],
                 firstDate: '',
                 lastDate: '',
                 targetDate: [],
@@ -397,7 +400,7 @@
                                                 })
 
                                                 /** toggle unmarked prompt status */
-                                                // me.partiallyType = 'unmarked'
+                                                me.partiallyType = 'unmarked'
                                                 me.$store.state.calendarAvailabilityUnmarkedStatus = true
                                                 document.body.classList.add('no_scroll')
                                             }

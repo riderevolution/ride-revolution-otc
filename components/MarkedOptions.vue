@@ -14,8 +14,7 @@
             </div>
             <div class="form_group full" v-show="!data.checked">
                 <label for="remarks">Remarks <span>*</span></label>
-                <textarea name="remarks[]" rows="2" id="remarks" class="default_text" v-validate="'required|max:500'" placeholder="Enter your remarks"></textarea>
-                <transition name="slide"><span class="validation_errors" v-if="errors.has('remarks')">{{ errors.first('remarks') | properFormat }}</span></transition>
+                <textarea name="remarks[]" rows="2" id="remarks" class="default_text" placeholder="Enter your remarks"></textarea>
             </div>
             <input type="hidden" name="scheduled_date_id[]" :value="data.id">
         </div>
@@ -24,6 +23,7 @@
 
 <script>
     export default {
+        inject: ['$validator'],
         props: {
             schedules: {
                 default: null
