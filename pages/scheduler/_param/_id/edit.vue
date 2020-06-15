@@ -20,23 +20,10 @@
                         </div>
                         <div class="form_main_group">
                             <div class="form_flex">
-                                <div class="form_group flex alternate">
-                                    <label>Start Time<span>*</span></label>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="start_time_hour" class="default_text" autocomplete="off" v-model="form.start.hour" maxlength="2" v-validate="'required|numeric|max_value:12|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_hour')">{{ errors.first('start_time_hour') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_flex_separator">:</div>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="start_time_minutes" class="default_text" autocomplete="off" v-model="form.start.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_minutes')">{{ errors.first('start_time_minutes') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="start_convention" class="default_text number no_click" autocomplete="off" v-model="form.start.convention" v-validate="'required'">
-                                        <div class="up" @click="changeConvention()"></div>
-                                        <div class="down" @click="changeConvention()"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_convention')">{{ errors.first('start_convention') | properFormat }}</span></transition>
-                                    </div>
+                                <div class="form_group">
+                                    <label for="start_time">Start Time <span>*</span></label>
+                                    <input type="time" name="start_time" :min="$moment().format('HH:mm')" v-model="res.start_time_military" v-validate="'required'" class="default_text">
+                                    <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="peak_type">Peak Type <span>*</span></label>
@@ -220,11 +207,6 @@
                 instructors: [],
                 prompt: false,
                 form: {
-                    start: {
-                        hour: '-',
-                        mins: '-',
-                        convention: 'AM'
-                    },
                     classLengthTemp: '',
                     classLength: '',
                     instructor_id: '',
@@ -360,7 +342,6 @@
                         if (!me.prompt) {
                             let formData = new FormData(document.getElementById('default_form'))
                             formData.append('_method', 'PATCH')
-                            formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
                             formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
                             formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
                             formData.append('class_length', me.form.classLength)
@@ -415,9 +396,6 @@
                     me.form.classLengthTemp = me.res.class_length_unformatted
                     me.form.classLength = me.res.class_length
                     me.form.credits = me.res.class_credits
-                    me.form.start.hour = me.res.start_time.split(':')[0]
-                    me.form.start.mins = me.res.start_time.split(':')[1].split(' ')[0]
-                    me.form.start.convention = me.res.start_time.split(':')[1].split(' ')[1]
                     me.customerTypes = res.data.schedule.customer_types
                     // me.isRepeat = (me.res.repeat == 1) ? true : false
                     // me.prompt = (me.res.repeat == 1) ? true : false

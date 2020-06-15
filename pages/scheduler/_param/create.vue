@@ -20,23 +20,10 @@
                         </div>
                         <div class="form_main_group">
                             <div class="form_flex">
-                                <div class="form_group flex alternate">
-                                    <label>Start Time<span>*</span></label>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="start_time_hour" class="default_text" autocomplete="off" v-model="form.start.hour" maxlength="2" v-validate="'required|numeric|max_value:12|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_hour')">{{ errors.first('start_time_hour') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_flex_separator">:</div>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="start_time_minutes" class="default_text" autocomplete="off" v-model="form.start.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_minutes')">{{ errors.first('start_time_minutes') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="start_convention" class="default_text number no_click" autocomplete="off" v-model="form.start.convention" v-validate="'required'">
-                                        <div class="up" @click="changeConvention()"></div>
-                                        <div class="down" @click="changeConvention()"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_convention')">{{ errors.first('start_convention') | properFormat }}</span></transition>
-                                    </div>
+                                <div class="form_group">
+                                    <label for="start_time">Start Time <span>*</span></label>
+                                    <input type="time" name="start_time" :min="$moment().format('HH:mm')" v-validate="'required'" class="default_text">
+                                    <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="peak_type">Peak Type <span>*</span></label>
@@ -219,11 +206,6 @@
                 customerTypes: [],
                 instructors: [],
                 form: {
-                    start: {
-                        hour: '-',
-                        mins: '-',
-                        convention: 'AM'
-                    },
                     classLengthTemp: '',
                     classLength: '',
                     instructor_id: '',
@@ -352,7 +334,6 @@
                     me.hasCustomerTypes = (ctr > 0) ? false : true
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
                         formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
                         formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
                         formData.append('studio_id', me.$store.state.user.current_studio_id)

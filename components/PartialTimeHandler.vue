@@ -1,41 +1,15 @@
 <template>
     <div class="form_flex" v-if="enabled" :data-vv-scope="`time_form_${unique}`">
         <div v-if="$parent.showCloser" class="form_close alternate" @click="removeImage()"></div>
-        <div class="form_group flex alternate">
-            <label>Start Time<span>*</span></label>
-            <div class="form_flex_input">
-                <input type="text" name="start_time_hour[]" class="default_text" autocomplete="off" v-model="form.start.hour" maxlength="2" v-validate="'required|numeric|max_value:12|min_value:0'">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_hour[]')">{{ errors.first('start_time_hour[]') | properFormat }}</span></transition>
-            </div>
-            <div class="form_flex_separator">:</div>
-            <div class="form_flex_input">
-                <input type="text" name="start_time_minutes[]" class="default_text" autocomplete="off" v-model="form.start.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_minutes[]')">{{ errors.first('start_time_minutes[]') | properFormat }}</span></transition>
-            </div>
-            <div class="form_flex_input">
-                <input type="text" name="start_convention[]" class="default_text number no_click" readonly autocomplete="off" v-model="form.start.convention" v-validate="'required'">
-                <div class="up" @click="changeConvention('start')"></div>
-                <div class="down" @click="changeConvention('start')"></div>
-                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_convention[]')">{{ errors.first('start_convention[]') | properFormat }}</span></transition>
-            </div>
+        <div class="form_group">
+            <label for="start_time">Start Time <span>*</span></label>
+            <input type="time" name="start_time[]" :min="$moment().format('HH:mm')" v-validate="'required'" class="default_text" @change="getFrom($event)">
+            <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time[]')">{{ errors.first('start_time[]') | properFormat }}</span></transition>
         </div>
-        <div class="form_group flex alternate">
-            <label>End Time<span>*</span></label>
-            <div class="form_flex_input">
-                <input type="text" name="end_time_hour[]" class="default_text" autocomplete="off" v-model="form.end.hour" maxlength="2" v-validate="'required|numeric|max_value:12|min_value:0'">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_time_hour[]')">{{ errors.first('end_time_hour[]') | properFormat }}</span></transition>
-            </div>
-            <div class="form_flex_separator">:</div>
-            <div class="form_flex_input">
-                <input type="text" name="end_time_minutes[]" class="default_text" autocomplete="off" v-model="form.end.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_time_minutes[]')">{{ errors.first('end_time_minutes[]') | properFormat }}</span></transition>
-            </div>
-            <div class="form_flex_input">
-                <input type="text" name="end_convention[]" class="default_text number no_click" readonly autocomplete="off" v-model="form.end.convention" v-validate="'required'">
-                <div class="up" @click="changeConvention('end')"></div>
-                <div class="down" @click="changeConvention('end')"></div>
-                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_convention[]')">{{ errors.first('end_convention[]') | properFormat }}</span></transition>
-            </div>
+        <div class="form_group">
+            <label for="end_time">End Time <span>*</span></label>
+            <input type="time" name="end_time[]" :min="$moment(form.timeTo, 'HH:mm').format('HH:mm')" v-validate="'required'" :class="`default_text ${(form.hasTimeFrom) ? '' : 'disabled'}`">
+            <transition name="slideY"><span class="validation_errors" v-if="errors.has('end_time[]')">{{ errors.first('end_time[]') | properFormat }}</span></transition>
         </div>
     </div>
 </template>
@@ -50,16 +24,8 @@
         data () {
             return {
                 form: {
-                    start: {
-                        hour: '-',
-                        mins: '-',
-                        convention: 'AM'
-                    },
-                    end: {
-                        hour: '-',
-                        mins: '-',
-                        convention: 'PM'
-                    }
+                    timeTo: '',
+                    hasTimeFrom: false,
                 },
                 enabled: true
             }
@@ -108,6 +74,12 @@
             }
         },
         methods: {
+            getFrom (event) {
+                const me = this
+                let target = event.target.value
+                me.form.timeTo = target
+                me.form.hasTimeFrom = true
+            },
             removeImage () {
                 let me = this
                 if (me.$parent.times.length > 1) {
