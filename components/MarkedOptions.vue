@@ -4,15 +4,15 @@
             <label>{{ data.schedule.start_time }} - {{ data.schedule.class_type.name }}</label>
             <div class="radio_wrapper">
                 <div class="form_radio">
-                    <input type="radio" :id="`status_${key}_av`" value="1" name="status[]" class="action_radio" checked @change="toggleRemarks(1)">
+                    <input type="radio" :id="`status_${key}_av`" value="1" :name="`status_${key}_av`" class="action_radio" checked @change="toggleRemarks(data, 1)">
                     <label :for="`status_${key}_av`">Available</label>
                 </div>
                 <div class="form_radio">
-                    <input type="radio" :id="`status_${key}_uav`" value="0" name="status[]" class="action_radio" @change="toggleRemarks(0)">
+                    <input type="radio" :id="`status_${key}_uav`" value="0" :name="`status_${key}_av`" class="action_radio" @change="toggleRemarks(data, 0)">
                     <label :for="`status_${key}_uav`">Unavailable</label>
                 </div>
             </div>
-            <div class="form_group full" v-if="!show">
+            <div class="form_group full" v-show="!data.checked">
                 <label for="remarks">Remarks <span>*</span></label>
                 <textarea name="remarks[]" rows="2" id="remarks" class="default_text" v-validate="'required|max:500'" placeholder="Enter your remarks"></textarea>
                 <transition name="slide"><span class="validation_errors" v-if="errors.has('remarks')">{{ errors.first('remarks') | properFormat }}</span></transition>
@@ -31,18 +31,24 @@
         },
         data () {
             return {
-                show: true
+                show: true,
+                options: []
             }
         },
         methods: {
-            toggleRemarks (status) {
+            toggleRemarks (data, status) {
                 const me = this
                 if (status) {
-                    me.show = true
+                    data.checked = true
                 } else {
-                    me.show = false
+                    data.checked = false
                 }
+                me.options = me.schedules
             }
+        },
+        mounted () {
+            const me = this
+            me.options = me.schedules
         }
     }
 </script>

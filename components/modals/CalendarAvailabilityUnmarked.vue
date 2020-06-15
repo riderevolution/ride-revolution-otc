@@ -6,7 +6,7 @@
                 <h2 class="form_title alt">{{ $moment().format('ddd, MMM DD, YYYY') }}</h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
-                    <marked-options :schedules="schedules" />
+                    <marked-options ref="options" :schedules="schedules" />
                     <div class="form_footer_wrapper">
                         <div class="button_group">
                             <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
@@ -28,6 +28,11 @@
         props: {
             schedules: {
                 default: null
+            }
+        },
+        data () {
+            return {
+                ctr: 0
             }
         },
         filters: {
@@ -77,7 +82,12 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
-
+                        let formData = new FormData(document.getElementById('default_form'))
+                        formData.append('scheduled_dates', JSON.stringify(me.$refs.options.options))
+                        formData.append('_method', 'PATCH')
+                        me.$axios.post('api/instructor-availabilities', formData).then(res => {
+                            console.log(res.data);
+                        })
                     } else {
                         me.$scrollTo('.validation_errors', {
                             container: '.default_modal',

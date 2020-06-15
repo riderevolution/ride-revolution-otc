@@ -380,10 +380,21 @@
 
                                                 /** toggle marked prompt status */
                                                 me.$store.state.calendarAvailabilityMarkedStatus = true
-                                                // me.partiallyType = 'marked'
+                                                me.partiallyType = 'marked'
                                                 document.body.classList.add('no_scroll')
                                             } else if (data.status == 'open') {
-                                                me.targetSchedules = data.scheduledDates
+                                                me.targetSchedules = []
+
+                                                let formData = new FormData()
+                                                formData.append('studio_id', me.form.studio_id)
+                                                formData.append('instructor_id', me.instructor.id)
+                                                formData.append('date', data.date)
+                                                me.$axios.post('api/seats/schedules', formData).then(res => {
+                                                    res.data.scheduledDates.forEach((item, index) => {
+                                                        item.checked = true
+                                                        me.targetSchedules.push(item)
+                                                    })
+                                                })
 
                                                 /** toggle unmarked prompt status */
                                                 // me.partiallyType = 'unmarked'
