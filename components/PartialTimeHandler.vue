@@ -3,7 +3,7 @@
         <div v-if="$parent.showCloser" class="form_close alternate" @click="removeImage()"></div>
         <div class="form_group">
             <label for="start_time">Start Time <span>*</span></label>
-            <input type="time" name="start_time[]" :min="$moment().format('HH:mm')" v-validate="'required'" class="default_text" @change="getFrom($event)">
+            <input type="time" name="start_time[]" v-validate="'required'" class="default_text" @change="getFrom($event)">
             <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time[]')">{{ errors.first('start_time[]') | properFormat }}</span></transition>
         </div>
         <div class="form_group">
