@@ -53,14 +53,7 @@
                     //     if (res.data) {
                     //         setTimeout( () => {
                     //             me.$parent.title = 'Success!'
-                    //             switch (me.availabilityStatus) {
-                    //                 case 'available':
-                    //                     me.$parent.message = 'You have added your available dates.'
-                    //                     break
-                    //                 case 'unavailable':
-                    //                     me.$parent.message = 'You have added your unavailable dates.'
-                    //                     break
-                    //             }
+                    //             me.$parent.message = 'You have changed your scheduled dates.'
                     //             if (me.type == 'marked') {
                     //                 me.$store.state.calendarAvailabilityMarkedStatus = false
                     //             } else {
