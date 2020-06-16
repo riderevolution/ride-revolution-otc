@@ -4971,54 +4971,6 @@ input::placeholder
             color: $green
             background-color: $light_green
             transition: .3s ease-in-out
-.cms_summary
-    display: block
-    background-color: $white
-    border-radius: 5px
-    text-decoration: none
-    margin-bottom: 60px
-    box-shadow: 15px 25px 40px transparent
-    animation: slide_in 1s
-    transition: .3s ease-in-out
-    .summary_header
-        display: flex
-        flex-flow: row wrap
-        align-items: center
-        justify-content: space-between
-        padding: 20px 30px
-        border-bottom: 1px solid $border
-        .header_title
-            sf_pro_medium(25px)
-            color: $black
-    .summary_body
-        display: flex
-        flex-flow: row wrap
-        align-items: center
-        .column
-            flex: 1 0 50%
-            padding: 40px
-            .total_label
-                sf_pro_regular(15px)
-                color: $black
-                padding-bottom: 20px
-            .total
-                display: flex
-                flex-flow: row wrap
-                align-items: center
-                justify-content: space-between
-                padding-top: 10px
-                .total_label
-                    flex: 1 0 40%
-                    padding-left: 20px
-                    padding-bottom: 0
-                .total_count
-                    sf_pro_semibold(20px)
-                    color: $black
-            &:first-child
-                border-right: 1px solid $border
-    &:hover
-        box-shadow: 15px 25px 40px rgba(0, 0, 0, 0.05)
-        transition: .3s ease-in-out
 
 .wrapper
     .total_image
@@ -7722,16 +7674,74 @@ input::placeholder
             padding: 0
         &.alternate_2
             padding: 30px 15px
-        .header_selector
-            border-bottom: 1px solid $border
-            padding: 0 30px
-            .default_select
-                width: 210px
-                sf_pro_regular(22px)
-                margin-left: 15px
-        .information
-            padding: 40px
-
+        .target_wrapper
+            display: flex
+            flex-flow: row wrap
+            .left
+                flex: 1 0 10%
+                background-color: #2e3c44
+                padding: 60px 30px 30px
+                .target_header
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    justify-content: space-between
+                    h2
+                        neutra_text(22px)
+                        color: $white
+                    .view
+                        label
+                            sf_pro_regular(14px)
+                            color: $white
+                            padding-right: 10px
+                        .default_select
+                            width: auto
+                            background-color: #38454c
+                            border: 1px solid $white
+                            color: $white
+                .target_content
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: flex-start
+                    justify-content: space-between
+                    margin-top: 30px
+                    .column
+                        flex: 0 0 calc(50% - 15px)
+                        width: calc(50% - 15px)
+                        padding: 30px
+                        margin-bottom: 30px
+                        background-color: #38454c
+                        .column_header
+                            h2
+                                sf_pro_bold(18px)
+                                color: $white
+                        .column_content
+                            display: flex
+                            flex-flow: row wrap
+                            align-items: center
+                            .content_left,
+                            .content_right
+                                flex: 0 0 50%
+                                width: 50%
+                            .content_right
+                                b
+                                    sf_pro_bold(16px)
+                                    &.blue
+                                        color: #5686fb
+                                    &.green
+                                        color: #38b09d
+                                    &.violet
+                                        color: #ae83ff
+                                p
+                                    sf_pro_regular(16px)
+                                    margin-bottom: 10px
+                                    color: $white
+            .right
+                flex: 0 0 30%
+                margin-left: 30px
+                .table_notepad
+                    width: 100%
+                    margin: 0
 /**
  * Animation */
 .fade-enter-active,

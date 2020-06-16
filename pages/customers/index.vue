@@ -1,7 +1,7 @@
 <template>
-    <div class="content">
+    <div class="content" v-if="loaded">
         <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table" v-if="loaded">
+            <section id="top_content" class="table">
                 <div class="action_wrapper">
                     <h1 class="header_title">Customers</h1>
                     <div class="actions">
