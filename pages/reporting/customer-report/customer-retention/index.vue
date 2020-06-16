@@ -35,10 +35,10 @@
                         <div class="total">Total: {{ totalItems(res.customers.total) }}</div>
                         <div class="total">Total Riders: {{ totalItems(res.customers.total) }}</div>
                         <div class="total">Retained: {{ totalItems(res.customers.total) }}</div>
-                        <div :class="`status ${(status == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First Stime</div>
+                        <div :class="`status ${(status == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First time</div>
                         <div :class="`status ${(status == 'second') ? 'active' : ''}`" @click="toggleStatus('second')">Second Time</div>
                         <div :class="`status ${(status == 'third') ? 'active' : ''}`" @click="toggleStatus('third')">Third Time</div>
-                        <div :class="`status ${(status == 'fourth') ? 'active' : ''}`" @click="toggleStatus('fourth')">Fourth Time</div>
+                        <div :class="`status ${(status == 'fourth') ? 'active' : ''}`" @click="toggleStatus('fourth')">Fourth Time &amp; Above</div>
                     </div>
                     <table class="cms_table">
                         <thead>
