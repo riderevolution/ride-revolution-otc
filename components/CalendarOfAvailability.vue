@@ -12,7 +12,7 @@
         <div class="calendar_wrapper">
             <div class="calendar_actions">
                 <div class="action_flex">
-                    <div :class="`action_calendar_btn green ${(targetDate.length > 0) ? '' : 'disabled'}`" @click="toggleMenuPrompt()">Choose Availability</div>
+                    <div :class="`action_calendar_btn green ${(targetDate.length > 0) ? '' : 'disabled'}`" @click="toggleMenuPrompt()" v-if="!admin">Choose Availability</div>
                     <!-- <div :class="`action_calendar_btn margin red ${(targetDate.length > 0) ? '' : 'disabled'}`" @click="generateCalendar(currentYear, currentMonth, 0, 0)">Reset Calendar</div> -->
                 </div>
             </div>
@@ -108,6 +108,10 @@
         props: {
             instructor: {
                 default: null
+            },
+            admin: {
+                type: Boolean,
+                default: false
             }
         },
         components: {
@@ -298,7 +302,9 @@
                 }
                 setTimeout( () => {
                     me.loader(false)
-                    me.clickDates(0, endDate, excess)
+                    if (!me.admin) {
+                        me.clickDates(0, endDate, excess)
+                    }
                 }, 300)
             },
             /**

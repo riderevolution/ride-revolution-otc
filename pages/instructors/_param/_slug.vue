@@ -29,7 +29,7 @@
                 </div>
             </section>
             <section id="content">
-                <instructor-content :value="instructor" :type="$route.params.slug" />
+                <instructor-content :value="instructor" :type="$route.params.slug" :admin="true" />
                 <button type="button" class="hidden" id="packages" @click="fetchData()"></button>
             </section>
         </div>

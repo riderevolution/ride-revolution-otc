@@ -84,7 +84,7 @@
                     </tbody>
                     <tbody class="no_results" v-else>
                         <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
+                            <td colspan="6">No Result(s) Found.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -178,7 +178,7 @@
         </transition>
         <transition name="fade">
             <div v-if="type == 'calendar-of-availability'">
-                <calendar-of-availability :instructor="value" />
+                <calendar-of-availability :instructor="value" :admin="admin" />
             </div>
         </transition>
         <transition name="fade">
@@ -285,6 +285,10 @@
                 default: null
             },
             isDashboard: {
+                type: Boolean,
+                default: false
+            },
+            admin: {
                 type: Boolean,
                 default: false
             }
