@@ -32,6 +32,7 @@
                             <div class="column">
                                 <div class="column_header">
                                     <h2>Total Attendance</h2>
+                                    <div class="action" @click="toggleAttendance()">View Details</div>
                                 </div>
                                 <div class="column_content">
                                     <div class="content_left">
@@ -109,20 +110,222 @@
                         </div>
                     </div>
                 </div>
+                <div class="summary_stats">
+                    <div class="left">
+                        <div class="stats_header">
+                            <h2>Alerts</h2>
+                            <div class="button">
+                                <select class="default_select" name="type">
+                                    <option value="today" selected>Today</option>
+                                    <option value="Upcoming">Upcoming</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="stats_content">
+                            <div class="stat_column">
+                                <div class="column_header">
+                                    <h2>VIPs</h2>
+                                </div>
+                                <div class="column_content">
+                                    <div class="wrapper" v-for="(n, key) in 4">
+                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                        </div>
+                                    </div>
+                                    <div class="wrapper" v-for="(n, key) in 4">
+                                        <div class="image">
+                                            <div class="overlay">
+                                                SA
+                                            </div>
+                                        </div>
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stat_column">
+                                <div class="column_header">
+                                    <h2>Milestone</h2>
+                                </div>
+                                <div class="column_content">
+                                    <div class="wrapper" v-for="(n, key) in 4">
+                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                            <div class="violator violet">100th Ride</div>
+                                        </div>
+                                    </div>
+                                    <div class="wrapper" v-for="(n, key) in 4">
+                                        <div class="image">
+                                            <div class="overlay">
+                                                SA
+                                            </div>
+                                        </div>
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                            <div class="violator blue">Teaching Anniversary</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stat_column">
+                                <div class="column_header">
+                                    <h2>First Class</h2>
+                                </div>
+                                <div class="column_content">
+                                    <div class="wrapper" v-for="(n, key) in 4">
+                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                        </div>
+                                    </div>
+                                    <div class="wrapper" v-for="(n, key) in 4">
+                                        <div class="image">
+                                            <div class="overlay">
+                                                SA
+                                            </div>
+                                        </div>
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stat_column">
+                                <div class="column_header">
+                                    <h2>Last Class</h2>
+                                </div>
+                                <div class="column_content">
+                                    <div class="wrapper" v-for="(n, key) in 4">
+                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                            <div class="violator orange">Last Class</div>
+                                        </div>
+                                    </div>
+                                    <div class="wrapper" v-for="(n, key) in 4">
+                                        <div class="image">
+                                            <div class="overlay">
+                                                SA
+                                            </div>
+                                        </div>
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                            <div class="violator orange">Last Class</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="parent_column">
+                            <div class="stats_header">
+                                <h2>Top Riders</h2>
+                                <form id="filter" class="date_form">
+                                    <div class="flex">
+                                        <div class="form_group">
+                                            <label for="start_date">Start Date</label>
+                                            <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
+                                        </div>
+                                        <div class="form_group margin">
+                                            <label for="end_date">End Date</label>
+                                            <input type="date" name="end_date" v-model="form.end_date"  class="default_text date" />
+                                        </div>
+                                    </div>
+                                    <div class="button">
+                                        <button type="submit" name="button" class="action_btn alternate margin">Apply</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="stats_content alt">
+                                <div class="wrapper" v-for="(n, key) in 4">
+                                    <div class="count">{{ n }}</div>
+                                    <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                    <div class="info">
+                                        <div class="name">Sample</div>
+                                    </div>
+                                </div>
+                                <div class="wrapper" v-for="(n, key) in 4">
+                                    <div class="count">{{ n + 4 }}</div>
+                                    <div class="image">
+                                        <div class="overlay">
+                                            SA
+                                        </div>
+                                    </div>
+                                    <div class="info">
+                                        <div class="name">Sample</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="parent_column">
+                            <div class="stats_header">
+                                <h2>Riders with Pending Payments</h2>
+                                <div class="button">
+                                    <div class="action_btn">Export List</div>
+                                </div>
+                            </div>
+                            <div class="stats_content alt">
+                                <div class="wrapper alt" v-for="(n, key) in 4">
+                                    <div class="info_left">
+                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                            <div class="violator pending">Pending: <b>Php 120.00</b></div>
+                                            <div class="violator label">Days Outstanding: 20 Days</div>
+                                        </div>
+                                    </div>
+                                    <div class="info_right">
+                                        <div class="action_success_btn">Pay Now</div>
+                                    </div>
+                                </div>
+                                <div class="wrapper alt" v-for="(n, key) in 4">
+                                    <div class="info_left">
+                                        <div class="image">
+                                            <div class="overlay">
+                                                SA
+                                            </div>
+                                        </div>
+                                        <div class="info">
+                                            <div class="name">Sample</div>
+                                            <div class="violator pending">Pending: <b>Php 120.00</b></div>
+                                            <div class="violator label">Days Outstanding: 20 Days</div>
+                                        </div>
+                                    </div>
+                                    <div class="info_right">
+                                        <div class="action_success_btn">Pay Now</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
         </div>
         <foot v-if="$store.state.isAuth" />
+        <transition name="fade">
+            <dashboard-attendance v-if="$store.state.dashboardAttendanceStatus" />
+        </transition>
     </div>
 </template>
 
 <script>
+    import DashboardAttendance from '../components/modals/DashboardAttendance'
     import Foot from '../components/Foot'
     export default {
         components: {
+            DashboardAttendance,
             Foot
         },
         data () {
             return {
+                form: {
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
+                },
                 attendanceSeries: [85],
                 packageSalesSeries: [85],
                 firstTimeRidersSeries: [85],
@@ -289,10 +492,18 @@
                 }
             }
         },
+        methods: {
+            toggleAttendance () {
+                const me = this
+                me.$store.state.dashboardAttendanceStatus = true
+                document.body.classList.add('no_scroll')
+            }
+        },
         mounted () {
             const me = this
             setTimeout( () => {
-                document.querySelector('.target_wrapper .right .table_notepad textarea').style.maxHeight = `${document.querySelector('.target_wrapper .left').offsetHeight}px`
+                document.querySelector('.target_wrapper .right .table_notepad textarea').style.height = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
+                document.querySelector('.target_wrapper .right .table_notepad textarea').style.maxHeight = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
             }, 200);
         }
     }

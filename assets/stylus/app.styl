@@ -1238,6 +1238,21 @@ table
                 &.alt
                     text-align: center
                     sf_pro_bold(22px)
+                &.dsh
+                    padding: 30px
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    justify-content: space-between
+                    h2
+                        sf_pro_bold(18px)
+                    .view
+                        label
+                            sf_pro_regular(14px)
+                            color: $black
+                            padding-right: 10px
+                        .default_select
+                            width: auto
             .form_close
                 cursor: pointer
                 position: absolute
@@ -1285,6 +1300,29 @@ table
                 .form_footer_wrapper
                     margin-top: 40px
                     margin-bottom: 0
+                .graphs
+                    .radial
+                        .details
+                            display: flex
+                            flex-flow: row wrap
+                            align-items: flex-start
+                            justify-content: center
+                            b
+                                sf_pro_bold(16px)
+                                &.blue
+                                    color: #5686fb
+                                &.green
+                                    color: #38b09d
+                                &.violet
+                                    color: #ae83ff
+                            p
+                                sf_pro_regular(16px)
+                                margin-bottom: 10px
+                                color: $black
+                                width: 100%
+                                max-width: 150px
+                            .right
+                                padding-left: 30px
             /**
              * Modal Tab **/
             .modal_tab_wrapper
@@ -1810,6 +1848,8 @@ input::placeholder
         z-index: 4
         left: 50%
         transform: translate(-50%, -50%)
+        &.alt
+            max-width: 1000px
         &.assign
             max-width: 600px
             .modal_wrapper
@@ -7677,6 +7717,7 @@ input::placeholder
         .target_wrapper
             display: flex
             flex-flow: row wrap
+            align-items: flex-start
             .left
                 flex: 1 0 10%
                 background-color: #2e3c44
@@ -7712,9 +7753,22 @@ input::placeholder
                         margin-bottom: 30px
                         background-color: #38454c
                         .column_header
+                            display: flex
+                            flex-flow: row wrap
+                            align-items: center
+                            justify-content: space-between
                             h2
                                 sf_pro_bold(18px)
                                 color: $white
+                            .action
+                                cursor: pointer
+                                sf_pro_regular(18px)
+                                text-decoration: underline
+                                color: #5686fb
+                                transition: .3s ease-in-out
+                                &:hover
+                                    text-shadow: 0px 0px 10px rgba(86, 134, 251, 0.75)
+                                    transition: .3s ease-in-out
                         .column_content
                             display: flex
                             flex-flow: row wrap
@@ -7742,6 +7796,148 @@ input::placeholder
                 .table_notepad
                     width: 100%
                     margin: 0
+        .summary_stats
+            display: flex
+            flex-flow: row wrap
+            align-items: flex-start
+            margin: 30px 0
+            .stats_header
+                display: flex
+                flex-flow: row wrap
+                align-items: center
+                justify-content: space-between
+                padding: 20px
+                border-bottom: 1px solid $border
+                h2
+                    neutra_text(20px)
+                    color: $black
+                .date_form
+                    margin-top: 20px
+                    flex: 0 0 100%
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: flex-end
+                    justify-content: space-between
+                    .flex
+                        flex: 0 0 50%
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        justify-content: flex-start
+                        .form_group
+                            flex: 1 0 auto
+                            margin-bottom: 0
+                    .button
+                        flex: 0 0 auto
+            .stats_content
+                display: flex
+                flex-flow: row wrap
+                padding: 20px 10px
+                justify-content: space-between
+                &.alt
+                    display: block
+                    height: 100%
+                    max-height: 400px
+                    overflow-y: auto
+                    overflow-x: hidden
+                    padding: 0 20px
+                .stat_column
+                    flex: 0 0 calc(25% - 20px)
+                    margin: 10px
+                    border: 1px solid $border
+                    .column_header
+                        padding: 20px
+                        border-bottom: 1px solid $border
+                        h2
+                            neutra_text(20px)
+                            color: $black
+                    .column_content
+                        padding: 0 20px
+                        height: 100%
+                        max-height: 385px
+                        overflow-y: auto
+                        overflow-x: hidden
+                .wrapper
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    padding: 20px 10px
+                    border-bottom: 1.5px dashed $border
+                    &.alt
+                        justify-content: space-between
+                        .info_left
+                            display: flex
+                            flex-flow: row wrap
+                            align-items: center
+                        .info_left,
+                        .info_right
+                            flex: 0 0 auto
+                    &:last-child
+                        border-bottom: 1.5px dashed transparent
+                    .count
+                        sf_pro_medium(20px)
+                        color: $black
+                        padding-right: 15px
+                    img
+                        width: 35px
+                        height: 35px
+                        border-radius: 50%
+                        object-fit: cover
+                        object-position: center
+                    .image
+                        position: relative
+                        text-transform: uppercase
+                        background-image: linear-gradient(137deg, $red, $orange)
+                        sf_pro_regular(14px)
+                        border-radius: 50%
+                        color: $white
+                        width: 35px
+                        height: 35px
+                        .overlay
+                            position: absolute
+                            top: 50%
+                            left: 0
+                            right: 0
+                            text-align: center
+                            transform: translateY(-50%)
+                    .name
+                        padding-left: 15px
+                        sf_pro_regular(16px)
+                        color: $black
+                    .violator
+                        padding-left: 15px
+                        sf_pro_semibold(14px)
+                        &.blue
+                            color: $blue
+                        &.violet
+                            color: $violet
+                        &.orange
+                            color: $orange
+                        &.pending
+                            color: $black
+                            sf_pro_regular(14px)
+                            margin: 5px 0
+                            b
+                                color: $red_alt
+                        &.label
+                            color: $gray_alternate
+            .left
+                flex: 0 0 100%
+                background-color: $white
+                margin-bottom: 30px
+            .right
+                flex: 0 0 100%
+                display: flex
+                flex-flow: row wrap
+                align-items: flex-start
+                .parent_column
+                    flex: 0 0 50%
+                    background-color: $white
+                    margin-bottom: 30px
+                    &:last-child
+                        flex: 1 0 10%
+                        margin-left: 30px
+                        margin-bottom: 0
 /**
  * Animation */
 .fade-enter-active,
