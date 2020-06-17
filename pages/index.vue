@@ -1,5 +1,5 @@
 <template>
-    <div class="content">
+    <div class="content" v-if="loaded">
         <div id="admin" class="cms_dashboard">
             <section id="top_content" class="table">
                 <div class="action_wrapper">
@@ -7,7 +7,7 @@
                         <div class="header_title">
                             <h1>Dashboard</h1>
                         </div>
-                        <h2 class="header_subtitle">Greenbelt Branch</h2>
+                        <h2 class="header_subtitle">{{ res.studio.name }} Branch</h2>
                     </div>
                     <div class="actions">
                         <div class="action_buttons">
@@ -105,7 +105,7 @@
                         <div class="table_notepad">
                             <h2 class="footer_title">Notepad</h2>
                             <div class="notepad_text">
-                                <textarea name="notepad" rows="10"></textarea>
+                                <textarea name="notepad" v-model="res.notepad" @focusout="updateNotes($event)" rows="10"></textarea>
                             </div>
                         </div>
                     </div>
@@ -322,6 +322,8 @@
         },
         data () {
             return {
+                loaded: false,
+                res: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
@@ -497,14 +499,46 @@
                 const me = this
                 me.$store.state.dashboardAttendanceStatus = true
                 document.body.classList.add('no_scroll')
+            },
+            updateNotes (event) {
+                const me = this
+                let id = me.$store.state.user.id
+                let formData = new FormData()
+                formData.append('_method', 'PATCH')
+                formData.append('user_id', id)
+                formData.append('note', event.target.value)
+                me.$axios.post('api/extras/update-user-notepad', formData).then(res => {
+                    if (res.data) {
+                        console.log(res.data.message)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                })
             }
         },
         mounted () {
             const me = this
-            setTimeout( () => {
-                document.querySelector('.target_wrapper .right .table_notepad textarea').style.height = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
-                document.querySelector('.target_wrapper .right .table_notepad textarea').style.maxHeight = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
-            }, 200);
+            me.loader(true)
+            let token = me.$cookies.get('token')
+            me.$axios.get('api/user', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(res => {
+                setTimeout( () => {
+                    me.loaded = true
+                    me.res = res.data.user
+                }, 500)
+            }).catch(err => {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }).then(() => {
+                setTimeout( () => {
+                    document.querySelector('.target_wrapper .right .table_notepad textarea').style.height = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
+                    document.querySelector('.target_wrapper .right .table_notepad textarea').style.maxHeight = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
+                    me.loader(false)
+                }, 500)
+            })
         }
     }
 </script>
