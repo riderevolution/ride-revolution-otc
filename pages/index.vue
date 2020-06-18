@@ -154,7 +154,7 @@
                                         <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
                                         <div class="info">
                                             <div class="name">Sample</div>
-                                            <div class="violator violet">100th Ride</div>
+                                            <div class="violator violet"><img src="/icons/star-violet.svg" /><span>100th Ride</span></div>
                                         </div>
                                     </div>
                                     <div class="wrapper" v-for="(n, key) in 4">
@@ -165,7 +165,7 @@
                                         </div>
                                         <div class="info">
                                             <div class="name">Sample</div>
-                                            <div class="violator blue">Teaching Anniversary</div>
+                                            <div class="violator blue"><img src="/icons/star-blue.svg" /><span>Teaching Anniversary</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -202,7 +202,7 @@
                                         <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
                                         <div class="info">
                                             <div class="name">Sample</div>
-                                            <div class="violator orange">Last Class</div>
+                                            <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
                                         </div>
                                     </div>
                                     <div class="wrapper" v-for="(n, key) in 4">
@@ -213,7 +213,7 @@
                                         </div>
                                         <div class="info">
                                             <div class="name">Sample</div>
-                                            <div class="violator orange">Last Class</div>
+                                            <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -480,7 +480,7 @@
                                     show: false,
                                 },
                                 value: {
-                                    color: "#ae83ff",
+                                    color: "#c264fd",
                                     fontSize: "30px",
                                     show: true,
                                     fontFamily: 'SFProDisplay-Bold'
@@ -489,7 +489,7 @@
                         }
                     },
                     fill: {
-                        colors: ['#ae83ff']
+                        colors: ['#c264fd']
                     }
                 }
             }

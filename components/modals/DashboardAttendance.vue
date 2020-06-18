@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="form_close" @click="toggleClose()"></div>
-                <div class="modal_main_group scrollable">
+                <div class="modal_main_group">
                     <div class="graphs">
                         <div class="radial">
                             <no-ssr>

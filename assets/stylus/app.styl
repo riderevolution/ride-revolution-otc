@@ -1314,7 +1314,7 @@ table
                                 &.green
                                     color: #38b09d
                                 &.violet
-                                    color: #ae83ff
+                                    color: #c264fd
                             p
                                 sf_pro_regular(16px)
                                 margin-bottom: 10px
@@ -7785,7 +7785,7 @@ input::placeholder
                                     &.green
                                         color: #38b09d
                                     &.violet
-                                        color: #ae83ff
+                                        color: #c264fd
                                 p
                                     sf_pro_regular(16px)
                                     margin-bottom: 10px
@@ -7905,8 +7905,15 @@ input::placeholder
                         sf_pro_regular(16px)
                         color: $black
                     .violator
+                        margin-top: 5px
                         padding-left: 15px
                         sf_pro_semibold(14px)
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
+                        img
+                            width: 20px
+                            height: 20px
                         &.blue
                             color: $blue
                         &.violet
@@ -7921,6 +7928,8 @@ input::placeholder
                                 color: $red_alt
                         &.label
                             color: $gray_alternate
+                        span
+                            padding-left: 10px
             .left
                 flex: 0 0 100%
                 background-color: $white
