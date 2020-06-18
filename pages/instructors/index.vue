@@ -26,6 +26,14 @@
                 </div>
             </section>
             <section id="content" v-if="loaded">
+                <form id="paginate_form">
+                    <div class="form_group">
+                        <label for="paginate">Items per page</label>
+                        <select class="default_select alternate" v-model="pagination" name="paginate" @change="submitPaginate()">
+                            <option :value="data" v-for="(data, key) in paginateValues" :key="key">{{ data }}</option>
+                        </select>
+                    </div>
+                </form>
                 <table class="cms_table fixed">
                     <thead>
                         <tr>
@@ -59,7 +67,6 @@
                         </tr>
                     </tbody>
                 </table>
-                <pagination :apiRoute="res.instructors.path" :current="res.instructors.current_page" :last="res.instructors.last_page" />
             </section>
         </div>
         <transition name="fade">
@@ -74,17 +81,17 @@
     import UserForm from '../../components/modals/UserForm'
     import RoleForm from '../../components/modals/RoleForm'
     import ConfirmStatus from '../../components/modals/ConfirmStatus'
-    import Pagination from '../../components/Pagination'
     export default {
         components: {
             Foot,
             UserForm,
             RoleForm,
-            ConfirmStatus,
-            Pagination
+            ConfirmStatus
         },
         data () {
             return {
+                pagination: 10,
+                paginateValues: [10, 25, 50, 100, 200, 300, 500],
                 loaded: false,
                 id: 0,
                 type: 0,
@@ -96,6 +103,10 @@
             }
         },
         methods: {
+            submitPaginate () {
+                const me = this
+                me.fetchData(me.status)
+            },
             submissionSuccess () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
@@ -139,7 +150,7 @@
             async fetchData (value) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/instructors?enabled=${value}`).then(res => {
+                me.$axios.get(`api/instructors?enabled=${value}&pagination=${me.pagination}`).then(res => {
                     me.res = res.data
                     me.loaded = true
                 }).catch(err => {
