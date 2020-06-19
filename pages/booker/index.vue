@@ -109,25 +109,25 @@
                             <div class="class_accordion" v-for="(result, key) in results" :key="key">
                                 <div class="accordion_header" @click.self="toggleClass($event, $moment(result.date).format('M'), $moment(result.date).format('D'), $moment(result.date).format('YYYY'))">{{ result.abbr }} | {{ result.date }}</div>
                                 <div class="accordion_content">
-                                    <a href="javascript:void(0)" :id="`class_${dkey}_${key}`" class="class_content" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
+                                    <div :id="`class_${dkey}_${key}`" class="class_content" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
                                         <div class="class_title">
                                             <span>{{ data.schedule.start_time }}, {{ data.schedule.class_type.name }}</span>
-                                            <div class="class_status full">
-                                                Full (28)
+                                            <div :class="`class_status ${(data.isFull) ? 'full' : ''}`">
+                                                {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.signedIn}` }}
                                             </div>
                                         </div>
                                         <div class="class_text">
                                             {{ data.schedule.description }}
                                         </div>
                                         <div class="class_text alternate">
-                                            <span>Signed-in: 3</span>
-                                            <span>Available: 3</span>
-                                            <span>No show: 3</span>
+                                            <span>Signed-in: {{ data.signedIn }}</span>
+                                            <span>Available: {{ data.availableSeatsCount }}</span>
+                                            <span>No show: {{ data.noShow }}</span>
                                         </div>
-                                    </a>
-                                    <a href="javascript:void(0)" class="no_class class_content" v-if="schedules.length <= 0">
+                                    </div>
+                                    <div class="no_class class_content" v-if="schedules.length <= 0">
                                         No Schedule(s) for this day.
-                                    </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -137,10 +137,10 @@
                             <div class="seat_controls">
                                 <div class="left_side">
                                     <div class="class_options">
-                                        <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options">
+                                        <!-- <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options">
                                             <option value="" disabled selected>Class Options</option>
                                             <option :value="key" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
-                                        </select>
+                                        </select> -->
                                         <div class="class_info">
                                             <div class="action_calendar_btn" id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
                                             <div class="overlay">

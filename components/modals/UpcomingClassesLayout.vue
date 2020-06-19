@@ -6,7 +6,7 @@
             <div class="class_layout">
                 <div class="layout_header">
                     <h2>{{ $moment(scheduleDate.date).format('ddd, MMM DD, YYYY') }} at {{ scheduleDate.schedule.start_time }}: {{ scheduleDate.schedule.class_type.name }}</h2>
-                    <div class="action_success_btn">Sign In</div>
+                    <!-- <div class="action_success_btn">Sign In</div> -->
                 </div>
                 <div :class="`layout_content layout_${studio}`">
                     <div class="seats">
