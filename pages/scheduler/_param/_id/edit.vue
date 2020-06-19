@@ -23,7 +23,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="start_time">Start Time <span>*</span></label>
-                                        <input type="time" name="start_time" :min="$moment().format('HH:mm')" v-model="res.start_time_military" v-validate="'required'" class="default_text" @change="getTime($event, 'dynamic')">
+                                        <input type="time" name="start_time" v-model="res.start_time_military" v-validate="'required'" class="default_text" @change="getTime($event, 'dynamic')">
                                         <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
