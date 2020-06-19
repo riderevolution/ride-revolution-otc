@@ -3,11 +3,11 @@
         <div class="background" @click="toggleClose(false)"></div>
         <div class="confirmation_wrapper">
             <h2 class="confirmation_title">Are you sure you want to sign this person out?</h2>
-            <div class="confirmation_default">
+            <!-- <div class="confirmation_default">
                 This person won’t be able to ride this class once they’re signed out. You can log them back in anytime before the class starts.
-            </div>
+            </div> -->
             <div class="button_group">
-                <a href="javascript:void(0)" class="action_cancel_btn" @click.once="toggleClose(false)">Cancel</a>
+                <div class="action_cancel_btn" @click.once="toggleClose(false)">Cancel</div>
                 <div class="action_success_btn confirm margin alternate" @click.once="toggleClose(true)">Continue</div>
             </div>
         </div>
