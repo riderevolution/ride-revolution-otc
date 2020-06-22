@@ -107,7 +107,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <pagination :apiRoute="(res.classPackages) ? res.classPackages.path : res.storeCredits.path" :current="(res.classPackages) ? res.classPackages.current_page : res.storeCredits.current_page" :last="(res.classPackages) ? res.classPackages.last_page : res.storeCredits.last_page" />
+                <!-- <pagination :apiRoute="(res.classPackages) ? res.classPackages.path : res.storeCredits.path" :current="(res.classPackages) ? res.classPackages.current_page : res.storeCredits.current_page" :last="(res.classPackages) ? res.classPackages.last_page : res.storeCredits.last_page" /> -->
             </section>
         </div>
         <foot v-if="$store.state.isAuth" />
@@ -119,12 +119,12 @@
 
 <script>
     import Foot from '../../../../components/Foot'
-    import Pagination from '../../../../components/Pagination'
+    // import Pagination from '../../../../components/Pagination'
     import ConfirmStatus from '../../../../components/modals/ConfirmStatus'
     export default {
         components: {
             Foot,
-            Pagination,
+            // Pagination,
             ConfirmStatus,
         },
         data () {

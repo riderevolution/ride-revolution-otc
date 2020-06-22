@@ -21,20 +21,6 @@
                         <transition name="fade">
                             <div class="form_main_group alternate" v-if="isPromo">
                                 <div class="form_flex_radio_alternate">
-                                    <label>Restrict to New Customers <span>*</span></label>
-                                    <div class="radio_wrapper">
-                                        <div class="form_radio">
-                                            <input type="radio" id="por_restrict_yes" :checked="res.por_restrict_to_new_customers == 1" value="Yes" v-validate="'required'" name="por_restrict_to_new_customers" class="action_radio">
-                                            <label for="por_restrict_yes">Yes</label>
-                                        </div>
-                                        <div class="form_radio">
-                                            <input type="radio" id="por_restrict_no" value="No" :checked="res.por_restrict_to_new_customers == 0" v-validate="'required'" name="por_restrict_to_new_customers" class="action_radio">
-                                            <label for="por_restrict_no">No</label>
-                                        </div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('por_restrict_to_new_customers')">{{ errors.first('por_restrict_to_new_customers') | properFormat }}</span></transition>
-                                    </div>
-                                </div>
-                                <div class="form_flex_radio_alternate">
                                     <label>Allow sharing of package? <span>*</span></label>
                                     <div class="radio_wrapper">
                                         <div class="form_radio">
@@ -59,16 +45,16 @@
                                 <div class="form_flex">
                                     <div class="form_group new_alt">
                                         <label for="promo_start_date">Start Date <span>*</span></label>
-                                        <input type="date" name="promo_start_date" autocomplete="off" class="default_text date" v-validate="'required'" v-model="res.promo_start_date">
+                                        <input type="date" name="promo_start_date" :min="$moment(form.startDate).format('YYYY-MM-DD')" autocomplete="off" class="default_text date" v-validate="'required'" v-model="form.startDate">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_start_date')">{{ errors.first('promo_start_date') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group new_alt">
                                         <label for="promo_end_date">End Date <span>*</span></label>
-                                        <input type="date" name="promo_end_date" autocomplete="off" class="default_text date" v-validate="'required'" v-model="res.promo_end_date">
+                                        <input type="date" name="promo_end_date" :min="$moment(form.startDate).format('YYYY-MM-DD')" autocomplete="off" class="default_text date" v-validate="'required'" v-model="form.endDate">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_end_date')">{{ errors.first('promo_end_date') | properFormat }}</span></transition>
                                     </div>
                                 </div>
-                                <div class="form_flex">
+                                <div class="form_flex check">
                                     <div class="form_group flex">
                                         <label>Purchase Limit <span>*</span></label>
                                         <div class="form_flex_input full">
@@ -253,6 +239,10 @@
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
+                        <div class="form_check">
+                            <input type="checkbox" id="por_restrict_to_new_customers" name="por_restrict_to_new_customers" class="action_check" :checked="res.por_restrict_to_new_customers == 1">
+                            <label for="por_restrict_to_new_customers">Restrict to New Customers</label>
+                        </div>
                         <div class="form_flex">
                             <div class="form_check">
                                 <input type="checkbox" id="enabled" name="enabled" class="action_check" :checked="res.enabled == 1">
@@ -296,6 +286,8 @@
                 storeCredits: [],
                 res: [],
                 form: {
+                    startDate: this.$moment().format('YYYY-MM-DD'),
+                    endDate: this.$moment().format('YYYY-MM-DD'),
                     classCount: 0,
                     expiryIn: 0,
                     notActivated: 0,
@@ -519,6 +511,8 @@
                 me.isNotActivated = (me.res.ao_activate_on_first_class_booked == 1) ? true : false
                 me.isComplimentary = (me.res.por_complimentary_package_mode == 1) ? true : false
                 me.isUnlimited = (me.res.class_count_unlimited == 1) ? true : false
+                me.form.startDate = (me.res.promo_start_date != null) ? me.res.promo_start_date : me.form.startDate
+                me.form.endDate = (me.res.promo_end_date != null) ? me.res.promo_end_date : me.form.endDate
             })
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 4]
             me.prevRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 5]
