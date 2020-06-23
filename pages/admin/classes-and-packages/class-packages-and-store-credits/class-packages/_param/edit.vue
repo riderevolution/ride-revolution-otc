@@ -35,11 +35,11 @@
                                     </div>
                                 </div>
                                 <div class="form_group">
-                                    <label for="discounted_price">Discounted Package Price <span>*</span></label>
+                                    <label for="discounted_package_price">Discounted Package Price <span>*</span></label>
                                     <div class="form_flex_input full">
-                                        <input type="text" name="discounted_price" class="default_text number" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" v-model="res.discounted_price">
+                                        <input type="text" name="discounted_package_price" class="default_text number" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" v-model="res.discounted_package_price">
                                         <div class="placeholder">PHP</div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('discounted_price')">{{ errors.first('discounted_price') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('discounted_package_price')">{{ errors.first('discounted_package_price') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">

@@ -1,7 +1,12 @@
 <template>
     <div :class="`seat_boxes ${position} ${layout}`" v-if="data.length > 0">
         <div :class="`seat_position ${addSeatClass(seat)}`" v-for="(seat, lkey) in data">
-
+            <div class="seat_details blocked" v-if="seat.status == 'blocked'">
+                <div class="info_image">
+                    <img src="/icons/broken-bike-icon.svg" />
+                </div>
+                <span>Blocked Bike</span>
+            </div>
             <div class="seat_available" @click="toggleSwitchSeat(seat)" v-if="seat.status == 'open' && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
             <div class="seat_action" @click.self="toggleAction(seat.status, (seat.bookings.length > 0) ? seat.bookings[0].id : null)"></div>
             <div class="seat_pending" @click.self="checkPending((seat.bookings.length > 0) ? seat.bookings[0].user_id : null)" v-if="!$store.state.disableBookerUI && seat.userPendingPayments > 0 && seat.status != 'no-show' && seat.past == 0"></div>
