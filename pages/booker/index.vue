@@ -69,7 +69,7 @@
                                         </div>
                                         <div class="customer_footer" v-if="customer != ''">
                                             <div class="item" @click="toggleLayout('attendance')">Attendance</div>
-                                            <div class="item">Packages</div>
+                                            <div class="item" @click="toggleLayout('package')">Packages</div>
                                             <div class="item">Redeem</div>
                                             <div id="credits" class="item" @click="toggleQuickSale('credit')">
                                                 Buy Credits
@@ -283,7 +283,10 @@
             <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
         </transition>
         <transition name="fade">
-            <attendance-layout v-if="$store.state.attendanceLayoutStatus" />
+            <attendance-layout v-if="$store.state.attendanceLayoutStatus" :customer="customer" />
+        </transition>
+        <transition name="fade">
+            <package-layout v-if="$store.state.packageLayoutStatus" :customer="customer" />
         </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
@@ -306,6 +309,7 @@
     import PendingTransactions from '../../components/modals/PendingTransactions'
     import CustomerPendingQuickSale from '../../components/modals/CustomerPendingQuickSale'
     import AttendanceLayout from '../../components/modals/AttendanceLayout'
+    import PackageLayout from '../../components/modals/PackageLayout'
     import BookerMenuPrompt from '../../components/modals/BookerMenuPrompt'
     export default {
         components: {
@@ -325,6 +329,7 @@
             PendingTransactions,
             CustomerPendingQuickSale,
             AttendanceLayout,
+            PackageLayout,
             BookerMenuPrompt
         },
         data () {
@@ -656,6 +661,9 @@
                 switch (type) {
                     case 'attendance':
                         me.$store.state.attendanceLayoutStatus = true
+                        break
+                    case 'package':
+                        me.$store.state.packageLayoutStatus = true
                         break
                 }
                 document.body.classList.add('no_scroll')

@@ -3590,6 +3590,22 @@ input::placeholder
                 sf_pro_regular(14px)
                 color: $black
                 padding: 13px 20px
+                &.violator
+                    span
+                        sf_pro_medium(12px)
+                        border-radius: 5px
+                        padding: 5px
+                        margin-left: 10px
+                        text-transform: uppercase
+                        &.shared
+                            color: $blue
+                            background-color: $light_blue
+                        &.frozen
+                            color: $light_blue
+                            background-color: $blue
+                        &.warning
+                            color: $white
+                            background-color: $red
                 &.alt
                     text-transform: uppercase
                 &.alt_2

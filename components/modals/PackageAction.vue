@@ -121,10 +121,10 @@
                                 me.$axios.post('api/packages/class-packages/transfer', formData).then(res => {
                                     if (res.data) {
                                         me.$store.state.packageActionStatus = false
+                                        if (me.$route.params.slug == 'packages') {
+                                            document.getElementById('packages').click()
+                                        }
                                         setTimeout( () => {
-                                            if (me.$route.params.slug == 'packages') {
-                                                document.getElementById('packages').click()
-                                            }
                                             me.$store.state.packageActionPromptStatus = true
                                             me.$parent.packagePromptType = 'Transfer'
                                             me.$parent.packagePromptMessage = 'You have successfully transfered your package.'
@@ -146,10 +146,10 @@
                                 me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData).then(res => {
                                     if (res.data) {
                                         me.$store.state.packageActionStatus = false
+                                        if (me.$route.params.slug == 'packages') {
+                                            document.getElementById('packages').click()
+                                        }
                                         setTimeout( () => {
-                                            if (me.$route.params.slug == 'packages') {
-                                                document.getElementById('packages').click()
-                                            }
                                             me.$store.state.packageActionPromptStatus = true
                                             me.$parent.packagePromptType = 'Share'
                                             me.$parent.packagePromptMessage = 'You have successfully shared your package.'

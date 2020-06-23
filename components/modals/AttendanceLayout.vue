@@ -4,7 +4,7 @@
             <div class="background"></div>
             <div class="action_back_btn" @click="toggleClose()"><img src="/icons/back-icon.svg"><span>Booker</span></div>
             <div class="table_layout">
-                <h2>{{ $parent.customer.first_name }}'s Class Attendance</h2>
+                <h2>{{ customer.first_name }}'s Class Attendance</h2>
                 <div class="actions">
                     <div class="total">Total: {{ res.classHistory.length }}</div>
                     <div class="cms_table_toggler">
@@ -70,6 +70,11 @@
 
 <script>
     export default {
+        props: {
+            customer: {
+                default: null
+            }
+        },
         data () {
             return {
                 classesHistoryStatus: 'all',
@@ -138,7 +143,7 @@
             initial (status) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers/${me.$parent.customer.id}/class-history?classHistoryStatus=${status}`).then(res => {
+                me.$axios.get(`api/customers/${me.customer.id}/class-history?classHistoryStatus=${status}`).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.customer
