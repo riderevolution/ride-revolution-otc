@@ -503,7 +503,7 @@
                 me.form.notActivated = me.res.ao_expiry_if_not_activated
                 me.isPromo = (me.res.is_promo == 1) ? true : false
                 me.isNotActivated = (me.res.ao_activate_on_first_class_booked == 1) ? true : false
-                me.isComplimentary = (me.res.por_complimentary_package_mode == 1) ? true : false
+                me.isComplimentary = (me.res.por_has_complimentary_package == 1) ? true : false
                 me.isUnlimited = (me.res.class_count_unlimited == 1) ? true : false
                 me.form.startDate = (me.res.promo_start_date != null) ? me.res.promo_start_date : me.form.startDate
                 me.form.endDate = (me.res.promo_end_date != null) ? me.res.promo_end_date : me.form.endDate
