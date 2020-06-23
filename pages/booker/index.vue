@@ -59,7 +59,7 @@
                                                 <div class="customer_info">
                                                     <span>Birthday: {{ $moment(customer.customer_details.co_birthdate).format('M/D/YY') }}</span>
                                                     <span>{{ customer.customer_details.co_contact_number }}</span>
-                                                    <span>Store Credit: 500</span>
+                                                    <span>Store Credit: {{ totalItems(customer.store_credits.amount) }}</span>
                                                     <span>Shoe Size: {{ customer.customer_details.co_shoe_size }}</span>
                                                 </div>
                                                 <div class="close_wrapper alternate" @click="removeCustomer()">
@@ -697,6 +697,7 @@
             },
             getCustomer (data) {
                 const me = this
+                console.log(data);
                 me.toggleCustomers = false
                 me.$store.state.customerID = data.id
                 me.customer = data
