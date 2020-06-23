@@ -1,12 +1,22 @@
 <template>
     <div :class="`seat_boxes ${position} ${layout}`" v-if="data.length > 0">
-        <div :class="`seat_position ${addSeatClass(seat)}`" v-for="(seat, lkey) in data">
+        <div :id="`seat_${position}_${lkey}`" :class="`seat_position ${addSeatClass(seat)}`" v-for="(seat, lkey) in data" @mouseover="toggle(lkey, 'hover')" @mouseout="toggle(lkey, 'out')">
             <div class="seat_details" v-if="seat.status == 'blocked'">
                 <div class="flex">
-                    <div class="info_image">
+                    <div class="info_image block">
                         <img src="/icons/broken-bike-icon.svg" />
                     </div>
                     <span>Blocked Bike</span>
+                </div>
+            </div>
+            <div class="seat_details" v-if="seat.status == 'signed-in'">
+                <div class="seat_name">{{ seat.number }} - {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.first_name : seat.bookings[0].guest_first_name }} {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.last_name : seat.bookings[0].guest_last_name }}</div>
+                <div class="seat_violator">{{ seat.status }}</div>
+                <div class="flex alt">
+                    <div class="info_image" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
+                        <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
+                    </div>
+                    <span>{{ seat.bookings[0].user.customer_details.customer_type.name }}</span>
                 </div>
             </div>
             <div class="seat_available" @click="toggleSwitchSeat(seat)" v-if="seat.status == 'open' && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
@@ -56,6 +66,20 @@
             }
         },
         methods: {
+            toggle (unique, type) {
+                const me = this
+                let target = document.getElementById(`seat_${me.position}_${unique}`)
+                if (target.querySelector('.seat_details')) {
+                    switch (type) {
+                        case 'hover':
+                            target.querySelector('.seat_details').classList.add('active')
+                            break
+                        case 'out':
+                            target.querySelector('.seat_details').classList.remove('active')
+                            break
+                    }
+                }
+            },
             addSeatClass (seat) {
                 const me = this
                 let result = ''

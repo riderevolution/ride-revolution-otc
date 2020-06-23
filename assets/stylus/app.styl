@@ -5468,19 +5468,50 @@ input::placeholder
                             transition: .3s ease-in-out
                             .seat_details
                                 position: absolute
-                                top: calc(0% + 10px)
+                                top: calc(0% - 70px)
                                 background-color: $white
-                                z-index: 1
-                                padding: 5px 10px
+                                z-index: 5
+                                padding: 20px 10px
                                 border-radius: 5px
                                 user-select: none
-                                left: 0
-                                right: 0
+                                left: 50%
+                                width: 200px
+                                opacity: 0
+                                visibility: hidden
                                 box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.16)
+                                transform: translateX(-50%) translateY(-20px)
+                                transition: .3s ease-in-out
+                                &.active
+                                    opacity: 1
+                                    visibility: visible
+                                    transform: translateX(-50%) translateY(0px)
+                                    transition: .3s ease-in-out
+                                .seat_name
+                                    text-align: left
+                                    sf_pro_regular(16px, false)
+                                    color: $black
+                                .flex
+                                    display: flex
+                                    flex-flow: row wrap
+                                    align-items: center
+                                    justify-content: center
+                                    &.alt
+                                        justify-content: flex-start
+                                    .info_image
+                                        padding-right: 10px
+                                        &.block
+                                            filter: grayscale(1)
+                                            opacity: 0.75
+                                        img
+                                            width: 20px
+                                            height: auto
+                                    span
+                                        sf_pro_regular(16px, false)
+                                        color: $black
                                 &::before
                                     content: ""
                                     position: absolute
-                                    bottom: calc(0% - 5px)
+                                    bottom: calc(0% - 10px)
                                     width: 0
                                     height: 0
                                     border-left: 10px solid transparent

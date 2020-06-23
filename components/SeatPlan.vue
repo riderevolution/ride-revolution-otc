@@ -55,25 +55,24 @@
                     me.loader(true)
                     me.$axios.get(`api/seats?studio_id=${id}&scheduled_date_id=${schedule_id}`).then(res => {
                         if (res.data) {
-                            console.log(me.temp);
                             me.temp = res.data.seats
                             me.temp.forEach((seat , index) => {
                                 switch (seat.position) {
                                     case 'left':
-                                    me.seats.left.data.push(seat)
-                                    break
+                                        me.seats.left.data.push(seat)
+                                        break
                                     case 'right':
-                                    me.seats.right.data.push(seat)
-                                    break
+                                        me.seats.right.data.push(seat)
+                                        break
                                     case 'bottom':
-                                    me.seats.bottom.data.push(seat)
-                                    break
+                                        me.seats.bottom.data.push(seat)
+                                        break
                                     case 'bottom_alt':
-                                    me.seats.bottom_alt.data.push(seat)
-                                    break
+                                        me.seats.bottom_alt.data.push(seat)
+                                        break
                                     case 'bottom_alt_2':
-                                    me.seats.bottom_alt_2.data.push(seat)
-                                    break
+                                        me.seats.bottom_alt_2.data.push(seat)
+                                        break
                                 }
                                 me.ctr++
                             })
