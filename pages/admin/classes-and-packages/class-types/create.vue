@@ -43,7 +43,7 @@
                                     </div>
                                 </div>
                                 <div class="form_group">
-                                    <div class="form_flex_radio">
+                                    <div class="form_flex_radio no_margin">
                                         <label class="radio_label">Is this bookable? <span>*</span></label>
                                         <div class="form_radio">
                                             <input type="radio" id="bookable_yes" value="Yes" name="bookable" class="action_radio" checked>

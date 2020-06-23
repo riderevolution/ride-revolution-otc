@@ -292,7 +292,7 @@
             <redeem-gift-card v-if="$store.state.redeemGiftCardStatus" :customer="customer" />
         </transition>
         <transition name="fade">
-            <redeem-gift-card-success v-if="$store.state.redeemGiftCardSuccessStatus" :customer="customer" />
+            <redeem-gift-card-success v-if="$store.state.redeemGiftCardSuccessStatus" />
         </transition>
         <foot v-if="$store.state.isAuth" />
     </div>

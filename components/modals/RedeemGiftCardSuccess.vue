@@ -7,7 +7,7 @@
                 Your gift card has now been redeemed. You now have credits in your account.
             </div>
             <div class="button_group">
-                <nuxt-link :to="`/customers/${customer.id}/packages`" class="action_success_btn confirm" @click.native="toggleClose()">Cancel</nuxt-link>
+                <div class="action_success_btn confirm" @click="toggleLayout()">See Packages</div>
                 <div class="action_success_btn confirm margin alternate" @click="toggleClose()">Book a Ride</div>
             </div>
         </div>
@@ -16,16 +16,16 @@
 
 <script>
     export default {
-        props: {
-            customer: {
-                default: null
-            }
-        },
         methods: {
             toggleClose () {
                 const me = this
                 me.$store.state.redeemgGiftCardSuccessStatus = false
                 document.body.classList.remove('no_scroll')
+            },
+            toggleLayout () {
+                const me = this
+                me.$store.state.redeemgGiftCardSuccessStatus = false
+                me.$store.state.packageLayoutStatus = true
             }
         }
     }
