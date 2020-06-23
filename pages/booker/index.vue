@@ -70,7 +70,7 @@
                                         <div class="customer_footer" v-if="customer != ''">
                                             <div class="item" @click="toggleLayout('attendance')">Attendance</div>
                                             <div class="item" @click="toggleLayout('package')">Packages</div>
-                                            <div class="item">Redeem</div>
+                                            <div class="item" @click="toggleLayout('redeem')">Redeem</div>
                                             <div id="credits" class="item" @click="toggleQuickSale('credit')">
                                                 Buy Credits
                                                 <transition name="slide"><span class="validation_errors alt" v-if="buyCredits">Buy Here</span></transition>
@@ -288,6 +288,12 @@
         <transition name="fade">
             <package-layout v-if="$store.state.packageLayoutStatus" :customer="customer" />
         </transition>
+        <transition name="fade">
+            <redeem-gift-card v-if="$store.state.redeemGiftCardStatus" :customer="customer" />
+        </transition>
+        <transition name="fade">
+            <redeem-gift-card-success v-if="$store.state.redeemGiftCardSuccessStatus" :customer="customer" />
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
@@ -310,6 +316,8 @@
     import CustomerPendingQuickSale from '../../components/modals/CustomerPendingQuickSale'
     import AttendanceLayout from '../../components/modals/AttendanceLayout'
     import PackageLayout from '../../components/modals/PackageLayout'
+    import RedeemGiftCard from '../../components/modals/RedeemGiftCard'
+    import RedeemGiftCardSuccess from '../../components/modals/RedeemGiftCardSuccess'
     import BookerMenuPrompt from '../../components/modals/BookerMenuPrompt'
     export default {
         components: {
@@ -330,6 +338,8 @@
             CustomerPendingQuickSale,
             AttendanceLayout,
             PackageLayout,
+            RedeemGiftCard,
+            RedeemGiftCardSuccess,
             BookerMenuPrompt
         },
         data () {
@@ -664,6 +674,9 @@
                         break
                     case 'package':
                         me.$store.state.packageLayoutStatus = true
+                        break
+                    case 'redeem':
+                        me.$store.state.redeemGiftCardStatus = true
                         break
                 }
                 document.body.classList.add('no_scroll')
