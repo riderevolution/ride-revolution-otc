@@ -8,49 +8,47 @@
                 <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
             </div>
             <div class="cms_table_package">
-                <div v-if="packageCount > 0">
-                    <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="data.count > 0 && !data.expired">
-                        <h2 class="package_title">
-                            {{ data.class_package.name }}
-                            <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment(), 'days')) <= 15">{{ checkViolator(data, 'warning') }}</span>
-                            <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
-                            <span class="frozen" v-if="data.frozen">Frozen</span>
-                        </h2>
-                        <div class="package_details">
-                            <div class="package_status">
-                                <div class="box">
-                                    <div class="overlay">
-                                        <p>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</p>
-                                        <label>Used</label>
-                                    </div>
-                                </div>
-                                <div class="box margin">
-                                    <div class="overlay">
-                                        <p>{{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : (parseInt(data.count) == data.original_package_count) ? parseInt(data.original_package_count) : parseInt(data.count) }}</p>
-                                        <label>Available</label>
-                                    </div>
+                <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="packageCount > 0 && (data.count > 0 && !data.expired)">
+                    <h2 class="package_title">
+                        {{ data.class_package.name }}
+                        <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment(), 'days')) <= 15">{{ checkViolator(data, 'warning') }}</span>
+                        <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
+                        <span class="frozen" v-if="data.frozen">Frozen</span>
+                    </h2>
+                    <div class="package_details">
+                        <div class="package_status">
+                            <div class="box">
+                                <div class="overlay">
+                                    <p>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</p>
+                                    <label>Used</label>
                                 </div>
                             </div>
-                            <div class="package_date">
-                                <div class="date">
-                                    <p>{{ formatDate(data.created_at, false) }} / {{ (data.activation_date != 'NA') ? formatDate(data.activation_date, false) : 'N/A' }}</p>
-                                    <label>Purchase Date / Activation Date</label>
-                                </div>
-                                <div class="date margin">
-                                    <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
-                                    <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
+                            <div class="box margin">
+                                <div class="overlay">
+                                    <p>{{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : (parseInt(data.count) == data.original_package_count) ? parseInt(data.original_package_count) : parseInt(data.count) }}</p>
+                                    <label>Available</label>
                                 </div>
                             </div>
-                            <div class="package_action">
-                                <a href="/booker" class="action_success_btn" @click.prevent="getCurrentCustomer()">Book a Class</a>
-                                <div class="package_options">
-                                    <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
-                                    <div class="option_selector">
-                                        <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
-                                        <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
-                                        <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
-                                        <div class="option_link">Print Receipt</div>
-                                    </div>
+                        </div>
+                        <div class="package_date">
+                            <div class="date">
+                                <p>{{ formatDate(data.created_at, false) }} / {{ (data.activation_date != 'NA') ? formatDate(data.activation_date, false) : 'N/A' }}</p>
+                                <label>Purchase Date / Activation Date</label>
+                            </div>
+                            <div class="date margin">
+                                <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
+                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
+                            </div>
+                        </div>
+                        <div class="package_action">
+                            <a href="/booker" class="action_success_btn" @click.prevent="getCurrentCustomer()">Book a Class</a>
+                            <div class="package_options">
+                                <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
+                                <div class="option_selector">
+                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
+                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
+                                    <div class="option_link">Print Receipt</div>
                                 </div>
                             </div>
                         </div>

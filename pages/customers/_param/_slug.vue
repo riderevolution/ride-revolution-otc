@@ -94,7 +94,7 @@
             fetchData () {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}`).then(res => {
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}${(me.$route.params.slug == 'class-history') ? '?classHistoryStatus=all' : ''}`).then(res => {
                     if (res.data) {
                         me.customer = res.data.customer
                         me.pendingPayment = me.customer.totalPendingPayments
