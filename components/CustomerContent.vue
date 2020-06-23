@@ -132,7 +132,7 @@
         </div>
         <div v-if="type == 'class-history' && loaded">
             <div class="actions">
-                <div class="total">Total: 4</div>
+                <div class="total">Total: {{ res.classHistory.length }}</div>
                 <div class="cms_table_toggler">
                     <div :class="`status ${(classesHistoryStatus == 'all') ? 'active' : ''}`" @click="toggleClassesHistory('all')">All</div>
                     <div :class="`status ${(classesHistoryStatus == 'completed') ? 'active' : ''}`" @click="toggleClassesHistory('completed')">Completed</div>
@@ -162,7 +162,7 @@
                         <td>
                             <div class="thumb">
                                 <img :src="data.instructor.user.instructor_details.images[0].path_resized" />
-                                <nuxt-link class="table_data_link" to="/">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
+                                <nuxt-link class="table_data_link" :to="`/instructors/${data.instructor.id}/class-schedules`">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
                             </div>
                         </td>
                         <td>
@@ -686,7 +686,7 @@
                     })
                 }
                 if (me.$route.params.slug == 'class-history') {
-                    for (let i = 0; i <= 2; i++) {
+                    for (let i = 0; i <= me.res.classHistory.length; i++) {
                         let element = document.getElementById(`table_select_${i}`)
                         if (element !== target) {
                             if (element.nextElementSibling.classList.contains('active')) {

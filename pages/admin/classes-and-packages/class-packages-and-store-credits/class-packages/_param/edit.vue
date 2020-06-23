@@ -231,10 +231,6 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div :class="`form_group flex ${(isNotActivated) ? 'not_active' : 'active'}`">
-                                    <label for="ao_fixed_activation_date">Fixed Activation Date</label>
-                                    <input type="date" name="ao_fixed_activation_date" autocomplete="off" class="default_text date" v-model="form.ao_fixed_activation_date = res.ao_fixed_activation_date">
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -291,8 +287,7 @@
                     classCount: 0,
                     expiryIn: 0,
                     notActivated: 0,
-                    purchaseLimit: 0,
-                    ao_fixed_activation_date: null
+                    purchaseLimit: 0
                 }
             }
         },
@@ -400,7 +395,6 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        formData.append('ao_fixed_activation_date', me.form.ao_fixed_activation_date)
                         formData.append('_method', 'PATCH')
                         me.loader(true)
                         me.$axios.post(`api/packages/class-packages/${me.$route.params.param}`, formData).then(res => {

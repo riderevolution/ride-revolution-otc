@@ -83,6 +83,7 @@
         watch:{
             $route (to, from){
                 const me = this
+                me.$store.state.attendanceLayoutStatus = false
                 me.$store.state.upcomingClassesLayoutStatus = false
                 me.$store.state.assignWaitlistBookerUI = false
                 me.$store.state.disableBookerUI = false

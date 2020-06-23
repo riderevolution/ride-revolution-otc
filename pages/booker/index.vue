@@ -68,7 +68,7 @@
                                             </div>
                                         </div>
                                         <div class="customer_footer" v-if="customer != ''">
-                                            <div class="item">Attendance</div>
+                                            <div class="item" @click="toggleLayout('attendance')">Attendance</div>
                                             <div class="item">Packages</div>
                                             <div class="item">Redeem</div>
                                             <div id="credits" class="item" @click="toggleQuickSale('credit')">
@@ -282,6 +282,9 @@
         <transition name="fade">
             <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
         </transition>
+        <transition name="fade">
+            <attendance-layout v-if="$store.state.attendanceLayoutStatus" />
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
@@ -302,6 +305,7 @@
     import RemoveAssign from '../../components/modals/RemoveAssign'
     import PendingTransactions from '../../components/modals/PendingTransactions'
     import CustomerPendingQuickSale from '../../components/modals/CustomerPendingQuickSale'
+    import AttendanceLayout from '../../components/modals/AttendanceLayout'
     import BookerMenuPrompt from '../../components/modals/BookerMenuPrompt'
     export default {
         components: {
@@ -320,6 +324,7 @@
             RemoveAssign,
             PendingTransactions,
             CustomerPendingQuickSale,
+            AttendanceLayout,
             BookerMenuPrompt
         },
         data () {
@@ -645,6 +650,15 @@
                 } else {
                     element.nextElementSibling.classList.add('active')
                 }
+            },
+            toggleLayout (type) {
+                const me = this
+                switch (type) {
+                    case 'attendance':
+                        me.$store.state.attendanceLayoutStatus = true
+                        break
+                }
+                document.body.classList.add('no_scroll')
             },
             toggleQuickSale (type) {
                 const me = this

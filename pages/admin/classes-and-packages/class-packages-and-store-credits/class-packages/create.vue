@@ -232,10 +232,6 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('ao_expiry_if_not_activated_type')">{{ errors.first('ao_expiry_if_not_activated_type') | properFormat }}</span></transition>
                                     </div>
                                 </div>
-                                <div :class="`form_group flex ${(isNotActivated) ? 'not_active' : 'active'}`">
-                                    <label for="ao_fixed_activation_date">Fixed Activation Date</label>
-                                    <input type="date" name="ao_fixed_activation_date" autocomplete="off" class="default_text date" v-model="form.ao_fixed_activation_date">
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -290,8 +286,7 @@
                     classCount: 0,
                     expiryIn: 0,
                     notActivated: 0,
-                    purchaseLimit: 0,
-                    ao_fixed_activation_date: '1999-01-01'
+                    purchaseLimit: 0
                 }
             }
         },
@@ -399,7 +394,6 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        formData.append('ao_fixed_activation_date', me.form.ao_fixed_activation_date)
                         me.loader(true)
                         me.$axios.post('api/packages/class-packages', formData).then(res => {
                             setTimeout( () => {
