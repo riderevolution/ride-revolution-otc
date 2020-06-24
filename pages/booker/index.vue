@@ -51,6 +51,7 @@
                                                 <h2 class="customer_name">
                                                     {{ customer.first_name }} {{ customer.last_name }}
                                                     <div class="types" v-if="customer.customer_details.customer_type.images.length > 0"><img :src="customer.customer_details.customer_type.images[0].path_resized" /></div>
+                                                    <div class="types" v-if="customer.has_first_timer"><img src="/icons/first-timer-package-icon.png" /></div>
                                                     <a :href="`mailto:${customer.email}`" class="email">
                                                         <img src="/icons/email-icon.svg" />
                                                         <span>Email</span>

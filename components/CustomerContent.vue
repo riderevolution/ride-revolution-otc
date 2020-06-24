@@ -5,8 +5,8 @@
                 <div :class="`status ${(packageStatus == 'all') ? 'active' : ''}`" @click="togglePackages('all')">Owned</div>
                 <div :class="`status ${(packageStatus == 'shared') ? 'active' : ''}`" @click="togglePackages('shared')">Shared</div>
                 <div :class="`status ${(packageStatus == 'frozen') ? 'active' : ''}`" @click="togglePackages('frozen')">Frozen</div>
-                <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
             </div>
+            <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
             <div class="cms_table_package">
                 <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="packageCount > 0 && (data.count > 0 && !data.expired)">
                     <h2 class="package_title">
@@ -42,13 +42,13 @@
                         </div>
                         <div class="package_action">
                             <a href="/booker" class="action_success_btn" @click.prevent="getCurrentCustomer()">Book a Class</a>
-                            <div class="package_options">
+                            <div class="package_options" v-if="data.class_package.class_count_unlimited != 1">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
                                     <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
                                     <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
                                     <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
-                                    <div class="option_link">Print Receipt</div>
+                                    <!-- <div class="option_link">Print Receipt</div> -->
                                 </div>
                             </div>
                         </div>
@@ -310,7 +310,7 @@
                     <div class="form_overview">
                         <div class="wrapper">
                             <label>Address</label>
-                            <p>{{ value.customer_details.pa_address_1 }}, {{ value.customer_details.pa_address_2 }}</p>
+                            <p>{{ value.customer_details.pa_address }}</p>
                         </div>
                         <div class="wrapper">
                             <label>City</label>
@@ -325,7 +325,7 @@
                     <div class="form_overview">
                         <div class="wrapper">
                             <label>Address</label>
-                            <p>{{ value.customer_details.ba_address_1 }}, {{ value.customer_details.ba_address_2 }}</p>
+                            <p>{{ value.customer_details.ba_address }}</p>
                         </div>
                         <div class="wrapper">
                             <label>City</label>
@@ -340,51 +340,22 @@
                     <div class="form_overview_instructor">
                         <div class="left">
                             <div class="image">
-                                <div class="instructor_image"></div>
+                                <img class="instructor_image" :src="value.top5Instructors[0].instructor_details.images[0].path"/>
                                 <div class="sequence"><span>1</span></div>
                             </div>
-                            <h2>Bruce Lee</h2>
-                            <p>Total Rides: 10</p>
+                            <h2>{{ value.top5Instructors[0].first_name }} {{ value.top5Instructors[0].last_name }}</h2>
+                            <p>Total Rides: {{ value.top5Instructors[0].bookCount }}</p>
                         </div>
                         <div class="right">
-                            <div class="wrapper">
+                            <div class="wrapper" v-for="(data, key) in topInstructors" :key="key">
                                 <div class="image">
-                                    <div class="instructor_image"></div>
-                                    <div class="sequence"><span>2</span></div>
+                                    <img class="instructor_image" :src="data.instructor_details.images[0].path" v-if="data.instructor_details.images[0].path != null" />
+                                    <div class="instructor_image" v-else></div>
+                                    <div class="sequence"><span>{{ key + 2 }}</span></div>
                                 </div>
                                 <div class="info">
-                                    <h2>Bruce Lee</h2>
-                                    <p>Total Rides: 10</p>
-                                </div>
-                            </div>
-                            <div class="wrapper">
-                                <div class="image">
-                                    <div class="instructor_image"></div>
-                                    <div class="sequence"><span>3</span></div>
-                                </div>
-                                <div class="info">
-                                    <h2>Bruce Lee</h2>
-                                    <p>Total Rides: 10</p>
-                                </div>
-                            </div>
-                            <div class="wrapper">
-                                <div class="image">
-                                    <div class="instructor_image"></div>
-                                    <div class="sequence"><span>4</span></div>
-                                </div>
-                                <div class="info">
-                                    <h2>Bruce Lee</h2>
-                                    <p>Total Rides: 10</p>
-                                </div>
-                            </div>
-                            <div class="wrapper">
-                                <div class="image">
-                                    <div class="instructor_image"></div>
-                                    <div class="sequence"><span>5</span></div>
-                                </div>
-                                <div class="info">
-                                    <h2>Bruce Lee</h2>
-                                    <p>Total Rides: 10</p>
+                                    <h2>{{ data.first_name }} {{ data.last_name }}</h2>
+                                    <p>Total Rides: {{ data.bookCount }}</p>
                                 </div>
                             </div>
                         </div>
@@ -462,6 +433,38 @@
             }
         },
         computed: {
+            topInstructors () {
+                const me = this
+                let results = []
+                let ctr = 0
+                me.value.top5Instructors.forEach((data, index) => {
+                    if (index != 0) {
+                        if (ctr < 4) {
+                            results.push(data)
+                            ctr++
+                        }
+                    }
+                })
+                if (ctr <= 4) {
+                    for (let i = 0; i < 4 - ctr; i++) {
+                        results.push(
+                            {
+                                bookCount: 0,
+                                first_name: '-',
+                                last_name: '-',
+                                instructor_details: {
+                                    images: [
+                                        {
+                                            path: null
+                                        }
+                                    ]
+                                }
+                            }
+                        )
+                    }
+                }
+                return results
+            },
             populatePackages () {
                 const me = this
                 let result = []
@@ -471,8 +474,8 @@
                         let expiry = me.$moment(element.class_package.computed_expiration_date)
                         if (parseInt(expiry.diff(current, 'days')) > 0) {
                             element.expired = false
-                        } else {
                             me.packageCount++
+                        } else {
                             element.expired = true
                         }
                         result.push(element)

@@ -4,26 +4,32 @@
             <section id="top_content">
                 <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
                 <div class="user_info">
-                    <img :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images[0].path_resized != null" />
+                    <img class="main" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images[0].path_resized != null" />
                     <div class="user_image_default" v-else>
                         <div class="overlay">
                             {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
                         </div>
                     </div>
                     <div class="user_details">
-                        <h1 class="user_name">{{ customer.first_name }} {{ customer.last_name }}</h1>
+                        <h1 class="user_name">
+                            {{ customer.first_name }} {{ customer.last_name }}
+                            <span class="icon">
+                                <img src="/icons/first-timer-package-icon.png" v-if="customer.has_first_timer" />
+                                <img :src="customer.customer_details.customer_type.images[0].path_resized" v-if="customer.customer_details.customer_type.images[0].path_resized != null" />
+                            </span>
+                        </h1>
                         <div class="user_contact">
                             <a :href="`tel:${customer.customer_details.co_contact_number}`" class="number">{{ customer.customer_details.co_contact_number }}</a>
                             <a :href="`mailto:${customer.email}`" class="email">{{ customer.email }}</a>
                         </div>
                         <div class="user_summary">
-                            <div class="summary">Completed Rides: 89</div>
+                            <div class="summary">Completed Rides: {{ customer.completed_rides }}</div>
                             <div class="summary">Store Credits: {{ (customer.store_credits) ? totalItems(customer.store_credits.amount) : 0 }}</div>
                             <div class="summary pending">Pending Payment: Php {{ totalCount(pendingPayment) }}</div>
                         </div>
                         <div class="user_action">
-                            <a href="javascript:void(0)" class="action_user_btn" @click="toggleQuickSale('credit')">Buy Credits</a>
-                            <a href="javascript:void(0)" class="action_user_btn margin" @click="toggleQuickSale('product')">Buy Products</a>
+                            <div class="action_user_btn" @click="toggleQuickSale('credit')">Buy Credits</div>
+                            <div class="action_user_btn margin" @click="toggleQuickSale('product')">Buy Products</div>
                         </div>
                     </div>
                 </div>

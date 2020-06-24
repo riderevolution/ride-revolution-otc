@@ -1,6 +1,6 @@
 <template>
     <div :class="`seat_boxes ${position} ${layout}`" v-if="data.length > 0">
-        <div :id="`seat_${position}_${lkey}`" :class="`seat_position ${addSeatClass(seat)}`" v-for="(seat, lkey) in data" @mouseover="toggle(lkey, 'hover')" @mouseout="toggle(lkey, 'out')">
+        <div :id="`seat_${position}_${lkey}`" :class="`seat_position ${addSeatClass(seat)}`" v-for="(seat, lkey) in data" @mouseover="toggle(seat, lkey, 'hover')" @mouseout="toggle(seat, lkey, 'out')">
             <div class="seat_details" v-if="seat.status == 'blocked'">
                 <div class="flex">
                     <div class="info_image block">
@@ -12,11 +12,17 @@
             <div class="seat_details" v-if="seat.status == 'signed-in' || seat.status == 'reserved'">
                 <div class="seat_name">{{ seat.number }} - {{ seat.bookings[0].user.first_name }} {{ seat.bookings[0].user.last_name }}</div>
                 <div class="seat_violator">{{ seat.status.charAt(0).toUpperCase() }}{{ seat.status.slice(1) }}</div>
-                <div class="flex alt">
+                <div class="flex alt margin">
                     <div class="info_image" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
                         <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
                     </div>
                     <span>{{ seat.bookings[0].user.customer_details.customer_type.name }}</span>
+                </div>
+                <div class="flex alt" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.has_first_timer">
+                    <div class="info_image">
+                        <img src="/icons/first-timer-package-icon.png" />
+                    </div>
+                    <span>First Timer Package</span>
                 </div>
                 <div class="seat_pending_total" v-if="seat.userPendingPayments">
                     <img src="/icons/pending-payment-icon.svg">
@@ -31,6 +37,12 @@
                         <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
                     </div>
                     <span>{{ seat.bookings[0].user.customer_details.customer_type.name }}</span>
+                </div>
+                <div class="flex alt margin" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.has_first_timer">
+                    <div class="info_image">
+                        <img src="/icons/first-timer-package-icon.png" />
+                    </div>
+                    <span>First Timer Package</span>
                 </div>
                 <div class="flex alt">
                     <div class="info_image" v-if="seat.bookings[0].is_guest == 1">
@@ -90,8 +102,9 @@
             }
         },
         methods: {
-            toggle (unique, type) {
+            toggle (seat, unique, type) {
                 const me = this
+                console.log(seat);
                 let target = document.getElementById(`seat_${me.position}_${unique}`)
                 if (target.querySelector('.seat_details')) {
                     switch (type) {

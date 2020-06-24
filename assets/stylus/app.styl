@@ -2133,7 +2133,7 @@ input::placeholder
                 .image
                     position: relative
                     .sequence
-                        right: calc(0% + 15px)
+                        right: calc(0% + 50px)
                     .instructor_image
                         margin: 0 auto
                         background-color: $black
@@ -2173,9 +2173,10 @@ input::placeholder
                             sf_pro_bold(14px)
                         .instructor_image
                             background-color: $black
-                            width: 50px
-                            height: 50px
+                            width: 65px
+                            height: 65px
                             border-radius: 50%
+                            border: 3px solid $green
                     .info
                         flex: 1 0 50%
                         margin-left: 20px
@@ -6815,7 +6816,7 @@ input::placeholder
                 display: flex
                 flex-flow: row wrap
                 align-items: flex-start
-                img
+                .main
                     width: 70px
                     height: 70px
                     border-radius: 90%
@@ -6842,8 +6843,22 @@ input::placeholder
                     flex: 1 0 40%
                     padding-left: 20px
                     .user_name
+                        display: flex
+                        flex-flow: row wrap
+                        align-items: center
                         sf_pro_bold(20px)
                         color: $white
+                        .icon
+                            display: flex
+                            flex-flow: row wrap
+                            align-items: center
+                            padding-left: 10px
+                            img
+                                width: 20px
+                                height: 20px
+                                margin-left: 5px
+                                &:first-child
+                                    margin-left: 0
                         .violator
                             background-image: linear-gradient(77deg, #7B53FF, #AE83FF)
                             border-radius: 2px
