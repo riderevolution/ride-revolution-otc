@@ -60,7 +60,7 @@
                     </div>
                     <div class="customer_picked" v-if="customer != ''">
                         <div class="customer_header">
-                            <img class="customer_image" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images.length > 0" />
+                            <img class="customer_image" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images[0].path_resized != null" />
                             <div class="customer_default_image" v-else>
                                 <div class="overlay">
                                     {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}

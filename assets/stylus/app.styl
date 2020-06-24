@@ -5468,7 +5468,7 @@ input::placeholder
                             transition: .3s ease-in-out
                             .seat_details
                                 position: absolute
-                                top: calc(0% - 70px)
+                                bottom: calc(100% + 10px)
                                 background-color: $white
                                 z-index: 5
                                 padding: 20px 10px
@@ -5490,6 +5490,24 @@ input::placeholder
                                     text-align: left
                                     sf_pro_regular(16px, false)
                                     color: $black
+                                .seat_violator
+                                    text-align: left
+                                    sf_pro_regular(14px, false)
+                                    color: $border_alt2
+                                    margin-bottom: 10px
+                                .seat_pending_total
+                                    margin-top: 10px
+                                    display: flex
+                                    flex-flow: row wrap
+                                    align-items: center
+                                    justify-content: flex-start
+                                    color: $red
+                                    sf_pro_regular(16px, false)
+                                    img
+                                        width: 20px
+                                        height: 20px
+                                    span
+                                        padding-left: 10px
                                 .flex
                                     display: flex
                                     flex-flow: row wrap
@@ -5497,6 +5515,8 @@ input::placeholder
                                     justify-content: center
                                     &.alt
                                         justify-content: flex-start
+                                    &.margin
+                                        margin-bottom: 10px
                                     .info_image
                                         padding-right: 10px
                                         &.block
@@ -5511,7 +5531,7 @@ input::placeholder
                                 &::before
                                     content: ""
                                     position: absolute
-                                    bottom: calc(0% - 10px)
+                                    bottom: calc(0% - 8px)
                                     width: 0
                                     height: 0
                                     border-left: 10px solid transparent
@@ -5700,6 +5720,7 @@ input::placeholder
                                 h2
                                     sf_pro_regular(18px)
                                     color: $black
+                                    flex: 0 0 100%
                             .seat_available
                                 position: absolute
                                 top: 0
