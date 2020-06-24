@@ -2,6 +2,9 @@
     <div class="default_modal">
         <div class="background" @click="toggleClose()"></div>
         <div class="confirmation_wrapper">
+            <div class="icon">
+                <svg id="modal_check_icon" xmlns="http://www.w3.org/2000/svg" width="109.5" height="109.5" viewBox="0 0 109.5 109.5"> <g transform="translate(-1011 -119)"> <g class="icon_1" transform="translate(1011 119)"> <circle class="icon_3" cx="54.75" cy="54.75" r="54.75" /> <circle class="icon_4" cx="54.75" cy="54.75" r="53.75" /> </g> <path class="icon_2" d="M1030.386,155.744l15.777,15.777,30.289-30.289" transform="translate(15.701 18.006)" /> </g> </svg>
+            </div>
             <h2 class="confirmation_title">Success!</h2>
             <div class="confirmation_default">
                 Your gift card has now been redeemed. You now have credits in your account.
@@ -19,12 +22,12 @@
         methods: {
             toggleClose () {
                 const me = this
-                me.$store.state.redeemgGiftCardSuccessStatus = false
+                me.$store.state.redeemGiftCardSuccessStatus = false
                 document.body.classList.remove('no_scroll')
             },
             toggleLayout () {
                 const me = this
-                me.$store.state.redeemgGiftCardSuccessStatus = false
+                me.$store.state.redeemGiftCardSuccessStatus = false
                 me.$store.state.packageLayoutStatus = true
             }
         }

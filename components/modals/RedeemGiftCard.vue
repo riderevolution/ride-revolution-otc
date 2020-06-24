@@ -92,14 +92,15 @@
                         me.loader(true)
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('customer_id', me.customer.id)
-                        me.$axios.post('api/gift-cards/redeem', formData).then(res => {
+                        me.$axios.post('api/inventory/gift-cards/redeem', formData).then(res => {
                             if (res.data) {
                                 me.$store.state.redeemGiftCardStatus = false
                                 setTimeout( () => {
-                                    me.$store.state.redeemgGiftCardSuccessStatus = true
+                                    me.$store.state.redeemGiftCardSuccessStatus = true
                                 }, 500)
                             }
                         }).catch(err => {
+                            me.$store.state.errorOverlayStatus = true
                             me.$store.state.errorList = err.response.data.errors
                             me.$store.state.errorStatus = true
                         }).then(() => {

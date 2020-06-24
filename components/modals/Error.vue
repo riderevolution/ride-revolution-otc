@@ -22,6 +22,7 @@
                 }
                 if (me.$store.state.errorOverlayStatus) {
                     me.$store.state.errorStatus = false
+                    me.$store.state.errorOverlayStatus = false
                 } else {
                     me.$store.state.errorStatus = false
                     document.body.classList.remove('no_scroll')

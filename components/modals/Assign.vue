@@ -25,7 +25,7 @@
                             <option value="so-sick">So Sick of love song</option>
                             <option value="other">Other</option>
                         </select>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('comp_reason')">{{ errors.first('comp_reason') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('comp_reason')">{{ errors.first('comp_reason') | properFormat }}</span></transition>
                     </div>
                     <transition name="fade">
                         <div class="form_group" v-if="form.comp == 'other'">
@@ -81,7 +81,7 @@
                     <div class="form_footer_wrapper">
                         <div class="form_flex">
                             <div class="button_group">
-                                <a href="javascript:void(0)" class="action_cancel_btn" @click="toggleClose()">Cancel</a>
+                                <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                                 <button type="submit" name="submit" class="action_success_btn margin alternate">{{ (type == 1) ? 'Assign Guest' : 'Block' }}</button>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
                             <option value="so-sick">So Sick of love song</option>
                             <option value="other">Other</option>
                         </select>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('comp_reason')">{{ errors.first('comp_reason') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('comp_reason')">{{ errors.first('comp_reason') | properFormat }}</span></transition>
                     </div>
                     <transition name="fade">
                         <div class="form_group" v-if="form.comp == 'other'">
@@ -119,23 +119,23 @@
                         <div class="form_group">
                             <label for="guest_first_name">First Name <span>*</span></label>
                             <input type="text" name="guest_first_name" autocomplete="off" class="default_text" v-validate="'required'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_first_name')">{{ errors.first('guest_first_name') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_first_name')">{{ errors.first('guest_first_name') | properFormat }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="guest_last_name">Last Name <span>*</span></label>
                             <input type="text" name="guest_last_name" autocomplete="off" class="default_text" v-validate="'required'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_last_name')">{{ errors.first('guest_last_name') }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_last_name')">{{ errors.first('guest_last_name') | properFormat }}</span></transition>
                         </div>
                     </div>
                     <div class="form_group" v-if="type == 0">
                         <label for="email">Email Address <span>*</span></label>
                         <input type="email" name="email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
                     </div>
                     <div class="form_group" v-else>
                         <label for="guest_email">Email Address <span>*</span></label>
                         <input type="email" name="guest_email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_email')">{{ errors.first('guest_email') }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_email')">{{ errors.first('guest_email') | properFormat }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="form_flex">
