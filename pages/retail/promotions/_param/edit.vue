@@ -45,57 +45,31 @@
                             </div>
                             <div class="form_group">
                                 <label for="promo_code">Promo Code <span>*</span></label>
-                                <input type="text" name="promo_code" autocomplete="off" class="default_text" v-validate="'required|min:6|max:8'" v-model="res.promo_code">
+                                <input type="text" name="promo_code" autocomplete="off" class="default_text" v-validate="'required|min:6|max:16'" v-model="res.promo_code">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_code')">{{ errors.first('promo_code') | properFormat }}</span></transition>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="start_date">Start Date <span>*</span></label>
-                                    <input type="date" name="start_date" autocomplete="off" class="default_text date" v-validate="'required'" v-model="res.start_date">
+                                    <input type="date" name="start_date" autocomplete="off" :min="$moment().format('YYYY-MM-DD')" class="default_text date" v-validate="'required|date_format:yyyy-MM-dd'" v-model="res.start_date">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
                                 </div>
-                                <div class="form_group flex alternate">
-                                    <label>Start Time<span>*</span></label>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="start_time_hour" class="default_text" autocomplete="off" v-model="form.start.hour" maxlength="2" v-validate="'required|numeric|max_value:12|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_hour')">{{ errors.first('start_time_hour') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_flex_separator">:</div>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="start_time_minutes" class="default_text" autocomplete="off" v-model="form.start.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_time_minutes')">{{ errors.first('start_time_minutes') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="start_convention" class="default_text number no_click" autocomplete="off" v-model="form.start.convention" v-validate="'required'">
-                                        <div class="up" @click="changeConvention('start')"></div>
-                                        <div class="down" @click="changeConvention('start')"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_convention')">{{ errors.first('start_convention') | properFormat }}</span></transition>
-                                    </div>
+                                <div class="form_group">
+                                    <label for="start_time">Start Time <span>*</span></label>
+                                    <input type="time" name="start_time" v-validate="'required'" class="default_text" v-model="$moment(res.start_time, 'hh:mm A').format('HH:mm')">
+                                    <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="end_date">End Date <span>*</span></label>
-                                    <input type="date" name="end_date" autocomplete="off" class="default_text date" v-validate="'required'" v-model="res.end_date">
+                                    <input type="date" name="end_date" autocomplete="off" :min="$moment(res.start_date).format('YYYY-MM-DD')" class="default_text date" v-validate="'required|date_format:yyyy-MM-dd'" v-model="res.end_date">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                                 </div>
-                                <div class="form_group flex alternate">
-                                    <label>End Time<span>*</span></label>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="end_time_hour" class="default_text" autocomplete="off" v-model="form.end.hour" maxlength="2" v-validate="'required|numeric|max_value:12|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_time_hour')">{{ errors.first('end_time_hour') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_flex_separator">:</div>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="end_time_minutes" class="default_text" autocomplete="off" v-model="form.end.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_time_minutes')">{{ errors.first('end_time_minutes') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_flex_input">
-                                        <input type="text" name="end_convention" class="default_text number no_click" autocomplete="off" v-model="form.end.convention" v-validate="'required'">
-                                        <div class="up" @click="changeConvention('end')"></div>
-                                        <div class="down" @click="changeConvention('end')"></div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_convention')">{{ errors.first('end_convention') | properFormat }}</span></transition>
-                                    </div>
+                                <div class="form_group">
+                                    <label for="end_time">End Time <span>*</span></label>
+                                    <input type="time" name="end_time" v-validate="'required'" class="default_text" v-model="$moment(res.end_time, 'hh:mm A').format('HH:mm')">
+                                    <transition name="slideY"><span class="validation_errors" v-if="errors.has('end_time')">{{ errors.first('end_time') | properFormat }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_flex">
@@ -135,7 +109,7 @@
                         <transition name="fade">
                             <div class="form_main_group" v-if="isFilter">
                                 <div class="form_flex alternate">
-                                    <div :class="`form_group ${(filterType == 'class_packages') ? 'full' : ''}`">
+                                    <div class="form_group">
                                         <label for="q">Search a {{ (filterType == 'class_packages') ? 'Class Packages' : 'Product' }}</label>
                                         <input type="text" name="q" autocomplete="off" v-model="form.query" :placeholder="`Search for a ${(filterType == 'class_packages') ? 'class packages' : 'products' }`" class="default_text search_alternate">
                                     </div>
@@ -146,7 +120,7 @@
                                             <option :value="data.id" v-for="(data, key) in filters">{{ data.name }}</option>
                                         </select>
                                     </div>
-                                    <div class="button_group">
+                                    <div class="button_group alt">
                                         <button type="button" name="button" class="action_btn alternate" @click="submitFilter(filterType)">Filter</button>
                                     </div>
                                 </div>
@@ -205,18 +179,51 @@
                 filterValues: [],
                 filterData: [],
                 form: {
-                    start: {
-                        hour: '00',
-                        mins: '00',
-                        convention: 'AM'
-                    },
-                    end: {
-                        hour: '00',
-                        mins: '00',
-                        convention: 'PM'
-                    },
+                    start_date: this.$moment().format('YYYY-MM-DD'),
                     query: '',
                     categoryID: ''
+                }
+            }
+        },
+        filters: {
+            properFormat (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                if (newValue.length > 1) {
+                    let nextValue = newValue[0].split('_')
+                    if (nextValue.length > 1) {
+                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                    } else {
+                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                    }
+                } else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    if (newValue.length > 1) {
+                        let firstValue = ''
+                        let lastValue = ''
+                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
+                        for (let i = 1; i < newValue.length; i++) {
+                            if (newValue[i] != 'id') {
+                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                            }
+                        }
+                        newValue = firstValue + ' ' + lastValue
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                    return `The ${newValue} field${message}`
+                } else {
+                    if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
                 }
             }
         },
@@ -236,28 +243,6 @@
                     result = false
                 }
                 return result
-            }
-        },
-        filters: {
-            properFormat: function (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        let lastValue = ''
-                        for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
             }
         },
         methods: {
@@ -282,12 +267,13 @@
             },
             getFilter (type) {
                 const me = this
+                me.filterData = []
                 let apiRoute = ''
                 let formData = new FormData()
                 me.filterType = type
                 switch (type) {
                     case 'class_packages':
-                        apiRoute = `api/packages/class-packages?promotion=1&promo_id=${me.res.id}`
+                        apiRoute = 'api/packages/class-packages?promotion=1'
                         break
                     case 'products':
                         apiRoute = 'api/inventory/product-categories'
@@ -296,14 +282,33 @@
                 me.$axios.get(apiRoute).then(res => {
                     if (res.data) {
                         if (type == 'class_packages') {
-                            me.filterData = res.data.classPackages.data
+                            res.data.classPackages.data.forEach((data, index) => {
+                                me.res.promo_applications.forEach((application, index) => {
+                                    if (data.id == application.class_package_id) {
+                                        data.checked = true
+                                    }
+                                })
+                                if (!data.checked) {
+                                    data.checked = false
+                                }
+                                me.filterData.push(data)
+                            })
                         } else {
                             me.filters = res.data.productCategories
                             formData.append('promotion', 1)
-                            formData.append('enabled', 1)
-                            me.$axios.post(`api/inventory/products/search?promo_id=${me.res.id}`, formData).then(res => {
+                            me.$axios.post('api/inventory/products/search', formData).then(res => {
                                 if (res.data) {
-                                    me.filterData = res.data.products
+                                    res.data.products.forEach((data, index) => {
+                                        me.res.promo_applications.forEach((application, index) => {
+                                            if (data.id == application.product_id) {
+                                                data.checked = true
+                                            }
+                                        })
+                                        if (!data.checked) {
+                                            data.checked = false
+                                        }
+                                        me.filterData.push(data)
+                                    })
                                 }
                             })
                         }
@@ -311,19 +316,9 @@
                     }
                 })
             },
-            changeConvention (type) {
-                const me = this
-                switch (type) {
-                    case 'start':
-                        me.form.start.convention = (me.form.start.convention == 'AM') ? 'PM' : 'AM'
-                        break
-                    case 'end':
-                        me.form.end.convention = (me.form.end.convention == 'AM') ? 'PM' : 'AM'
-                        break
-                }
-            },
             submitFilter (type) {
                 const me = this
+                me.filterData = []
                 let formData = new FormData()
                 formData.append('promotion', 1)
                 formData.append('q', me.form.query)
@@ -331,7 +326,17 @@
                     case 'class_packages':
                         me.$axios.post('api/packages/class-packages/search', formData).then(res => {
                             if (res.data) {
-                                me.filterData = res.data.classPackages
+                                res.data.classPackages.data.forEach((data, index) => {
+                                    me.res.promo_applications.forEach((application, index) => {
+                                        if (data.id == application.class_package_id) {
+                                            data.checked = true
+                                        }
+                                    })
+                                    if (!data.checked) {
+                                        data.checked = false
+                                    }
+                                    me.filterData.push(data)
+                                })
                             }
                         })
                         break
@@ -339,7 +344,17 @@
                         formData.append('category_id', me.form.categoryID)
                         me.$axios.post('api/inventory/products/search', formData).then(res => {
                             if (res.data) {
-                                me.filterData = res.data.products
+                                res.data.products.forEach((data, index) => {
+                                    me.res.promo_applications.forEach((application, index) => {
+                                        if (data.id == application.product_id) {
+                                            data.checked = true
+                                        }
+                                    })
+                                    if (!data.checked) {
+                                        data.checked = false
+                                    }
+                                    me.filterData.push(data)
+                                })
                             }
                         })
                         break
@@ -359,8 +374,6 @@
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
                         formData.append('affecteds', JSON.stringify(me.filterData))
-                        formData.append('start_time', `${me.form.start.hour}:${me.form.start.mins} ${me.form.start.convention}`)
-                        formData.append('end_time', `${me.form.end.hour}:${me.form.end.mins} ${me.form.end.convention}`)
                         me.loader(true)
                         me.$axios.post(`api/inventory/promos/${me.$route.params.param}`, formData).then(res => {
                             setTimeout( () => {
@@ -395,12 +408,7 @@
             me.$axios.get(`api/inventory/promos/${me.$route.params.param}`).then(res => {
                 if (res.data) {
                     me.res = res.data.promo
-                    me.form.start.hour = me.res.start_time.split(':')[0]
-                    me.form.start.mins = me.res.start_time.split(':')[1].split(' ')[0]
-                    me.form.start.convention = me.res.start_time.split(':')[1].split(' ')[1]
-                    me.form.end.hour = me.res.end_time.split(':')[0]
-                    me.form.end.mins = me.res.end_time.split(':')[1].split(' ')[0]
-                    me.form.end.convention = me.res.end_time.split(':')[1].split(' ')[1]
+                    me.form.start_date = res.data.promo.start_time
                     me.isDiscount = (me.res.discount_type == 'percent') ? true : false
                     me.getFilter(me.res.affected_type)
                     me.filterType = me.res.affected_type
