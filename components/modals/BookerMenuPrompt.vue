@@ -145,8 +145,7 @@
             populateItems () {
                 const me = this
                 let results = []
-                console.log(me.seat);
-                if (me.seat != '' && me.$parent.customer != '') {
+                if (me.seat != '' && me.$parent.customer != '' && me.seat.bookings.length > 0) {
                     me.items.forEach((item, index) => {
                         if (me.seat.bookings[0].original_booker_id == me.$parent.customer.id) {
                             if (item.status == 'reserved') {

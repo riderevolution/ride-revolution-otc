@@ -50,6 +50,10 @@
                                         <div class="type_title">{{ data.name }}</div>
                                     </div>
                                     <div class="type">
+                                        <img src="/icons/first-timer-package-icon.png" />
+                                        <div class="type_title">First Timer Package</div>
+                                    </div>
+                                    <div class="type">
                                         <img src="/icons/guest-icon.svg" />
                                         <div class="type_title">Guest</div>
                                     </div>
