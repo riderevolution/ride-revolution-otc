@@ -297,10 +297,10 @@
                             <label>Customer Type</label>
                             <p>{{ value.customer_details.customer_type.name }}</p>
                         </div>
-                        <div class="wrapper">
+                        <!-- <div class="wrapper">
                             <label>Rewards Membership</label>
                             <p>Black</p>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="form_wrapper">
@@ -313,8 +313,20 @@
                             <p>{{ value.customer_details.pa_address }}</p>
                         </div>
                         <div class="wrapper">
+                            <label>Country</label>
+                            <p>{{ value.customer_details.personal_country }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>State</label>
+                            <p>{{ value.customer_details.personal_state }}</p>
+                        </div>
+                        <div class="wrapper">
                             <label>City</label>
                             <p>{{ value.customer_details.pa_city }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Zip Code</label>
+                            <p>{{ value.customer_details.pa_zip_code }}</p>
                         </div>
                     </div>
                 </div>
@@ -328,8 +340,20 @@
                             <p>{{ value.customer_details.ba_address }}</p>
                         </div>
                         <div class="wrapper">
+                            <label>Country</label>
+                            <p>{{ value.customer_details.billing_country }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>State</label>
+                            <p>{{ value.customer_details.billing_state }}</p>
+                        </div>
+                        <div class="wrapper">
                             <label>City</label>
                             <p>{{ value.customer_details.ba_city }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Zip Code</label>
+                            <p>{{ value.customer_details.ba_zip_code }}</p>
                         </div>
                     </div>
                 </div>

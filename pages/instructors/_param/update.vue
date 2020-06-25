@@ -130,13 +130,38 @@
                             <div class="form_main_group">
                                 <div class="form_group">
                                     <label for="pa_address">Address <span>*</span></label>
-                                    <input type="text" name="pa_address" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.pa_address">
+                                    <textarea name="pa_address" class="default_text" rows="3" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.pa_address"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address')">{{ errors.first('pa_address') | properFormat }}</span></transition>
                                 </div>
-                                <div class="form_group">
-                                    <label for="pa_city">City <span>*</span></label>
-                                    <input type="text" name="pa_city" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$', max: 30}" v-model="form.pa_city">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_city')">{{ errors.first('pa_city') | properFormat }}</span></transition>
+                                <div class="form_flex">
+                                    <div class="form_group">
+                                        <label for="pa_country_id">Country <span>*</span></label>
+                                        <select class="default_select alternate" name="pa_country_id" v-validate="'required'" v-model="form.pa_country" @change="toggleWorld($event, 'state', 'pa')">
+                                            <option value="" selected disabled>Choose Country</option>
+                                            <option :value="country.id" v-for="(country, key) in pa_countries" :key="key">{{ country.name }}</option>
+                                        </select>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_country_id')">{{ errors.first('pa_country_id') | properFormat }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="pa_state_id">State <span>*</span></label>
+                                        <select class="default_select alternate" name="pa_state_id" v-validate="'required'" v-model="form.pa_state">
+                                            <option value="" selected disabled>Choose State</option>
+                                            <option :value="state.id" v-for="(state, key) in pa_states" :key="key">{{ state.name }}</option>
+                                        </select>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_state_id')">{{ errors.first('pa_state_id') | properFormat }}</span></transition>
+                                    </div>
+                                </div>
+                                <div class="form_flex">
+                                    <div class="form_group">
+                                        <label for="pa_city">City <span>*</span></label>
+                                        <input type="text" name="pa_city" autocomplete="off" :class="`default_text ${(form.pa_state != '') ? '' : 'disabled'}`" v-validate="{required: true}" v-model="form.pa_city">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_city')">{{ errors.first('pa_city') | properFormat }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="pa_zip_code">Zip Code <span>*</span></label>
+                                        <input type="text" name="pa_zip_code" autocomplete="off" :class="`default_text ${(form.pa_city != '') ? '' : 'disabled'}`" v-validate="{required: true, numeric: true}" v-model="form.pa_zip_code">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_zip_code')">{{ errors.first('pa_zip_code') | properFormat }}</span></transition>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -151,13 +176,38 @@
                             <div class="form_main_group">
                                 <div class="form_group">
                                     <label for="ba_address">Address <span>*</span></label>
-                                    <input type="text" name="ba_address" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.ba_address">
+                                    <textarea name="ba_address" class="default_text" rows="3" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.ba_address"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address')">{{ errors.first('ba_address') | properFormat }}</span></transition>
                                 </div>
-                                <div class="form_group">
-                                    <label for="ba_city">City <span>*</span></label>
-                                    <input type="text" name="ba_city" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$', max: 30}" v-model="form.ba_city">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_city')">{{ errors.first('ba_city') | properFormat }}</span></transition>
+                                <div class="form_flex">
+                                    <div class="form_group">
+                                        <label for="ba_country_id">Country <span>*</span></label>
+                                        <select class="default_select alternate" name="ba_country_id" v-validate="'required'" v-model="form.ba_country" @change="toggleWorld($event, 'state', 'ba')">
+                                            <option value="" selected disabled>Choose Country</option>
+                                            <option :value="country.id" v-for="(country, key) in ba_countries" :key="key">{{ country.name }}</option>
+                                        </select>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_country_id')">{{ errors.first('ba_country_id') | properFormat }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="ba_state_id">State <span>*</span></label>
+                                        <select class="default_select alternate" name="ba_state_id" v-validate="'required'" v-model="form.ba_state">
+                                            <option value="" selected disabled>Choose State</option>
+                                            <option :value="state.id" v-for="(state, key) in ba_states" :key="key">{{ state.name }}</option>
+                                        </select>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_state_id')">{{ errors.first('ba_state_id') | properFormat }}</span></transition>
+                                    </div>
+                                </div>
+                                <div class="form_flex">
+                                    <div class="form_group">
+                                        <label for="ba_city">City <span>*</span></label>
+                                        <input type="text" name="ba_city" autocomplete="off" :class="`default_text ${(form.ba_state != '') ? '' : 'disabled'}`" v-validate="{required: true}" v-model="form.ba_city">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_city')">{{ errors.first('ba_city') | properFormat }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="ba_zip_code">Zip Code <span>*</span></label>
+                                        <input type="text" name="ba_zip_code" autocomplete="off" :class="`default_text ${(form.ba_city != '') ? '' : 'disabled'}`" v-validate="{required: true, numeric: true}" v-model="form.ba_zip_code">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_zip_code')">{{ errors.first('ba_zip_code') | properFormat }}</span></transition>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -196,7 +246,7 @@
                                     <label for="enabled">Activate</label>
                                 </div>
                                 <div class="button_group">
-                                    <nuxt-link :to="`/${lastRoute}`" class="action_cancel_btn">Cancel</nuxt-link>
+                                    <nuxt-link :to="`/instructors/${lastRoute}/details`" class="action_cancel_btn">Cancel</nuxt-link>
                                     <button type="submit" name="submit" class="action_btn alternate margin">Save</button>
                                 </div>
                             </div>
@@ -228,11 +278,21 @@
                 form: {
                     toggled: false,
                     pa_address: '',
+                    pa_country: '',
+                    pa_state: '',
                     pa_city: '',
+                    pa_zip_code: '',
                     ba_address: '',
-                    ba_city: ''
+                    ba_country: '',
+                    ba_state: '',
+                    ba_city: '',
+                    ba_zip_code: ''
                 },
                 res: [],
+                pa_countries: [],
+                pa_states: [],
+                ba_countries: [],
+                ba_states: [],
                 professions: ['Accounting/Finance', 'Admin/Human Resources', 'Arts/Media/Communications', 'Building/Construction', 'Information Technology', 'Education/Training', 'Engineering', 'Healthcare', 'Hotel/Restaurant', 'Manufacturing', 'Sales/Marketing', 'Sciences', 'Services', 'Others'],
                 studios: []
             }
@@ -250,16 +310,21 @@
             }
         },
         filters: {
-            properFormat: function (value) {
+            properFormat (value) {
                 let newValue = value.split('The ')[1].split(' field')[0].split('[]')
                 if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
+                    let nextValue = newValue[0].split('_')
+                    if (nextValue.length > 1) {
+                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                    } else {
+                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                    }
+                } else {
                     newValue = value.split('The ')[1].split(' field')[0].split('_')
                     if (newValue.length > 1) {
                         let firstValue = ''
                         let lastValue = ''
-                        if (newValue[0] != 'io' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
                             firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
                         for (let i = 1; i < newValue.length; i++) {
@@ -277,11 +342,35 @@
                     message = message[1]
                     return `The ${newValue} field${message}`
                 } else {
-                    return `The ${newValue}`
+					if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
                 }
             }
         },
         methods: {
+            toggleWorld (event, type, category) {
+                const me = this
+                let country_id = (category == 'pa') ? me.form.pa_country : me.form.ba_country
+                me.loader(true)
+                switch (type) {
+                    case 'state':
+                        me.$axios.get(`api/world/states?country_id=${country_id}`).then(res => {
+                            if (category == 'pa') {
+                                me.pa_states = res.data.states
+                            } else {
+                                me.ba_states = res.data.states
+                            }
+                            setTimeout( () => {
+                                me.loader(false)
+                            }, 500)
+                        })
+                        break
+                }
+            },
             getFile (event) {
                 const me = this
                 let element = event.target
@@ -297,31 +386,28 @@
                     reader.readAsDataURL(element.files[0])
                 }
             },
-            toggleMedical (key, status) {
-                const me = this
-                let ctr = 0
-                me.form.medical_history = me.histories
-                me.form.medical_history[key].value = status
-                me.form.medical_history[key].checked = true
-                me.histories.forEach((history, index) => {
-                    if (history.checked) {
-                        ctr++
-                    }
-                })
-                if (ctr == me.histories.length) {
-                    me.error = false
-                } else {
-                    me.error = true
-                }
-            },
             copyPersonal (status) {
                 const me = this
                 if (status) {
                     me.form.ba_address = me.form.pa_address
+                    me.form.ba_country = me.form.pa_country
+                    if (me.form.ba_state == '') {
+                        me.$axios.get(`api/world/states?country_id=${me.form.pa_country}`).then(res => {
+                            me.ba_states = res.data.states
+                        })
+                    }
+                    me.form.ba_state = me.form.pa_state
                     me.form.ba_city = me.form.pa_city
+                    me.form.ba_zip_code = me.form.pa_zip_code
                 } else {
-                    me.form.ba_address = ''
-                    me.form.ba_city = ''
+                    if (me.res.instructor_details.ba_state_id != null) {
+                        me.form.ba_state = me.res.instructor_details.ba_state_id
+                    } else {
+                        me.form.ba_state = ''
+                    }
+                    me.form.ba_address = me.res.instructor_details.ba_address
+                    me.form.ba_city = me.res.instructor_details.ba_city
+                    me.form.ba_zip_code = me.res.instructor_details.ba_zip_code
                 }
             },
             submissionSuccess () {
@@ -335,9 +421,7 @@
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Instructor has been Updated')
-                                } else {
-                                    me.$store.state.errorList.push('Sorry, Something went wrong')
-                                    me.$store.state.errorStatus = true
+                                    me.$router.push(`/instructors/${me.lastRoute}/details`)
                                 }
                             }, 500)
                         }).catch(err => {
@@ -345,9 +429,6 @@
                             me.$store.state.errorStatus = true
                         }).then(() => {
                             setTimeout( () => {
-                                if (!me.$store.state.errorStatus) {
-                                    me.$router.push(`/instructors/${me.lastRoute}/details`)
-                                }
                                 me.loader(false)
                             }, 500)
                         })
@@ -367,10 +448,34 @@
                     me.loaded = true
                     me.previewImage = true
                     me.res = res.data.user
-                    me.form.pa_address = me.res.instructor_details.pa_address
-                    me.form.pa_city = me.res.instructor_details.pa_city
-                    me.form.ba_address = me.res.instructor_details.ba_address
-                    me.form.ba_city = me.res.instructor_details.ba_city
+                    me.$axios.get('api/world/countries').then(res => {
+                        if (res.data) {
+                            me.pa_countries = res.data.countries
+                            me.ba_countries = res.data.countries
+                            if (me.res.instructor_details.pa_country_id != null) {
+                                me.$axios.get(`api/world/states?country_id=${me.res.instructor_details.pa_country_id}`).then(res => {
+                                    me.pa_states = res.data.states
+                                    me.form.pa_country = me.res.instructor_details.pa_country_id
+                                    me.form.pa_state = me.res.instructor_details.pa_state_id
+                                })
+                            }
+                            if (me.res.instructor_details.ba_country_id != null) {
+                                me.$axios.get(`api/world/states?country_id=${me.res.instructor_details.ba_country_id}`).then(res => {
+                                    me.ba_states = res.data.states
+                                    me.form.ba_country = me.res.instructor_details.ba_country_id
+                                    me.form.ba_state = me.res.instructor_details.ba_state_id
+                                })
+                            }
+                        }
+                    })
+
+                    me.form.pa_address = res.data.user.instructor_details.pa_address
+                    me.form.pa_city = res.data.user.instructor_details.pa_city
+                    me.form.pa_zip_code = res.data.user.instructor_details.pa_zip_code
+                    me.form.ba_address = res.data.user.instructor_details.ba_address
+                    me.form.ba_city = res.data.user.instructor_details.ba_city
+                    me.form.ba_zip_code = res.data.user.instructor_details.ba_zip_code
+
                 }, 500)
             }).catch(err => {
                 me.$store.state.errorList = err.response.data.errors

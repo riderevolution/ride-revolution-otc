@@ -30,7 +30,7 @@
                         <div class="form_main_group">
                             <div class="form_group">
                                 <label for="username">Username <span>*</span></label>
-                                <input type="text" @keyup="checkValidity('username', $event)" name="username" autocomplete="off" class="default_text uppercase" v-validate="{required: true, regex: '^[a-zA-Z0-9|\@|\#|\_|\.]*$', min: 6, max: 15}">
+                                <input type="text" @keyup="checkValidity('username', $event)" name="username" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9|\@|\#|\_|\.]*$', min: 6, max: 15}">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('username') && !checkUsernameValidity">{{ errors.first('username') | properFormat }}</span></transition>
                                 <transition name="slide"><span class="validation_errors" v-if="checkUsernameValidity">Username is already taken</span></transition>
                             </div>
@@ -61,12 +61,12 @@
                             <div class="form_flex">
                                 <div class="form_group">
                                     <label for="co_birthdate">Birthdate <span>*</span></label>
-                                    <input type="date" name="co_birthdate" autocomplete="off" class="default_text date" v-validate="'required'">
+                                    <input type="date" name="co_birthdate" autocomplete="off" class="default_text date" v-model="form.birth_date" v-validate="'required|date_format:yyyy-MM-dd'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('co_birthdate')">{{ errors.first('co_birthdate') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="co_weight">Weight (in kilograms)</label>
-                                    <input type="text" name="co_weight" autocomplete="off" class="default_text" v-validate="'numeric|min_value:1|max_value:200'">
+                                    <input type="text" name="co_weight" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:200'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('co_weight')">{{ errors.first('co_weight') | properFormat }}</span></transition>
                                 </div>
                             </div>
@@ -127,18 +127,43 @@
                     </div>
                     <div class="form_wrapper">
                         <div class="form_header_wrapper">
-                            <h2 class="form_title">Personal Address</h2>
+                            <h2 class="form_title">Home Address</h2>
                         </div>
                         <div class="form_main_group">
                             <div class="form_group">
                                 <label for="pa_address">Address <span>*</span></label>
-                                <input type="text" name="pa_address" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.pa_address">
+                                <textarea name="pa_address" class="default_text" rows="3" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.pa_address"></textarea>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address')">{{ errors.first('pa_address') | properFormat }}</span></transition>
                             </div>
-                            <div class="form_group">
-                                <label for="pa_city">City <span>*</span></label>
-                                <input type="text" name="pa_city" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$', max: 30}" v-model="form.pa_city">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_city')">{{ errors.first('pa_city') | properFormat }}</span></transition>
+                            <div class="form_flex">
+                                <div class="form_group">
+                                    <label for="pa_country_id">Country <span>*</span></label>
+                                    <select class="default_select alternate" name="pa_country_id" v-validate="'required'" v-model="form.pa_country" @change="toggleWorld($event, 'state', 'pa')">
+                                        <option value="" selected disabled>Choose Country</option>
+                                        <option :value="country.id" v-for="(country, key) in pa_countries" :key="key">{{ country.name }}</option>
+                                    </select>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_country_id')">{{ errors.first('pa_country_id') | properFormat }}</span></transition>
+                                </div>
+                                <div class="form_group">
+                                    <label for="pa_state_id">State <span>*</span></label>
+                                    <select class="default_select alternate" name="pa_state_id" v-validate="'required'" v-model="form.pa_state">
+                                        <option value="" selected disabled>Choose State</option>
+                                        <option :value="state.id" v-for="(state, key) in pa_states" :key="key">{{ state.name }}</option>
+                                    </select>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_state_id')">{{ errors.first('pa_state_id') | properFormat }}</span></transition>
+                                </div>
+                            </div>
+                            <div class="form_flex">
+                                <div class="form_group">
+                                    <label for="pa_city">City <span>*</span></label>
+                                    <input type="text" name="pa_city" autocomplete="off" :class="`default_text ${(form.pa_state != '') ? '' : 'disabled'}`" v-validate="{required: true}" v-model="form.pa_city">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_city')">{{ errors.first('pa_city') | properFormat }}</span></transition>
+                                </div>
+                                <div class="form_group">
+                                    <label for="pa_zip_code">Zip Code <span>*</span></label>
+                                    <input type="text" name="pa_zip_code" autocomplete="off" :class="`default_text ${(form.pa_city != '') ? '' : 'disabled'}`" v-validate="{required: true, numeric: true}" v-model="form.pa_zip_code">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_zip_code')">{{ errors.first('pa_zip_code') | properFormat }}</span></transition>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -153,13 +178,38 @@
                         <div class="form_main_group">
                             <div class="form_group">
                                 <label for="ba_address">Address <span>*</span></label>
-                                <input type="text" name="ba_address" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$'}" v-model="form.ba_address">
+                                <textarea name="ba_address" class="default_text" rows="3" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.ba_address"></textarea>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address')">{{ errors.first('ba_address') | properFormat }}</span></transition>
                             </div>
-                            <div class="form_group">
-                                <label for="ba_city">City <span>*</span></label>
-                                <input type="text" name="ba_city" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ -.]*$', max: 30}" v-model="form.ba_city">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_city')">{{ errors.first('ba_city') | properFormat }}</span></transition>
+                            <div class="form_flex">
+                                <div class="form_group">
+                                    <label for="ba_country_id">Country <span>*</span></label>
+                                    <select class="default_select alternate" name="ba_country_id" v-validate="'required'" v-model="form.ba_country" @change="toggleWorld($event, 'state', 'ba')">
+                                        <option value="" selected disabled>Choose Country</option>
+                                        <option :value="country.id" v-for="(country, key) in ba_countries" :key="key">{{ country.name }}</option>
+                                    </select>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_country_id')">{{ errors.first('ba_country_id') | properFormat }}</span></transition>
+                                </div>
+                                <div class="form_group">
+                                    <label for="ba_state_id">State <span>*</span></label>
+                                    <select class="default_select alternate" name="ba_state_id" v-validate="'required'" v-model="form.ba_state">
+                                        <option value="" selected disabled>Choose State</option>
+                                        <option :value="state.id" v-for="(state, key) in ba_states" :key="key">{{ state.name }}</option>
+                                    </select>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_state_id')">{{ errors.first('ba_state_id') | properFormat }}</span></transition>
+                                </div>
+                            </div>
+                            <div class="form_flex">
+                                <div class="form_group">
+                                    <label for="ba_city">City <span>*</span></label>
+                                    <input type="text" name="ba_city" autocomplete="off" :class="`default_text ${(form.ba_state != '') ? '' : 'disabled'}`" v-validate="{required: true}" v-model="form.ba_city">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_city')">{{ errors.first('ba_city') | properFormat }}</span></transition>
+                                </div>
+                                <div class="form_group">
+                                    <label for="ba_zip_code">Zip Code <span>*</span></label>
+                                    <input type="text" name="ba_zip_code" autocomplete="off" :class="`default_text ${(form.ba_city != '') ? '' : 'disabled'}`" v-validate="{required: true, numeric: true}" v-model="form.ba_zip_code">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_zip_code')">{{ errors.first('ba_zip_code') | properFormat }}</span></transition>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -303,13 +353,24 @@
                 prevRoute: '',
                 form: {
                     toggled: false,
+                    birth_date: 'YYYY-MM-DD',
                     pa_address: '',
+                    pa_country: 174,
+                    pa_state: '',
                     pa_city: '',
+                    pa_zip_code: '',
                     ba_address: '',
+                    ba_country: 174,
+                    ba_state: '',
                     ba_city: '',
+                    ba_zip_code: '',
                     medical_history: []
                 },
                 histories: [],
+                pa_countries: [],
+                pa_states: [],
+                ba_countries: [],
+                ba_states: [],
                 types: [],
                 professions: ['Accounting/Finance', 'Admin/Human Resources', 'Arts/Media/Communications', 'Building/Construction', 'Information Technology', 'Education/Training', 'Engineering', 'Healthcare', 'Hotel/Restaurant', 'Manufacturing', 'Sales/Marketing', 'Sciences', 'Services', 'Others']
             }
@@ -369,6 +430,25 @@
             }
         },
         methods: {
+            toggleWorld (event, type, category) {
+                const me = this
+                let country_id = (category == 'pa') ? me.form.pa_country : me.form.ba_country
+                me.loader(true)
+                switch (type) {
+                    case 'state':
+                        me.$axios.get(`api/world/states?country_id=${country_id}`).then(res => {
+                            if (category == 'pa') {
+                                me.pa_states = res.data.states
+                            } else {
+                                me.ba_states = res.data.states
+                            }
+                            setTimeout( () => {
+                                me.loader(false)
+                            }, 500)
+                        })
+                        break
+                }
+            },
             checkValidity (type, event) {
                 const me = this
                 let value = event.target.value
@@ -439,10 +519,16 @@
                 const me = this
                 if (status) {
                     me.form.ba_address = me.form.pa_address
+                    me.form.ba_country = me.form.pa_country
+                    me.form.ba_state = me.form.pa_state
                     me.form.ba_city = me.form.pa_city
+                    me.form.ba_zip_code = me.form.pa_zip_code
                 } else {
                     me.form.ba_address = ''
+                    me.form.ba_country = 174
+                    me.form.ba_state = ''
                     me.form.ba_city = ''
+                    me.form.ba_zip_code = ''
                 }
             },
             submissionSuccess () {
@@ -462,9 +548,7 @@
                                 setTimeout( () => {
                                     if (res.data) {
                                         me.notify('Content has been Added')
-                                    } else {
-                                        me.$store.state.errorList.push('Sorry, Something went wrong')
-                                        me.$store.state.errorStatus = true
+                                        me.$router.push(`/${me.lastRoute}`)
                                     }
                                 }, 500)
                             }).catch(err => {
@@ -472,9 +556,6 @@
                                 me.$store.state.errorStatus = true
                             }).then(() => {
                                 setTimeout( () => {
-                                    if (!me.$store.state.errorStatus) {
-                                        me.$router.push(`/${me.lastRoute}`)
-                                    }
                                     me.loader(false)
                                 }, 500)
                             })
@@ -497,6 +578,16 @@
                     res.data.medicalHistoryQuestions.forEach((history, index) => {
                         history.checked = false
                         me.histories.push(history)
+                    })
+                }
+            })
+            me.$axios.get('api/world/countries').then(res => {
+                if (res.data) {
+                    me.pa_countries = res.data.countries
+                    me.ba_countries = res.data.countries
+                    me.$axios.get(`api/world/states?country_id=${me.form.pa_country}`).then(res => {
+                        me.pa_states = res.data.states
+                        me.ba_states = res.data.states
                     })
                 }
             })

@@ -118,7 +118,7 @@
         data () {
             return {
                 pagination: 10,
-                paginateValues: [10, 25, 50, 100, 200, 300, 500],
+                paginateValues: [10, 25, 50, 100, 200, 300, 500, 1000],
                 loaded: false,
                 id: 0,
                 type: 0,

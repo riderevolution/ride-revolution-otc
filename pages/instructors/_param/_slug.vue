@@ -4,7 +4,7 @@
             <section id="top_content">
                 <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
                 <div class="user_info">
-                    <img :src="instructor.instructor_details.images[0].path_resized" v-if="instructor.instructor_details.images.length > 0" />
+                    <img class="main" :src="instructor.instructor_details.images[0].path_resized" v-if="instructor.instructor_details.images.length > 0" />
                     <div class="user_image_default" v-else>
                         <div class="overlay">
                             {{ instructor.first_name.charAt(0) }}{{ instructor.last_name.charAt(0) }}

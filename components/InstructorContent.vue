@@ -230,8 +230,20 @@
                                 <p>{{ value.instructor_details.pa_address }}</p>
                             </div>
                             <div class="wrapper">
+                                <label>Country</label>
+                                <p>{{ value.instructor_details.personal_country }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>State</label>
+                                <p>{{ value.instructor_details.personal_state }}</p>
+                            </div>
+                            <div class="wrapper">
                                 <label>City</label>
                                 <p>{{ value.instructor_details.pa_city }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>Zip Code</label>
+                                <p>{{ value.instructor_details.pa_zip_code }}</p>
                             </div>
                         </div>
                     </div>
@@ -245,8 +257,20 @@
                                 <p>{{ value.instructor_details.ba_address }}</p>
                             </div>
                             <div class="wrapper">
+                                <label>Country</label>
+                                <p>{{ value.instructor_details.billing_country }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>State</label>
+                                <p>{{ value.instructor_details.billing_state }}</p>
+                            </div>
+                            <div class="wrapper">
                                 <label>City</label>
                                 <p>{{ value.instructor_details.ba_city }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>Zip Code</label>
+                                <p>{{ value.instructor_details.ba_zip_code }}</p>
                             </div>
                         </div>
                     </div>

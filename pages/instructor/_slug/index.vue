@@ -118,7 +118,6 @@
                                 me.instructor = res.data.instructor
                                 me.loaded = true
                                 me.layout.instructor_id = me.instructor.id
-                                console.log(me.instructor);
                             }, 500)
                         }).catch(err => {
                             me.$store.state.errorList = err.response.data.errors
