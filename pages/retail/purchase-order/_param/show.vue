@@ -12,6 +12,7 @@
                     <div class="action_buttons">
                         <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/duplicate`" class="action_btn">Duplicate P.O.</nuxt-link>
                         <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/edit`" class="action_btn alternate margin">Edit P.O.</nuxt-link>
+                        <div class="action_cancel_btn margin" @click="toggleDelete($route.params.param)">Delete P.O.</div>
                     </div>
                 </div>
                 <div class="filter_wrapper">
@@ -37,7 +38,7 @@
                         <div class="input_header">Cost</div>
                     </div>
                     <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
-                        <purchase-order class="input_content_wrapper" :type="'show'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
+                        <purchase-order class="input_content_wrapper table" :type="'show'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
                         <div class="footer_wrapper">
                             <!-- <div class="footer_cost">Total Additional Cost: PHP {{ totalCount(res.total_additional_cost) }}</div> -->
                             <div class="footer_cost">Total Shipping Cost: PHP {{ totalCount(res.total_shipping_cost) }}</div>
@@ -47,6 +48,9 @@
                 </div>
             </section>
         </div>
+        <transition name="fade">
+            <confirm-delete v-if="$store.state.deleteStatus" ref="delete" :url="`api/inventory/purchase-orders`" />
+        </transition>
         <foot v-if="$store.state.isAuth" />
     </div>
 </template>
@@ -54,10 +58,12 @@
 <script>
     import PurchaseOrder from '../../../../components/PurchaseOrder'
     import Foot from '../../../../components/Foot'
+    import ConfirmDelete from '../../../../components/modals/ConfirmDelete'
     export default {
         components: {
             PurchaseOrder,
-            Foot
+            Foot,
+            ConfirmDelete
         },
         data () {
             return {
@@ -66,9 +72,18 @@
                 prevRoute: '',
                 variants: [],
                 res: [],
+                purchase_order: true
             }
         },
         methods: {
+            toggleDelete (id) {
+                const me = this
+                me.$store.state.deleteStatus = true
+                document.body.classList.add('no_scroll')
+                setTimeout( () => {
+                    me.$refs.delete.contentID = id
+                }, 100)
+            },
             formatDate (value) {
                 if (value) {
                     return this.$moment(value).format('MMM DD, YYYY')

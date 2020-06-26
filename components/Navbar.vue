@@ -114,6 +114,13 @@
                         ]
                     },
                     {
+                        title: 'Studio Receiving',
+                        link: '/studio-receiving',
+                        hasLink: true,
+                        class: 'supplies',
+                        image: '/icons/navbar/supplies-unselected.png'
+                    },
+                    {
                         title: 'Reporting',
                         link: '/reporting',
                         hasLink: false,

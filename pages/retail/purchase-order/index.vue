@@ -41,7 +41,7 @@
                 </div>
             </section>
             <section id="content" v-if="loaded">
-                <table class="cms_table">
+                <table class="cms_table alt">
                     <thead>
                         <tr>
                             <th class="stick">P.O. Number</th>
@@ -56,9 +56,9 @@
                     </thead>
                     <tbody v-if="res.purchaseOrders.data.length > 0">
                         <tr v-for="(data, key) in res.purchaseOrders.data" :key="key">
-                            <td><nuxt-link class="table_data_link alternate" :to="`${$route.path}/${data.id}/show`" table_action_text>{{ data.purchase_order_number }}</nuxt-link></td>
-                            <td>{{ data.studio.name }}</td>
+                            <td><nuxt-link class="table_data_link alternate" :to="`${$route.path}/${data.id}/show`">{{ data.purchase_order_number }}</nuxt-link></td>
                             <td>{{ data.supplier.name }}</td>
+                            <td>{{ data.studio.name }}</td>
                             <td>PHP {{ totalCount(data.total_shipping_cost) }}</td>
                             <!-- <td>PHP {{ totalCount(data.total_additional_cost) }}</td> -->
                             <td>PHP {{ totalCount(data.total_cost) }}</td>

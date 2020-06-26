@@ -3269,6 +3269,8 @@ input::placeholder
         .input_content_wrapper
             background-color: transparent
             transition: .3s ease-in-out
+            &.table
+                border-bottom: 2px dashed $border
             &.active
                 border-bottom: 2px dashed $border
             &.not_active
@@ -7657,6 +7659,7 @@ input::placeholder
                 justify-content: space-between
                 align-items: center
                 &.alternate
+                    margin-bottom: 10px
                     .header_title,
                     .action_buttons
                         flex: 0 0 auto

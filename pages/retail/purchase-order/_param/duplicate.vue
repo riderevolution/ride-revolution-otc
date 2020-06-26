@@ -57,7 +57,7 @@
                             <div class="input_header">Cost</div>
                         </div>
                         <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
-                            <purchase-order :type="'duplicate'" class="input_content_wrapper" ref="orders" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
+                            <purchase-order :type="'duplicate'" class="input_content_wrapper table" ref="orders" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
                             <div class="footer_wrapper">
                                 <div class="footer_form_group">
                                     <label for="name">Shipping Cost:</label>

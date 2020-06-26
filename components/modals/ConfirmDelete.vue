@@ -34,11 +34,15 @@
                 if (me.$parent.isDelete) {
                     me.$parent.isDelete = false
                 }
-                me.$axios.delete(`${me.url}/${me.contentID}`).then(res => {
-                    if (res.data) {
-                        me.$parent.fetchData(1)
-                    }
-                })
+                if (me.$parent.purchase_order) {
+                    me.$router.push(`/${me.$parent.prevRoute}/${me.$parent.lastRoute}`)
+                } else {
+                    me.$axios.delete(`${me.url}/${me.contentID}`).then(res => {
+                        if (res.data) {
+                            me.$parent.fetchData(1)
+                        }
+                    })
+                }
                 document.body.classList.remove('no_scroll')
             },
             toggleClose () {

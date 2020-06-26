@@ -110,6 +110,27 @@
             <input type="hidden" name="product_id[]" v-model="value.product_id">
             <input type="hidden" name="id[]" v-model="value.id">
         </div>
+        <div class="input_wrapper" :data-vv-scope="`purchase_order_form_${unique}`" v-if="type == 'receive'">
+            <div class="input_content name">{{ value.product_variant.product.name }} - {{ value.product_variant.variant }}</div>
+            <div class="input_content">{{ value.product_variant.sku_id }}</div>
+            <div class="input_content">{{ value.quantity }}</div>
+            <div class="input_content">{{ (value.product_variant.product.sellable == 1) ? 'Sellable' : 'Non-sellable' }}</div>
+            <div class="input_content">
+                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" v-model="quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">The Quantity field is required</span></transition>
+            </div>
+            <!-- <div class="input_content">
+                <input type="text" name="shipping_cost[]" :class="`default_text ${(!isQuantity) ? 'disabled' : '' }`" autocomplete="off" v-validate="`{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}`" v-model="shipping = value.shipping_cost" @input="updateTotal($event, 'shipping', unique)" :data-vv-name="`purchase_order_form_${unique}.shipping_cost[]`">
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.shipping_cost[]`)">The shipping cost field is required</span></transition>
+            </div> -->
+            <!-- <div class="input_content">
+                <input type="text" name="additional_cost[]" :class="`default_text ${(!isQuantity) ? 'disabled' : '' }`" autocomplete="off" v-validate="`{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}`" v-model="additional = value.additional_cost"  @input="updateTotal($event, 'additional', unique)" :data-vv-name="`purchase_order_form_${unique}.additional_cost[]`">
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.additional_cost[]`)">The additional cost field is required</span></transition>
+            </div> -->
+            <input type="hidden" name="variant_id[]" v-model="value.variant_id">
+            <input type="hidden" name="product_id[]" v-model="value.product_id">
+            <input type="hidden" name="id[]" v-model="value.id">
+        </div>
     </div>
 </template>
 
