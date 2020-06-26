@@ -186,6 +186,7 @@
                 formData.append('q', value)
                 formData.append('forBooker', 1)
                 formData.append('enabled', 1)
+                formData.append('user_id', me.$parent.$parent.customer.id)
                 me.$axios.post('api/customers/search', formData).then(res => {
                     if (res.data) {
                         me.customers = res.data.customers
@@ -200,6 +201,7 @@
                 const me = this
                 let formData = new FormData()
                 formData.append('forBooker', 1)
+                formData.append('user_id', me.$parent.$parent.customer.id)
                 me.$axios.post('api/customers/search', formData).then(res => {
                     if (res.data) {
                         me.customers = res.data.customers

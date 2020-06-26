@@ -37,16 +37,16 @@
                             </div>
                             <div class="date margin">
                                 <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
-                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
+                                <label v-if="!data.frozen">Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
                             </div>
                         </div>
                         <div class="package_action">
-                            <a href="/booker" class="action_success_btn" @click.prevent="getCurrentCustomer()">Book a Class</a>
+                            <nuxt-link to="/booker" :class="`action_success_btn ${(data.frozen) ? 'disabled' : ''}`" @click.prevent="getCurrentCustomer()">Book a Class</nuxt-link>
                             <div class="package_options" v-if="data.class_package.class_count_unlimited != 1">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
-                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
-                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
+                                    <div v-if="data.class_package.class_count_unlimited != 1 && !data.frozen" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+                                    <div v-if="data.class_package.class_count_unlimited != 1 && !data.frozen" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
                                     <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
                                     <!-- <div class="option_link">Print Receipt</div> -->
                                 </div>
