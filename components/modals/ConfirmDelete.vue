@@ -34,15 +34,18 @@
                 if (me.$parent.isDelete) {
                     me.$parent.isDelete = false
                 }
-                if (me.$parent.purchase_order) {
-                    me.$router.push(`/${me.$parent.prevRoute}/${me.$parent.lastRoute}`)
-                } else {
-                    me.$axios.delete(`${me.url}/${me.contentID}`).then(res => {
-                        if (res.data) {
+                me.$axios.delete(`${me.url}/${me.contentID}`).then(res => {
+                    if (res.data) {
+                        if (me.$parent.purchase_order) {
+                            me.notify('Content has been Deleted')
+                            setTimeout( () => {
+                                me.$router.push(`/${me.$parent.prevRoute}/${me.$parent.lastRoute}`)
+                            }, 500)
+                        } else {
                             me.$parent.fetchData(1)
                         }
-                    })
-                }
+                    }
+                })
                 document.body.classList.remove('no_scroll')
             },
             toggleClose () {

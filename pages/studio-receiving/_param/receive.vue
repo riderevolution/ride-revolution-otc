@@ -142,18 +142,15 @@
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
-                        formData.append('po_id', me.randomID)
-                        formData.append('total_additional_cost', me.form.total_additional)
-                        formData.append('total_shipping_cost',  me.form.total_shipping)
-                        formData.append('total_cost', me.form.total_cost)
-                        me.loader(true)
-                        me.$axios.post(`api/inventory/purchase-orders/${me.$route.params.param}`, formData).then(res => {
-                            setTimeout( () => {
-                                if (res.data) {
-                                    me.notify('Content has been Updated')
-                                    me.$router.push(`/${me.lastRoute}`)
-                                }
-                            }, 500)
+                        // me.loader(true)
+                        me.$axios.post(`api/inventory/purchase-orders/receive/${me.$route.params.param}`, formData).then(res => {
+                            console.log(res.data);
+                            // setTimeout( () => {
+                            //     if (res.data) {
+                            //         me.notify('Content has been Updated')
+                            //         me.$router.push(`/${me.lastRoute}`)
+                            //     }
+                            // }, 500)
                         }).catch(err => {
                             me.$store.state.errorList = err.response.data.errors
                             me.$store.state.errorStatus = true

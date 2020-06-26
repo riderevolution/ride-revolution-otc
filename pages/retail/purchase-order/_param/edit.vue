@@ -217,7 +217,6 @@
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
-                        formData.append('po_id', me.randomID)
                         formData.append('total_additional_cost', me.form.total_additional)
                         formData.append('total_shipping_cost',  me.form.total_shipping)
                         formData.append('total_cost', me.form.total_cost)

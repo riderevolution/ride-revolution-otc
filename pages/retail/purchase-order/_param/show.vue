@@ -12,7 +12,7 @@
                     <div class="action_buttons">
                         <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/duplicate`" class="action_btn">Duplicate P.O.</nuxt-link>
                         <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/edit`" class="action_btn alternate margin">Edit P.O.</nuxt-link>
-                        <div class="action_cancel_btn margin" @click="toggleDelete($route.params.param)">Delete P.O.</div>
+                        <div class="action_cancel_btn margin" @click="toggleDelete($route.params.param)" v-if="res.paid == 0">Delete P.O.</div>
                     </div>
                 </div>
                 <div class="filter_wrapper">
