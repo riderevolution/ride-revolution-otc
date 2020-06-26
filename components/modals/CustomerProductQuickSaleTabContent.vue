@@ -38,6 +38,7 @@
                 isSearched: true
             }
         },
+        inject: ['$validator'],
         filters: {
             properFormat: function (value) {
                 let newValue = value.split('The ')[1].split(' field')[0].split('[]')

@@ -3,27 +3,27 @@
         <div class="input_wrapper" v-show="show" v-if="type == 0">
             <div class="input_content">
                 <input type="text" name="variant[]" autocomplete="off" class="default_text" v-validate="'required|max:50'" :data-vv-name="`variant_form_${unique}.variant[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.variant[]`)">The Variant field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.variant[]`)">{{ errors.first(`variant_form_${unique}.variant[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="sku_id[]" autocomplete="off" class="default_text" v-validate="'required|max:25'" :data-vv-name="`variant_form_${unique}.sku_id[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sku_id[]`)">The SKU Id field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sku_id[]`)">{{ errors.first(`variant_form_${unique}.sku_id[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="quantity[]" autocomplete="off" class="default_text disabled" v-validate="'required|numeric|min_value:0|max_value:99'" value="0" :data-vv-name="`variant_form_${unique}.quantity[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.quantity[]`)">The Quantity field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.quantity[]`)">{{ errors.first(`variant_form_${unique}.quantity[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="reorder_point[]" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:99'" :data-vv-name="`variant_form_${unique}.reorder_point[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.reorder_point[]`)">The Reorder Point field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.reorder_point[]`)">{{ errors.first(`variant_form_${unique}.reorder_point[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="unit_price[]" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" :data-vv-name="`variant_form_${unique}.unit_price[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.unit_price[]`)">The Unit Price field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.unit_price[]`)">{{ errors.first(`variant_form_${unique}.unit_price[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="sale_price[]" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" :data-vv-name="`variant_form_${unique}.sale_price[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sale_price[]`)">The Sale Price field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sale_price[]`)">{{ errors.first(`variant_form_${unique}.sale_price[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content image_upload" v-if="$parent.showClose">
                 <!-- <a href="javascript:void(0)" class="action_btn" @click="toggleVariantImage(unique)"><svg xmlns="http://www.w3.org/2000/svg" width="18.306" height="18.306" viewBox="0 0 18.306 18.306"> <g transform="translate(-1233.873 -1197.248) rotate(-9)"> <g transform="translate(1031 1378)" class="upload_image"> <rect width="16" height="16" rx="2" stroke="none" /> <rect x="0.5" y="0.5" width="15" height="15" rx="1.5" fill="none" /> </g> <path d="M16305.061-1443.824l5.559-4.864,4.563,4.259,2.891-3.014,2.3,3.014" transform="translate(-15273.644 2834.915)" class="upload_image" /> <g transform="translate(1039 1380.909)" class="upload_image"> <circle cx="1.818" cy="1.818" r="1.818" stroke="none" /> <circle cx="1.818" cy="1.818" r="1.318" fill="none" /> </g> </g> </svg>Upload Images ({{ totalUploaded }})</a> -->
@@ -36,27 +36,27 @@
         <div class="input_wrapper" v-show="show" v-else>
             <div class="input_content">
                 <input type="text" name="variant[]" autocomplete="off" class="default_text" v-model="value.variant" v-validate="'required|max:50'" :data-vv-name="`variant_form_${unique}.variant[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.variant[]`)">The Variant field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.variant[]`)">{{ errors.first(`variant_form_${unique}.variant[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="sku_id[]" autocomplete="off" class="default_text" v-model="value.sku_id" v-validate="'required|max:25'" :data-vv-name="`variant_form_${unique}.sku_id[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sku_id[]`)">The SKU Id field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sku_id[]`)">{{ errors.first(`variant_form_${unique}.sku_id[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="quantity[]" autocomplete="off" class="default_text disabled" value="0" v-validate="'required|numeric|min_value:0|max_value:99'" :data-vv-name="`variant_form_${unique}.quantity[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.quantity[]`)">The Quantity field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.quantity[]`)">{{ errors.first(`variant_form_${unique}.quantity[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="reorder_point[]" autocomplete="off" class="default_text" v-model="value.reorder_point" v-validate="'required|numeric|min_value:1|max_value:99'" :data-vv-name="`variant_form_${unique}.reorder_point[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.reorder_point[]`)">The Reorder Point field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.reorder_point[]`)">{{ errors.first(`variant_form_${unique}.reorder_point[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="unit_price[]" autocomplete="off" class="default_text" v-model="value.unit_price" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" :data-vv-name="`variant_form_${unique}.unit_price[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.unit_price[]`)">The Unit Price field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.unit_price[]`)">{{ errors.first(`variant_form_${unique}.unit_price[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content">
                 <input type="text" name="sale_price[]" autocomplete="off" class="default_text" v-model="value.sale_price" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" :data-vv-name="`variant_form_${unique}.sale_price[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sale_price[]`)">The Sale Price field is required</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${unique}.sale_price[]`)">{{ errors.first(`variant_form_${unique}.sale_price[]`) | properFormat }}</span></transition>
             </div>
             <div class="input_content image_upload" v-if="$parent.showClose">
                 <!-- <a href="javascript:void(0)" class="action_btn" @click="toggleVariantImage(unique)"><svg xmlns="http://www.w3.org/2000/svg" width="18.306" height="18.306" viewBox="0 0 18.306 18.306"> <g transform="translate(-1233.873 -1197.248) rotate(-9)"> <g transform="translate(1031 1378)" class="upload_image"> <rect width="16" height="16" rx="2" stroke="none" /> <rect x="0.5" y="0.5" width="15" height="15" rx="1.5" fill="none" /> </g> <path d="M16305.061-1443.824l5.559-4.864,4.563,4.259,2.891-3.014,2.3,3.014" transform="translate(-15273.644 2834.915)" class="upload_image" /> <g transform="translate(1039 1380.909)" class="upload_image"> <circle cx="1.818" cy="1.818" r="1.818" stroke="none" /> <circle cx="1.818" cy="1.818" r="1.318" fill="none" /> </g> </g> </svg>{{ (value.images.length > 0) ? 'Manage Images' : 'Upload Images' }} ({{ totalUploaded }})</a> -->
@@ -97,6 +97,61 @@
             ConfirmDelete
         },
         inject: ['$validator'],
+        filters: {
+            properFormat (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('.')
+                if (newValue.length > 1) {
+                    newValue = newValue[1].split('[]')
+                    if (newValue.length > 1) {
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
+                    }
+                } else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                    if (newValue.length > 1) {
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].split('_')
+                        if (newValue.length > 1) {
+                            let firstValue = ''
+                            let lastValue = ''
+                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                            }
+                            for (let i = 1; i < newValue.length; i++) {
+                                if (newValue[i] != 'id') {
+                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                                }
+                            }
+                            newValue = firstValue + ' ' + lastValue
+                        } else {
+                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        }
+                    }
+                }
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                    return `The ${newValue} field${message}`
+                } else {
+                    if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
+                }
+            }
+        },
         data () {
             return {
                 isDelete: false,

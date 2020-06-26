@@ -1,11 +1,11 @@
 <template>
     <div v-if="enabled" :data-vv-scope="`image_form_${unique}`">
         <div class="form_group">
-            <input type="file" class="action_image" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`${(dataImage.id) ? '' : 'required|'}image|ext:jpeg,jpg,png,svg|size:2000${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`">
+            <input type="file" class="action_image" :data-vv-name="`image_form_${unique}.image[]`" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`${(dataImage.id) ? '' : 'required|'}image|ext:jpeg,jpg,png,svg|size:2000${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`">
             <input type="hidden" name="image_id[]" v-model="dataImage.id">
             <label class="action_image_label" :for="`image${unique}`">Choose File</label>
             <div v-if="$parent.showCloser" class="action_image_remove" @click="removeImage($event, unique, item.id, parent)">Remove</div>
-            <transition name="slide"><span class="validation_errors" v-if="errors.has(`image[]`)">{{ errors.first(`image[]`) | properFormat }}</span></transition>
+            <transition name="slide"><span class="validation_errors" v-if="errors.has(`image_form_${unique}.image[]`)">{{ errors.first(`image_form_${unique}.image[]`) | properFormat }}</span></transition>
         </div>
         <div class="form_tags_group" v-if="showTags">
             <div class="preview_group">
@@ -14,18 +14,18 @@
             <div class="tags_group">
                 <div class="form_group">
                     <label :for="`image_title${unique}`">Image Title <span>*</span></label>
-                    <input type="text" name="image_title[]" :id="`image_title${unique}`" v-validate="{required: true, regex: '^[a-zA-Z\-_ |\_]*$', max: 20}" autocomplete="off" class="action_form default_text" v-model="dataImage.title">
-                    <transition name="slide"><span class="validation_errors" v-if="errors.has(`image_title[]`)">{{ errors.first(`image_title[]`) | properFormat }}</span></transition>
+                    <input type="text" name="image_title[]" :id="`image_title${unique}`" :data-vv-name="`image_form_${unique}.image_title[]`" v-validate="{required: true, regex: '^[a-zA-Z\-_ |\_]*$', max: 20}" autocomplete="off" class="action_form default_text" v-model="dataImage.title">
+                    <transition name="slide"><span class="validation_errors" v-if="errors.has(`image_form_${unique}.image_title[]`)">{{ errors.first(`image_form_${unique}.image_title[]`) | properFormat }}</span></transition>
                 </div>
                 <div class="form_group">
                     <label :for="`image_alt${unique}`">Image Alt <span>*</span></label>
-                    <input type="text" name="image_alt[]" :id="`image_alt_${unique}`" v-validate="{required: true, regex: '^[a-zA-Z\_\-]*$', max: 20}" autocomplete="off" class="action_form default_text" v-model="dataImage.alt">
-                    <transition name="slide"><span class="validation_errors" v-if="errors.has(`image_alt[]`)">{{ errors.first(`image_alt[]`) | properFormat }}</span></transition>
+                    <input type="text" name="image_alt[]" :id="`image_alt_${unique}`" :data-vv-name="`image_form_${unique}.image_alt[]`" v-validate="{required: true, regex: '^[a-zA-Z\_\-]*$', max: 20}" autocomplete="off" class="action_form default_text" v-model="dataImage.alt">
+                    <transition name="slide"><span class="validation_errors" v-if="errors.has(`image_form_${unique}.image_alt[]`)">{{ errors.first(`image_form_${unique}.image_alt[]`) | properFormat }}</span></transition>
                 </div>
                 <div class="form_group" v-if="$parent.multiple">
                     <label :for="`image_sequence${unique}`">Image Sequence <span>*</span></label>
-                    <input type="text" name="image_sequence[]" :id="`image_sequence_${unique}`" v-validate="{required: true, numeric: true, min_value: 1, max_value: 99}" autocomplete="off" class="action_form default_text" v-model="dataImage.sequence">
-                    <transition name="slide"><span class="validation_errors" v-if="errors.has(`image_sequence[]`)">{{ errors.first(`image_sequence[]`) | properFormat }}</span></transition>
+                    <input type="text" name="image_sequence[]" :id="`image_sequence_${unique}`" :data-vv-name="`image_form_${unique}.image_sequence[]`" v-validate="{required: true, numeric: true, min_value: 1, max_value: 99}" autocomplete="off" class="action_form default_text" v-model="dataImage.sequence">
+                    <transition name="slide"><span class="validation_errors" v-if="errors.has(`image_form_${unique}.image_sequence[]`)">{{ errors.first(`image_form_${unique}.image_sequence[]`) | properFormat }}</span></transition>
                 </div>
             </div>
         </div>
@@ -74,30 +74,43 @@
         },
         filters: {
             properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                let newValue = value.split('The ')[1].split(' field')[0].split('.')
                 if (newValue.length > 1) {
-                    let nextValue = newValue[0].split('_')
-                    if (nextValue.length > 1) {
-                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                    } else {
-                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                    }
-                }else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    newValue = newValue[1].split('[]')
                     if (newValue.length > 1) {
-                        let firstValue = ''
-                        let lastValue = ''
-                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
-                        for (let i = 1; i < newValue.length; i++) {
-                            if (newValue[i] != 'id') {
-                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                            }
+                    }
+                } else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                    if (newValue.length > 1) {
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
-                        newValue = firstValue + ' ' + lastValue
                     } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        newValue = value.split('The ')[1].split(' field')[0].split('_')
+                        if (newValue.length > 1) {
+                            let firstValue = ''
+                            let lastValue = ''
+                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                            }
+                            for (let i = 1; i < newValue.length; i++) {
+                                if (newValue[i] != 'id') {
+                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                                }
+                            }
+                            newValue = firstValue + ' ' + lastValue
+                        } else {
+                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        }
                     }
                 }
                 let message = value.split('The ')[1].split(' field')
@@ -105,7 +118,7 @@
                     message = message[1]
                     return `The ${newValue} field${message}`
                 } else {
-					if (message[0].split('file').length > 1) {
+                    if (message[0].split('file').length > 1) {
                         message = message[0].split('file')[1]
                         return `The ${newValue} field${message}`
                     } else {
