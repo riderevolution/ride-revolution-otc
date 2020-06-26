@@ -498,7 +498,9 @@
                         let expiry = me.$moment(element.class_package.computed_expiration_date)
                         if (parseInt(expiry.diff(current, 'days')) > 0) {
                             element.expired = false
-                            me.packageCount++
+                            if (element.count > 0) {
+                                me.packageCount++
+                            }
                         } else {
                             element.expired = true
                         }
@@ -726,6 +728,7 @@
                 me.loader(true)
                 me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${status}`).then(res => {
                     if (res.data) {
+                        me.packageCount = 0
                         me.res = res.data.customer
                     }
                 }).catch(err => {
