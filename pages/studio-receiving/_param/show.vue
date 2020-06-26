@@ -1,16 +1,13 @@
 <template>
     <div class="content">
         <div id="admin" class="cms_dashboard">
-            <form id="default_form" class="alternate" @submit.prevent="submissionSuccess()" v-if="loaded">
+            <form id="default_form" class="alternate" v-if="loaded">
                 <section id="top_content" class="table" v-if="loaded">
                     <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
                     <div class="action_wrapper alternate">
                         <h1 class="header_title">
                             <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
                         </h1>
-                        <div class="action_buttons">
-                            <button type="submit" name="submit" class="action_success_btn alternate margin">Receive</button>
-                        </div>
                     </div>
                     <div class="filter_wrapper">
                         <div class="filter_flex" id="filter">
@@ -30,7 +27,7 @@
                             <div class="input_header">Qty. Received</div>
                         </div>
                         <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
-                            <purchase-order class="input_content_wrapper table" :type="'receive'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
+                            <purchase-order class="input_content_wrapper table" :type="'receive-show'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
                         </div>
                     </div>
                 </section>
@@ -148,44 +145,6 @@
                                 )
                             }
                         }
-                    }
-                })
-            },
-            submissionSuccess () {
-                const me = this
-                me.$validator.validateAll().then(valid => {
-                    if (valid) {
-                        let formData = new FormData(document.getElementById('default_form'))
-                        let studio_id = me.$cookies.get('CSID')
-                        let token = me.$cookies.get('token')
-                        formData.append('studio_id', studio_id)
-                        formData.append('_method', 'PATCH')
-                        me.loader(true)
-                        me.$axios.post(`api/inventory/purchase-orders/receive/${me.$route.params.param}`, formData, {
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }
-                        }).then(res => {
-                            setTimeout( () => {
-                                if (res.data) {
-                                    me.notify('Content has been Updated')
-                                    me.$router.push(`/${me.lastRoute}`)
-                                }
-                            }, 500)
-                        }).catch(err => {
-                            me.$store.state.errorList = err.response.data.errors
-                            me.$store.state.errorStatus = true
-                        }).then(() => {
-                            setTimeout( () => {
-                                me.loader(false)
-                            }, 500)
-                        })
-                    } else {
-                        setTimeout( () => {
-                            me.$scrollTo('.validation_errors', {
-                                offset: -250
-                            })
-                        }, 10)
                     }
                 })
             }

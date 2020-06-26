@@ -28,17 +28,11 @@
                                 </select>
                             </div>
                             <div class="form_group margin">
-                                <label for="studio_id">Studio</label>
-                                <select class="default_select alternate" name="studio_id" v-model="form.studio = res.studio_id">
-                                    <option value="" selected disabled>Select a Studio</option>
-                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                                </select>
-                            </div>
-                            <div class="form_group margin">
                                 <label for="po_number">P.O. Number</label>
                                 <input type="text" name="po_number" placeholder="Enter P.O. Number" autocomplete="off" class="uppercase default_text" v-validate="'required|max:25'">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('po_number')">{{ errors.first('po_number') | properFormat }}</span></transition>
                             </div>
+                            <div class="filter_label margin alt">Studio: {{ res.studio.name }}</div>
                         </div>
                     </div>
                 </section>
@@ -243,6 +237,7 @@
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('po_id', me.randomID)
+                        formData.append('studio_id', me.res.studio_id)
                         formData.append('total_additional_cost', me.form.total_additional)
                         formData.append('total_shipping_cost',  me.form.total_shipping)
                         formData.append('total_cost', me.form.total_cost)

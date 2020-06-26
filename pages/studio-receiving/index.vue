@@ -33,11 +33,14 @@
                                 <td>{{ data.supplier.name }}</td>
                                 <td>{{ data.studio.name }}</td>
                                 <td>{{ formatDate(data.created_at) }}</td>
-                                <td :class="`${(data.paid == 2) ? '' : 'red'}`">{{ (data.paid == 2) ? formatDate(data.updated_at) : 'Pending' }}</td>
-                                <td>-</td>
+                                <td :class="`${(data.paid == 2) ? '' : 'red'}`">{{ (data.paid == 2) ? formatDate(data.delivery_date) : 'Pending' }}</td>
+                                <td>{{ (data.paid == 2) ? data.lead_time : '-' }}</td>
                                 <td>
                                     <div class="table_actions" v-if="data.paid == 1">
                                         <nuxt-link class="table_action_success" :to="`${$route.path}/${data.id}/receive`">Receive</nuxt-link>
+                                    </div>
+                                    <div class="table_actions" v-else>
+                                        <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/show`">View</nuxt-link>
                                     </div>
                                 </td>
                             </tr>
@@ -97,9 +100,9 @@
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
                 }).then(() => {
-                    me.rowCount = document.getElementsByTagName('th').length
                     setTimeout( () => {
                         me.loader(false)
+                        me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
                 })
             }

@@ -131,6 +131,13 @@
             <input type="hidden" name="product_id[]" v-model="value.product_id">
             <input type="hidden" name="id[]" v-model="value.id">
         </div>
+        <div class="input_wrapper" v-if="type == 'receive-show'">
+            <div class="input_content name">{{ value.product_variant.product.name }} - {{ value.product_variant.variant }}</div>
+            <div class="input_content">{{ value.product_variant.sku_id }}</div>
+            <div class="input_content">{{ value.quantity }}</div>
+            <div class="input_content">{{ (value.product_variant.product.sellable == 1) ? 'Sellable' : 'Non-sellable' }}</div>
+            <div class="input_content">{{ value.product_variant.product_quantities.quantity }}</div>
+        </div>
     </div>
 </template>
 

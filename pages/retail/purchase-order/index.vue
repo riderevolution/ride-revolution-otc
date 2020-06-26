@@ -9,7 +9,7 @@
                         <div class="toggler">
                             <div :class="`status ${(status == 0) ? 'active' : ''}`" @click="toggleOnOff(0)">Unpaid</div>
                             <div :class="`status ${(status == 1) ? 'active' : ''}`" @click="toggleOnOff(1)">Paid</div>
-                            <div :class="`status ${(status == -1) ? 'active' : ''}`" @click="toggleOnOff(-1)">Received</div>
+                            <div :class="`status ${(status == 2) ? 'active' : ''}`" @click="toggleOnOff(2)">Received</div>
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,8 @@
                             <!-- <td>PHP {{ totalCount(data.total_additional_cost) }}</td> -->
                             <td>PHP {{ totalCount(data.total_cost) }}</td>
                             <td>{{ formatDate(data.created_at) }}</td>
-                            <td :class="`${(data.paid == 1) ? 'green' : 'red'}`" v-if="status != -1">{{ (data.paid == 1) ? 'Paid' : 'Unpaid' }}</td>
+                            <td :class="`${(data.paid == 1) ? 'green' : 'red'}`" v-if="status != 2">{{ (data.paid == 1) ? 'Paid' : 'Unpaid' }}</td>
+                            <td class="green" v-else>Received</td>
                         </tr>
                     </tbody>
                     <tbody class="no_results" v-else>
