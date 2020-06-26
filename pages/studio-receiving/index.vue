@@ -15,7 +15,7 @@
                     </div>
                 </section>
                 <section id="content">
-                    <table class="cms_table alt">
+                    <table class="cms_table">
                         <thead>
                             <tr>
                                 <th class="stick">P.O. Number</th>
@@ -87,7 +87,8 @@
             fetchData (value) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/inventory/purchase-orders?status=${value}`).then(res => {
+                let studio_id = me.$cookies.get('CSID')
+                me.$axios.get(`api/inventory/purchase-orders?status=${value}&studio_id=${studio_id}`).then(res => {
                     setTimeout( () => {
                         me.res = res.data
                         me.loaded = true

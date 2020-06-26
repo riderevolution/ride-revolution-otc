@@ -3,13 +3,13 @@
         <div v-if="$parent.showCloser" class="form_close alternate" @click="removeImage()"></div>
         <div class="form_group">
             <label for="start_time">Start Time <span>*</span></label>
-            <input type="time" name="start_time[]" v-validate="'required'" class="default_text" @change="getFrom($event)">
-            <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time[]')">{{ errors.first('start_time[]') | properFormat }}</span></transition>
+            <input type="time" name="start_time[]" v-validate="'required'" :data-vv-name="`time_form_${unique}.start_time[]`" class="default_text" @change="getFrom($event)">
+            <transition name="slideY"><span class="validation_errors" v-if="errors.has(`time_form_${unique}.start_time[]`)">{{ errors.first(`time_form_${unique}.start_time[]`) | properFormat }}</span></transition>
         </div>
         <div class="form_group">
             <label for="end_time">End Time <span>*</span></label>
-            <input type="time" name="end_time[]" :min="$moment(form.timeTo, 'HH:mm').format('HH:mm')" v-validate="'required'" :class="`default_text ${(form.hasTimeFrom) ? '' : 'disabled'}`">
-            <transition name="slideY"><span class="validation_errors" v-if="errors.has('end_time[]')">{{ errors.first('end_time[]') | properFormat }}</span></transition>
+            <input type="time" name="end_time[]" :min="$moment(form.timeTo, 'HH:mm').format('HH:mm')" :data-vv-name="`time_form_${unique}.end_time[]`" v-validate="'required'" :class="`default_text ${(form.hasTimeFrom) ? '' : 'disabled'}`">
+            <transition name="slideY"><span class="validation_errors" v-if="errors.has(`time_form_${unique}.end_time[]`)">{{ errors.first(`time_form_${unique}.end_time[]`) | properFormat }}</span></transition>
         </div>
     </div>
 </template>
@@ -41,7 +41,7 @@
                     } else {
                         newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                     }
-                }else {
+                } else {
                     newValue = value.split('The ')[1].split(' field')[0].split('_')
                     if (newValue.length > 1) {
                         let firstValue = ''
