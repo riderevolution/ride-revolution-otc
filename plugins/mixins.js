@@ -5,6 +5,7 @@ Vue.mixin({
         getNavItems (page) {
             const me = this
             return new Promise((resolve, reject) => {
+                me.loader(true)
                 let token = this.$cookies.get('token')
                 let nav = []
                 if (token != null || token != undefined) {
@@ -14,11 +15,11 @@ Vue.mixin({
                         }
                     }).then(res => {
                         page.navItems = res.data.items
-                        console.log(res.data.items);
                     }).catch(err => {
                         console.log(err);
                     }).then(() => {
                         resolve('ok')
+                        me.loader(false)
                     })
                 } else {
                     this.logout()
