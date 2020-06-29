@@ -7,11 +7,11 @@
                     <h1 class="header_title">
                         <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
                         <span class="header_id">ID: {{ res.po_id }}</span>
-                        <span :class="`${(res.paid == 1) ? 'green' : 'red'}`">{{ (res.paid == 1) ? 'Paid' : 'Unpaid' }}</span>
+                        <span :class="`${(res.paid == 1 || res.paid == 2) ? 'green' : 'red'}`">{{ (res.paid == 1) ? 'Paid' : 'Unpaid' }}</span>
                     </h1>
                     <div class="action_buttons">
                         <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/duplicate`" class="action_btn">Duplicate P.O.</nuxt-link>
-                        <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/edit`" class="action_btn alternate margin">Edit P.O.</nuxt-link>
+                        <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/edit`" class="action_btn alternate margin" v-if="res.paid != 2">Edit P.O.</nuxt-link>
                         <div class="action_cancel_btn margin" @click="toggleDelete($route.params.param)" v-if="res.paid == 0">Delete P.O.</div>
                     </div>
                 </div>

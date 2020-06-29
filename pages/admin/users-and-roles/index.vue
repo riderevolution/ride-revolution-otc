@@ -117,7 +117,7 @@
                             <td>
                                 <div class="table_actions">
                                     <div class="table_action_edit link" @click="toggleForm(role.id, 1, 'role')">Edit Role</div>
-                                    <div class="table_action_success link" @click.self="toggleStatus(role.id, 1, 'Activated')">Activate Role</div>
+                                    <div class="table_action_success link" @click.self="toggleStatus(role.id, 1, 'Activated')" v-if="key > 1">Activate Role</div>
                                 </div>
                             </td>
                         </tr>
@@ -232,7 +232,7 @@
                             ctr++
                         }
                     })
-                    if (ctr == 16) {
+                    if (ctr == 13) {
                         return 'All'
                     } else {
                         return ctr
@@ -358,9 +358,9 @@
                     }).then(() => {
                         setTimeout( () => {
                             me.loader(false)
-                            const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                            const elements = document.querySelectorAll('.cms_table_accordion tbody')
                             elements.forEach((element, index) => {
-                                element.querySelector('.accordion_table').style.height = 0
+                                element.classList.remove('toggled')
                             })
                         }, 500)
                     })

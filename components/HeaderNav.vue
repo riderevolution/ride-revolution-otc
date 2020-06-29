@@ -36,7 +36,7 @@
                         <div class="header_name">{{ user.first_name }}</div>
                         <div class="header_role">{{ user.staff_details.role.display_name }}</div>
                     </div>
-                    <div class="header_studio">
+                    <div class="header_studio" v-if="!user.front_desk">
                         <a href="javascript:void(0)" class="action_btn white" @click="changeStudio()">Change Studio</a>
                     </div>
                 </div>

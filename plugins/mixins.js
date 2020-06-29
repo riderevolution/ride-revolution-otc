@@ -2,6 +2,29 @@ import Vue from 'vue'
 
 Vue.mixin({
     methods: {
+        getNavItems (page) {
+            const me = this
+            return new Promise((resolve, reject) => {
+                let token = this.$cookies.get('token')
+                let nav = []
+                if (token != null || token != undefined) {
+                    me.$axios.get('api/extras/get-nav', {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
+                        page.navItems = res.data.items
+                        console.log(res.data.items);
+                    }).catch(err => {
+                        console.log(err);
+                    }).then(() => {
+                        resolve('ok')
+                    })
+                } else {
+                    this.logout()
+                }
+            })
+        },
         randomCode () {
             return Math.random().toString(36).substring(5).toUpperCase()
         },

@@ -17,7 +17,7 @@
                 </div>
             </section>
             <section id="content">
-                <div class="target_wrapper">
+                <div class="target_wrapper" v-if="!res.front_desk">
                     <div class="left">
                         <div class="target_header">
                             <h2>Targets</h2>
@@ -111,7 +111,7 @@
                     </div>
                 </div>
                 <div class="summary_stats">
-                    <div class="left">
+                    <div class="left" v-if="!res.front_desk">
                         <div class="stats_header">
                             <h2>Alerts</h2>
                             <div class="button">
@@ -216,6 +216,125 @@
                                             <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="left alt" v-if="res.front_desk">
+                        <div class="left_fd">
+                            <div class="stats_header">
+                                <h2>Alerts</h2>
+                                <div class="button">
+                                    <select class="default_select" name="type">
+                                        <option value="today" selected>Today</option>
+                                        <option value="Upcoming">Upcoming</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="stats_content">
+                                <div class="stat_column">
+                                    <div class="column_header">
+                                        <h2>VIPs</h2>
+                                    </div>
+                                    <div class="column_content">
+                                        <div class="wrapper" v-for="(n, key) in 4">
+                                            <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                            <div class="info">
+                                                <div class="name">Sample</div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper" v-for="(n, key) in 4">
+                                            <div class="image">
+                                                <div class="overlay">
+                                                    SA
+                                                </div>
+                                            </div>
+                                            <div class="info">
+                                                <div class="name">Sample</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat_column">
+                                    <div class="column_header">
+                                        <h2>Milestone</h2>
+                                    </div>
+                                    <div class="column_content">
+                                        <div class="wrapper" v-for="(n, key) in 4">
+                                            <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                            <div class="info">
+                                                <div class="name">Sample</div>
+                                                <div class="violator violet"><img src="/icons/star-violet.svg" /><span>100th Ride</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper" v-for="(n, key) in 4">
+                                            <div class="image">
+                                                <div class="overlay">
+                                                    SA
+                                                </div>
+                                            </div>
+                                            <div class="info">
+                                                <div class="name">Sample</div>
+                                                <div class="violator blue"><img src="/icons/star-blue.svg" /><span>Teaching Anniversary</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat_column">
+                                    <div class="column_header">
+                                        <h2>First Class</h2>
+                                    </div>
+                                    <div class="column_content">
+                                        <div class="wrapper" v-for="(n, key) in 4">
+                                            <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                            <div class="info">
+                                                <div class="name">Sample</div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper" v-for="(n, key) in 4">
+                                            <div class="image">
+                                                <div class="overlay">
+                                                    SA
+                                                </div>
+                                            </div>
+                                            <div class="info">
+                                                <div class="name">Sample</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat_column">
+                                    <div class="column_header">
+                                        <h2>Last Class</h2>
+                                    </div>
+                                    <div class="column_content">
+                                        <div class="wrapper" v-for="(n, key) in 4">
+                                            <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
+                                            <div class="info">
+                                                <div class="name">Sample</div>
+                                                <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper" v-for="(n, key) in 4">
+                                            <div class="image">
+                                                <div class="overlay">
+                                                    SA
+                                                </div>
+                                            </div>
+                                            <div class="info">
+                                                <div class="name">Sample</div>
+                                                <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right_fd">
+                            <div class="table_notepad">
+                                <h2 class="footer_title">Notepad</h2>
+                                <div class="notepad_text">
+                                    <textarea name="notepad" v-model="res.notepad" @focusout="updateNotes($event)" rows="10"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -534,8 +653,13 @@
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }).then(() => {
                 setTimeout( () => {
-                    document.querySelector('.target_wrapper .right .table_notepad textarea').style.height = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
-                    document.querySelector('.target_wrapper .right .table_notepad textarea').style.maxHeight = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
+                    if (!me.res.front_desk) {
+                        document.querySelector('.target_wrapper .right .table_notepad textarea').style.height = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
+                        document.querySelector('.target_wrapper .right .table_notepad textarea').style.maxHeight = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
+                    } else {
+                        document.querySelector('.summary_stats .right_fd .table_notepad textarea').style.height = `${document.querySelector('.summary_stats .left_fd').offsetHeight}px`
+                        document.querySelector('.summary_stats .right_fd .table_notepad textarea').style.maxHeight = `${document.querySelector('.summary_stats .left_fd').offsetHeight}px`
+                    }
                     me.loader(false)
                 }, 500)
             })

@@ -209,6 +209,7 @@
         },
         data () {
             return {
+                name: 'Inventory',
                 loaded: false,
                 lastRoute: '',
                 rowCount: 0,

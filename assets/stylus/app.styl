@@ -2289,6 +2289,9 @@ input::placeholder
     &.select_all
         position: relative
         margin-bottom: 20px
+        .form_flex_radio
+            flex: 0 0 100%
+            margin-bottom: 15px
         .validation_errors
             position: absolute
             top: calc(100% - 15px)
@@ -7961,6 +7964,12 @@ input::placeholder
                 flex-flow: row wrap
                 padding: 20px 10px
                 justify-content: space-between
+                &.front_desk
+                    .left
+                        flex: 1 0 10%
+                    .right
+                        flex: 0 0 15%
+                        margin-left: 20px
                 &.alt
                     display: block
                     height: 100%
@@ -8061,6 +8070,18 @@ input::placeholder
                 flex: 0 0 100%
                 background-color: $white
                 margin-bottom: 30px
+                &.alt
+                    background-color: transparent
+                    display: flex
+                    flex-flow: row wrap
+                    .left_fd
+                        flex: 1 0 10%
+                        background-color: $white
+                    .right_fd
+                        flex: 0 0 15%
+                        margin-left: 30px
+                        .table_notepad
+                            margin: 0
             .right
                 flex: 0 0 100%
                 display: flex

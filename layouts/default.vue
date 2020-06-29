@@ -98,6 +98,7 @@
                 if (!me.routes.includes(me.$route.path)) {
                     me.validateToken()
                 }
+                console.log(me);
                 // if (me.$store.state.user.type != 0) {
                 //     me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
                 // }

@@ -13,6 +13,17 @@
                     </div>
                     <div class="form_flex select_all">
                         <label class="flex_label alternate">Select permissions under this role <span>*</span></label>
+                        <div class="form_flex_radio">
+                            <div class="form_radio">
+                                <input type="radio" id="admin_access" value="1" name="permission_admin" v-validate="'required'" class="action_radio">
+                                <label for="admin_access">Dashboard (Admin)</label>
+                            </div>
+                            <div class="form_radio">
+                                <input type="radio" id="front_desk" value="0" name="permission_admin" v-validate="'required'" class="action_radio">
+                                <label for="front_desk">Dashboard (Front Desk)</label>
+                            </div>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ errors.first('permission_admin') | properFormat }}</span></transition>
+                        </div>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkPermissions) ? 'checked' : ''}`" @click.prevent="toggleSelectAllPermissions($event)">Select All</div>
                         </div>
@@ -49,6 +60,17 @@
                     </div>
                     <div class="form_flex select_all">
                         <label class="flex_label alternate">Select permissions under this role <span>*</span></label>
+                        <div class="form_flex_radio">
+                            <div class="form_radio">
+                                <input type="radio" id="admin_access" value="1" name="permission_admin" :checked="res.permission_admin == '1'" v-validate="'required'" class="action_radio">
+                                <label for="admin_access">Dashboard (Admin)</label>
+                            </div>
+                            <div class="form_radio">
+                                <input type="radio" id="front_desk" value="0" name="permission_admin" :checked="res.permission_admin == '0'" v-validate="'required'" class="action_radio">
+                                <label for="front_desk">Dashboard (Front Desk)</label>
+                            </div>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ errors.first('permission_admin') | properFormat }}</span></transition>
+                        </div>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkPermissions) ? 'checked' : ''}`" @click.prevent="toggleSelectAllPermissions($event)">Select All</div>
                         </div>
@@ -96,23 +118,28 @@
                 hasPermissions: false,
                 res: [],
                 permissions: [
-                    {
-                        name: 'Dashboard (Front Desk)',
-                        class: 'parent',
-                        checked: false
-                    },
+                    // {
+                    //     name: 'Dashboard (Front Desk)',
+                    //     class: 'parent',
+                    //     checked: false
+                    // },
                     {
                         name: 'Studio Receiving',
                         class: 'parent',
                         checked: false
                     },
+                    // {
+                    //     name: 'Dashboard (Admin)',
+                    //     class: 'parent',
+                    //     checked: false
+                    // },
+                    // {
+                    //     name: 'Reporting',
+                    //     class: 'parent',
+                    //     checked: false
+                    // },
                     {
-                        name: 'Dashboard (Admin)',
-                        class: 'parent',
-                        checked: false
-                    },
-                    {
-                        name: 'Reporting',
+                        name: 'Customer Report',
                         class: 'parent',
                         checked: false
                     },
@@ -122,8 +149,8 @@
                         checked: false
                     },
                     {
-                        name: 'Customer Reports',
-                        class: 'child',
+                        name: 'Class Report',
+                        class: 'parent',
                         checked: false
                     },
                     {
@@ -132,8 +159,8 @@
                         checked: false
                     },
                     {
-                        name: 'Class Reports',
-                        class: 'child',
+                        name: 'Class Package Report',
+                        class: 'parent',
                         checked: false
                     },
                     {
@@ -142,8 +169,8 @@
                         checked: false
                     },
                     {
-                        name: 'Class Package Reports',
-                        class: 'child',
+                        name: 'Sales Report',
+                        class: 'parent',
                         checked: false
                     },
                     {
@@ -152,18 +179,13 @@
                         checked: false
                     },
                     {
-                        name: 'Sales Reports',
-                        class: 'child',
-                        checked: false
-                    },
-                    {
-                        name: 'Inventory',
+                        name: 'Retail',
                         class: 'parent',
                         checked: false
                     },
                     {
                         name: 'Inventory Value Report',
-                        class: 'child',
+                        class: 'parent',
                         checked: false
                     },
                     {
