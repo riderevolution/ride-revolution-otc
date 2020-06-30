@@ -103,6 +103,8 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
+                name: 'Class Package Expiration',
+                access: true,
                 loaded: false,
                 rowCount: 0,
                 status: 'expiring',
@@ -149,7 +151,12 @@
         },
         async mounted () {
             const me = this
-            me.fetchData(1)
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData(1)
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

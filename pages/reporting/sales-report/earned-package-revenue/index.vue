@@ -105,7 +105,9 @@
                 status: 1,
                 res: [],
                 total_count: 0,
-                loaded: false
+                name: 'Earned Package Revenue',
+                access: true,
+                loaded: false,
             }
         },
         methods: {
@@ -152,6 +154,7 @@
                 me.rowCount = 4
                 if (value != -1) {
                     me.$axios.get(`api/roles?enabled=${value}`).then(res => {
+                        me.loaded = true
                         me.res = res.data.roles
                         me.total_count = me.res.length
                     }).catch(err => {
@@ -181,10 +184,14 @@
                 }
             }
         },
-        mounted () {
+        async mounted () {
             const me = this
-            me.loaded = true
-            me.fetchData(1)
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData(1)
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

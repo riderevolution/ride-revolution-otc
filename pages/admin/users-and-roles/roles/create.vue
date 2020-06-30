@@ -1,75 +1,77 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table">
-                <nuxt-link :to="`/admin/${prevRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(prevRoute) }}</span></nuxt-link>
-                <div class="action_wrapper">
-                    <h1 class="header_title">Add a Role</h1>
-                </div>
-            </section>
-            <section id="content">
-                <form id="default_form" @submit.prevent="submissionSuccess()">
-                    <div class="form_wrapper">
-                        <div class="form_header_wrapper">
-                            <h2 class="form_title">Role Details</h2>
-                        </div>
-                        <div class="form_main_group">
-                            <div class="form_group">
-                                <label for="display_name">Role Name <span>*</span></label>
-                                <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') | properFormat }}</span></transition>
-                            </div>
-                            <div class="form_flex select_all">
-                                <label class="flex_label alternate">Select permissions under this role <span>*</span></label>
-                                <div class="form_flex_radio">
-                                    <div class="form_radio">
-                                        <input type="radio" id="admin_access" value="1" name="permission_admin" v-validate="'required'" class="action_radio">
-                                        <label for="admin_access">Dashboard (Admin)</label>
-                                    </div>
-                                    <div class="form_radio">
-                                        <input type="radio" id="front_desk" value="0" name="permission_admin" v-validate="'required'" class="action_radio">
-                                        <label for="front_desk">Dashboard (Front Desk)</label>
-                                    </div>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ errors.first('permission_admin') | properFormat }}</span></transition>
-                                </div>
-                            </div>
-                            <div class="form_flex start">
-                                <div class="form_check select_all">
-                                    <div :class="`custom_action_check ${(checkPermissions) ? 'checked' : ''}`" @click.prevent="toggleSelectAllPermissions($event)">Select All</div>
-                                </div>
-                                <div class="form_group">
-                                    <div class="form_check" v-for="(permission, key) in permissionsPages" :key="key">
-                                        <input type="checkbox" :id="`permission_page_${key}`" name="permissions[]" :class="`action_check ${permission.class}`" v-model="permission.checked" :checked="permission.checked" v-if="!permission.parent">
-                                        <label :for="`permission_page_${key}`" :class="`${(permission.parent) ? 'parent' : ''}`">{{ permission.name }}</label>
-                                    </div>
-                                    <transition name="slide"><span class="validation_errors" v-if="hasPermissions">The Permissions field is required</span></transition>
-                                </div>
-                                <div class="form_group">
-                                    <div class="form_check" v-for="(permission, key) in permissionsReporting" :key="key">
-                                        <input type="checkbox" :id="`permission_reporting_${key}`" name="permissions[]" :class="`action_check ${permission.class}`" v-model="permission.checked" :checked="permission.checked" v-if="!permission.parent">
-                                        <label :for="`permission_reporting_${key}`" :class="`${(permission.parent) ? 'parent' : ''}`">{{ permission.name }}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <section id="top_content" class="table">
+                    <nuxt-link :to="`/admin/${prevRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(prevRoute) }}</span></nuxt-link>
+                    <div class="action_wrapper">
+                        <h1 class="header_title">Add a Role</h1>
                     </div>
-                    <div class="form_footer_wrapper">
-                        <div class="form_flex">
-                            <div class="form_check">
-                                <input type="checkbox" id="enabled" name="enabled" class="action_check" checked>
-                                <label for="enabled">Activate</label>
+                </section>
+                <section id="content">
+                    <form id="default_form" @submit.prevent="submissionSuccess()">
+                        <div class="form_wrapper">
+                            <div class="form_header_wrapper">
+                                <h2 class="form_title">Role Details</h2>
                             </div>
-                            <div class="button_group">
-                                <nuxt-link :to="`/admin/${prevRoute}`" class="action_cancel_btn">Cancel</nuxt-link>
-                                <button type="submit" name="submit" class="action_btn alternate margin">Save</button>
+                            <div class="form_main_group">
+                                <div class="form_group">
+                                    <label for="display_name">Role Name <span>*</span></label>
+                                    <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') | properFormat }}</span></transition>
+                                </div>
+                                <div class="form_flex select_all">
+                                    <label class="flex_label alternate">Select permissions under this role <span>*</span></label>
+                                    <div class="form_flex_radio">
+                                        <div class="form_radio">
+                                            <input type="radio" id="admin_access" value="1" name="permission_admin" v-validate="'required'" class="action_radio">
+                                            <label for="admin_access">Dashboard (Admin)</label>
+                                        </div>
+                                        <div class="form_radio">
+                                            <input type="radio" id="front_desk" value="0" name="permission_admin" v-validate="'required'" class="action_radio">
+                                            <label for="front_desk">Dashboard (Front Desk)</label>
+                                        </div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ errors.first('permission_admin') | properFormat }}</span></transition>
+                                    </div>
+                                </div>
+                                <div class="form_flex start">
+                                    <div class="form_check select_all">
+                                        <div :class="`custom_action_check ${(checkPermissions) ? 'checked' : ''}`" @click.prevent="toggleSelectAllPermissions($event)">Select All</div>
+                                    </div>
+                                    <div class="form_group">
+                                        <div class="form_check" v-for="(permission, key) in permissionsPages" :key="key">
+                                            <input type="checkbox" :id="`permission_page_${key}`" name="permissions[]" :class="`action_check ${permission.class}`" v-model="permission.checked" :checked="permission.checked" v-if="!permission.parent">
+                                            <label :for="`permission_page_${key}`" :class="`${(permission.parent) ? 'parent' : ''}`">{{ permission.name }}</label>
+                                        </div>
+                                        <transition name="slide"><span class="validation_errors" v-if="hasPermissions">The Permissions field is required</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <div class="form_check" v-for="(permission, key) in permissionsReporting" :key="key">
+                                            <input type="checkbox" :id="`permission_reporting_${key}`" name="permissions[]" :class="`action_check ${permission.class}`" v-model="permission.checked" :checked="permission.checked" v-if="!permission.parent">
+                                            <label :for="`permission_reporting_${key}`" :class="`${(permission.parent) ? 'parent' : ''}`">{{ permission.name }}</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
-            </section>
+                        <div class="form_footer_wrapper">
+                            <div class="form_flex">
+                                <div class="form_check">
+                                    <input type="checkbox" id="enabled" name="enabled" class="action_check" checked>
+                                    <label for="enabled">Activate</label>
+                                </div>
+                                <div class="button_group">
+                                    <nuxt-link :to="`/admin/${prevRoute}`" class="action_cancel_btn">Cancel</nuxt-link>
+                                    <button type="submit" name="submit" class="action_btn alternate margin">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+            <foot v-if="$store.state.isAuth" />
         </div>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -80,6 +82,9 @@
         },
         data () {
             return {
+                name: 'Users and Roles',
+                loaded: false,
+                access: true,
                 hasPermissions: false,
                 permissionsPages: [
                     {
@@ -463,6 +468,12 @@
         },
         async mounted () {
             const me = this
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.loaded = true
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 2]
             me.prevRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
         }

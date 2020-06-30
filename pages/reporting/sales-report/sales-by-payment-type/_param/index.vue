@@ -68,6 +68,8 @@
         },
         data () {
             return {
+                name: 'Sales by Payment Type',
+                access: true,
                 loaded: false,
                 rowCount: 0,
                 status: 'all',
@@ -88,6 +90,12 @@
             },
             fetchData (value) {
                 const me = this
+                if (me.$route.query.studio_id) {
+                    me.form.studio_id = me.$route.query.studio_id
+                }
+                me.form.start_date = me.$route.query.start_date
+                me.form.end_date = me.$route.query.end_date
+                me.form.payment_method = me.$route.params.param
                 me.loader(true)
                 let formData = new FormData()
                 formData.append('status', value)
@@ -117,17 +125,16 @@
                 })
             }
         },
-        mounted () {
+        async mounted () {
             const me = this
-            setTimeout( () => {
-                if (me.$route.query.studio_id) {
-                    me.form.studio_id = me.$route.query.studio_id
-                }
-                me.form.start_date = me.$route.query.start_date
-                me.form.end_date = me.$route.query.end_date
-                me.form.payment_method = me.$route.params.param
+            await me.checkPagePermission(me)
+            if (me.access) {
                 me.status = me.$route.query.status
                 me.fetchData(me.status)
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
+            setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 500)
         }

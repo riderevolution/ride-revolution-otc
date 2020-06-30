@@ -162,7 +162,9 @@
                 total_count: 0,
                 studios: [],
                 types: [],
-                loaded: false
+                name: 'Attendance with Revenue',
+                access: true,
+                loaded: false,
             }
         },
         methods: {
@@ -281,8 +283,13 @@
         },
         async mounted () {
             const me = this
-            me.fetchData(1)
-            me.fetchStudios()
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData(1)
+                me.fetchStudios()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

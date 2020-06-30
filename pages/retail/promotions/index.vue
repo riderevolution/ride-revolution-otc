@@ -1,72 +1,74 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table" v-if="loaded">
-                <div class="action_wrapper">
-                    <h1 class="header_title">Promotions</h1>
-                    <div class="actions">
-                        <div class="total">Total: {{ totalItems(res.promos.total) }}</div>
-                        <div class="toggler">
-                            <div :class="`status ${(status == 1) ? 'active' : ''}`" @click="toggleOnOff(1)">Activated</div>
-                            <div :class="`status ${(status == 0) ? 'active' : ''}`" @click="toggleOnOff(0)">Deactivated</div>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <section id="top_content" class="table">
+                    <div class="action_wrapper">
+                        <h1 class="header_title">Promotions</h1>
+                        <div class="actions">
+                            <div class="total">Total: {{ totalItems(res.promos.total) }}</div>
+                            <div class="toggler">
+                                <div :class="`status ${(status == 1) ? 'active' : ''}`" @click="toggleOnOff(1)">Activated</div>
+                                <div :class="`status ${(status == 0) ? 'active' : ''}`" @click="toggleOnOff(0)">Deactivated</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="action_buttons">
-                    <nuxt-link :to="`${$route.path}/create`" class="action_btn"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add a Promotion</nuxt-link>
-                </div>
-                <div class="filter_wrapper">
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
-                        <div class="form_group">
-                            <label for="q">Find a Promo</label>
-                            <input type="text" name="q" autocomplete="off" placeholder="Search for a promo" class="default_text search_alternate">
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                </div>
-            </section>
-            <section id="content" v-if="loaded">
-                <table class="cms_table">
-                    <thead>
-                        <tr>
-                            <th class="stick">Promo Name</th>
-                            <th class="stick">Discount</th>
-                            <th class="stick">Promo Code</th>
-                            <th class="stick">Start date</th>
-                            <th class="stick">End Date</th>
-                            <th class="stick">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="res.promos.data.length > 0">
-                        <tr v-for="(data, key) in res.promos.data" :key="key">
-                            <td>{{ data.name }}</td>
-                            <td>{{ (data.discount_type == 'percent') ? `${data.discount_percent}  %` : `PHP ${totalCount(data.discount_flat_rate)}` }}</td>
-                            <td>{{ data.promo_code }}</td>
-                            <td>{{ formatDate(data.start_date) }}</td>
-                            <td>{{ formatDate(data.end_date) }}</td>
-                            <td>
-                                <div class="table_actions">
-                                    <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
-                                    <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                    <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pagination :apiRoute="res.promos.path" :current="res.promos.current_page" :last="res.promos.last_page" />
-            </section>
+                    <div class="action_buttons">
+                        <nuxt-link :to="`${$route.path}/create`" class="action_btn"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add a Promotion</nuxt-link>
+                    </div>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                            <div class="form_group">
+                                <label for="q">Find a Promo</label>
+                                <input type="text" name="q" autocomplete="off" placeholder="Search for a promo" class="default_text search_alternate">
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
+                    </div>
+                </section>
+                <section id="content">
+                    <table class="cms_table">
+                        <thead>
+                            <tr>
+                                <th class="stick">Promo Name</th>
+                                <th class="stick">Discount</th>
+                                <th class="stick">Promo Code</th>
+                                <th class="stick">Start date</th>
+                                <th class="stick">End Date</th>
+                                <th class="stick">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="res.promos.data.length > 0">
+                            <tr v-for="(data, key) in res.promos.data" :key="key">
+                                <td>{{ data.name }}</td>
+                                <td>{{ (data.discount_type == 'percent') ? `${data.discount_percent}  %` : `PHP ${totalCount(data.discount_flat_rate)}` }}</td>
+                                <td>{{ data.promo_code }}</td>
+                                <td>{{ formatDate(data.start_date) }}</td>
+                                <td>{{ formatDate(data.end_date) }}</td>
+                                <td>
+                                    <div class="table_actions">
+                                        <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
+                                        <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
+                                        <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td :colspan="rowCount">No Result(s) Found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <pagination :apiRoute="res.promos.path" :current="res.promos.current_page" :last="res.promos.last_page" />
+                </section>
+            </div>
+            <foot v-if="$store.state.isAuth" />
+            <transition name="fade">
+                <confirm-status v-if="$store.state.confirmStatus" ref="enabled" :status="status" />
+            </transition>
         </div>
-        <foot v-if="$store.state.isAuth" />
-        <transition name="fade">
-            <confirm-status v-if="$store.state.confirmStatus" ref="enabled" :status="status" />
-        </transition>
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -81,6 +83,8 @@
         },
         data () {
             return {
+                name: 'Promotions',
+                access: true,
                 loaded: false,
                 prevRoute: '',
                 rowCount: 0,
@@ -150,7 +154,12 @@
         },
         async mounted () {
             const me = this
-            me.fetchData(1)
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData(1)
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

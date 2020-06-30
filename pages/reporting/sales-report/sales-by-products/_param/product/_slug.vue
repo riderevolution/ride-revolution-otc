@@ -71,6 +71,8 @@
         },
         data () {
             return {
+                name: 'Sales by Products',
+                access: true,
                 loaded: false,
                 rowCount: 0,
                 status: 'all',
@@ -97,6 +99,11 @@
             },
             fetchData (value) {
                 const me = this
+                me.form.start_date = me.$route.query.start_date
+                me.form.end_date = me.$route.query.end_date
+                me.form.slug = me.$route.query.slug
+                me.form.id = me.$route.query.id
+                me.form.variant_id = me.$route.query.variant_id
                 me.loader(true)
                 let formData = new FormData()
                 formData.append('slug', me.form.slug)
@@ -126,16 +133,16 @@
                 })
             }
         },
-        mounted () {
+        async mounted () {
             const me = this
-            setTimeout( () => {
-                me.form.start_date = me.$route.query.start_date
-                me.form.end_date = me.$route.query.end_date
-                me.form.slug = me.$route.query.slug
-                me.form.id = me.$route.query.id
-                me.form.variant_id = me.$route.query.variant_id
+            await me.checkPagePermission(me)
+            if (me.access) {
                 me.status = me.$route.query.status
                 me.fetchData(me.status)
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
+            setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 500)
         }

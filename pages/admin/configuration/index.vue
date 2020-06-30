@@ -1,25 +1,27 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content">
-                <h1 class="header_title">Configuration</h1>
-            </section>
-            <section id="content">
-                <div class="cms_col_four">
-                    <div class="cms_col" v-for="(data, key) in res.today" :key="key">
-                        <nuxt-link :to="data.link" class="wrapper">
-                            <div class="total_image">
-                                <img class="front" :src="data.imgSrc" />
-                                <img class="back" :src="data.imgSrc" />
-                            </div>
-                            <div class="total_title">{{ data.label }}</div>
-                        </nuxt-link>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <section id="top_content">
+                    <h1 class="header_title">Configuration</h1>
+                </section>
+                <section id="content">
+                    <div class="cms_col_four">
+                        <div class="cms_col" v-for="(data, key) in res.today" :key="key">
+                            <nuxt-link :to="data.link" class="wrapper">
+                                <div class="total_image">
+                                    <img class="front" :src="data.imgSrc" />
+                                    <img class="back" :src="data.imgSrc" />
+                                </div>
+                                <div class="total_title">{{ data.label }}</div>
+                            </nuxt-link>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
+            <foot v-if="$store.state.isAuth" />
         </div>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -30,6 +32,9 @@
         },
         data () {
             return {
+                name: 'Admin Configuration',
+                access: true,
+                loaded: false,
                 res: {
                     today: [
                         {
@@ -62,18 +67,27 @@
                             imgSrc: '/icons/medical-history-icon.svg',
                             link: '/admin/configuration/medical-history'
                         },
-                        {
-                            label: 'System Emails',
-                            imgSrc: '/icons/system-emails-icon.svg',
-                            link: '/admin/configuration/system-emails'
-                        },
-                        {
-                            label: 'MailChimp',
-                            imgSrc: '/icons/mailchimp-icon.svg',
-                            link: '/admin/configuration/mailchimp'
-                        }
+                        // {
+                        //     label: 'System Emails',
+                        //     imgSrc: '/icons/system-emails-icon.svg',
+                        //     link: '/admin/configuration/system-emails'
+                        // },
+                        // {
+                        //     label: 'MailChimp',
+                        //     imgSrc: '/icons/mailchimp-icon.svg',
+                        //     link: '/admin/configuration/mailchimp'
+                        // }
                     ]
                 }
+            }
+        },
+        async mounted () {
+            const me = this
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.loaded = true
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
         }
     }

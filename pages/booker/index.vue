@@ -1,144 +1,145 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table booker" v-if="loaded">
-                <div class="action_wrapper">
-                    <h1 class="header_title">Booker</h1>
-                    <div class="actions">
-                        <form :class="`customer_filter_flex ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" id="filter" @submit.prevent>
-                            <div class="form_group customer">
-                                <label for="studio_id">Studio</label>
-                                <select :class="`default_select alternate ${(!selectStudio) ? 'highlighted' : ''}`" name="studio_id" @change="getStudio($event)">
-                                    <option value="" selected disabled>Select a Studio</option>
-                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                                </select>
-                                <transition name="slide"><span class="validation_errors alt" v-if="!selectStudio">Select Studio</span></transition>
-                            </div>
-                            <div class="form_group selection margin" v-click-outside="closeMe">
-                                <label for="q">Find a Customer</label>
-                                <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @click="toggleCustomers ^= true" @input="searchCustomer($event)">
-                                <transition name="slide"><span class="validation_errors alt" v-if="!findCustomer && customer == ''">Select Customer</span></transition>
-                                <div :class="`customer_selection ${(customerLength > 6) ? 'scrollable' : ''}`" v-if="toggleCustomers">
-                                    <div class="customer_selection_list">
-                                        <div class="customer_wrapper" v-if="customerLength > 0 && customer.id != data.id" :id="`customer_${data.id}`" v-for="(data, key) in populateCustomers" :key="key" @click="getCustomer(data)">
-                                            <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path_resized != null" />
-                                            <div class="customer_image" v-else>
-                                                <div class="overlay">
-                                                    {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <section id="top_content" class="table booker">
+                    <div class="action_wrapper">
+                        <h1 class="header_title">Booker</h1>
+                        <div class="actions">
+                            <form :class="`customer_filter_flex ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" id="filter" @submit.prevent>
+                                <div class="form_group customer">
+                                    <label for="studio_id">Studio</label>
+                                    <select :class="`default_select alternate ${(!selectStudio) ? 'highlighted' : ''}`" name="studio_id" @change="getStudio($event)">
+                                        <option value="" selected disabled>Select a Studio</option>
+                                        <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                    </select>
+                                    <transition name="slide"><span class="validation_errors alt" v-if="!selectStudio">Select Studio</span></transition>
+                                </div>
+                                <div class="form_group selection margin" v-click-outside="closeMe">
+                                    <label for="q">Find a Customer</label>
+                                    <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @click="toggleCustomers ^= true" @input="searchCustomer($event)">
+                                    <transition name="slide"><span class="validation_errors alt" v-if="!findCustomer && customer == ''">Select Customer</span></transition>
+                                    <div :class="`customer_selection ${(customerLength > 6) ? 'scrollable' : ''}`" v-if="toggleCustomers">
+                                        <div class="customer_selection_list">
+                                            <div class="customer_wrapper" v-if="customerLength > 0 && customer.id != data.id" :id="`customer_${data.id}`" v-for="(data, key) in populateCustomers" :key="key" @click="getCustomer(data)">
+                                                <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path_resized != null" />
+                                                <div class="customer_image" v-else>
+                                                    <div class="overlay">
+                                                        {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                                    </div>
+                                                </div>
+                                                <div class="customer_name" v-line-clamp="1">
+                                                    {{ data.first_name }} {{ data.last_name }}
                                                 </div>
                                             </div>
-                                            <div class="customer_name" v-line-clamp="1">
-                                                {{ data.first_name }} {{ data.last_name }}
+                                            <div class="no_results" v-if="customerLength == 0" >
+                                                No customer(s) found.
                                             </div>
-                                        </div>
-                                        <div class="no_results" v-if="customerLength == 0" >
-                                            No customer(s) found.
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div :class="`customer_selected ${(customer != '') ? 'selected' : ''}`">
-                                <transition name="fade">
-                                    <div class="customer_picked" v-if="customer != ''">
-                                        <div class="customer_header">
-                                            <img class="customer_image" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images[0].path_resized != null" />
-                                            <div class="customer_default_image" v-else>
-                                                <div class="overlay">
-                                                    {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
+                                <div :class="`customer_selected ${(customer != '') ? 'selected' : ''}`">
+                                    <transition name="fade">
+                                        <div class="customer_picked" v-if="customer != ''">
+                                            <div class="customer_header">
+                                                <img class="customer_image" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images[0].path_resized != null" />
+                                                <div class="customer_default_image" v-else>
+                                                    <div class="overlay">
+                                                        {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
+                                                    </div>
+                                                </div>
+                                                <div class="customer_details">
+                                                    <h2 class="customer_name">
+                                                        {{ customer.first_name }} {{ customer.last_name }}
+                                                        <div class="types" v-if="customer.customer_details.customer_type.images.length > 0"><img :src="customer.customer_details.customer_type.images[0].path_resized" /></div>
+                                                        <div class="types" v-if="customer.has_first_timer"><img src="/icons/first-timer-package-icon.png" /></div>
+                                                        <a :href="`mailto:${customer.email}`" class="email">
+                                                            <img src="/icons/email-icon.svg" />
+                                                            <span>Email</span>
+                                                        </a>
+                                                    </h2>
+                                                    <div class="customer_info">
+                                                        <span>Birthday: {{ $moment(customer.customer_details.co_birthdate).format('M/D/YY') }}</span>
+                                                        <span>{{ customer.customer_details.co_contact_number }}</span>
+                                                        <span>Store Credit: {{ totalItems(customer.store_credits.amount) }}</span>
+                                                        <span>Shoe Size: {{ customer.customer_details.co_shoe_size }}</span>
+                                                    </div>
+                                                    <div class="close_wrapper alternate" @click="removeCustomer()">
+                                                        <div class="close_icon"></div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="customer_details">
-                                                <h2 class="customer_name">
-                                                    {{ customer.first_name }} {{ customer.last_name }}
-                                                    <div class="types" v-if="customer.customer_details.customer_type.images.length > 0"><img :src="customer.customer_details.customer_type.images[0].path_resized" /></div>
-                                                    <div class="types" v-if="customer.has_first_timer"><img src="/icons/first-timer-package-icon.png" /></div>
-                                                    <a :href="`mailto:${customer.email}`" class="email">
-                                                        <img src="/icons/email-icon.svg" />
-                                                        <span>Email</span>
-                                                    </a>
-                                                </h2>
-                                                <div class="customer_info">
-                                                    <span>Birthday: {{ $moment(customer.customer_details.co_birthdate).format('M/D/YY') }}</span>
-                                                    <span>{{ customer.customer_details.co_contact_number }}</span>
-                                                    <span>Store Credit: {{ totalItems(customer.store_credits.amount) }}</span>
-                                                    <span>Shoe Size: {{ customer.customer_details.co_shoe_size }}</span>
+                                            <div class="customer_footer" v-if="customer != ''">
+                                                <div class="item" @click="toggleLayout('attendance')">Attendance</div>
+                                                <div class="item" @click="toggleLayout('package')">Packages</div>
+                                                <div class="item" @click="toggleLayout('redeem')">Redeem</div>
+                                                <div id="credits" class="item" @click="toggleQuickSale('credit')">
+                                                    Buy Credits
+                                                    <transition name="slide"><span class="validation_errors alt" v-if="buyCredits">Buy Here</span></transition>
                                                 </div>
-                                                <div class="close_wrapper alternate" @click="removeCustomer()">
-                                                    <div class="close_icon"></div>
-                                                </div>
+                                                <div class="item" @click="toggleQuickSale('product')">Buy Products</div>
                                             </div>
                                         </div>
-                                        <div class="customer_footer" v-if="customer != ''">
-                                            <div class="item" @click="toggleLayout('attendance')">Attendance</div>
-                                            <div class="item" @click="toggleLayout('package')">Packages</div>
-                                            <div class="item" @click="toggleLayout('redeem')">Redeem</div>
-                                            <div id="credits" class="item" @click="toggleQuickSale('credit')">
-                                                Buy Credits
-                                                <transition name="slide"><span class="validation_errors alt" v-if="buyCredits">Buy Here</span></transition>
-                                            </div>
-                                            <div class="item" @click="toggleQuickSale('product')">Buy Products</div>
+                                    </transition>
+                                    <transition name="fade">
+                                        <div class="no_results" v-if="customer == ''">
+                                            <div class="customer_label">No Customer Selected</div>
+                                            <div class="customer_text">Find a Customer / Scan QR Code</div>
                                         </div>
-                                    </div>
-                                </transition>
-                                <transition name="fade">
-                                    <div class="no_results" v-if="customer == ''">
-                                        <div class="customer_label">No Customer Selected</div>
-                                        <div class="customer_text">Find a Customer / Scan QR Code</div>
-                                    </div>
-                                </transition>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </section>
-            <section id="content" v-if="loaded">
-                <div class="booker_wrapper">
-                    <div :class="`booker_classes ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
-                        <div class="header_wrapper">
-                            <div class="booker_header">
-                                <div class="booker_prev" @click="generatePrevClasses()">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                                    </transition>
                                 </div>
-                                <h2 class="booker_title">Classes</h2>
-                                <div class="booker_next" @click="generateNextClasses()">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
-                                </div>
-                            </div>
-                            <div class="action_calendar_btn" @click="populateClasses()">Today</div>
-                        </div>
-                        <div class="content_wrapper">
-                            <div class="class_accordion" v-for="(result, key) in results" :key="key">
-                                <div class="accordion_header" @click.self="toggleClass($event, $moment(result.date).format('M'), $moment(result.date).format('D'), $moment(result.date).format('YYYY'))">{{ result.abbr }} | {{ result.date }}</div>
-                                <div class="accordion_content">
-                                    <div :id="`class_${dkey}_${key}`" class="class_content" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
-                                        <div class="class_title">
-                                            <span>{{ data.schedule.start_time }}, {{ data.schedule.class_type.name }}</span>
-                                            <div :class="`class_status ${(data.isFull) ? 'full' : ''}`">
-                                                {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.signedIn}` }}
-                                            </div>
-                                        </div>
-                                        <div class="class_text">
-                                            {{ data.schedule.description }}
-                                        </div>
-                                        <div class="class_text alternate">
-                                            <span>Signed-in: {{ data.signedIn }}</span>
-                                            <span>Available: {{ data.availableSeatsCount }}</span>
-                                            <span>No show: {{ data.noShow }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="no_class class_content" v-if="schedules.length <= 0">
-                                        No Schedule(s) for this day.
-                                    </div>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="booker_content">
-                        <div class="booker_seats">
-                            <div class="seat_controls">
-                                <div class="left_side">
-                                    <div class="class_options">
-                                        <!-- <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options">
+                </section>
+                <section id="content">
+                    <div class="booker_wrapper">
+                        <div :class="`booker_classes ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
+                            <div class="header_wrapper">
+                                <div class="booker_header">
+                                    <div class="booker_prev" @click="generatePrevClasses()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                                    </div>
+                                    <h2 class="booker_title">Classes</h2>
+                                    <div class="booker_next" @click="generateNextClasses()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                                    </div>
+                                </div>
+                                <div class="action_calendar_btn" @click="populateClasses()">Today</div>
+                            </div>
+                            <div class="content_wrapper">
+                                <div class="class_accordion" v-for="(result, key) in results" :key="key">
+                                    <div class="accordion_header" @click.self="toggleClass($event, $moment(result.date).format('M'), $moment(result.date).format('D'), $moment(result.date).format('YYYY'))">{{ result.abbr }} | {{ result.date }}</div>
+                                    <div class="accordion_content">
+                                        <div :id="`class_${dkey}_${key}`" class="class_content" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
+                                            <div class="class_title">
+                                                <span>{{ data.schedule.start_time }}, {{ data.schedule.class_type.name }}</span>
+                                                <div :class="`class_status ${(data.isFull) ? 'full' : ''}`">
+                                                    {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.signedIn}` }}
+                                                </div>
+                                            </div>
+                                            <div class="class_text">
+                                                {{ data.schedule.description }}
+                                            </div>
+                                            <div class="class_text alternate">
+                                                <span>Signed-in: {{ data.signedIn }}</span>
+                                                <span>Available: {{ data.availableSeatsCount }}</span>
+                                                <span>No show: {{ data.noShow }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="no_class class_content" v-if="schedules.length <= 0">
+                                            No Schedule(s) for this day.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="booker_content">
+                            <div class="booker_seats">
+                                <div class="seat_controls">
+                                    <div class="left_side">
+                                        <div class="class_options">
+                                            <!-- <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options">
                                             <option value="" disabled selected>Class Options</option>
                                             <option :value="key" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
                                         </select> -->
@@ -164,143 +165,144 @@
                                                         <div class="type_title">Pending Payment</div>
                                                     </div>
                                                     <!-- <div class="type">
-                                                        <img src="/icons/broken-bike-icon.svg" />
-                                                        <div class="type_title">Broken Bike</div>
-                                                    </div> -->
-                                                </div>
+                                                    <img src="/icons/broken-bike-icon.svg" />
+                                                    <div class="type_title">Broken Bike</div>
+                                                </div> -->
                                             </div>
                                         </div>
                                     </div>
-                                    <label class="booker_label">{{ (schedule != '') ? `${schedule.schedule.instructor_schedules[0].user.first_name} (${schedule.schedule.class_length_formatted})` : 'Please Select a Class' }}</label>
-                                    <div class="controls">
-                                        <button id="zoom_in">Zoom in</button>
-                                        <button id="zoom_out" class="margin">Zoom out</button>
-                                        <button id="reset" class="margin">Reset</button>
-                                    </div>
                                 </div>
-                                <div :class="`right_side ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
-                                    <button id="reload">Reload</button>
+                                <label class="booker_label">{{ (schedule != '') ? `${schedule.schedule.instructor_schedules[0].user.first_name} (${schedule.schedule.class_length_formatted})` : 'Please Select a Class' }}</label>
+                                <div class="controls">
+                                    <button id="zoom_in">Zoom in</button>
+                                    <button id="zoom_out" class="margin">Zoom out</button>
+                                    <button id="reset" class="margin">Reset</button>
                                 </div>
                             </div>
-                            <panZoom @init="panZoomInit" :options="{
-                                bounds: true,
-                                boundsPadding: 0.2,
-                                minZoom: 0.25,
-                                maxZoom: 1,
-                                zoomDoubleClickSpeed: 1,
-                                beforeWheel: panZoomBeforeWheel,
-                                onDoubleClick: panZoomDoubleClick,
-                                smoothScroll: false,
-                                onTouch: panZoomTouch
-                            }">
-                                <seat-plan ref="plan" />
-                            </panZoom>
-                            <div class="seat_legends">
-                                <div class="legend_title gray"><span></span> Booked</div>
-                                <div class="legend_title margin green"><span></span> Signed In</div>
-                                <div class="legend_title margin white"><span></span> Available</div>
-                                <div class="legend_title margin gradient"><span></span> Blocked/Comp</div>
-                                <div class="action_cancel_btn" @click="toggleDisabled()" v-if="$store.state.disableBookerUI">Cancel</div>
+                            <div :class="`right_side ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
+                                <button id="reload">Reload</button>
                             </div>
                         </div>
-                        <div :class="`booker_footer ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
-                            <div class="booker_notepad">
-                                <h2 class="footer_title">Notepad</h2>
-                                <div class="notepad_text">
-                                    <textarea name="notepad" rows="10" v-model="notePad" @focusout="updateNotes($event)"></textarea>
-                                </div>
-                            </div>
-                            <div class="booker_waitlist">
-                                <div class="footer_header">
-                                    <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
-                                    <a href="javascript:void(0)" :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
-                                </div>
-                                <table class="cms_waitlist">
-                                    <thead>
-                                        <tr>
-                                            <th>Last Name</th>
-                                            <th>First Name</th>
-                                            <th class="action">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody v-if="waitlists.length > 0">
-                                        <tr v-for="(waitlist, key) in waitlists" :key="key">
-                                            <td>{{ waitlist.user.last_name }}</td>
-                                            <td>{{ waitlist.user.first_name }}</td>
-                                            <td class="action">
-                                                <a href="javascript:void(0)" @click="prioritizeWaitlist(waitlist)" :class="`${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</a>
-                                                <a href="javascript:void(0)" :class="`margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                    <tbody class="no_results" v-else>
-                                        <tr>
-                                            <td colspan="3">The Waitlist is empty.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <panZoom @init="panZoomInit" :options="{
+                            bounds: true,
+                            boundsPadding: 0.2,
+                            minZoom: 0.25,
+                            maxZoom: 1,
+                            zoomDoubleClickSpeed: 1,
+                            beforeWheel: panZoomBeforeWheel,
+                            onDoubleClick: panZoomDoubleClick,
+                            smoothScroll: false,
+                            onTouch: panZoomTouch
+                        }">
+                        <seat-plan ref="plan" />
+                    </panZoom>
+                    <div class="seat_legends">
+                        <div class="legend_title gray"><span></span> Booked</div>
+                        <div class="legend_title margin green"><span></span> Signed In</div>
+                        <div class="legend_title margin white"><span></span> Available</div>
+                        <div class="legend_title margin gradient"><span></span> Blocked/Comp</div>
+                        <div class="action_cancel_btn" @click="toggleDisabled()" v-if="$store.state.disableBookerUI">Cancel</div>
                     </div>
                 </div>
-            </section>
+                <div :class="`booker_footer ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
+                    <div class="booker_notepad">
+                        <h2 class="footer_title">Notepad</h2>
+                        <div class="notepad_text">
+                            <textarea name="notepad" rows="10" v-model="notePad" @focusout="updateNotes($event)"></textarea>
+                        </div>
+                    </div>
+                    <div class="booker_waitlist">
+                        <div class="footer_header">
+                            <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
+                            <a href="javascript:void(0)" :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
+                        </div>
+                        <table class="cms_waitlist">
+                            <thead>
+                                <tr>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th class="action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody v-if="waitlists.length > 0">
+                                <tr v-for="(waitlist, key) in waitlists" :key="key">
+                                    <td>{{ waitlist.user.last_name }}</td>
+                                    <td>{{ waitlist.user.first_name }}</td>
+                                    <td class="action">
+                                        <a href="javascript:void(0)" @click="prioritizeWaitlist(waitlist)" :class="`${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</a>
+                                        <a href="javascript:void(0)" :class="`margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody class="no_results" v-else>
+                                <tr>
+                                    <td colspan="3">The Waitlist is empty.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <transition name="fade">
-            <prompt v-if="$store.state.promptStatus" :message="($refs.plan.hasCancel) ? $refs.plan.message : message" :hasCancel="$refs.plan.hasCancel" />
-        </transition>
-        <transition name="fade">
-            <prompt-broken-bike v-if="$store.state.promptBrokenBikeStatus" :message="brokenMessage" />
-        </transition>
-        <transition name="fade">
-            <prompt-booker v-if="$store.state.promptBookerStatus" :message="$refs.plan.message" />
-        </transition>
-        <transition name="fade">
-            <prompt-booker-action v-if="$store.state.promptBookerActionStatus" :message="actionMessage" />
-        </transition>
-        <transition name="fade">
-            <prompt-sign-out v-if="$store.state.promptSignOutStatus" />
-        </transition>
-        <transition name="fade">
-            <prompt-switch-seat v-if="$store.state.promptSwitchSeatStatus" />
-        </transition>
-        <transition name="fade">
-            <prompt-cancel v-if="$store.state.promptCancelStatus" />
-        </transition>
-        <transition name="fade">
-            <prompt-waitlist v-if="$store.state.promptWaitlistStatus" :value="waitlistID" />
-        </transition>
-        <transition name="fade">
-            <assign v-if="$store.state.assignStatus" :type="$refs.plan.assignType" />
-        </transition>
-        <transition name="fade">
-            <remove-assign v-if="$store.state.removeAssignStatus" />
-        </transition>
-        <transition name="fade">
-            <customer-package v-if="$store.state.customerPackageStatus" :studioID="studioID" :type="packageMethod" />
-        </transition>
-        <transition name="fade">
-            <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
-        </transition>
-        <transition name="fade">
-            <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
-        </transition>
-        <transition name="fade">
-            <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
-        </transition>
-        <transition name="fade">
-            <attendance-layout v-if="$store.state.attendanceLayoutStatus" :customer="customer" />
-        </transition>
-        <transition name="fade">
-            <package-layout v-if="$store.state.packageLayoutStatus" :customer="customer" />
-        </transition>
-        <transition name="fade">
-            <redeem-gift-card v-if="$store.state.redeemGiftCardStatus" :customer="customer" />
-        </transition>
-        <transition name="fade">
-            <redeem-gift-card-success v-if="$store.state.redeemGiftCardSuccessStatus" />
-        </transition>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </section>
+</div>
+<transition name="fade">
+    <prompt v-if="$store.state.promptStatus" :message="($refs.plan.hasCancel) ? $refs.plan.message : message" :hasCancel="$refs.plan.hasCancel" />
+</transition>
+<transition name="fade">
+    <prompt-broken-bike v-if="$store.state.promptBrokenBikeStatus" :message="brokenMessage" />
+</transition>
+<transition name="fade">
+    <prompt-booker v-if="$store.state.promptBookerStatus" :message="$refs.plan.message" />
+</transition>
+<transition name="fade">
+    <prompt-booker-action v-if="$store.state.promptBookerActionStatus" :message="actionMessage" />
+</transition>
+<transition name="fade">
+    <prompt-sign-out v-if="$store.state.promptSignOutStatus" />
+</transition>
+<transition name="fade">
+    <prompt-switch-seat v-if="$store.state.promptSwitchSeatStatus" />
+</transition>
+<transition name="fade">
+    <prompt-cancel v-if="$store.state.promptCancelStatus" />
+</transition>
+<transition name="fade">
+    <prompt-waitlist v-if="$store.state.promptWaitlistStatus" :value="waitlistID" />
+</transition>
+<transition name="fade">
+    <assign v-if="$store.state.assignStatus" :type="$refs.plan.assignType" />
+</transition>
+<transition name="fade">
+    <remove-assign v-if="$store.state.removeAssignStatus" />
+</transition>
+<transition name="fade">
+    <customer-package v-if="$store.state.customerPackageStatus" :studioID="studioID" :type="packageMethod" />
+</transition>
+<transition name="fade">
+    <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
+</transition>
+<transition name="fade">
+    <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
+</transition>
+<transition name="fade">
+    <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
+</transition>
+<transition name="fade">
+    <attendance-layout v-if="$store.state.attendanceLayoutStatus" :customer="customer" />
+</transition>
+<transition name="fade">
+    <package-layout v-if="$store.state.packageLayoutStatus" :customer="customer" />
+</transition>
+<transition name="fade">
+    <redeem-gift-card v-if="$store.state.redeemGiftCardStatus" :customer="customer" />
+</transition>
+<transition name="fade">
+    <redeem-gift-card-success v-if="$store.state.redeemGiftCardSuccessStatus" />
+</transition>
+<foot v-if="$store.state.isAuth" />
+</div>
+    </transition>
 </template>
 
 <script>
@@ -349,6 +351,9 @@
         },
         data () {
             return {
+                name: 'Booker',
+                access: true,
+                loaded: false,
                 assignType: 0,
                 brokenMessage: '',
                 inWaitlist: false,
@@ -1026,7 +1031,12 @@
         },
         async mounted () {
             const me = this
-            me.fetchData(1)
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData(1)
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

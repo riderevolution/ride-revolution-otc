@@ -60,6 +60,8 @@
         },
         data () {
             return {
+                name: 'Average Time to Utilize Packages',
+                access: true,
                 loaded: false,
                 rowCount: 0,
                 res: []
@@ -76,7 +78,12 @@
         },
         async mounted () {
             const me = this
-            me.fetchData()
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

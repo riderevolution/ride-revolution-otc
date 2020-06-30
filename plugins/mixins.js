@@ -2,6 +2,34 @@ import Vue from 'vue'
 
 Vue.mixin({
     methods: {
+        checkPagePermission (page) {
+            const me = this
+            return new Promise((resolve, reject) => {
+                let permission = true
+                let token = this.$cookies.get('token')
+                let formData = new FormData()
+                formData.append('page_name', page.name)
+
+                me.loader(true)
+                let nav = []
+                if (token != null || token != undefined) {
+                    me.$axios.post('api/extras/page-permission', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
+                        page.access = res.data.access
+                    }).catch(err => {
+                        console.log(err);
+                    }).then(() => {
+                        resolve('ok')
+                        me.loader(false)
+                    })
+                } else {
+                    this.logout()
+                }
+            })
+        },
         getNavItems (page) {
             const me = this
             return new Promise((resolve, reject) => {
@@ -18,7 +46,6 @@ Vue.mixin({
                     }).catch(err => {
                         console.log(err);
                     }).then(() => {
-                        resolve('ok')
                         me.loader(false)
                     })
                 } else {

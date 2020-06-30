@@ -83,6 +83,8 @@
         },
         data () {
             return {
+                name: 'Gift Cards Redeemed',
+                access: true,
                 loaded: false,
                 rowCount: 0,
                 res: [],
@@ -142,10 +144,15 @@
                 })
             }
         },
-        mounted () {
+        async mounted () {
             const me = this
-            setTimeout( () => {
+            await me.checkPagePermission(me)
+            if (me.access) {
                 me.fetchData()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
+            setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 500)
         }

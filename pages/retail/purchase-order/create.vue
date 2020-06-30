@@ -1,101 +1,103 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <form id="default_form" class="alternate" @submit.prevent="submissionSuccess()" enctype="multipart/form-data" v-if="loaded">
-                <section id="top_content" class="table" v-if="loaded">
-                    <nuxt-link :to="`/${prevRoute}/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
-                    <div class="action_wrapper">
-                        <h1 class="header_title">
-                            <div>New Purchase Orders</div>
-                            <span class="header_id">ID: {{ randomID }}</span>
-                            <div class="form_check alternate">
-                                <input type="checkbox" id="validate" name="paid" class="action_check" @change="tickPaid($event)">
-                                <label for="validate">Paid</label>
-                            </div>
-                        </h1>
-                    </div>
-                    <div class="filter_wrapper">
-                        <div class="filter_flex" id="filter">
-                            <div class="form_group">
-                                <label for="supplier_id">Supplier</label>
-                                <select class="default_select alternate" name="supplier_id" @change="searchVariants()" v-model="form.supplier">
-                                    <option value="" selected disabled>Select a Supplier</option>
-                                    <option :value="supplier.id" v-for="(supplier, key) in suppliers" :key="key">{{ supplier.name }}</option>
-                                </select>
-                            </div>
-                            <div class="form_group margin">
-                                <label for="studio_id">Studio</label>
-                                <select :class="`default_select alternate ${(!isSupplier) ? 'disabled' : (purchaseOrders.length > 0 ? 'disabled' : '') }`" name="studio_id" v-model="form.studio" @change="searchVariants()">
-                                    <option value="" selected disabled>Select a Studio</option>
-                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                                </select>
-                            </div>
-                            <div class="form_group margin">
-                                <label for="po_number">P.O. Number</label>
-                                <input type="text" name="po_number" placeholder="Enter P.O. Number" autocomplete="off" :class="`uppercase default_text ${(!isStudio) ? 'disabled' : '' }`" v-validate="'required|max:25'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('po_number')">{{ errors.first('po_number') || properFormat }}</span></transition>
-                            </div>
-                            <div class="form_group margin alternate" v-click-outside="closeMe">
-                                <label>Search a Product</label>
-                                <input type="text" autocomplete="off" placeholder="Add a product name only" :class="`default_text search_alternate ${(!isStudio) ? 'disabled' : '' }`" @click="autocomplete ^= true" @input="filterVariants($event)">
-                                <div :class="`cms_autocomplete ${(variants.length >= 8) ? 'scrollable' : ''}`" v-if="autocomplete">
-                                    <div class="autocomplete_title" v-for="(variant, key) in variants" :key="key" @click="addVariant(variant)" v-if="variants.length > 0">{{ variant.product.name }} - {{ variant.variant }}</div>
-                                    <div class="autocomplete_title" v-if="variants.length == 0">No Product(s) Found.</div>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <form id="default_form" class="alternate" @submit.prevent="submissionSuccess()" enctype="multipart/form-data" v-if="loaded">
+                    <section id="top_content" class="table" v-if="loaded">
+                        <nuxt-link :to="`/${prevRoute}/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
+                        <div class="action_wrapper">
+                            <h1 class="header_title">
+                                <div>New Purchase Orders</div>
+                                <span class="header_id">ID: {{ randomID }}</span>
+                                <div class="form_check alternate">
+                                    <input type="checkbox" id="validate" name="paid" class="action_check" @change="tickPaid($event)">
+                                    <label for="validate">Paid</label>
                                 </div>
-                            </div>
+                            </h1>
                         </div>
-                    </div>
-                </section>
-                <section id="content" v-if="loaded">
-                    <div class="cms_table_input alternate" v-if="isSupplier && isStudio">
-                        <div class="header_wrapper">
-                            <div class="input_header name">Product Name</div>
-                            <div class="input_header">SKU ID</div>
-                            <div class="input_header">Sellable</div>
-                            <div class="input_header">Category</div>
-                            <div class="input_header">In Stock</div>
-                            <div class="input_header">Qty.</div>
-                            <div class="input_header">Unit Price</div>
-                            <!-- <div class="input_header">Shipping Cost</div> -->
-                            <!-- <div class="input_header">Additional Cost</div> -->
-                            <div class="input_header">Cost</div>
-                        </div>
-                        <div class="content_wrapper" v-if="purchaseOrders.length > 0">
-                            <purchase-order :type="'create'" :class="`input_content_wrapper ${(data.product_quantities[0].quantity < data.reorder_point) ? 'threshold' : ''}`" ref="orders" :unique="key" :value="data" v-for="(data, key) in purchaseOrders" :key="key" />
-                            <div class="footer_wrapper">
-                                <div class="footer_form_group">
-                                    <label for="name">Shipping Cost:</label>
-                                    <div class="footer_input">
-                                        <input type="text" name="shipping" class="default_text" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" v-model="form.total_shipping">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(`shipping`)">{{ errors.first('shipping') || properFormat }}</span></transition>
+                        <div class="filter_wrapper">
+                            <div class="filter_flex" id="filter">
+                                <div class="form_group">
+                                    <label for="supplier_id">Supplier</label>
+                                    <select class="default_select alternate" name="supplier_id" @change="searchVariants()" v-model="form.supplier">
+                                        <option value="" selected disabled>Select a Supplier</option>
+                                        <option :value="supplier.id" v-for="(supplier, key) in suppliers" :key="key">{{ supplier.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="form_group margin">
+                                    <label for="studio_id">Studio</label>
+                                    <select :class="`default_select alternate ${(!isSupplier) ? 'disabled' : (purchaseOrders.length > 0 ? 'disabled' : '') }`" name="studio_id" v-model="form.studio" @change="searchVariants()">
+                                        <option value="" selected disabled>Select a Studio</option>
+                                        <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="form_group margin">
+                                    <label for="po_number">P.O. Number</label>
+                                    <input type="text" name="po_number" placeholder="Enter P.O. Number" autocomplete="off" :class="`uppercase default_text ${(!isStudio) ? 'disabled' : '' }`" v-validate="'required|max:25'">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('po_number')">{{ errors.first('po_number') || properFormat }}</span></transition>
+                                </div>
+                                <div class="form_group margin alternate" v-click-outside="closeMe">
+                                    <label>Search a Product</label>
+                                    <input type="text" autocomplete="off" placeholder="Add a product name only" :class="`default_text search_alternate ${(!isStudio) ? 'disabled' : '' }`" @click="autocomplete ^= true" @input="filterVariants($event)">
+                                    <div :class="`cms_autocomplete ${(variants.length >= 8) ? 'scrollable' : ''}`" v-if="autocomplete">
+                                        <div class="autocomplete_title" v-for="(variant, key) in variants" :key="key" @click="addVariant(variant)" v-if="variants.length > 0">{{ variant.product.name }} - {{ variant.variant }}</div>
+                                        <div class="autocomplete_title" v-if="variants.length == 0">No Product(s) Found.</div>
                                     </div>
                                 </div>
-                                <!-- <div class="footer_cost">Total Additional Cost: PHP {{ computeAdditional }}</div> -->
-                                <div class="footer_cost">Total Shipping Cost: PHP {{ computeShipping }}</div>
-                                <div class="footer_total_cost">Total: <span class="total_cost">PHP {{ getAllCost }}</span></div>
                             </div>
                         </div>
-                        <div class="no_results" v-if="purchaseOrders.length == 0">
-                            No Variant(s) Found. Please add a variant.
-                        </div>
-                        <div class="form_footer_wrapper">
-                            <div class="button_group">
-                                <nuxt-link :to="`/${prevRoute}/${lastRoute}`" class="action_cancel_btn">Cancel</nuxt-link>
-                                <button type="submit" name="submit" class="action_btn alternate margin">Create P.O.</button>
+                    </section>
+                    <section id="content" v-if="loaded">
+                        <div class="cms_table_input alternate" v-if="isSupplier && isStudio">
+                            <div class="header_wrapper">
+                                <div class="input_header name">Product Name</div>
+                                <div class="input_header">SKU ID</div>
+                                <div class="input_header">Sellable</div>
+                                <div class="input_header">Category</div>
+                                <div class="input_header">In Stock</div>
+                                <div class="input_header">Qty.</div>
+                                <div class="input_header">Unit Price</div>
+                                <!-- <div class="input_header">Shipping Cost</div> -->
+                                <!-- <div class="input_header">Additional Cost</div> -->
+                                <div class="input_header">Cost</div>
+                            </div>
+                            <div class="content_wrapper" v-if="purchaseOrders.length > 0">
+                                <purchase-order :type="'create'" :class="`input_content_wrapper ${(data.product_quantities[0].quantity < data.reorder_point) ? 'threshold' : ''}`" ref="orders" :unique="key" :value="data" v-for="(data, key) in purchaseOrders" :key="key" />
+                                <div class="footer_wrapper">
+                                    <div class="footer_form_group">
+                                        <label for="name">Shipping Cost:</label>
+                                        <div class="footer_input">
+                                            <input type="text" name="shipping" class="default_text" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" v-model="form.total_shipping">
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has(`shipping`)">{{ errors.first('shipping') || properFormat }}</span></transition>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="footer_cost">Total Additional Cost: PHP {{ computeAdditional }}</div> -->
+                                    <div class="footer_cost">Total Shipping Cost: PHP {{ computeShipping }}</div>
+                                    <div class="footer_total_cost">Total: <span class="total_cost">PHP {{ getAllCost }}</span></div>
+                                </div>
+                            </div>
+                            <div class="no_results" v-if="purchaseOrders.length == 0">
+                                No Variant(s) Found. Please add a variant.
+                            </div>
+                            <div class="form_footer_wrapper">
+                                <div class="button_group">
+                                    <nuxt-link :to="`/${prevRoute}/${lastRoute}`" class="action_cancel_btn">Cancel</nuxt-link>
+                                    <button type="submit" name="submit" class="action_btn alternate margin">Create P.O.</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="no_contents" v-else>
-                        Select a supplier &amp; studio before entering any products.
-                    </div>
-                </section>
-            </form>
+                        <div class="no_contents" v-else>
+                            Select a supplier &amp; studio before entering any products.
+                        </div>
+                    </section>
+                </form>
+            </div>
+            <transition name="fade">
+                <prompt-validate v-if="$store.state.promptValidateStatus" :message="message" :category="'purchase-order'" />
+            </transition>
+            <foot v-if="$store.state.isAuth" />
         </div>
-        <transition name="fade">
-            <prompt-validate v-if="$store.state.promptValidateStatus" :message="message" :category="'purchase-order'" />
-        </transition>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -108,16 +110,13 @@
             PurchaseOrder,
             Foot
         },
-        provide () {
-            return {
-                $validator: this.$validator
-            }
-        },
         data () {
             return {
                 isSupplier: false,
                 isStudio: false,
                 autocomplete: false,
+                name: 'Purchase Order',
+                access: true,
                 loaded: false,
                 randomID: 0,
                 lastRoute: '',
@@ -343,7 +342,12 @@
         },
         async mounted () {
             const me = this
-            me.fetchData()
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

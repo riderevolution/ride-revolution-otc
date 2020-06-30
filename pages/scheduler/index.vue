@@ -1,90 +1,92 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table" v-if="loaded">
-                <div class="action_wrapper">
-                    <h1 class="header_title">Scheduler</h1>
-                    <div class="actions">
-                        <a href="javascript:void(0)" class="action_btn">Export Schedule</a>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <section id="top_content" class="table">
+                    <div class="action_wrapper">
+                        <h1 class="header_title">Scheduler</h1>
+                        <div class="actions">
+                            <a href="javascript:void(0)" class="action_btn">Export Schedule</a>
+                        </div>
                     </div>
-                </div>
-                <div class="filter_wrapper alternate">
-                    <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
-                        <div class="form_group">
-                            <label for="studio_id">Studio</label>
-                            <select class="default_select alternate" name="studio_id" v-model="form.studio_id" @change="getStudio($event)">
-                                <option value="" disabled>Choose a Studio</option>
-                                <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                            </select>
+                    <div class="filter_wrapper alternate">
+                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
+                            <div class="form_group">
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" name="studio_id" v-model="form.studio_id" @change="getStudio($event)">
+                                    <option value="" disabled>Choose a Studio</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="instructor_id">Instructor</label>
+                                <select class="default_select alternate" name="instructor_id" v-model="form.instructor_id">
+                                    <option value="0" selected>All Instructors</option>
+                                    <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                                </select>
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
+                        <div class="legends_wrapper">
+                            <div class="legend_title gray"><span>&#x25CF;</span> Class Completed</div>
+                            <div class="legend_title margin blue"><span>&#x25CF;</span> Published</div>
+                            <div class="legend_title margin black"><span>&#x25CF;</span> Draft</div>
                         </div>
-                        <div class="form_group margin">
-                            <label for="instructor_id">Instructor</label>
-                            <select class="default_select alternate" name="instructor_id" v-model="form.instructor_id">
-                                <option value="0" selected>All Instructors</option>
-                                <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
-                            </select>
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                    <div class="legends_wrapper">
-                        <div class="legend_title gray"><span>&#x25CF;</span> Class Completed</div>
-                        <div class="legend_title margin blue"><span>&#x25CF;</span> Published</div>
-                        <div class="legend_title margin black"><span>&#x25CF;</span> Draft</div>
                     </div>
-                </div>
-            </section>
-            <section id="content">
-                <div class="calendar_wrapper">
-                    <div class="calendar_actions">
-                        <div class="action_flex">
-                            <div class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</div>
-                            <div class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</div>
-                        </div>
-                        <div :class="`action_flex ${(schedules.length <= 0) ? 'disabled_gear' : '' }`">
-                            <div class="gear_action">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="calendar_gear" id="gear_month" width="38.568" height="32.924" viewBox="0 0 38.568 32.924" @click="monthGear()"> <rect width="38.569" height="32.924" rx="3" transform="translate(0 0)"/> <g transform="translate(10.043 7.221)"> <ellipse cx="6.719" cy="6.719" rx="6.719" ry="6.719" transform="translate(2.196 2.197)" class="gear_2"/> <line y2="2.197" transform="translate(8.916)" class="gear_2"/> <line y2="2.197" transform="translate(8.916 15.635)" class="gear_2"/> <line x2="2.197" transform="translate(0 8.916)" class="gear_2"/> <line x2="2.197" transform="translate(15.635 8.916)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(2.611 2.611)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(13.667 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(2.611 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(13.667 2.611)" class="gear_2"/> </g> </svg>
-                                <div :class="`gear_overlay ${(monthStatus) ? 'active' : ''}`">
-                                    <ul class='gear_list_wrapper'>
-                                        <li class='gear_list'><a class='clear gear_item' href='javascript:void(0)' @click="clearMonth()">Clear Month</a></li>
-                                        <li class='gear_list'><a class='duplicate gear_item' href='javascript:void(0)' @click="duplicateMonth()">Duplicate Month</a></li>
-                                    </ul>
+                </section>
+                <section id="content">
+                    <div class="calendar_wrapper">
+                        <div class="calendar_actions">
+                            <div class="action_flex">
+                                <div class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</div>
+                                <div class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</div>
+                            </div>
+                            <div :class="`action_flex ${(schedules.length <= 0) ? 'disabled_gear' : '' }`">
+                                <div class="gear_action">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="calendar_gear" id="gear_month" width="38.568" height="32.924" viewBox="0 0 38.568 32.924" @click="monthGear()"> <rect width="38.569" height="32.924" rx="3" transform="translate(0 0)"/> <g transform="translate(10.043 7.221)"> <ellipse cx="6.719" cy="6.719" rx="6.719" ry="6.719" transform="translate(2.196 2.197)" class="gear_2"/> <line y2="2.197" transform="translate(8.916)" class="gear_2"/> <line y2="2.197" transform="translate(8.916 15.635)" class="gear_2"/> <line x2="2.197" transform="translate(0 8.916)" class="gear_2"/> <line x2="2.197" transform="translate(15.635 8.916)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(2.611 2.611)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(13.667 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(2.611 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(13.667 2.611)" class="gear_2"/> </g> </svg>
+                                    <div :class="`gear_overlay ${(monthStatus) ? 'active' : ''}`">
+                                        <ul class='gear_list_wrapper'>
+                                            <li class='gear_list'><a class='clear gear_item' href='javascript:void(0)' @click="clearMonth()">Clear Month</a></li>
+                                            <li class='gear_list'><a class='duplicate gear_item' href='javascript:void(0)' @click="duplicateMonth()">Duplicate Month</a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="calendar_header">
-                        <div class="calendar_prev" @click="generatePrevCalendar()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                        <div class="calendar_header">
+                            <div class="calendar_prev" @click="generatePrevCalendar()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                            </div>
+                            <h2 class="calendar_title">{{ monthName }} {{ yearName }}</h2>
+                            <div class="calendar_next" @click="generateNextCalendar()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                            </div>
                         </div>
-                        <h2 class="calendar_title">{{ monthName }} {{ yearName }}</h2>
-                        <div class="calendar_next" @click="generateNextCalendar()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
+                        <div class="cms_table_calendar_wrapper">
+                            <table class="cms_table_calendar">
+                                <thead>
+                                    <tr>
+                                        <th v-for="(dayLabel, key) in dayLabels" :key="key">{{ dayLabel }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="cms_table_calendar_wrapper">
-                        <table class="cms_table_calendar">
-                            <thead>
-                                <tr>
-                                    <th v-for="(dayLabel, key) in dayLabels" :key="key">{{ dayLabel }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
+            <transition name="fade">
+                <foot v-if="$store.state.isAuth" />
+            </transition>
+            <transition name="fade">
+                <calendar-clear v-if="$store.state.calendarClearStatus" :value="value" :type="calendarType" />
+            </transition>
+            <transition name="fade">
+                <calendar-duplicate v-if="$store.state.calendarDuplicateStatus" :type="calendarType" :datePicked="value" :yearPicked="currentYear" :monthPicked="currentMonth" />
+            </transition>
         </div>
-        <transition name="fade">
-            <foot v-if="$store.state.isAuth" />
-        </transition>
-        <transition name="fade">
-            <calendar-clear v-if="$store.state.calendarClearStatus" :value="value" :type="calendarType" />
-        </transition>
-        <transition name="fade">
-            <calendar-duplicate v-if="$store.state.calendarDuplicateStatus" :type="calendarType" :datePicked="value" :yearPicked="currentYear" :monthPicked="currentMonth" />
-        </transition>
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -99,6 +101,8 @@
         },
         data () {
             return {
+                name: 'Scheduler',
+                access: true,
                 lastRoute: '',
                 loaded: false,
                 monthStatus: false,
@@ -513,7 +517,6 @@
                     me.instructors = res.data.instructors.data
                 })
                 me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
-                me.loaded = true
             },
             getStudio (event) {
                 const me = this
@@ -523,26 +526,31 @@
                 })
             }
         },
-        mounted () {
+        async mounted () {
             const me = this
-            me.loader(true)
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.loader(true)
+                let token = me.$cookies.get('token')
+                me.$axios.get('api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data != 0) {
+                        me.loaded = true
+                        setTimeout( () => {
+                            me.fetchData()
+                            me.form.studio_id = res.data.user.current_studio_id
+                        }, 500)
+                    }
+                }).catch(err => {
+                    console.log(err);
+                })
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             me.lastRoute = me.$route.path.split('/')[1]
-            let token = me.$cookies.get('token')
-            me.$axios.get('api/user', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(res => {
-                if (res.data != 0) {
-                    setTimeout( () => {
-                        me.fetchData()
-                        me.form.studio_id = res.data.user.current_studio_id
-                        me.loader(false)
-                    }, 500)
-                }
-            }).catch(err => {
-                console.log(err);
-            })
         },
         beforeMount () {
             document.addEventListener('click', this.toggleOverlays)

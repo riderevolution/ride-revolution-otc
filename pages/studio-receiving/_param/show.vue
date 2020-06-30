@@ -1,40 +1,42 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <form id="default_form" class="alternate" v-if="loaded">
-                <section id="top_content" class="table" v-if="loaded">
-                    <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
-                    <div class="action_wrapper alternate">
-                        <h1 class="header_title">
-                            <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
-                        </h1>
-                    </div>
-                    <div class="filter_wrapper">
-                        <div class="filter_flex" id="filter">
-                            <div class="filter_label">ID: {{ res.po_id }}</div>
-                            <div class="filter_label margin">Supplier: {{ res.supplier.name }}</div>
-                            <div class="filter_label margin">Studio: {{ res.studio.name }}</div>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <form id="default_form" class="alternate">
+                    <section id="top_content" class="table">
+                        <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
+                        <div class="action_wrapper alternate">
+                            <h1 class="header_title">
+                                <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
+                            </h1>
                         </div>
-                    </div>
-                </section>
-                <section id="content" v-if="loaded">
-                    <div class="cms_table_input alternate">
-                        <div class="header_wrapper">
-                            <div class="input_header name">Product Name</div>
-                            <div class="input_header">SKU ID</div>
-                            <div class="input_header">Qty. Purchased</div>
-                            <div class="input_header">Sellable/Non-sellable</div>
-                            <div class="input_header">Qty. Received</div>
+                        <div class="filter_wrapper">
+                            <div class="filter_flex" id="filter">
+                                <div class="filter_label">ID: {{ res.po_id }}</div>
+                                <div class="filter_label margin">Supplier: {{ res.supplier.name }}</div>
+                                <div class="filter_label margin">Studio: {{ res.studio.name }}</div>
+                            </div>
                         </div>
-                        <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
-                            <purchase-order class="input_content_wrapper table" :type="'receive-show'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
+                    </section>
+                    <section id="content">
+                        <div class="cms_table_input alternate">
+                            <div class="header_wrapper">
+                                <div class="input_header name">Product Name</div>
+                                <div class="input_header">SKU ID</div>
+                                <div class="input_header">Qty. Purchased</div>
+                                <div class="input_header">Sellable/Non-sellable</div>
+                                <div class="input_header">Qty. Received</div>
+                            </div>
+                            <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
+                                <purchase-order class="input_content_wrapper table" :type="'receive-show'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
+                            </div>
                         </div>
-                    </div>
-                </section>
-            </form>
+                    </section>
+                </form>
+            </div>
+            <foot v-if="$store.state.isAuth" />
         </div>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -47,6 +49,8 @@
         },
         data () {
             return {
+                name: 'Studio Receiving',
+                access: true,
                 loaded: false,
                 lastRoute: '',
                 prevRoute: '',
@@ -151,7 +155,12 @@
         },
         async mounted () {
             const me = this
-            me.fetchData()
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

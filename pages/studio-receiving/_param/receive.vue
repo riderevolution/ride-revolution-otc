@@ -1,43 +1,45 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <form id="default_form" class="alternate" @submit.prevent="submissionSuccess()" v-if="loaded">
-                <section id="top_content" class="table" v-if="loaded">
-                    <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
-                    <div class="action_wrapper alternate">
-                        <h1 class="header_title">
-                            <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
-                        </h1>
-                        <div class="action_buttons">
-                            <button type="submit" name="submit" class="action_success_btn alternate margin">Receive</button>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <form id="default_form" class="alternate" @submit.prevent="submissionSuccess()" v-if="loaded">
+                    <section id="top_content" class="table" v-if="loaded">
+                        <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
+                        <div class="action_wrapper alternate">
+                            <h1 class="header_title">
+                                <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
+                            </h1>
+                            <div class="action_buttons">
+                                <button type="submit" name="submit" class="action_success_btn alternate margin">Receive</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="filter_wrapper">
-                        <div class="filter_flex" id="filter">
-                            <div class="filter_label">ID: {{ res.po_id }}</div>
-                            <div class="filter_label margin">Supplier: {{ res.supplier.name }}</div>
-                            <div class="filter_label margin">Studio: {{ res.studio.name }}</div>
+                        <div class="filter_wrapper">
+                            <div class="filter_flex" id="filter">
+                                <div class="filter_label">ID: {{ res.po_id }}</div>
+                                <div class="filter_label margin">Supplier: {{ res.supplier.name }}</div>
+                                <div class="filter_label margin">Studio: {{ res.studio.name }}</div>
+                            </div>
                         </div>
-                    </div>
-                </section>
-                <section id="content" v-if="loaded">
-                    <div class="cms_table_input alternate">
-                        <div class="header_wrapper">
-                            <div class="input_header name">Product Name</div>
-                            <div class="input_header">SKU ID</div>
-                            <div class="input_header">Qty. Purchased</div>
-                            <div class="input_header">Sellable/Non-sellable</div>
-                            <div class="input_header">Qty. Received</div>
+                    </section>
+                    <section id="content" v-if="loaded">
+                        <div class="cms_table_input alternate">
+                            <div class="header_wrapper">
+                                <div class="input_header name">Product Name</div>
+                                <div class="input_header">SKU ID</div>
+                                <div class="input_header">Qty. Purchased</div>
+                                <div class="input_header">Sellable/Non-sellable</div>
+                                <div class="input_header">Qty. Received</div>
+                            </div>
+                            <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
+                                <purchase-order class="input_content_wrapper table" :type="'receive'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
+                            </div>
                         </div>
-                        <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
-                            <purchase-order class="input_content_wrapper table" :type="'receive'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
-                        </div>
-                    </div>
-                </section>
-            </form>
+                    </section>
+                </form>
+            </div>
+            <foot v-if="$store.state.isAuth" />
         </div>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -50,6 +52,8 @@
         },
         data () {
             return {
+                name: 'Studio Receiving',
+                access: true,
                 loaded: false,
                 lastRoute: '',
                 prevRoute: '',
@@ -70,30 +74,43 @@
         },
         filters: {
             properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                let newValue = value.split('The ')[1].split(' field')[0].split('.')
                 if (newValue.length > 1) {
-                    let nextValue = newValue[0].split('_')
-                    if (nextValue.length > 1) {
-                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                    } else {
-                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                    newValue = newValue[1].split('[]')
+                    if (newValue.length > 1) {
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
                     }
                 } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
                     if (newValue.length > 1) {
-                        let firstValue = ''
-                        let lastValue = ''
-                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
-                        for (let i = 1; i < newValue.length; i++) {
-                            if (newValue[i] != 'id') {
-                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                            }
-                        }
-                        newValue = firstValue + ' ' + lastValue
                     } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        newValue = value.split('The ')[1].split(' field')[0].split('_')
+                        if (newValue.length > 1) {
+                            let firstValue = ''
+                            let lastValue = ''
+                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                            }
+                            for (let i = 1; i < newValue.length; i++) {
+                                if (newValue[i] != 'id') {
+                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                                }
+                            }
+                            newValue = firstValue + ' ' + lastValue
+                        } else {
+                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        }
                     }
                 }
                 let message = value.split('The ')[1].split(' field')
@@ -101,7 +118,7 @@
                     message = message[1]
                     return `The ${newValue} field${message}`
                 } else {
-					if (message[0].split('file').length > 1) {
+                    if (message[0].split('file').length > 1) {
                         message = message[0].split('file')[1]
                         return `The ${newValue} field${message}`
                     } else {
@@ -192,7 +209,12 @@
         },
         async mounted () {
             const me = this
-            me.fetchData()
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

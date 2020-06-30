@@ -99,6 +99,8 @@
         },
         data () {
             return {
+                name: 'Summary of Instructor Subbing per Period',
+                access: true,
                 loaded: false,
                 id: 0,
                 type: 0,
@@ -177,8 +179,13 @@
         },
         async mounted () {
             const me = this
-            me.fetchData(1)
-            me.fetchTypes()
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData(1)
+                me.fetchTypes()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

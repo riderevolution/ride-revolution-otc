@@ -1,7 +1,7 @@
 <template>
-    <div class="content">
-        <transition name="fade">
-            <div id="admin" class="cms_dashboard" v-if="loaded">
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
                     <nuxt-link :to="`/instructors/${lastRoute}/details`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Instructors</span></nuxt-link>
                     <div class="action_wrapper">
@@ -254,9 +254,9 @@
                     </form>
                 </section>
             </div>
-        </transition>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+            <foot v-if="$store.state.isAuth" />
+        </div>
+    </transition>
 </template>
 
 <script>
@@ -268,6 +268,8 @@
         data () {
             return {
                 tooltip: false,
+                name: 'Instructors',
+                access: true,
                 loaded: false,
                 error: false,
                 previewImage: false,
@@ -311,30 +313,43 @@
         },
         filters: {
             properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                let newValue = value.split('The ')[1].split(' field')[0].split('.')
                 if (newValue.length > 1) {
-                    let nextValue = newValue[0].split('_')
-                    if (nextValue.length > 1) {
-                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                    } else {
-                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                    newValue = newValue[1].split('[]')
+                    if (newValue.length > 1) {
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
                     }
                 } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
                     if (newValue.length > 1) {
-                        let firstValue = ''
-                        let lastValue = ''
-                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
-                        for (let i = 1; i < newValue.length; i++) {
-                            if (newValue[i] != 'id') {
-                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                            }
-                        }
-                        newValue = firstValue + ' ' + lastValue
                     } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        newValue = value.split('The ')[1].split(' field')[0].split('_')
+                        if (newValue.length > 1) {
+                            let firstValue = ''
+                            let lastValue = ''
+                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                            }
+                            for (let i = 1; i < newValue.length; i++) {
+                                if (newValue[i] != 'id') {
+                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                                }
+                            }
+                            newValue = firstValue + ' ' + lastValue
+                        } else {
+                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        }
                     }
                 }
                 let message = value.split('The ')[1].split(' field')
@@ -342,7 +357,7 @@
                     message = message[1]
                     return `The ${newValue} field${message}`
                 } else {
-					if (message[0].split('file').length > 1) {
+                    if (message[0].split('file').length > 1) {
                         message = message[0].split('file')[1]
                         return `The ${newValue} field${message}`
                     } else {
@@ -442,56 +457,58 @@
         },
         async mounted () {
             const me = this
-            me.loader(true)
-            me.$axios.get(`api/instructors/${me.$route.params.param}`).then(res => {
-                setTimeout( () => {
-                    me.loaded = true
-                    me.previewImage = true
-                    me.res = res.data.user
-                    me.$axios.get('api/world/countries').then(res => {
-                        if (res.data) {
-                            me.pa_countries = res.data.countries
-                            me.ba_countries = res.data.countries
-                            if (me.res.instructor_details.pa_country_id != null) {
-                                me.$axios.get(`api/world/states?country_id=${me.res.instructor_details.pa_country_id}`).then(res => {
-                                    me.pa_states = res.data.states
-                                    me.form.pa_country = me.res.instructor_details.pa_country_id
-                                    me.form.pa_state = me.res.instructor_details.pa_state_id
-                                })
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.loader(true)
+                me.$axios.get(`api/instructors/${me.$route.params.param}`).then(res => {
+                    setTimeout( () => {
+                        me.loaded = true
+                        me.previewImage = true
+                        me.res = res.data.user
+                        me.$axios.get('api/world/countries').then(res => {
+                            if (res.data) {
+                                me.pa_countries = res.data.countries
+                                me.ba_countries = res.data.countries
+                                if (me.res.instructor_details.pa_country_id != null) {
+                                    me.$axios.get(`api/world/states?country_id=${me.res.instructor_details.pa_country_id}`).then(res => {
+                                        me.pa_states = res.data.states
+                                        me.form.pa_country = me.res.instructor_details.pa_country_id
+                                        me.form.pa_state = me.res.instructor_details.pa_state_id
+                                    })
+                                }
+                                if (me.res.instructor_details.ba_country_id != null) {
+                                    me.$axios.get(`api/world/states?country_id=${me.res.instructor_details.ba_country_id}`).then(res => {
+                                        me.ba_states = res.data.states
+                                        me.form.ba_country = me.res.instructor_details.ba_country_id
+                                        me.form.ba_state = me.res.instructor_details.ba_state_id
+                                    })
+                                }
                             }
-                            if (me.res.instructor_details.ba_country_id != null) {
-                                me.$axios.get(`api/world/states?country_id=${me.res.instructor_details.ba_country_id}`).then(res => {
-                                    me.ba_states = res.data.states
-                                    me.form.ba_country = me.res.instructor_details.ba_country_id
-                                    me.form.ba_state = me.res.instructor_details.ba_state_id
-                                })
-                            }
+                        })
+
+                        me.form.pa_address = res.data.user.instructor_details.pa_address
+                        me.form.pa_city = res.data.user.instructor_details.pa_city
+                        me.form.pa_zip_code = res.data.user.instructor_details.pa_zip_code
+                        me.form.ba_address = res.data.user.instructor_details.ba_address
+                        me.form.ba_city = res.data.user.instructor_details.ba_city
+                        me.form.ba_zip_code = res.data.user.instructor_details.ba_zip_code
+
+                    }, 500)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                        if (me.res.instructor_details.images.length > 0) {
+                            me.hasImage = true
+                            document.getElementById('preview_image').src = me.res.instructor_details.images[0].path
                         }
-                    })
-
-                    me.form.pa_address = res.data.user.instructor_details.pa_address
-                    me.form.pa_city = res.data.user.instructor_details.pa_city
-                    me.form.pa_zip_code = res.data.user.instructor_details.pa_zip_code
-                    me.form.ba_address = res.data.user.instructor_details.ba_address
-                    me.form.ba_city = res.data.user.instructor_details.ba_city
-                    me.form.ba_zip_code = res.data.user.instructor_details.ba_zip_code
-
-                }, 500)
-            }).catch(err => {
-                me.$store.state.errorList = err.response.data.errors
-                me.$store.state.errorStatus = true
-            }).then(() => {
-                setTimeout( () => {
-                    me.loader(false)
-                    if (me.res.instructor_details.images.length > 0) {
-                        me.hasImage = true
-                        document.getElementById('preview_image').src = me.res.instructor_details.images[0].path
-                    }
-                }, 500)
-            })
-            // me.$axios.get('api/studios?enabled=1').then(res => {
-            //     me.studios = res.data.studios
-            // })
+                    }, 500)
+                })
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 2]
             me.prevRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
         }

@@ -1,77 +1,78 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table" v-if="loaded">
-                <div class="action_wrapper">
-                    <h1 class="header_title">Inventory</h1>
-                    <div class="actions">
-                        <div class="total">Total: {{ totalItems((res.productVariants) ? res.productVariants.total : (res.promos ? res.promos.total : res.giftCards.total )) }}</div>
-                        <div class="toggler">
-                            <div :class="`status ${(status == 1) ? 'active' : ''}`" @click="toggleOnOff(1)">Activated</div>
-                            <div :class="`status ${(status == 0) ? 'active' : ''}`" @click="toggleOnOff(0)">Deactivated</div>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <section id="top_content" class="table">
+                    <div class="action_wrapper">
+                        <h1 class="header_title">Inventory</h1>
+                        <div class="actions">
+                            <div class="total">Total: {{ totalItems((res.productVariants) ? res.productVariants.total : (res.promos ? res.promos.total : res.giftCards.total )) }}</div>
+                            <div class="toggler">
+                                <div :class="`status ${(status == 1) ? 'active' : ''}`" @click="toggleOnOff(1)">Activated</div>
+                                <div :class="`status ${(status == 0) ? 'active' : ''}`" @click="toggleOnOff(0)">Deactivated</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="action_buttons" v-if="package_status == 1">
-                    <nuxt-link :to="`${$route.path}/class-packages/create`" class="action_btn margin"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Physical Count</nuxt-link>
-                </div>
-                <div class="action_buttons" v-if="package_status == 3">
-                    <a href="javascript:void(0)" class="action_btn alternate" @click="$store.state.importStatus = true">Import Gift Cards</a>
-                </div>
-                <div class="filter_wrapper">
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)" v-if="package_status == 1">
-                        <div class="form_group">
-                            <label for="category_id">Category</label>
-                            <select class="default_select alternate" name="category_id">
-                                <option value="" selected>All Categories</option>
-                                <option :value="category.id" v-for="(category, key) in categories" :key="key">{{ category.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="supplier_id">Supplier</label>
-                            <select class="default_select alternate" name="supplier_id">
-                                <option value="" selected>All Suppliers</option>
-                                <option :value="supplier.id" v-for="(supplier, key) in suppliers" :key="key">{{ supplier.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="studio_id">Studio</label>
-                            <select class="default_select alternate" id="studio_select" name="studio_id">
-                                <option value="" selected>All Studios</option>
-                                <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="q">Find a product</label>
-                            <input type="text" name="q" autocomplete="off" placeholder="Search for a product" class="default_text search_alternate">
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)" v-if="package_status == 2">
-                        <div class="form_group">
-                            <label for="q">Find a Promo</label>
-                            <input type="text" name="q" autocomplete="off" placeholder="Search for a promo" class="default_text search_alternate">
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                    <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)" v-if="package_status == 3">
-                        <div class="form_group">
-                            <label for="class_package_sku_id">Value</label>
-                            <select class="default_select alternate" name="class_package_sku_id">
-                                <option value="" selected>All Values</option>
-                                <option :value="classPackage.sku_id" v-for="(classPackage, key) in classPackages" :key="key">{{ classPackage.name }}</option>
-                            </select>
-                        </div>
-                        <div class="form_group margin">
-                            <label for="q">Find a gift card</label>
-                            <input type="text" name="q" autocomplete="off" placeholder="Search for a gift card" class="default_text search_alternate">
-                        </div>
-                        <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                    </form>
-                </div>
-            </section>
-            <section id="content" v-if="loaded">
-                <!-- <div class="cms_table_toggler">
+                    <div class="action_buttons" v-if="package_status == 1">
+                        <nuxt-link :to="`${$route.path}/class-packages/create`" class="action_btn margin"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Physical Count</nuxt-link>
+                    </div>
+                    <div class="action_buttons" v-if="package_status == 3">
+                        <a href="javascript:void(0)" class="action_btn alternate" @click="$store.state.importStatus = true">Import Gift Cards</a>
+                    </div>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)" v-if="package_status == 1">
+                            <div class="form_group">
+                                <label for="category_id">Category</label>
+                                <select class="default_select alternate" name="category_id">
+                                    <option value="" selected>All Categories</option>
+                                    <option :value="category.id" v-for="(category, key) in categories" :key="key">{{ category.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="supplier_id">Supplier</label>
+                                <select class="default_select alternate" name="supplier_id">
+                                    <option value="" selected>All Suppliers</option>
+                                    <option :value="supplier.id" v-for="(supplier, key) in suppliers" :key="key">{{ supplier.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" id="studio_select" name="studio_id">
+                                    <option value="" selected>All Studios</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="q">Find a product</label>
+                                <input type="text" name="q" autocomplete="off" placeholder="Search for a product" class="default_text search_alternate">
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
+                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)" v-if="package_status == 2">
+                            <div class="form_group">
+                                <label for="q">Find a Promo</label>
+                                <input type="text" name="q" autocomplete="off" placeholder="Search for a promo" class="default_text search_alternate">
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
+                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)" v-if="package_status == 3">
+                            <div class="form_group">
+                                <label for="class_package_sku_id">Value</label>
+                                <select class="default_select alternate" name="class_package_sku_id">
+                                    <option value="" selected>All Values</option>
+                                    <option :value="classPackage.sku_id" v-for="(classPackage, key) in classPackages" :key="key">{{ classPackage.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="q">Find a gift card</label>
+                                <input type="text" name="q" autocomplete="off" placeholder="Search for a gift card" class="default_text search_alternate">
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
+                    </div>
+                </section>
+                <section id="content">
+                    <!-- <div class="cms_table_toggler">
                     <div :class="`status ${(package_status == 1) ? 'active' : ''}`" @click="togglePackages(1)">Products</div>
                     <div :class="`status ${(package_status == 2) ? 'active' : ''}`" @click="togglePackages(2)">Promotions</div>
                     <div :class="`status ${(package_status == 3) ? 'active' : ''}`" @click="togglePackages(3)">Gift Cards</div>
@@ -193,6 +194,7 @@
             <import v-if="$store.state.importStatus" :status="status" />
         </transition>
     </div>
+    </transition>
 </template>
 
 <script>
@@ -210,6 +212,7 @@
         data () {
             return {
                 name: 'Inventory',
+                access: true,
                 loaded: false,
                 lastRoute: '',
                 rowCount: 0,
@@ -339,12 +342,16 @@
                         })
                         break
                 }
-
             }
         },
         async mounted () {
             const me = this
-            me.fetchData(1, 1)
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData(1, 1)
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

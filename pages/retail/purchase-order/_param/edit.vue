@@ -1,72 +1,74 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <form id="default_form" class="alternate" @submit.prevent="submissionSuccess()" v-if="loaded">
-                <section id="top_content" class="table" v-if="loaded">
-                    <nuxt-link :to="`/${prevRoute}/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
-                    <div class="action_wrapper alternate">
-                        <h1 class="header_title">
-                            <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
-                            <span class="header_id">ID: {{ res.po_id }}</span>
-                            <div class="form_check alternate">
-                                <input type="checkbox" id="validate" name="paid" class="action_check" :checked="(res.paid == 1)" @change="tickPaid(res.paid)">
-                                <label for="validate">Paid</label>
-                            </div>
-                        </h1>
-                        <div class="action_buttons">
-                            <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/show`" class="action_cancel_btn">Cancel</nuxt-link>
-                            <button type="submit" name="submit" class="action_success_btn alternate margin">Update P.O.</button>
-                        </div>
-                    </div>
-                    <div class="filter_wrapper">
-                        <div class="filter_flex" id="filter">
-                            <div class="filter_label">Supplier: {{ res.supplier.name }}</div>
-                            <div class="filter_label margin">Studio: {{ res.studio.name }}</div>
-                            <div class="filter_label margin">Requisition Date: {{ formatDate(res.created_at) }}</div>
-                        </div>
-                    </div>
-                </section>
-                <section id="content" v-if="loaded">
-                    <div class="cms_table_input alternate">
-                        <div class="header_wrapper">
-                            <div class="input_header name">Product Name</div>
-                            <div class="input_header">SKU ID</div>
-                            <div class="input_header">Sellable</div>
-                            <div class="input_header">Category</div>
-                            <div class="input_header">In Stock</div>
-                            <div class="input_header">Qty.</div>
-                            <div class="input_header">Unit Price</div>
-                            <!-- <div class="input_header">Shipping Cost</div> -->
-                            <!-- <div class="input_header">Additional Cost</div> -->
-                            <div class="input_header">Cost</div>
-                        </div>
-                        <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
-                            <purchase-order class="input_content_wrapper table" :type="'edit'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
-                            <div class="footer_wrapper">
-                                <div class="footer_form_group">
-                                    <label for="name">Shipping Cost:</label>
-                                    <div class="footer_input">
-                                        <input type="text" name="shipping" class="default_text" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" v-model="form.total_shipping">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(`shipping`)">{{ errors.first('shipping') | properFormat }}</span></transition>
-                                    </div>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <form id="default_form" class="alternate" @submit.prevent="submissionSuccess()" v-if="loaded">
+                    <section id="top_content" class="table" v-if="loaded">
+                        <nuxt-link :to="`/${prevRoute}/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
+                        <div class="action_wrapper alternate">
+                            <h1 class="header_title">
+                                <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
+                                <span class="header_id">ID: {{ res.po_id }}</span>
+                                <div class="form_check alternate">
+                                    <input type="checkbox" id="validate" name="paid" class="action_check" :checked="(res.paid == 1)" @change="tickPaid(res.paid)">
+                                    <label for="validate">Paid</label>
                                 </div>
-                                <!-- <div class="footer_cost">Total Additional Cost: PHP {{ computeAdditional }}</div> -->
-                                <div class="footer_cost">Total Shipping Cost: PHP {{ computeShipping }}</div>
-                                <div class="footer_total_cost">Total: <span class="total_cost">PHP {{ getAllCost }}</span></div>
+                            </h1>
+                            <div class="action_buttons">
+                                <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/show`" class="action_cancel_btn">Cancel</nuxt-link>
+                                <button type="submit" name="submit" class="action_success_btn alternate margin">Update P.O.</button>
                             </div>
                         </div>
-                    </div>
-                </section>
-            </form>
+                        <div class="filter_wrapper">
+                            <div class="filter_flex" id="filter">
+                                <div class="filter_label">Supplier: {{ res.supplier.name }}</div>
+                                <div class="filter_label margin">Studio: {{ res.studio.name }}</div>
+                                <div class="filter_label margin">Requisition Date: {{ formatDate(res.created_at) }}</div>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="content" v-if="loaded">
+                        <div class="cms_table_input alternate">
+                            <div class="header_wrapper">
+                                <div class="input_header name">Product Name</div>
+                                <div class="input_header">SKU ID</div>
+                                <div class="input_header">Sellable</div>
+                                <div class="input_header">Category</div>
+                                <div class="input_header">In Stock</div>
+                                <div class="input_header">Qty.</div>
+                                <div class="input_header">Unit Price</div>
+                                <!-- <div class="input_header">Shipping Cost</div> -->
+                                <!-- <div class="input_header">Additional Cost</div> -->
+                                <div class="input_header">Cost</div>
+                            </div>
+                            <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
+                                <purchase-order class="input_content_wrapper table" :type="'edit'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
+                                <div class="footer_wrapper">
+                                    <div class="footer_form_group">
+                                        <label for="name">Shipping Cost:</label>
+                                        <div class="footer_input">
+                                            <input type="text" name="shipping" class="default_text" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" v-model="form.total_shipping">
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has(`shipping`)">{{ errors.first('shipping') | properFormat }}</span></transition>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="footer_cost">Total Additional Cost: PHP {{ computeAdditional }}</div> -->
+                                    <div class="footer_cost">Total Shipping Cost: PHP {{ computeShipping }}</div>
+                                    <div class="footer_total_cost">Total: <span class="total_cost">PHP {{ getAllCost }}</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+            </div>
+            <transition name="fade">
+                <prompt-validate v-if="$store.state.promptValidateStatus" :message="message" :category="'purchase-order'" />
+            </transition>
+            <transition name="fade">
+                <confirm-delete v-if="$store.state.deleteStatus" ref="delete" :url="`api/inventory/purchase-order-products`" />
+            </transition>
+            <foot v-if="$store.state.isAuth" />
         </div>
-        <transition name="fade">
-            <prompt-validate v-if="$store.state.promptValidateStatus" :message="message" :category="'purchase-order'" />
-        </transition>
-        <transition name="fade">
-            <confirm-delete v-if="$store.state.deleteStatus" ref="delete" :url="`api/inventory/purchase-order-products`" />
-        </transition>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -83,6 +85,8 @@
         },
         data () {
             return {
+                name: 'Purchase Order',
+                access: true,
                 loaded: false,
                 lastRoute: '',
                 prevRoute: '',
@@ -102,25 +106,58 @@
             }
         },
         filters: {
-            properFormat: function (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+            properFormat (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('.')
                 if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    newValue = newValue[1].split('[]')
                     if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        let lastValue = ''
-                        for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
-                        newValue = firstValue + ' ' + lastValue
+                    }
+                } else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                    if (newValue.length > 1) {
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
                     } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        newValue = value.split('The ')[1].split(' field')[0].split('_')
+                        if (newValue.length > 1) {
+                            let firstValue = ''
+                            let lastValue = ''
+                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                            }
+                            for (let i = 1; i < newValue.length; i++) {
+                                if (newValue[i] != 'id') {
+                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                                }
+                            }
+                            newValue = firstValue + ' ' + lastValue
+                        } else {
+                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        }
                     }
                 }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                    return `The ${newValue} field${message}`
+                } else {
+                    if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
+                }
             }
         },
         computed: {
@@ -253,7 +290,12 @@
         },
         async mounted () {
             const me = this
-            me.fetchData()
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)

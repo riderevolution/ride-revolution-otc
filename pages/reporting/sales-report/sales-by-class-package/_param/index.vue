@@ -77,6 +77,8 @@
         },
         data () {
             return {
+                name: 'Sales by Class Package',
+                access: true,
                 loaded: false,
                 rowCount: 0,
                 status: 'all',
@@ -95,6 +97,10 @@
             fetchData (value) {
                 const me = this
                 me.loader(true)
+                me.form.start_date = me.$route.query.start_date
+                me.form.end_date = me.$route.query.end_date
+                me.form.slug = me.$route.query.slug
+                me.form.id = me.$route.query.id
                 let formData = new FormData()
                 formData.append('slug', me.form.slug)
                 formData.append('id', me.form.id)
@@ -105,7 +111,6 @@
                 me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            console.log(res.data);
                             me.res = res.data.result
                             me.total = res.data.total
                             me.package = res.data.package
@@ -123,15 +128,16 @@
                 })
             }
         },
-        mounted () {
+        async mounted () {
             const me = this
-            setTimeout( () => {
-                me.form.start_date = me.$route.query.start_date
-                me.form.end_date = me.$route.query.end_date
-                me.form.slug = me.$route.query.slug
-                me.form.id = me.$route.query.id
+            await me.checkPagePermission(me)
+            if (me.access) {
                 me.status = me.$route.query.status
                 me.fetchData(me.status)
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
+            setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 500)
         }

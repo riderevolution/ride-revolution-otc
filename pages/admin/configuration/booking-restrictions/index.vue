@@ -97,6 +97,8 @@
         },
         data () {
             return {
+                name: 'Configuration',
+                access: true,
                 loaded: false,
                 form: {
                     booking: {
@@ -300,31 +302,36 @@
                 }
             },
         },
-        mounted () {
+        async mounted () {
             const me = this
-            me.loader(true)
-            me.$axios.get('api/booking-restrictions/1').then(res => {
-                if (res.data) {
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.loader(true)
+                me.$axios.get('api/booking-restrictions/1').then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.form.booking.hour = res.data.booking_restriction.allowed_time_booking.split('+')[1].split(':')[0]
+                            me.form.booking.mins = res.data.booking_restriction.allowed_time_booking.split('+')[1].split(':')[1]
+
+                            me.form.cancel.hour = res.data.booking_restriction.allowed_time_cancel.split('+')[1].split(':')[0]
+                            me.form.cancel.mins = res.data.booking_restriction.allowed_time_cancel.split('+')[1].split(':')[1]
+
+                            me.form.noShow.hour = res.data.booking_restriction.allowed_time_no_show.split('+')[1].split(':')[0]
+                            me.form.noShow.mins = res.data.booking_restriction.allowed_time_no_show.split('+')[1].split(':')[1]
+                            me.loaded = true
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
                     setTimeout( () => {
-                        me.form.booking.hour = res.data.booking_restriction.allowed_time_booking.split('+')[1].split(':')[0]
-                        me.form.booking.mins = res.data.booking_restriction.allowed_time_booking.split('+')[1].split(':')[1]
-
-                        me.form.cancel.hour = res.data.booking_restriction.allowed_time_cancel.split('+')[1].split(':')[0]
-                        me.form.cancel.mins = res.data.booking_restriction.allowed_time_cancel.split('+')[1].split(':')[1]
-
-                        me.form.noShow.hour = res.data.booking_restriction.allowed_time_no_show.split('+')[1].split(':')[0]
-                        me.form.noShow.mins = res.data.booking_restriction.allowed_time_no_show.split('+')[1].split(':')[1]
-                        me.loaded = true
+                        me.loader(false)
                     }, 500)
-                }
-            }).catch(err => {
-                me.$store.state.errorList = err.response.data.errors
-                me.$store.state.errorStatus = true
-            }).then(() => {
-                setTimeout( () => {
-                    me.loader(false)
-                }, 500)
-            })
+                })
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
         }
     }
 </script>

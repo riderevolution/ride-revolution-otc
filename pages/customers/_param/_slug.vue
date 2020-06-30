@@ -1,51 +1,53 @@
 <template>
-    <div class="content">
-        <div id="admin" :class="`cms_dashboard user ${($route.params.slug == 'transactions' || $route.params.slug == 'class-history' || $route.params.slug == 'upcoming-classes') ? 'alt' : ($route.params.slug == 'details' ? 'alt_2' : ($route.params.slug == 'packages' ? 'alt_3' : ($route.params.slug == 'badges') ? 'alt_4' : ''))}`" v-if="loaded">
-            <section id="top_content">
-                <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
-                <div class="user_info">
-                    <img class="main" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images[0].path_resized != null" />
-                    <div class="user_image_default" v-else>
-                        <div class="overlay">
-                            {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" :class="`cms_dashboard user ${($route.params.slug == 'transactions' || $route.params.slug == 'class-history' || $route.params.slug == 'upcoming-classes') ? 'alt' : ($route.params.slug == 'details' ? 'alt_2' : ($route.params.slug == 'packages' ? 'alt_3' : ($route.params.slug == 'badges') ? 'alt_4' : ''))}`" v-if="loaded">
+                <section id="top_content">
+                    <nuxt-link :to="`/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
+                    <div class="user_info">
+                        <img class="main" :src="customer.customer_details.images[0].path_resized" v-if="customer.customer_details.images[0].path_resized != null" />
+                        <div class="user_image_default" v-else>
+                            <div class="overlay">
+                                {{ customer.first_name.charAt(0) }}{{ customer.last_name.charAt(0) }}
+                            </div>
+                        </div>
+                        <div class="user_details">
+                            <h1 class="user_name">
+                                {{ customer.first_name }} {{ customer.last_name }}
+                                <span class="icon">
+                                    <img src="/icons/first-timer-package-icon.png" v-if="customer.has_first_timer" />
+                                    <img :src="customer.customer_details.customer_type.images[0].path_resized" v-if="customer.customer_details.customer_type.images[0].path_resized != null" />
+                                </span>
+                            </h1>
+                            <div class="user_contact">
+                                <a :href="`tel:${customer.customer_details.co_contact_number}`" class="number">{{ customer.customer_details.co_contact_number }}</a>
+                                <a :href="`mailto:${customer.email}`" class="email">{{ customer.email }}</a>
+                            </div>
+                            <div class="user_summary">
+                                <div class="summary">Completed Rides: {{ customer.completed_rides }}</div>
+                                <div class="summary">Store Credits: {{ (customer.store_credits) ? totalItems(customer.store_credits.amount) : 0 }}</div>
+                                <div class="summary pending">Pending Payment: Php {{ totalCount(pendingPayment) }}</div>
+                            </div>
+                            <div class="user_action">
+                                <div class="action_user_btn" @click="toggleQuickSale('credit')">Buy Credits</div>
+                                <div class="action_user_btn margin" @click="toggleQuickSale('product')">Buy Products</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="user_details">
-                        <h1 class="user_name">
-                            {{ customer.first_name }} {{ customer.last_name }}
-                            <span class="icon">
-                                <img src="/icons/first-timer-package-icon.png" v-if="customer.has_first_timer" />
-                                <img :src="customer.customer_details.customer_type.images[0].path_resized" v-if="customer.customer_details.customer_type.images[0].path_resized != null" />
-                            </span>
-                        </h1>
-                        <div class="user_contact">
-                            <a :href="`tel:${customer.customer_details.co_contact_number}`" class="number">{{ customer.customer_details.co_contact_number }}</a>
-                            <a :href="`mailto:${customer.email}`" class="email">{{ customer.email }}</a>
-                        </div>
-                        <div class="user_summary">
-                            <div class="summary">Completed Rides: {{ customer.completed_rides }}</div>
-                            <div class="summary">Store Credits: {{ (customer.store_credits) ? totalItems(customer.store_credits.amount) : 0 }}</div>
-                            <div class="summary pending">Pending Payment: Php {{ totalCount(pendingPayment) }}</div>
-                        </div>
-                        <div class="user_action">
-                            <div class="action_user_btn" @click="toggleQuickSale('credit')">Buy Credits</div>
-                            <div class="action_user_btn margin" @click="toggleQuickSale('product')">Buy Products</div>
-                        </div>
+                    <div class="user_tabs">
+                        <nuxt-link :to="tab.link" class="tab_title" v-for="(tab, key) in tabs" :key="key">{{ tab.name }}</nuxt-link>
                     </div>
-                </div>
-                <div class="user_tabs">
-                    <nuxt-link :to="tab.link" class="tab_title" v-for="(tab, key) in tabs" :key="key">{{ tab.name }}</nuxt-link>
-                </div>
-            </section>
-            <section id="content">
-                <customer-content :value="customer" :type="$route.params.slug" />
-            </section>
-            <transition name="fade">
-                <upcoming-classes-layout :studio="layout.studio" :schedule="layout.schedule" v-if="$store.state.upcomingClassesLayoutStatus" />
-            </transition>
+                </section>
+                <section id="content">
+                    <customer-content :value="customer" :type="$route.params.slug" />
+                </section>
+                <transition name="fade">
+                    <upcoming-classes-layout :studio="layout.studio" :schedule="layout.schedule" v-if="$store.state.upcomingClassesLayoutStatus" />
+                </transition>
+            </div>
+            <foot v-if="$store.state.isAuth" />
         </div>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -64,6 +66,8 @@
                     studio: null,
                     schedule: null
                 },
+                name: 'Customers',
+                access: true,
                 loaded: false,
                 lastRoute: '',
                 customer: [],
@@ -130,9 +134,14 @@
                 document.body.classList.add('no_scroll')
             }
         },
-        mounted () {
+        async mounted () {
             const me = this
-            me.fetchData()
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchData()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
         },
     }

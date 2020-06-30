@@ -1,58 +1,60 @@
 <template>
-    <div class="content">
-        <div id="admin" class="cms_dashboard">
-            <section id="top_content" class="table" v-if="loaded">
-                <nuxt-link :to="`/${prevRoute}/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
-                <div class="action_wrapper alternate">
-                    <h1 class="header_title">
-                        <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
-                        <span class="header_id">ID: {{ res.po_id }}</span>
-                        <span :class="`${(res.paid == 1 || res.paid == 2) ? 'green' : 'red'}`">{{ (res.paid == 1) ? 'Paid' : 'Unpaid' }}</span>
-                    </h1>
-                    <div class="action_buttons">
-                        <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/duplicate`" class="action_btn">Duplicate P.O.</nuxt-link>
-                        <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/edit`" class="action_btn alternate margin" v-if="res.paid != 2">Edit P.O.</nuxt-link>
-                        <div class="action_cancel_btn margin" @click="toggleDelete($route.params.param)" v-if="res.paid == 0">Delete P.O.</div>
-                    </div>
-                </div>
-                <div class="filter_wrapper">
-                    <div class="filter_flex" id="filter">
-                        <div class="filter_label">Supplier: {{ res.supplier.name }}</div>
-                        <div class="filter_label margin">Studio: {{ res.studio.name }}</div>
-                        <div class="filter_label margin">Requisition Date: {{ formatDate(res.created_at) }}</div>
-                    </div>
-                </div>
-            </section>
-            <section id="content" v-if="loaded">
-                <div class="cms_table_input alternate">
-                    <div class="header_wrapper">
-                        <div class="input_header name">Product Name</div>
-                        <div class="input_header">SKU ID</div>
-                        <div class="input_header">Sellable</div>
-                        <div class="input_header">Category</div>
-                        <div class="input_header">In Stock</div>
-                        <div class="input_header">Qty.</div>
-                        <div class="input_header">Unit Price</div>
-                        <!-- <div class="input_header">Shipping Cost</div> -->
-                        <!-- <div class="input_header">Additional Cost</div> -->
-                        <div class="input_header">Cost</div>
-                    </div>
-                    <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
-                        <purchase-order class="input_content_wrapper table" :type="'show'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
-                        <div class="footer_wrapper">
-                            <!-- <div class="footer_cost">Total Additional Cost: PHP {{ totalCount(res.total_additional_cost) }}</div> -->
-                            <div class="footer_cost">Total Shipping Cost: PHP {{ totalCount(res.total_shipping_cost) }}</div>
-                            <div class="footer_total_cost">Total: <span class="total_cost">PHP {{ totalCount(res.total_cost) }}</span></div>
+    <transition name="fade">
+        <div class="content" v-if="loaded">
+            <div id="admin" class="cms_dashboard">
+                <section id="top_content" class="table">
+                    <nuxt-link :to="`/${prevRoute}/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>
+                    <div class="action_wrapper alternate">
+                        <h1 class="header_title">
+                            <div class="uppercase">P.O. {{ res.purchase_order_number }}</div>
+                            <span class="header_id">ID: {{ res.po_id }}</span>
+                            <span :class="`${(res.paid == 1 || res.paid == 2) ? 'green' : 'red'}`">{{ (res.paid == 1) ? 'Paid' : 'Unpaid' }}</span>
+                        </h1>
+                        <div class="action_buttons">
+                            <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/duplicate`" class="action_btn">Duplicate P.O.</nuxt-link>
+                            <nuxt-link :to="`/${prevRoute}/${lastRoute}/${res.id}/edit`" class="action_btn alternate margin" v-if="res.paid != 2">Edit P.O.</nuxt-link>
+                            <div class="action_cancel_btn margin" @click="toggleDelete($route.params.param)" v-if="res.paid == 0">Delete P.O.</div>
                         </div>
                     </div>
-                </div>
-            </section>
+                    <div class="filter_wrapper">
+                        <div class="filter_flex" id="filter">
+                            <div class="filter_label">Supplier: {{ res.supplier.name }}</div>
+                            <div class="filter_label margin">Studio: {{ res.studio.name }}</div>
+                            <div class="filter_label margin">Requisition Date: {{ formatDate(res.created_at) }}</div>
+                        </div>
+                    </div>
+                </section>
+                <section id="content">
+                    <div class="cms_table_input alternate">
+                        <div class="header_wrapper">
+                            <div class="input_header name">Product Name</div>
+                            <div class="input_header">SKU ID</div>
+                            <div class="input_header">Sellable</div>
+                            <div class="input_header">Category</div>
+                            <div class="input_header">In Stock</div>
+                            <div class="input_header">Qty.</div>
+                            <div class="input_header">Unit Price</div>
+                            <!-- <div class="input_header">Shipping Cost</div> -->
+                            <!-- <div class="input_header">Additional Cost</div> -->
+                            <div class="input_header">Cost</div>
+                        </div>
+                        <div class="content_wrapper" v-if="res.purchase_order_products.length > 0">
+                            <purchase-order class="input_content_wrapper table" :type="'show'" :unique="key" :value="data" v-for="(data, key) in res.purchase_order_products" :key="key" />
+                            <div class="footer_wrapper">
+                                <!-- <div class="footer_cost">Total Additional Cost: PHP {{ totalCount(res.total_additional_cost) }}</div> -->
+                                <div class="footer_cost">Total Shipping Cost: PHP {{ totalCount(res.total_shipping_cost) }}</div>
+                                <div class="footer_total_cost">Total: <span class="total_cost">PHP {{ totalCount(res.total_cost) }}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <transition name="fade">
+                <confirm-delete v-if="$store.state.deleteStatus" ref="delete" :url="`api/inventory/purchase-orders`" />
+            </transition>
+            <foot v-if="$store.state.isAuth" />
         </div>
-        <transition name="fade">
-            <confirm-delete v-if="$store.state.deleteStatus" ref="delete" :url="`api/inventory/purchase-orders`" />
-        </transition>
-        <foot v-if="$store.state.isAuth" />
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -67,6 +69,8 @@
         },
         data () {
             return {
+                name: 'Purchase Order',
+                access: true,
                 loaded: false,
                 lastRoute: '',
                 prevRoute: '',
@@ -134,7 +138,12 @@
         },
         async mounted () {
             const me = this
-            me.fetchShowData()
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.fetchShowData()
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)
