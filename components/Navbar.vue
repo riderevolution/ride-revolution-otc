@@ -10,11 +10,11 @@
             </nuxt-link>
             <transition name="slide_alt">
                 <ul class="nav_list" v-if="!hasToggleThirdLevel">
-                    <li class="item_wrapper" v-for="(navItem, parent_key) in navItems" :key="parent_key">
+                    <li class="item_wrapper" v-for="(navItem, parent_key) in navItems" :key="parent_key" v-if="navItem.access">
                         <nuxt-link :class="`nav_item ${navItem.class} ${(navItem.subItems) ? 'nav_parent' : ''}`" :to="navItem.link" v-if="navItem.hasLink" @click.native.self="resetToggle()">{{ navItem.title }}</nuxt-link>
                         <nuxt-link :event="''" :class="`nav_item ${navItem.class} ${(navItem.subItems) ? 'nav_parent' : ''}`" :to="navItem.link" v-else @click.native.self="toggleChild($event)">{{ navItem.title }}</nuxt-link>
                         <div class="sub_wrapper" v-if="navItem.subItems">
-                            <ul class="sub_nav_list" v-for="(subItem, sub_key) in navItem.subItems" :key="sub_key">
+                            <ul class="sub_nav_list" v-for="(subItem, sub_key) in navItem.subItems" :key="sub_key" v-if="subItem.access">
                                 <li :class="`sub_item_wrapper ${(subItem.hasChild) ? 'child' : ''}`">
                                     <nuxt-link class="sub_nav_item" :to="subItem.link" @click.native.self="resetToggle()" v-if="!subItem.hasChild">{{ subItem.title }}</nuxt-link>
                                     <nuxt-link class="sub_nav_item" :event="''" :to="subItem.link" @click.native.self="toggleSubChild(subItem)" v-else>{{ subItem.title }}</nuxt-link>
@@ -26,7 +26,7 @@
             </transition>
             <div class="nav_back" v-if="hasToggleThirdLevel" @click="back()">Back</div>
             <ul class="nav_list alt" v-if="hasToggleThirdLevel">
-                <li class="child_item_wrapper" v-for="(navItem, child_key) in thirdNavItems" :key="child_key">
+                <li class="child_item_wrapper" v-for="(navItem, child_key) in thirdNavItems" :key="child_key" v-if="navItem.access">
                     <nuxt-link class="nav_child_item" :to="navItem.link" @click.native.self="resetToggle()">{{ navItem.title }}</nuxt-link>
                 </li>
             </ul>
@@ -356,7 +356,7 @@
         mounted () {
             const me = this
             me.checkHeightViewport()
-            // me.getNavItems(this)
+            me.getNavItems(this)
         },
         beforeMount () {
             window.addEventListener('load', this.checkHeightViewport)
