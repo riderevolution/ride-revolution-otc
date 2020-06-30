@@ -129,9 +129,14 @@
                             </div>
                             <div class="form_main_group">
                                 <div class="form_group">
-                                    <label for="pa_address">Address <span>*</span></label>
-                                    <textarea name="pa_address" class="default_text" rows="3" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.pa_address"></textarea>
+                                    <label for="pa_address">Address Line 1 <span>*</span></label>
+                                    <input name="pa_address" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.pa_address"/>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address')">{{ errors.first('pa_address') | properFormat }}</span></transition>
+                                </div>
+                                <div class="form_group">
+                                    <label for="pa_address_2">Address Line 2 <span>*</span></label>
+                                    <input name="pa_address_2" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.pa_address_2"/>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_2')">{{ errors.first('pa_address_2') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
@@ -175,9 +180,14 @@
                             </div>
                             <div class="form_main_group">
                                 <div class="form_group">
-                                    <label for="ba_address">Address <span>*</span></label>
-                                    <textarea name="ba_address" class="default_text" rows="3" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.ba_address"></textarea>
+                                    <label for="ba_address">Address Line 1 <span>*</span></label>
+                                    <input name="ba_address" class="default_text" rows="3" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.ba_address"/>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address')">{{ errors.first('ba_address') | properFormat }}</span></transition>
+                                </div>
+                                <div class="form_group">
+                                    <label for="ba_address_2">Address Line 2 <span>*</span></label>
+                                    <input name="ba_address_2" class="default_text" rows="3" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.ba_address_2"/>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address_2')">{{ errors.first('ba_address_2') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
@@ -340,11 +350,13 @@
                 form: {
                     toggled: false,
                     pa_address: '',
+                    pa_address_2: '',
                     pa_country: 174,
                     pa_state: '',
                     pa_city: '',
                     pa_zip_code: '',
                     ba_address: '',
+                    ba_address_2: '',
                     ba_country: 174,
                     ba_state: '',
                     ba_city: '',
@@ -483,12 +495,14 @@
                 const me = this
                 if (status) {
                     me.form.ba_address = me.form.pa_address
+                    me.form.ba_address_2 = me.form.pa_address_2
                     me.form.ba_country = me.form.pa_country
                     me.form.ba_state = me.form.pa_state
                     me.form.ba_city = me.form.pa_city
                     me.form.ba_zip_code = me.form.pa_zip_code
                 } else {
                     me.form.ba_address = ''
+                    me.form.ba_address_2 = ''
                     me.form.ba_country = ''
                     me.form.ba_state = ''
                     me.form.ba_city = ''
