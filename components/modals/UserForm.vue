@@ -15,7 +15,7 @@
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex select_all" v-if="form.role != 2">
-                        <label class="flex_label alternate">Restrict class to studios: <span>*</span></label>
+                        <label class="flex_label alternate">Restrict user to studios: <span>*</span></label>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
                         </div>
@@ -91,7 +91,7 @@
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex select_all" v-if="form.role != 2">
-                        <label class="flex_label alternate">Restrict class to studios: <span>*</span></label>
+                        <label class="flex_label alternate">Restrict user to studios: <span>*</span></label>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
                         </div>

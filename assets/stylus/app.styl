@@ -2259,6 +2259,8 @@ input::placeholder
     flex-flow: row wrap
     align-items: flex-end
     justify-content: space-between
+    &.start
+        align-items: flex-start
     &.check
         align-items: center
     &.trio
@@ -2489,6 +2491,10 @@ input::placeholder
         font-weight: normal
         color: $black
         cursor: pointer
+        &.parent
+            sf_pro_bold(14px)
+            margin-left: 0
+            color: $green
         a
             sf_pro_regular(16px)
             color: $blue
