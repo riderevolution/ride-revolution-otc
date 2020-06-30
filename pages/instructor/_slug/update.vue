@@ -134,9 +134,8 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address')">{{ errors.first('pa_address') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
-                                    <label for="pa_address_2">Address Line 2 <span>*</span></label>
-                                    <input name="pa_address_2" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.pa_address_2"/>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address_2')">{{ errors.first('pa_address_2') | properFormat }}</span></transition>
+                                    <label for="pa_address_2">Address Line 2 <b>(Optional)</b></label>
+                                    <input name="pa_address_2" class="default_text" v-validate="{regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.pa_address_2"/>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
@@ -185,9 +184,8 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address')">{{ errors.first('ba_address') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
-                                    <label for="ba_address_2">Address Line 2 <span>*</span></label>
-                                    <input name="ba_address_2" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.ba_address_2"/>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address_2')">{{ errors.first('ba_address_2') | properFormat }}</span></transition>
+                                    <label for="ba_address_2">Address Line 2 <b>(Optional)</b></label>
+                                    <input name="ba_address_2" class="default_text" v-validate="{regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.ba_address_2"/>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">

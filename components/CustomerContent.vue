@@ -310,7 +310,7 @@
                     <div class="form_overview">
                         <div class="wrapper">
                             <label>Address</label>
-                            <p>{{ value.customer_details.pa_address }}</p>
+                            <p>{{ value.customer_details.pa_address }} {{ value.customer_details.pa_address_2 }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Country</label>
@@ -337,7 +337,7 @@
                     <div class="form_overview">
                         <div class="wrapper">
                             <label>Address</label>
-                            <p>{{ value.customer_details.ba_address }}</p>
+                            <p>{{ value.customer_details.ba_address }} {{ value.customer_details.ba_address_2 }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Country</label>
