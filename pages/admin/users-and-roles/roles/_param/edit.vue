@@ -475,7 +475,7 @@
                     me.res = res.data.role
                     me.permissionsPages = me.parser(res.data.role.permissions_pages)
                     me.permissionsReporting = me.parser(res.data.role.permissions_reporting)
-                    me.loader = true
+                    me.loaded = true
                 })
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
