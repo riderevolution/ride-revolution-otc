@@ -30,7 +30,7 @@ const createStore = () => {
             disableBookerUI: false,
             pendingCustomerID: 0,
             waitlistID: 0,
-            classPackageID: 0,
+            userPackageCountId: 0,
             compID: 0,
             bookingID: 0,
             scheduleID: 0,

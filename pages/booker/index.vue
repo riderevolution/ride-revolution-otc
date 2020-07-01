@@ -1036,6 +1036,10 @@
                                 }, 500)
                             }
                         })
+                        me.$axios.get('api/studios?enabled=1').then(res => {
+                            me.studios = res.data.studios
+                        })
+                        me.notePad = me.$store.state.user.notepad
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors

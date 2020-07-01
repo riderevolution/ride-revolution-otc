@@ -8,7 +8,7 @@
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
                         <div class="form_radio" v-for="(data, key) in res" v-if="data.count > 0" :key="key">
-                            <input type="radio" :id="`package_${key}`" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                            <input type="radio" :id="`package_${key}`" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -31,7 +31,7 @@
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
                         <div class="form_radio" v-for="(data, key) in res" v-if="data.count > 0" :key="key">
-                            <input type="radio" :id="`package_${key}`" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                            <input type="radio" :id="`package_${key}`" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -53,8 +53,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${($store.state.classPackageID == data.class_package.id) ? 'toggled' : ''}`" v-if="data.count > 0" v-for="(data, key) in res" :key="key">
-                            <input type="radio" :id="`package_${key}`" :checked="$store.state.classPackageID == data.class_package.id" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${($store.state.userPackageCountId == data.id) ? 'toggled' : ''}`" v-if="data.count > 0" v-for="(data, key) in res" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="$store.state.userPackageCountId == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -76,8 +76,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${($store.state.classPackageID == data.class_package.id) ? 'toggled' : ''}`" v-for="(data, key) in res" :key="key">
-                            <input type="radio" :id="`package_${key}`" :checked="$store.state.classPackageID == data.class_package.id" :value="data.class_package.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${($store.state.userPackageCountId == data.id) ? 'toggled' : ''}`" v-for="(data, key) in res" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="$store.state.userPackageCountId == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -100,7 +100,6 @@
     export default {
         props: {
             studioID: {
-                type: String,
                 default: 0
             },
             type: {
@@ -122,7 +121,7 @@
                 let element = document.getElementById(`package_${key}`)
                 me.user_package_count_id = data.id
                 me.new_package_count_id = data.id
-                me.$store.state.classPackageID = data.class_package.id
+                me.$store.state.userPackageCountId = data.id
                 me.res.forEach((value, index) => {
                     if (index == key) {
                         element.parentNode.classList.add('toggled')
@@ -143,7 +142,7 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        formData.append('user_package_count_id', me.$store.state.classPackageID)
+                        formData.append('user_package_count_id', me.$store.state.userPackageCountId)
                         formData.append('user_id', me.$store.state.customerID)
                         formData.append('scheduled_date_id', me.$store.state.scheduleID)
                         formData.append('studio_id', me.$parent.studioID)
@@ -164,7 +163,7 @@
                             me.$store.state.customerPackageStatus = false
                             setTimeout( () => {
                                 me.$parent.fetchWaitlist(me.$store.state.scheduleID)
-                                me.$store.state.classPackageID = 0
+                                me.$store.state.userPackageCountId = 0
                                 me.$store.state.disableBookerUI = false
                                 me.$store.state.assignWaitlistBookerUI = false
                                 me.loader(false)
@@ -191,7 +190,7 @@
                             if (res.data) {
                                 setTimeout( () => {
                                     me.$parent.actionMessage = 'Successfully changed package.'
-                                    me.$store.state.classPackageID = me.new_package_count_id
+                                    me.$store.state.userPackageCountId = me.new_package_count_id
                                     me.$store.state.promptBookerActionStatus = true
                                     document.body.classList.add('no_scroll')
                                 }, 500)
@@ -265,7 +264,7 @@
                             me.$parent.getSeats()
                             me.$parent.fetchWaitlist(me.$store.state.scheduleID)
                             me.$store.state.bookingID = 0
-                            me.$store.state.classPackageID = 0
+                            me.$store.state.userPackageCountId = 0
                             me.$store.state.seat = ''
                             me.$store.state.disableBookerUI = false
                             me.$store.state.assignWaitlistBookerUI = false
@@ -292,7 +291,7 @@
                                 })
                                 if (me.res.length > 0) {
                                     me.res.forEach((data, index) => {
-                                        if (me.$store.state.classPackageID == data.class_package.id) {
+                                        if (me.$store.state.userPackageCountId == data.id) {
                                             me.old_package_count_id = data.id
                                         }
                                     })

@@ -87,7 +87,7 @@
                 me.$store.state.upcomingClassesLayoutStatus = false
                 me.$store.state.assignWaitlistBookerUI = false
                 me.$store.state.disableBookerUI = false
-                me.$store.state.classPackageID = 0
+                me.$store.state.userPackageCountId = 0
                 me.$store.state.compID = 0
                 me.$store.state.bookingID = 0
                 me.$store.state.scheduleID = 0

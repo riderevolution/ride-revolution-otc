@@ -104,7 +104,6 @@
         methods: {
             toggle (seat, unique, type) {
                 const me = this
-                console.log(seat);
                 let target = document.getElementById(`seat_${me.position}_${unique}`)
                 if (target.querySelector('.seat_details')) {
                     switch (type) {
@@ -164,7 +163,7 @@
                 const me = this
                 me.$store.state.compID = (seat.comp.length > 0) ? seat.comp[0].id : 0
                 me.$store.state.bookingID = (seat.bookings.length > 0) ? seat.bookings[0].id : 0
-                me.$store.state.classPackageID = (seat.bookings.length > 0) ? seat.bookings[0].class_package_id : 0
+                me.$store.state.userPackageCountId = (seat.bookings.length > 0) ? seat.bookings[0].user_package_count_id : 0
                 me.$store.state.seat = seat
                 switch (status) {
                     case 'open':
@@ -178,7 +177,6 @@
                                     me.$store.state.promptBookerStatus = true
                                     document.body.classList.add('no_scroll')
                                 } else {
-                                    console.log(res.data);
                                     if (res.data.result == 0) {
                                         me.$store.state.customerPackageStatus = true
                                         me.$parent.$parent.$parent.packageMethod = 'create'
