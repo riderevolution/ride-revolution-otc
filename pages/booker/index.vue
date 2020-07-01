@@ -7,13 +7,17 @@
                         <h1 class="header_title">Booker</h1>
                         <div class="actions">
                             <form :class="`customer_filter_flex ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" id="filter" @submit.prevent>
-                                <div class="form_group customer">
+                                <div class="form_group customer" v-if="!user.front_desk">
                                     <label for="studio_id">Studio</label>
                                     <select :class="`default_select alternate ${(!selectStudio) ? 'highlighted' : ''}`" name="studio_id" @change="getStudio($event)">
                                         <option value="" selected disabled>Select a Studio</option>
-                                        <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                        <option :value="studio.id" v-for="(studio, key) in studios" :selected="studio.id == studioID" :key="key">{{ studio.name }}</option>
                                     </select>
-                                    <transition name="slide"><span class="validation_errors alt" v-if="!selectStudio">Select Studio</span></transition>
+                                    <!-- <transition name="slide"><span class="validation_errors alt" v-if="!selectStudio">Select Studio</span></transition> -->
+                                </div>
+                                <div class="form_group customer">
+                                    <label for="studio_id">Studio</label>
+                                    <div class="selected_studio">{{ user.studio.name }}</div>
                                 </div>
                                 <div class="form_group selection margin" v-click-outside="closeMe">
                                     <label for="q">Find a Customer</label>
@@ -394,7 +398,8 @@
                 findCustomer: true,
                 schedule: '',
                 waitlists: [],
-                waitlistCount: 0
+                waitlistCount: 0,
+                user: []
             }
         },
         computed: {
@@ -980,16 +985,22 @@
                     }
                 })
                 if (!target.parentNode.classList.contains('toggled')) {
+                    me.loader(true)
                     await me.$axios.get(`api/schedules?month=${month}&year=${year}&day=${day}&studio_id=${me.studioID}&for_booker=1`).then(res => {
                         if (res.data) {
                             me.schedules = res.data.schedules
+                            setTimeout( () => {
+                                target.nextElementSibling.style.height = `${target.nextElementSibling.scrollHeight}px`
+                                target.parentNode.classList.add('toggled')
+                            }, 500)
                         }
+                    }).catch(err => {
+                        console.log(err);
+                    }).then(() => {
+                        setTimeout( () => {
+                            me.loader(false)
+                        }, 500)
                     })
-                    target.nextElementSibling.style.height = `${target.nextElementSibling.scrollHeight}px`
-                    setTimeout( () => {
-                        target.parentNode.classList.add('toggled')
-                    }, 100)
-
                 } else {
                     target.nextElementSibling.style.height = 0
                     target.parentNode.classList.remove('toggled')
@@ -1010,23 +1021,29 @@
                         }
                         me.customers = res.data.customers
                         me.customerLength = me.customers.length
+                        let token = me.$cookies.get('token')
+                        me.$axios.get('api/user', {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
+                            if (res.data != 0) {
+                                setTimeout( () => {
+                                    me.user = res.data.user
+                                    me.studioID = res.data.user.current_studio_id
+                                    me.loaded = true
+                                    me.populateClasses()
+                                }, 500)
+                            }
+                        })
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.$axios.get('api/studios?enabled=1').then(res => {
-                            me.studios = res.data.studios
-                        })
-                        me.notePad = me.$store.state.user.notepad
-                    }, 200)
-                    me.loaded = true
                 })
                 me.$axios.get('api/extras/customer-types').then(res => {
                     me.customerTypes = res.data.customerTypes
                 })
-                me.populateClasses()
             }
         },
         async mounted () {
