@@ -15,7 +15,7 @@
                                     </select>
                                     <!-- <transition name="slide"><span class="validation_errors alt" v-if="!selectStudio">Select Studio</span></transition> -->
                                 </div>
-                                <div class="form_group customer">
+                                <div class="form_group customer" v-else>
                                     <label for="studio_id">Studio</label>
                                     <div class="selected_studio">{{ user.studio.name }}</div>
                                 </div>
