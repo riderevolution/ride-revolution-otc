@@ -1707,7 +1707,8 @@ table
                     width: auto
 /**
  * Default Form */
-.default_select
+.default_select,
+.selected_studio
     width: 100%
     padding: 10px 40px 10px 15px
     sf_pro_regular(12px)
@@ -1734,6 +1735,9 @@ table
     &:focus
         border: 1px solid $black
         transition: .3s ease-in-out
+
+.selected_studio
+    background-image: unset
 
 input::-webkit-input-placeholder
     color: $gray
