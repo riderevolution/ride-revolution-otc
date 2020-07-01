@@ -111,7 +111,7 @@
         data () {
             return {
                 res: [],
-                class_package_id: [],
+                user_package_count_id: [],
                 old_package_count_id: null,
                 new_package_count_id: null
             }
@@ -120,7 +120,7 @@
             selectPackage (data, key) {
                 const me = this
                 let element = document.getElementById(`package_${key}`)
-                me.class_package_id = data.class_package.id
+                me.user_package_count_id = data.id
                 me.new_package_count_id = data.id
                 me.$store.state.classPackageID = data.class_package.id
                 me.res.forEach((value, index) => {
@@ -143,7 +143,7 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        formData.append('class_package_id', me.$store.state.classPackageID)
+                        formData.append('user_package_count_id', me.$store.state.classPackageID)
                         formData.append('user_id', me.$store.state.customerID)
                         formData.append('scheduled_date_id', me.$store.state.scheduleID)
                         formData.append('studio_id', me.$parent.studioID)
@@ -220,7 +220,7 @@
             },
             submissionCreateGuestSuccess () {
                 const me = this
-                if (me.class_package_id != 0) {
+                if (me.user_package_count_id != 0) {
                     let formData = new FormData()
                     formData.append('scheduled_date_id', me.$store.state.scheduleID)
                     formData.append('user_id', me.$store.state.customerID)
@@ -238,13 +238,13 @@
             },
             submissionCreateSuccess () {
                 const me = this
-                if (me.class_package_id != 0) {
+                if (me.user_package_count_id != 0) {
                     let formData = new FormData(document.getElementById('default_form'))
                     formData.append('is_guest', 0)
                     formData.append('scheduled_date_id', me.$store.state.scheduleID)
                     formData.append('seat_id', me.$store.state.seat.id)
                     formData.append('user_id', me.$store.state.customerID)
-                    formData.append('class_package_id', me.class_package_id)
+                    formData.append('user_package_count_id', me.user_package_count_id)
                     me.loader(true)
                     me.$axios.post('api/bookings', formData).then(res => {
                         if (res.data) {
