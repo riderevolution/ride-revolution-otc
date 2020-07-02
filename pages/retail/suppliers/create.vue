@@ -1,6 +1,6 @@
 <template>
     <transition name="fade">
-        <div class="content" v-if="load">
+        <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
                     <nuxt-link :to="`/${prevRoute}/${lastRoute}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>{{ replacer(lastRoute) }}</span></nuxt-link>

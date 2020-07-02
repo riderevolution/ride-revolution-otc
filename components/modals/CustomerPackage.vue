@@ -53,15 +53,15 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${($store.state.userPackageCountId == data.id) ? 'toggled' : ''}`" v-if="data.count > 0" v-for="(data, key) in res" :key="key">
-                            <input type="radio" :id="`package_${key}`" :checked="$store.state.userPackageCountId == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-if="data.count > 0" v-for="(data, key) in res" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="old_package_count_id == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
                             </label>
                         </div>
                     </div>
-                    <div class="form_footer_wrapper">
+                    <div class="form_footer_wrapper" v-if="new_package_count_id && new_package_count_id != old_package_count_id">
                         <div class="button_group">
                             <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                             <button type="submit" name="submit" class="action_success_btn margin alternate">Select</button>
@@ -76,8 +76,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${($store.state.userPackageCountId == data.id) ? 'toggled' : ''}`" v-for="(data, key) in res" :key="key">
-                            <input type="radio" :id="`package_${key}`" :checked="$store.state.userPackageCountId == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-for="(data, key) in res" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="old_package_count_id == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -289,23 +289,25 @@
                                         me.res.push(data)
                                     }
                                 })
-                                if (me.res.length > 0) {
-                                    me.res.forEach((data, index) => {
-                                        if (me.$store.state.userPackageCountId == data.id) {
-                                            me.old_package_count_id = data.id
-                                        }
-                                    })
-                                } else {
-                                    me.$store.state.customerPackageStatus = false
-                                    setTimeout( () => {
-                                        me.$parent.$refs.plan.message = 'Please buy a class package first'
-                                    }, 10)
-                                    me.$parent.buyCredits = true
-                                    document.getElementById('credits').classList.add('active')
-                                    me.$scrollTo('#credits', {
-                                        offset: -250
-                                    })
-                                    me.$store.state.promptBookerStatus = true
+                                if (me.$store.state.seat.bookings.length > 0) {
+                                    if (me.res.length > 0) {
+                                        me.res.forEach((data, index) => {
+                                            if (data.id == me.$store.state.seat.bookings[0].user_package_count_id) {
+                                                me.old_package_count_id = data.id
+                                            }
+                                        })
+                                    } else {
+                                        me.$store.state.customerPackageStatus = false
+                                        setTimeout( () => {
+                                            me.$parent.$refs.plan.message = 'Please buy a class package first'
+                                        }, 10)
+                                        me.$parent.buyCredits = true
+                                        document.getElementById('credits').classList.add('active')
+                                        me.$scrollTo('#credits', {
+                                            offset: -250
+                                        })
+                                        me.$store.state.promptBookerStatus = true
+                                    }
                                 }
                             } else {
                                 me.$store.state.customerPackageStatus = false
