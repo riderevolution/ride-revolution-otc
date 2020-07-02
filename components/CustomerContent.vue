@@ -357,7 +357,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form_wrapper">
+                <div class="form_wrapper" v-if="value.top5Instructors.length > 0">
                     <div class="form_header_wrapper">
                         <h2 class="form_title">Top 5 Instructors</h2>
                     </div>
