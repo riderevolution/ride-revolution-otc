@@ -34,14 +34,6 @@
                     </div>
                 </section>
                 <section id="content">
-                    <form id="paginate_form">
-                        <div class="form_group">
-                            <label for="paginate">Items per page</label>
-                            <select class="default_select alternate" v-model="pagination" name="paginate" @change="submitPaginate()">
-                                <option :value="data" v-for="(data, key) in paginateValues" :key="key">{{ data }}</option>
-                            </select>
-                        </div>
-                    </form>
                     <table class="cms_table">
                         <thead>
                             <tr>
@@ -85,6 +77,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -103,6 +96,7 @@
 
 <script>
     import Foot from '../../components/Foot'
+    import Pagination from '../../components/Pagination'
     import UserForm from '../../components/modals/UserForm'
     import RoleForm from '../../components/modals/RoleForm'
     import ConfirmStatus from '../../components/modals/ConfirmStatus'
@@ -111,6 +105,7 @@
     export default {
         components: {
             Foot,
+            Pagination,
             UserForm,
             RoleForm,
             ConfirmStatus,
@@ -120,9 +115,9 @@
         data () {
             return {
                 name: 'Customers',
+                filter: false,
                 access: true,
-                pagination: 10,
-                paginateValues: [10, 25, 50, 100, 200, 300, 500, 1000],
+                pagination: 20,
                 loaded: false,
                 id: 0,
                 type: 0,
@@ -146,9 +141,9 @@
             },
             submissionSuccess () {
                 const me = this
+                me.filter = true
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('enabled', me.status)
-                formData.append('pagination', me.pagination)
                 me.loader(true)
                 me.$axios.post(`api/customers/search`, formData).then(res => {
                     me.res = res.data
@@ -181,7 +176,7 @@
             fetchData (value) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}&pagination=${me.pagination}`).then(res => {
+                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
                     me.res = res.data
                     me.loaded = true
                 }).catch(err => {

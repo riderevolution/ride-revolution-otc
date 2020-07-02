@@ -14,10 +14,10 @@
                         </div>
                     </div>
                     <div class="action_buttons">
-                        <a href="javascript:void(0)" class="action_btn alternate" @click="$store.state.importStatus = true">Import Gift Cards</a>
+                        <div class="action_btn alternate" @click="$store.state.importStatus = true">Import Gift Cards</div>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="class_package_sku_id">Value</label>
                                 <select class="default_select alternate" name="class_package_sku_id">
@@ -50,8 +50,8 @@
                                 <td>{{ formatDate(data.created_at) }}</td>
                                 <td>
                                     <div class="table_actions">
-                                        <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                        <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                                        <div class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
+                                        <div class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" v-if="status == 0">Activate</div>
                                     </div>
                                 </td>
                             </tr>
@@ -91,6 +91,7 @@
         data () {
             return {
                 name: 'Physical Gift Cards',
+                filter: false,
                 access: true,
                 loaded: false,
                 prevRoute: '',
@@ -106,8 +107,9 @@
                     return this.$moment(value).format('MMM DD, YYYY')
                 }
             },
-            submissionSuccess (packageStatus) {
+            submissionSuccess () {
                 const me = this
+                me.filter = true
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('enabled', me.status)
                 me.loader(true)

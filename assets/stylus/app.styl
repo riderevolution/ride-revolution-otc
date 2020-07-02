@@ -5111,6 +5111,10 @@ input::placeholder
     justify-content: center
     padding: 20px 0 30px
     user-select: none
+    .separator
+        sf_pro_bold(16px)
+        color: $green
+        padding: 0 5px
     .next,
     .prev
         sf_pro_regular(16px)
@@ -5123,7 +5127,7 @@ input::placeholder
         transition: .3s ease-in-out
         &:hover,
         &:focus
-            background-color: $light_green
+            background-color: $green_alt3
             color: $green
             transition: .3s ease-in-out
         &.disabled
@@ -5134,7 +5138,7 @@ input::placeholder
     .number
         sf_pro_regular(16px)
         color: $green
-        background-color: $light_green
+        background-color: $green_alt3
         border: 1px solid $green
         padding: 8px 14px
         margin: 0 3px

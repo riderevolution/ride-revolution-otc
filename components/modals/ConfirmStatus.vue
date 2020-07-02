@@ -25,7 +25,7 @@
                 default: 1
             },
             packageStatus: {
-                type: Number
+                default: null
             },
             isUser: {
                 default: 0
@@ -56,7 +56,7 @@
                     setTimeout( () => {
                         me.$store.state.confirmStatus = false
                         me.notify(`${me.confirm.type.charAt(0).toUpperCase() + me.confirm.type.slice(1)} has been ${me.confirm.status}`)
-                        if (me.packageStatus) {
+                        if (me.packageStatus != null) {
                             me.$parent.fetchData(me.status, me.packageStatus)
                         } else {
                             me.$parent.fetchData(me.status)

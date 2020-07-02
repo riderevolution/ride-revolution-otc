@@ -13,14 +13,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="action_buttons" v-if="package_status == 1">
-                        <nuxt-link :to="`${$route.path}/class-packages/create`" class="action_btn margin"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Physical Count</nuxt-link>
-                    </div>
-                    <div class="action_buttons" v-if="package_status == 3">
-                        <a href="javascript:void(0)" class="action_btn alternate" @click="$store.state.importStatus = true">Import Gift Cards</a>
+                    <div class="action_buttons">
+                        <a href="javascript:void(0)" class="action_btn margin"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Physical Count</a>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)" v-if="package_status == 1">
+                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="category_id">Category</label>
                                 <select class="default_select alternate" name="category_id">
@@ -48,147 +45,60 @@
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)" v-if="package_status == 2">
-                            <div class="form_group">
-                                <label for="q">Find a Promo</label>
-                                <input type="text" name="q" autocomplete="off" placeholder="Search for a promo" class="default_text search_alternate">
-                            </div>
-                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                        </form>
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)" v-if="package_status == 3">
-                            <div class="form_group">
-                                <label for="class_package_sku_id">Value</label>
-                                <select class="default_select alternate" name="class_package_sku_id">
-                                    <option value="" selected>All Values</option>
-                                    <option :value="classPackage.sku_id" v-for="(classPackage, key) in classPackages" :key="key">{{ classPackage.name }}</option>
-                                </select>
-                            </div>
-                            <div class="form_group margin">
-                                <label for="q">Find a gift card</label>
-                                <input type="text" name="q" autocomplete="off" placeholder="Search for a gift card" class="default_text search_alternate">
-                            </div>
-                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
-                        </form>
                     </div>
                 </section>
                 <section id="content">
-                    <!-- <div class="cms_table_toggler">
-                    <div :class="`status ${(package_status == 1) ? 'active' : ''}`" @click="togglePackages(1)">Products</div>
-                    <div :class="`status ${(package_status == 2) ? 'active' : ''}`" @click="togglePackages(2)">Promotions</div>
-                    <div :class="`status ${(package_status == 3) ? 'active' : ''}`" @click="togglePackages(3)">Gift Cards</div>
-                </div> -->
-                <table class="cms_table" v-if="res.productVariants && package_status == 1">
-                    <thead>
-                        <tr>
-                            <th class="stick">Product Name</th>
-                            <th class="stick">SKU ID</th>
-                            <th class="stick">Category</th>
-                            <th class="stick">Studio</th>
-                            <th class="stick">Supplier</th>
-                            <th class="stick">In Stock</th>
-                            <th class="stick">Unit Price</th>
-                            <th class="stick">Sale Price</th>
-                            <th class="stick">Sellable</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="res.productVariants.data.length > 0">
-                        <tr v-for="(data, key) in res.productVariants.data" :key="key" :class="`${(data.quantity < data.reorder_point) ? 'threshold' : ''}`">
-                            <td>{{ data.product.name }} - {{ data.variant }}</td>
-                            <td>{{ data.sku_id }}</td>
-                            <td>{{ data.product.category.name }}</td>
-                            <td>
-                                <div v-for="(studio, key) in data.product.studio_access" :key="key" v-if="data.product.studio_access.length != studios.length">
-                                    {{ studio.studio.name }} <br />
-                                </div>
-                                <div v-if="data.product.studio_access.length == studios.length">
-                                    All Studios
-                                </div>
-                            </td>
-                            <td>{{ data.product.supplier.name }}</td>
-                            <td>
-                                <p v-for="(productQuantity, key) in data.product_quantities">
-                                    <span :class="`${(productQuantity.quantity > 0) ? 'green' : 'red' }`" v-if="studioID == ''">{{ productQuantity.quantity }}<span> - {{ productQuantity.studio.name }}</span></span>
-                                    <span :class="`${(productQuantity.quantity > 0) ? 'green' : 'red' }`" v-else-if="studioID == productQuantity.studio.id">{{ productQuantity.quantity }}<span> - {{ productQuantity.studio.name }}</span></span>
-                                </p>
-                            </td>
-                            <td>PHP {{ totalCount(data.unit_price) }}</td>
-                            <td>PHP {{ totalCount(data.sale_price) }}</td>
-                            <td>{{ (data.product.sellable == 1) ? 'Yes' : 'No' }}</td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="cms_table" v-if="res.promos && package_status == 2">
-                    <thead>
-                        <tr>
-                            <th class="stick">Promo Name</th>
-                            <th class="stick">Discount</th>
-                            <th class="stick">Promo Code</th>
-                            <th class="stick">Start date</th>
-                            <th class="stick">End Date</th>
-                            <th class="stick">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="res.promos.data.length > 0">
-                        <tr v-for="(data, key) in res.promos.data" :key="key">
-                            <td>{{ data.name }}</td>
-                            <td>{{ (data.discount_type == 'percent') ? `${data.discount_percent}  %` : `PHP ${totalCount(data.discount_flat_rate)}` }}</td>
-                            <td>{{ data.promo_code }}</td>
-                            <td>{{ formatDate(data.start_date) }}</td>
-                            <td>{{ formatDate(data.end_date) }}</td>
-                            <td>
-                                <div class="table_actions">
-                                    <nuxt-link class="table_action_edit" :to="`${$route.path}/promotions/${data.id}/edit`">Edit</nuxt-link>
-                                    <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                    <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="cms_table" v-if="res.giftCards && package_status == 3">
-                    <thead>
-                        <tr>
-                            <th class="stick">Card Code</th>
-                            <th class="stick">Starting Value</th>
-                            <th class="stick">Date Created</th>
-                            <th class="stick">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="res.giftCards.data.length > 0">
-                        <tr v-for="(data, key) in res.giftCards.data" :key="key">
-                            <td>{{ data.card_code }}</td>
-                            <td>PHP {{ totalCount(data.class_package.package_price) }} - {{ data.class_package.name }}</td>
-                            <td>{{ formatDate(data.created_at) }}</td>
-                            <td>
-                                <div class="table_actions">
-                                    <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                    <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <pagination :apiRoute="(res.productVariants) ? res.productVariants.path : (res.promos ? res.promos.path : res.giftCards.path)" :current="(res.productVariants) ? res.productVariants.current_page : (res.promos ? res.promos.current_page : res.giftCards.current_page)" :last="(res.productVariants) ? res.productVariants.last_page : (res.promos ? res.promos.last_page : res.giftCards.last_page)" />
+                    <table class="cms_table" v-if="res.productVariants">
+                        <thead>
+                            <tr>
+                                <th class="stick">Product Name</th>
+                                <th class="stick">SKU ID</th>
+                                <th class="stick">Category</th>
+                                <th class="stick">Studio</th>
+                                <th class="stick">Supplier</th>
+                                <th class="stick">In Stock</th>
+                                <th class="stick">Unit Price</th>
+                                <th class="stick">Sale Price</th>
+                                <th class="stick">Sellable</th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="res.productVariants.data.length > 0">
+                            <tr v-for="(data, key) in res.productVariants.data" :key="key" :class="`${(data.quantity < data.reorder_point) ? 'threshold' : ''}`">
+                                <td>{{ data.product.name }} - {{ data.variant }}</td>
+                                <td>{{ data.sku_id }}</td>
+                                <td>{{ data.product.category.name }}</td>
+                                <td>
+                                    <div v-for="(studio, key) in data.product.studio_access" :key="key" v-if="data.product.studio_access.length != studios.length">
+                                        {{ studio.studio.name }} <br />
+                                    </div>
+                                    <div v-if="data.product.studio_access.length == studios.length">
+                                        All Studios
+                                    </div>
+                                </td>
+                                <td>{{ data.product.supplier.name }}</td>
+                                <td>
+                                    <p v-for="(productQuantity, key) in data.product_quantities">
+                                        <span :class="`${(productQuantity.quantity > 0) ? 'green' : 'red' }`" v-if="studioID == ''">{{ productQuantity.quantity }}<span> - {{ productQuantity.studio.name }}</span></span>
+                                        <span :class="`${(productQuantity.quantity > 0) ? 'green' : 'red' }`" v-else-if="studioID == productQuantity.studio.id">{{ productQuantity.quantity }}<span> - {{ productQuantity.studio.name }}</span></span>
+                                    </p>
+                                </td>
+                                <td>PHP {{ totalCount(data.unit_price) }}</td>
+                                <td>PHP {{ totalCount(data.sale_price) }}</td>
+                                <td>{{ (data.product.sellable == 1) ? 'Yes' : 'No' }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td :colspan="rowCount">No Result(s) Found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                <pagination :apiRoute="res.productVariants.path" :current="res.productVariants.current_page" :last="res.productVariants.last_page" />
             </section>
         </div>
         <foot v-if="$store.state.isAuth" />
         <transition name="fade">
-            <confirm-status v-if="$store.state.confirmStatus" ref="enabled" :status="status" :packageStatus="package_status" />
+            <confirm-status v-if="$store.state.confirmStatus" ref="enabled" :status="status" />
         </transition>
         <transition name="fade">
             <import v-if="$store.state.importStatus" :status="status" />
@@ -212,12 +122,12 @@
         data () {
             return {
                 name: 'Inventory',
+                filter: false,
                 access: true,
                 loaded: false,
                 lastRoute: '',
                 rowCount: 0,
                 status: 1,
-                package_status: 1,
                 res: [],
                 categories: [],
                 suppliers: [],
@@ -232,22 +142,12 @@
                     return this.$moment(value).format('MMM DD, YYYY')
                 }
             },
-            submissionSuccess (packageStatus) {
+            submissionSuccess () {
                 const me = this
-                let apiRoute = ''
+                me.filter = true
+                let apiRoute = 'api/inventory/product-variants/search'
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('enabled', me.status)
-                switch (packageStatus) {
-                    case 1:
-                        apiRoute = 'api/inventory/product-variants/search'
-                        break
-                    case 2:
-                        apiRoute = 'api/inventory/promos/search'
-                        break
-                    case 3:
-                        apiRoute = 'api/inventory/gift-cards/search'
-                        break
-                }
                 me.loader(true)
                 me.$axios.post(apiRoute, formData).then(res => {
                     if (res.data) {
@@ -283,27 +183,11 @@
             toggleOnOff (value) {
                 const me = this
                 me.status = value
-                me.fetchData(value, me.package_status)
+                me.fetchData(value)
             },
-            togglePackages (value) {
+            fetchData (status) {
                 const me = this
-                me.package_status = value
-                me.fetchData(me.status, value)
-            },
-            fetchData (status, packageStatus) {
-                const me = this
-                let apiRoute = ''
-                switch (packageStatus) {
-                    case 1:
-                        apiRoute = `api/inventory/product-variants?enabled=${status}`
-                        break
-                    case 2:
-                        apiRoute = `api/inventory/promos?enabled=${status}`
-                        break
-                    case 3:
-                        apiRoute = `api/inventory/gift-cards?enabled=${status}&status=0`
-                        break
-                }
+                let apiRoute = `api/inventory/product-variants?enabled=${status}`
                 me.loader(true)
                 me.$axios.get(apiRoute).then(res => {
                     if (res.data) {
@@ -324,31 +208,22 @@
                         me.loader(false)
                     }, 500)
                 })
-                switch (packageStatus) {
-                    case 1:
-                        me.$axios.get('api/studios').then(res => {
-                            me.studios = res.data.studios
-                        })
-                        me.$axios.get('api/suppliers').then(res => {
-                            me.suppliers = res.data.suppliers.data
-                        })
-                        me.$axios.get('api/inventory/product-categories').then(res => {
-                            me.categories = res.data.productCategories
-                        })
-                        break
-                    case 3:
-                        me.$axios.get('api/extras/class-packages-for-gift-cards').then(res => {
-                            me.classPackages = res.data.classPackages
-                        })
-                        break
-                }
+                me.$axios.get('api/studios').then(res => {
+                    me.studios = res.data.studios
+                })
+                me.$axios.get('api/suppliers').then(res => {
+                    me.suppliers = res.data.suppliers.data
+                })
+                me.$axios.get('api/inventory/product-categories').then(res => {
+                    me.categories = res.data.productCategories
+                })
             }
         },
         async mounted () {
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData(1, 1)
+                me.fetchData(1)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

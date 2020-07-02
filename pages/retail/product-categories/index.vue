@@ -14,7 +14,7 @@
                         </div>
                     </div>
                     <div class="action_buttons">
-                        <a @click="toggleForm(id, 0)" href="javascript:void(0)" class="action_btn"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add New Category</a>
+                        <div @click="toggleForm(id, 0)" class="action_btn"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add New Category</div>
                     </div>
                 </section>
                 <section id="content" class="alternate_2">
@@ -25,7 +25,7 @@
                                     <h2 class="header_title">{{ data.name }}</h2>
                                     <div class="taxonomy_actions">
                                         <nuxt-link :to="`/${prevRoute}/products/create?c=${data.id}`" class="action_btn"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add Products</nuxt-link>
-                                        <a href="javascript:void(0)" class="action_btn margin" @click="toggleForm(data.id, 1)"><svg xmlns="http://www.w3.org/2000/svg" width="21.316" height="16.434" viewBox="0 0 21.316 16.434"> <g transform="translate(-1244 -346.75)"> <path class="edit" d="M1259.684,357.585v4.849H1244.75V347.5h14.934v1.785" transform="translate(0 0)" /> <g transform="translate(1255.311 348.26)"> <line class="edit_sign" x1="9.476" y2="9.476" /> </g> </g> </svg>Edit</a>
+                                        <div class="action_btn margin" @click="toggleForm(data.id, 1)"><svg xmlns="http://www.w3.org/2000/svg" width="21.316" height="16.434" viewBox="0 0 21.316 16.434"> <g transform="translate(-1244 -346.75)"> <path class="edit" d="M1259.684,357.585v4.849H1244.75V347.5h14.934v1.785" transform="translate(0 0)" /> <g transform="translate(1255.311 348.26)"> <line class="edit_sign" x1="9.476" y2="9.476" /> </g> </g> </svg>Edit</div>
                                     </div>
                                 </div>
                                 <div class="taxonomy_content">
@@ -44,8 +44,8 @@
                                                 <td>
                                                     <div class="table_actions">
                                                         <nuxt-link class="table_action_edit" :to="`/${prevRoute}/products/${product.id}/edit?c=${data.id}`">Edit</nuxt-link>
-                                                        <a class="table_action_cancel" @click.self="toggleStatus(product.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                                        <a class="table_action_success" @click.self="toggleStatus(product.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                                                        <div class="table_action_cancel link" @click.self="toggleStatus(product.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
+                                                        <div class="table_action_success link" @click.self="toggleStatus(product.id, 1, 'Activated')" v-if="status == 0">Activate</div>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -58,7 +58,7 @@
                                     </table>
                                 </div>
                                 <div class="taxonomy_footer">
-                                    <a href="javascript:void(0)" class="action_cancel_btn" @click="toggleDelete(data.id)">Delete Category</a>
+                                    <div class="action_cancel_btn" @click="toggleDelete(data.id)">Delete Category</div>
                                 </div>
                             </div>
                         </div>

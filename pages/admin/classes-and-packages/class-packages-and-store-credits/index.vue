@@ -19,7 +19,7 @@
                         <nuxt-link :to="`${$route.path}/class-packages/create`" class="action_btn margin"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add Class Package</nuxt-link>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess(package_status)">
+                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess(package_status)">
                             <div class="form_group" v-if="package_status == 1">
                                 <label for="q">Find a package</label>
                                 <input type="text" name="q" placeholder="Search for a class packages" autocomplete="off" class="default_text search_alternate">
@@ -65,8 +65,8 @@
                                 <td>
                                     <div class="table_actions">
                                         <nuxt-link class="table_action_edit" :to="`${$route.path}/class-packages/${data.id}/edit`">Edit</nuxt-link>
-                                        <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                        <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                                        <div class="table_action_cancel link" @click.self="toggleStatus(data.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
+                                        <div class="table_action_success link" @click.self="toggleStatus(data.id, 1, 'Activated')" v-if="status == 0">Activate</div>
                                     </div>
                                 </td>
                             </tr>
@@ -96,8 +96,8 @@
                                 <td>
                                     <div class="table_actions">
                                         <nuxt-link class="table_action_edit" :to="`${$route.path}/store-credits/${data.id}/edit`">Edit</nuxt-link>
-                                        <a class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" href="javascript:void(0)" v-if="status == 1">Deactivate</a>
-                                        <a class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" href="javascript:void(0)" v-if="status == 0">Activate</a>
+                                        <div class="table_action_cancel link" @click.self="toggleStatus(data.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
+                                        <div class="table_action_success link" @click.self="toggleStatus(data.id, 1, 'Activated')" v-if="status == 0">Activate</div>
                                     </div>
                                 </td>
                             </tr>
@@ -108,7 +108,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <!-- <pagination :apiRoute="(res.classPackages) ? res.classPackages.path : res.storeCredits.path" :current="(res.classPackages) ? res.classPackages.current_page : res.storeCredits.current_page" :last="(res.classPackages) ? res.classPackages.last_page : res.storeCredits.last_page" /> -->
+                    <pagination :apiRoute="(res.classPackages) ? res.classPackages.path : res.storeCredits.path" :current="(res.classPackages) ? res.classPackages.current_page : res.storeCredits.current_page" :last="(res.classPackages) ? res.classPackages.last_page : res.storeCredits.last_page" />
                 </section>
             </div>
             <foot v-if="$store.state.isAuth" />
@@ -121,17 +121,18 @@
 
 <script>
     import Foot from '../../../../components/Foot'
-    // import Pagination from '../../../../components/Pagination'
+    import Pagination from '../../../../components/Pagination'
     import ConfirmStatus from '../../../../components/modals/ConfirmStatus'
     export default {
         components: {
             Foot,
-            // Pagination,
+            Pagination,
             ConfirmStatus,
         },
         data () {
             return {
                 name: 'Classes and Packages',
+                filter: true,
                 access: true,
                 loaded: false,
                 lastRoute: '',
@@ -151,6 +152,7 @@
             submissionSuccess (packageStatus) {
                 const me = this
                 let apiRoute = ''
+                me.filter = true
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('enabled', me.status)
                 switch (packageStatus) {

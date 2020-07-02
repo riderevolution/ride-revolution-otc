@@ -114,6 +114,7 @@
         data () {
             return {
                 name: 'Products',
+                filter: false,
                 access: true,
                 loaded: false,
                 prevRoute: '',
@@ -128,6 +129,7 @@
         methods: {
             submissionSuccess () {
                 const me = this
+                me.filter = true
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('enabled', me.status)
                 me.loader(true)
