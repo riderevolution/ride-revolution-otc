@@ -7,7 +7,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
-                        <div class="form_radio" v-for="(data, key) in res" v-if="data.count > 0" :key="key">
+                        <div class="form_radio" v-for="(data, key) in res" v-if="parseInt(data.count) > $parent.schedule.schedule.class_credits" :key="key">
                             <input type="radio" :id="`package_${key}`" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
@@ -30,7 +30,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
-                        <div class="form_radio" v-for="(data, key) in res" v-if="data.count > 0" :key="key">
+                        <div class="form_radio" v-for="(data, key) in res" v-if="parseInt(data.count) > $parent.schedule.schedule.class_credits" :key="key">
                             <input type="radio" :id="`package_${key}`" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
@@ -53,10 +53,11 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-if="data.count > 0" v-for="(data, key) in res" :key="key">
+                        <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-if="parseInt(data.count) > $parent.schedule.schedule.class_credits" v-for="(data, key) in res" :key="key">
                             <input type="radio" :id="`package_${key}`" :checked="old_package_count_id == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
+                                {{ data.id }}
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
                             </label>
                         </div>
@@ -76,7 +77,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-for="(data, key) in res" :key="key">
+                        <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-if="parseInt(data.count) > $parent.schedule.schedule.class_credits" v-for="(data, key) in res" :key="key">
                             <input type="radio" :id="`package_${key}`" :checked="old_package_count_id == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
@@ -142,7 +143,7 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        formData.append('user_package_count_id', me.$store.state.userPackageCountId)
+                        formData.append('user_package_count_id', me.$store.state.user_package_count_id)
                         formData.append('user_id', me.$store.state.customerID)
                         formData.append('scheduled_date_id', me.$store.state.scheduleID)
                         formData.append('studio_id', me.$parent.studioID)
@@ -289,6 +290,7 @@
                                         me.res.push(data)
                                     }
                                 })
+                                console.log(me.$store.state.seat);
                                 if (me.$store.state.seat.bookings.length > 0) {
                                     if (me.res.length > 0) {
                                         me.res.forEach((data, index) => {
