@@ -14,7 +14,7 @@
                         </select>
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') | properFormat }}</span></transition>
                     </div>
-                    <div class="form_flex select_all" v-if="form.role != 2">
+                    <div class="form_flex select_all" v-if="form.role == 1">
                         <label class="flex_label alternate">Restrict user to studios: <span>*</span></label>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
@@ -25,7 +25,7 @@
                         </div>
                         <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
                     </div>
-                    <div class="form_flex_radio select_all" v-if="form.role == 2">
+                    <div class="form_flex_radio select_all" v-if="form.role != 1">
                         <label class="radio_label">Restrict class to studios: <span>*</span></label>
                         <div class="form_radio" v-for="(studio, key) in studios" :key="key">
                             <input type="radio" :id="`studio_${key}`" name="studios" :value="studio.id" class="action_radio">
@@ -90,7 +90,7 @@
                         </select>
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') | properFormat }}</span></transition>
                     </div>
-                    <div class="form_flex select_all" v-if="form.role != 2">
+                    <div class="form_flex select_all" v-if="form.role == 1">
                         <label class="flex_label alternate">Restrict user to studios: <span>*</span></label>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
@@ -101,7 +101,7 @@
                         </div>
                         <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
                     </div>
-                    <div class="form_flex_radio select_all" v-if="form.role == 2">
+                    <div class="form_flex_radio select_all" v-if="form.role != 1">
                         <label class="radio_label">Restrict class to studios: <span>*</span></label>
                         <div class="form_radio" v-for="(studio, key) in studios" :key="key">
                             <input type="radio" :id="`studio_${key}`" name="studios" :value="studio.id" class="action_radio" :checked="studio.checkedForReal">

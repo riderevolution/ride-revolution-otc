@@ -2,7 +2,7 @@
     <div v-if="enabled">
         <div class="form_group">
             <input type="hidden" name="image_id[]" :value="`${(item.id) ? item.id : ''}`">
-            <input type="file" class="action_image" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`${(item) ? '' : `required`}|size:1000|image|ext:jpeg,jpg,png|${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`" :required="item.path == null">
+            <input type="file" class="action_image" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`${(item) ? '' : `required`}|size:20000|image|ext:jpeg,jpg,png|${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`" :required="item.path == null">
             <label class="action_image_label default_text" :for="`image${unique}`">Choose File</label>
             <transition name="slide"><span class="validation_errors" v-if="errors.has('image[]')">{{ errors.first('image[]') | properFormat }}</span></transition>
         </div>

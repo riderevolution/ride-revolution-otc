@@ -377,7 +377,6 @@
                                     if (me.$route.params.slug == 'transactions') {
                                         document.getElementById('transactions').click()
                                     }
-
                                 } else {
                                     me.$store.state.errorList.push('Sorry, Something went wrong')
                                     me.$store.state.errorQuickSaleStatus = true

@@ -142,7 +142,7 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        formData.append('user_package_count_id', me.$store.state.user_package_count_id)
+                        formData.append('user_package_count_id', me.user_package_count_id)
                         formData.append('user_id', me.$store.state.customerID)
                         formData.append('scheduled_date_id', me.$store.state.scheduleID)
                         formData.append('studio_id', me.$parent.studioID)

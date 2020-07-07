@@ -1,7 +1,7 @@
 <template>
     <div v-if="enabled" :data-vv-scope="`image_form_${unique}`">
         <div class="form_group">
-            <input type="file" class="action_image" :data-vv-name="`image_form_${unique}.image[]`" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`${(dataImage.id) ? '' : 'required|'}image|ext:jpeg,jpg,png,svg|size:2000${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`">
+            <input type="file" class="action_image" :data-vv-name="`image_form_${unique}.image[]`" :id="`image${unique}`" name="image[]" ref="file" @change="getFile($event)" v-validate="`${(dataImage.id) ? '' : 'required|'}image|ext:jpeg,jpg,png,svg|size:20000${(dimension.imageWidth == 0) ? '' : `|dimensions:${dimension.imageWidth},${dimension.imageHeight}`}`">
             <input type="hidden" name="image_id[]" v-model="dataImage.id">
             <label class="action_image_label" :for="`image${unique}`">Choose File</label>
             <div v-if="$parent.showCloser" class="action_image_remove" @click="removeImage($event, unique, item.id, parent)">Remove</div>
