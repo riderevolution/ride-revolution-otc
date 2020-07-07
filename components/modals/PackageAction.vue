@@ -68,7 +68,7 @@
 <script>
     export default {
         props: {
-            packageID: {
+            userPackageCountId: {
                 type: Number,
                 default: 0
             },
@@ -116,7 +116,7 @@
                         switch (me.type) {
                             case 'Transfer':
                                 formData.append('receiver_id', me.customer.id)
-                                formData.append('class_package_id', me.packageID)
+                                formData.append('user_package_count_id', me.userPackageCountId)
                                 formData.append('sender_id', me.$parent.res.id)
                                 me.$axios.post('api/packages/class-packages/transfer', formData).then(res => {
                                     if (res.data) {
@@ -141,7 +141,7 @@
                                 break
                             case 'Share':
                                 formData.append('receiver_id', me.customer.id)
-                                formData.append('class_package_id', me.packageID)
+                                formData.append('user_package_count_id', me.userPackageCountId)
                                 formData.append('sender_id', me.$parent.res.id)
                                 me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData).then(res => {
                                     if (res.data) {

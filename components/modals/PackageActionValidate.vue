@@ -16,7 +16,7 @@
 <script>
     export default {
         props: {
-            packageID: {
+            userPackageCountId: {
                 default: null
             }
         },
@@ -28,7 +28,7 @@
                     me.loader(true)
                     if (me.$parent.methodType != 'unshare') {
                         formData.append('user_id', me.$parent.res.id)
-                        formData.append('class_package_id', me.packageID)
+                        formData.append('user_package_count_id', me.userPackageCountId)
                         me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData).then(res => {
                             if (res.data) {
                                 me.$store.state.packageActionValidateStatus = false
@@ -56,7 +56,7 @@
                         })
                     } else {
                         formData.append('receiver_id', me.$parent.tempData.sharedto_user_id)
-                        formData.append('class_package_id', me.packageID)
+                        formData.append('user_package_count_id', me.userPackageCountId)
                         formData.append('sender_id', me.$parent.tempData.user_id)
                         me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData).then(res => {
                             if (res.data) {

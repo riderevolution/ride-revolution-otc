@@ -397,10 +397,10 @@
             <package-action-prompt :message="packagePromptMessage" :type="packagePromptType" v-if="$store.state.packageActionPromptStatus" />
         </transition>
         <transition name="fade">
-            <package-action :packageID="packageID" :type="packageActionType" v-if="$store.state.packageActionStatus" />
+            <package-action :userPackageCountId="userPackageCountId" :type="packageActionType" v-if="$store.state.packageActionStatus" />
         </transition>
         <transition name="fade">
-            <package-action-validate :packageID="packageID" v-if="$store.state.packageActionValidateStatus" />
+            <package-action-validate :userPackageCountId="userPackageCountId" v-if="$store.state.packageActionValidateStatus" />
         </transition>
     </div>
 </template>
@@ -438,7 +438,7 @@
                 packageActionType: '',
                 packagePromptType: '',
                 packagePromptMessage: '',
-                packageID: 0,
+                userPackageCountId: 0,
                 rowCount: 0,
                 promptMessage: '',
                 isActivated: true,
@@ -541,7 +541,7 @@
                         document.body.classList.add('no_scroll')
                         break;
                 }
-                me.packageID = data.class_package.id
+                me.userPackageCountId = data.id
             },
             checkStatus (data) {
                 const me = this
