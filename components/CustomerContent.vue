@@ -37,7 +37,7 @@
                             </div>
                             <div class="date margin">
                                 <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
-                                <label v-if="!data.frozen">Expiry date <a href="javascript:void(0)" class="expiry_btn">Edit</a></label>
+                                <label v-if="!data.frozen">Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')" v-if="data.activation_date != 'NA'">Edit</a></label>
                             </div>
                         </div>
                         <div class="package_action">
@@ -402,6 +402,9 @@
         <transition name="fade">
             <package-action-validate :userPackageCountId="userPackageCountId" v-if="$store.state.packageActionValidateStatus" />
         </transition>
+        <transition name="fade">
+            <package-edit-expiry-prompt :data="expiryData" v-if="$store.state.editPackageExpiryStatus" />
+        </transition>
     </div>
 </template>
 
@@ -411,6 +414,7 @@
     import PackageAction from '../components/modals/PackageAction'
     import PackageActionPrompt from '../components/modals/PackageActionPrompt'
     import PackageActionValidate from '../components/modals/PackageActionValidate'
+    import PackageEditExpiryPrompt from '../components/modals/PackageEditExpiryPrompt'
     import Pagination from '../components/Pagination'
     export default {
         components: {
@@ -419,6 +423,7 @@
             PackageAction,
             PackageActionPrompt,
             PackageActionValidate,
+            PackageEditExpiryPrompt,
             Pagination
         },
         props: {
@@ -432,6 +437,7 @@
         },
         data () {
             return {
+                expiryData: [],
                 packageCount: 0,
                 tempData: null,
                 methodType: '',
@@ -538,6 +544,11 @@
                             me.methodType = 'freeze'
                         }
                         me.$store.state.packageActionValidateStatus = true
+                        document.body.classList.add('no_scroll')
+                        break
+                    case 'expiry':
+                        me.expiryData = data
+                        me.$store.state.editPackageExpiryStatus = true
                         document.body.classList.add('no_scroll')
                         break;
                 }
