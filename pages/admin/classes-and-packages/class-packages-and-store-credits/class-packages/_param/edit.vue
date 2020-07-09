@@ -237,6 +237,10 @@
                         </div>
                         <div class="form_footer_wrapper">
                             <div class="form_check">
+                                <input type="checkbox" id="show_on_web" name="show_on_web" class="action_check" :checked="res.show_on_web == 1">
+                                <label for="show_on_web">Show on Web</label>
+                            </div>
+                            <div class="form_check">
                                 <input type="checkbox" id="por_restrict_to_new_customers" name="por_restrict_to_new_customers" class="action_check" :checked="res.por_restrict_to_new_customers == 1">
                                 <label for="por_restrict_to_new_customers">Restrict to New Customers</label>
                             </div>

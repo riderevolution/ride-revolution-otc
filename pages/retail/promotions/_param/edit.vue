@@ -144,12 +144,12 @@
                         </div>
                         <div class="form_footer_wrapper">
                             <div class="form_check">
-                                <input type="checkbox" id="show_on_web" name="show_on_web" class="action_check" :checked="res.show_on_web">
+                                <input type="checkbox" id="show_on_web" name="show_on_web" class="action_check" :checked="res.show_on_web == 1">
                                 <label for="show_on_web">Show on Web</label>
                             </div>
                             <div class="form_flex">
                                 <div class="form_check">
-                                    <input type="checkbox" id="enabled" name="enabled" class="action_check" :checked="res.enabled">
+                                    <input type="checkbox" id="enabled" name="enabled" class="action_check" :checked="res.enabled == 1">
                                     <label for="enabled">Activate</label>
                                 </div>
                                 <div class="button_group">
