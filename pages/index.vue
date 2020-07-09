@@ -131,6 +131,7 @@
                                         <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
                                         <div class="info">
                                             <div class="name">Sample</div>
+                                            <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                         </div>
                                     </div>
                                     <div class="wrapper" v-for="(n, key) in 4">
@@ -141,6 +142,7 @@
                                         </div>
                                         <div class="info">
                                             <div class="name">Sample</div>
+                                            <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -155,6 +157,7 @@
                                         <div class="info">
                                             <div class="name">Sample</div>
                                             <div class="violator violet"><img src="/icons/star-violet.svg" /><span>100th Ride</span></div>
+                                            <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                         </div>
                                     </div>
                                     <div class="wrapper" v-for="(n, key) in 4">
@@ -166,6 +169,7 @@
                                         <div class="info">
                                             <div class="name">Sample</div>
                                             <div class="violator blue"><img src="/icons/star-blue.svg" /><span>Teaching Anniversary</span></div>
+                                            <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -179,6 +183,7 @@
                                         <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
                                         <div class="info">
                                             <div class="name">Sample</div>
+                                            <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                         </div>
                                     </div>
                                     <div class="wrapper" v-for="(n, key) in 4">
@@ -189,6 +194,7 @@
                                         </div>
                                         <div class="info">
                                             <div class="name">Sample</div>
+                                            <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -203,6 +209,7 @@
                                         <div class="info">
                                             <div class="name">Sample</div>
                                             <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
+                                            <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                         </div>
                                     </div>
                                     <div class="wrapper" v-for="(n, key) in 4">
@@ -214,6 +221,7 @@
                                         <div class="info">
                                             <div class="name">Sample</div>
                                             <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
+                                            <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -241,6 +249,7 @@
                                             <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
                                             <div class="info">
                                                 <div class="name">Sample</div>
+                                                <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                             </div>
                                         </div>
                                         <div class="wrapper" v-for="(n, key) in 4">
@@ -251,6 +260,7 @@
                                             </div>
                                             <div class="info">
                                                 <div class="name">Sample</div>
+                                                <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                             </div>
                                         </div>
                                     </div>
@@ -265,6 +275,7 @@
                                             <div class="info">
                                                 <div class="name">Sample</div>
                                                 <div class="violator violet"><img src="/icons/star-violet.svg" /><span>100th Ride</span></div>
+                                                <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                             </div>
                                         </div>
                                         <div class="wrapper" v-for="(n, key) in 4">
@@ -276,6 +287,7 @@
                                             <div class="info">
                                                 <div class="name">Sample</div>
                                                 <div class="violator blue"><img src="/icons/star-blue.svg" /><span>Teaching Anniversary</span></div>
+                                                <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                             </div>
                                         </div>
                                     </div>
@@ -289,6 +301,7 @@
                                             <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
                                             <div class="info">
                                                 <div class="name">Sample</div>
+                                                <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                             </div>
                                         </div>
                                         <div class="wrapper" v-for="(n, key) in 4">
@@ -299,6 +312,7 @@
                                             </div>
                                             <div class="info">
                                                 <div class="name">Sample</div>
+                                                <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                             </div>
                                         </div>
                                     </div>
@@ -313,6 +327,7 @@
                                             <div class="info">
                                                 <div class="name">Sample</div>
                                                 <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
+                                                <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                             </div>
                                         </div>
                                         <div class="wrapper" v-for="(n, key) in 4">
@@ -324,6 +339,7 @@
                                             <div class="info">
                                                 <div class="name">Sample</div>
                                                 <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
+                                                <div class="violator label">50 Minutes Class ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
                                             </div>
                                         </div>
                                     </div>
