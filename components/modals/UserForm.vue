@@ -20,7 +20,7 @@
                             <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
                         </div>
                         <div class="form_check" v-for="(studio, key) in studios" :key="key">
-                            <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checked" class="action_check">
+                            <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checked" @change="toggleStudio()" class="action_check">
                             <label :for="`studio_${key}`">{{ studio.name }}</label>
                         </div>
                         <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
@@ -28,7 +28,7 @@
                     <div class="form_flex_radio select_all" v-if="form.role != 1">
                         <label class="radio_label">Restrict class to studios: <span>*</span></label>
                         <div class="form_radio" v-for="(studio, key) in studios" :key="key">
-                            <input type="radio" :id="`studio_${key}`" name="studios" :value="studio.id" class="action_radio">
+                            <input type="radio" :id="`studio_${key}`" name="studios" :value="studio.id" @change="toggleStudio()" class="action_radio">
                             <label :for="`studio_${key}`">{{ studio.name }}</label>
                         </div>
                         <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
@@ -240,6 +240,12 @@
             }
         },
         methods: {
+            toggleStudio () {
+                const me = this
+                if (me.hasStudio) {
+                    me.hasStudio = false
+                }
+            },
             toggleSelectAllStudio (event) {
                 const me = this
                 if (me.checkStudio) {
