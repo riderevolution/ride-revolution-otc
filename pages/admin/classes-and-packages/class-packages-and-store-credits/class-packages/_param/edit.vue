@@ -277,8 +277,8 @@
                 access: true,
                 loaded: false,
                 imageDimensions: {
-                    imageWidth: 675,
-                    imageHeight: 385
+                    imageWidth: 2814,
+                    imageHeight: 1605
                 },
                 isUnlimited: false,
                 isComplimentary: true,

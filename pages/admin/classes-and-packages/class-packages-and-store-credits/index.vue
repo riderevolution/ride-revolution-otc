@@ -62,7 +62,7 @@
                                 <td>{{ data.sku_id }}</td>
                                 <td>{{ (data.class_count_unlimited) ? 'Unlimited' : data.class_count }}</td>
                                 <td>PHP {{ totalCount(data.package_price) }}</td>
-                                <td>
+                                <td width="20%">
                                     <div class="table_actions">
                                         <nuxt-link class="table_action_edit" :to="`${$route.path}/class-packages/${data.id}/edit`">Edit</nuxt-link>
                                         <div class="table_action_cancel link" @click.self="toggleStatus(data.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
@@ -132,7 +132,7 @@
         data () {
             return {
                 name: 'Classes and Packages',
-                filter: true,
+                filter: false,
                 access: true,
                 loaded: false,
                 lastRoute: '',

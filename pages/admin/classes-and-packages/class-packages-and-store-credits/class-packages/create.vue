@@ -238,7 +238,7 @@
                         </div>
                         <div class="form_footer_wrapper">
                             <div class="form_check">
-                                <input type="checkbox" id="show_on_web" name="show_on_web" class="action_check">
+                                <input type="checkbox" id="show_on_web" name="show_on_web" class="action_check" checked>
                                 <label for="show_on_web">Show on Web</label>
                             </div>
                             <div class="form_check">
@@ -278,8 +278,8 @@
                 access: true,
                 loaded: false,
                 imageDimensions: {
-                    imageWidth: 675,
-                    imageHeight: 385
+                    imageWidth: 2814,
+                    imageHeight: 1605
                 },
                 isUnlimited: false,
                 isComplimentary: true,
