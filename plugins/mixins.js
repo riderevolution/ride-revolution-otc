@@ -124,7 +124,7 @@ Vue.mixin({
                     Authorization: `Bearer ${token}`
                 }
             }).then(res => {
-                this.$cookies.remove('token')
+                this.$cookies.remove('70hokcotc3hhhn5')
                 this.$cookies.remove('CSID')
                 if (this.$store.state.isAuth) {
                     setTimeout(() => {

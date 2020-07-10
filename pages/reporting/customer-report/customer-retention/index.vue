@@ -32,9 +32,9 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div class="total">Total: {{ totalItems(res.customers.total) }}</div>
-                        <div class="total">Total Riders: {{ totalItems(res.customers.total) }}</div>
-                        <div class="total">Retained: {{ totalItems(res.customers.total) }}</div>
+                        <div class="total">Total: {{ totalItems(res.total) }}</div>
+                        <div class="total">Total Riders: {{ totalItems(totalRiders) }}</div>
+                        <div class="total">Retained: {{ totalItems(totalRetained) }}</div>
                         <div :class="`status ${(status == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First time</div>
                         <div :class="`status ${(status == 'second') ? 'active' : ''}`" @click="toggleStatus('second')">Second Time</div>
                         <div :class="`status ${(status == 'third') ? 'active' : ''}`" @click="toggleStatus('third')">Third Time</div>
@@ -75,7 +75,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
+                    <pagination :apiRoute="res.path" :current="res.current_page" :last="res.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -101,21 +101,28 @@
                 },
                 name: 'Customer Retention',
                 access: true,
+                filter: false,
                 loaded: false,
                 rowCount: 0,
                 status: 'first',
                 res: [],
-                types: []
+                totalRiders: 0,
+                totalRetained: 0
             }
         },
         methods: {
             submissionSuccess () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('enabled', me.status)
+                formData.append('type', me.status)
                 me.loader(true)
-                me.$axios.post(`api/customers/search`, formData).then(res => {
-                    me.res = res.data
+                me.filter = true
+                me.$axios.post(`api/reporting/customers/customer-retention`, formData).then(res => {
+                    setTimeout( () => {
+                        me.res = res.data.customers
+                        me.totalRiders = res.data.totalRiders
+                        me.totalRetained = res.data.totalRetained
+                    }, 500)
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
@@ -125,42 +132,33 @@
                     }, 500)
                 })
             },
-            toggleStatus (id, enabled, status) {
+            toggleStatus (status) {
                 const me = this
-                me.$store.state.confirmStatus = true
-                setTimeout( () => {
-                    me.$refs.enabled.confirm.table_name = 'roles'
-                    me.$refs.enabled.confirm.id = id
-                    me.$refs.enabled.confirm.enabled = enabled
-                    me.$refs.enabled.confirm.status = status
-                    me.$refs.enabled.confirm.type = 'role'
-                }, 100)
-                document.body.classList.add('no_scroll')
+                me.status = status
+                me.fetchData(status)
             },
-            toggleStatus (value) {
-                const me = this
-                me.status = value
-            },
-            fetchData (value) {
+            fetchData (status) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
-                    me.res = res.data
-                    me.loaded = true
+                let formData = new FormData()
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                formData.append('type', me.status)
+                me.$axios.post(`api/reporting/customers/customer-retention`, formData).then(res => {
+                    setTimeout( () => {
+                        me.res = res.data.customers
+                        me.totalRiders = res.data.totalRiders
+                        me.totalRetained = res.data.totalRetained
+                        me.loaded = true
+                    }, 500)
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
                 }).then(() => {
                     setTimeout( () => {
+                        me.rowCount = document.getElementsByTagName('th').length
                         me.loader(false)
                     }, 500)
-                    me.rowCount = document.getElementsByTagName('th').length
-                })
-            },
-            fetchTypes () {
-                const me = this
-                me.$axios.get('api/extras/customer-types').then(res => {
-                    me.types = res.data.customerTypes
                 })
             }
         },
@@ -168,8 +166,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData(1)
-                me.fetchTypes()
+                me.fetchData(me.status)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
