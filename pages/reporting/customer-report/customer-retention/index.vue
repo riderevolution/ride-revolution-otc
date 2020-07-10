@@ -50,8 +50,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.customers.data.length > 0">
-                            <tr v-for="(data, key) in res.customers.data" :key="key">
+                        <tbody v-if="res.data.length > 0">
+                            <tr v-for="(data, key) in res.data" :key="key">
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -63,10 +63,10 @@
                                         <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.last_name }} {{ data.last_name }}</nuxt-link>
                                     </div>
                                 </td>
-                                <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                                <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                                <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                                <td>Sample</td>
+                                <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'N/A' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'N/A' }}</td>
+                                <td>{{ data.customer_details.pa_city }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>

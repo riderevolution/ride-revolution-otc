@@ -5,7 +5,7 @@
             <div class="modal_wrapper">
                 <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
-                <div class="modal_main_group">
+                <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
                         <div class="form_radio" v-for="(data, key) in res" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" :key="key">
                             <input type="radio" :id="`package_${key}`" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
@@ -28,7 +28,7 @@
             <div class="modal_wrapper">
                 <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
-                <div class="modal_main_group">
+                <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
                         <div class="form_radio" v-for="(data, key) in res" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" :key="key">
                             <input type="radio" :id="`package_${key}`" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
@@ -51,7 +51,7 @@
             <div class="modal_wrapper">
                 <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
-                <div class="modal_main_group">
+                <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
                         <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" v-for="(data, key) in res" :key="key">
                             <input type="radio" :id="`package_${key}`" :checked="old_package_count_id == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
@@ -74,7 +74,7 @@
             <div class="modal_wrapper">
                 <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
-                <div class="modal_main_group">
+                <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
                         <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" v-for="(data, key) in res" :key="key">
                             <input type="radio" :id="`package_${key}`" :checked="old_package_count_id == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
