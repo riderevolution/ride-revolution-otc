@@ -316,7 +316,7 @@
             if (me.access) {
                 me.loader(true)
                 me.lastRoute = me.$route.path.split('/')[1]
-                let token = me.$cookies.get('token')
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.$axios.get('api/user', {
                     headers: {
                         Authorization: `Bearer ${token}`

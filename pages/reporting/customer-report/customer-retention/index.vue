@@ -20,11 +20,11 @@
                         <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="start_date">Start Date</label>
-                                <input type="date" name="start_date" class="default_text date" />
+                                <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date</label>
-                                <input type="date" name="end_date" class="default_text date" />
+                                <input type="date" name="end_date" v-model="form.end_date"  class="default_text date" />
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -95,9 +95,9 @@
         },
         data () {
             return {
-                range: {
-                    start: new Date(),
-                    end: new Date()
+                form: {
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
                 },
                 name: 'Customer Retention',
                 access: true,

@@ -102,7 +102,7 @@
         },
         mounted () {
             const me = this
-            let token = me.$cookies.get('token')
+            let token = me.$cookies.get('70hokcotc3hhhn5')
             me.$axios.get('api/logs').then(res => {
                 if (res.data) {
                     me.notifications = res.data.logs.data

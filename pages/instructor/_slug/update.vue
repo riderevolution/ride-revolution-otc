@@ -448,7 +448,7 @@
         },
         async mounted () {
             const me = this
-            let token = me.$cookies.get('token')
+            let token = me.$cookies.get('70hokcotc3hhhn5')
             if (me.$route.params.slug == undefined) {
                 me.$nuxt.error({ statusCode: 404, message: 'Page Not Found' })
             } else {

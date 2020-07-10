@@ -64,7 +64,7 @@
                 if (status) {
                     me.$validator.validateAll().then(valid => {
                         if (valid) {
-                            let token = me.$cookies.get('token')
+                            let token = me.$cookies.get('70hokcotc3hhhn5')
                             switch (me.category) {
                                 case 'purchase-order':
                                     me.loader(true)

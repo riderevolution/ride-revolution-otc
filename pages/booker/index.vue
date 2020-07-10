@@ -1021,7 +1021,7 @@
                         }
                         me.customers = res.data.customers
                         me.customerLength = me.customers.length
-                        let token = me.$cookies.get('token')
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         me.$axios.get('api/user', {
                             headers: {
                                 Authorization: `Bearer ${token}`

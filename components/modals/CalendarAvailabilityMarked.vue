@@ -86,7 +86,7 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
-                        let token = me.$cookies.get('token')
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
 
                     } else {
                         me.$scrollTo('.validation_errors', {

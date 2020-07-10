@@ -174,7 +174,7 @@
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
                         let studio_id = me.$cookies.get('CSID')
-                        let token = me.$cookies.get('token')
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         formData.append('studio_id', studio_id)
                         formData.append('_method', 'PATCH')
                         me.loader(true)

@@ -41,7 +41,7 @@
             }
         },
         mounted () {
-            if (this.$cookies.get('token') != null && this.$cookies.get('token') !== undefined) {
+            if (this.$cookies.get('70hokcotc3hhhn5') != null && this.$cookies.get('70hokcotc3hhhn5') !== undefined) {
                 this.$router.push('/')
             }
         },
