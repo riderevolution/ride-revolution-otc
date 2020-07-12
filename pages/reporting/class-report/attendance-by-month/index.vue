@@ -20,15 +20,16 @@
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
-                                <select class="default_select alternate" name="studio_id" v-model="form.studio_id" @change="getStudio($event)">
-                                    <option value="" disabled>Choose a Studio</option>
+                                <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
+                                    <option value="" selected>Choose a Studio</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
                                 <label for="class_type_id">Class Type</label>
-                                <select class="default_select alternate" name="class_type_id">
-                                    <option value="" selected>All Class Type</option>
+                                <select class="default_select alternate" name="class_type_id" v-model="form.class_type_id">
+                                    <option value="0" selected>All Class Type</option>
+                                    <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key">{{ classType.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
@@ -39,12 +40,11 @@
                                 </select>
                             </div>
                             <div class="form_group margin">
-                                <label for="start_date">Start Date</label>
-                                <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
-                            </div>
-                            <div class="form_group margin">
-                                <label for="end_date">End Date</label>
-                                <input type="date" name="end_date" v-model="form.end_date"  class="default_text date" />
+                                <label for="month">Month</label>
+                                <select class="default_select alternate" name="month" v-model="form.month">
+                                    <option value="" disabled>Choose a month</option>
+                                    <option :value="monthsByScheduledDates" v-for="(monthsByScheduledDates, key) in monthsByScheduledDates" :key="key">{{ monthsByScheduledDates }}</option>
+                                </select>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -112,13 +112,15 @@
                 yearName: '',
                 studios: [],
                 instructors: [],
+                classTypes: [],
                 schedules: [],
+                monthsByScheduledDates: [],
                 dayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 form: {
                     studio_id: 0,
+                    class_type_id: 0,
                     instructor_id: 0,
-                    start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    month: this.$moment().format('MMM YYYY')
                 }
             }
         },
@@ -294,19 +296,22 @@
             fetchData () {
                 const me = this
                 let studio_id = me.$cookies.get('CSID')
+                me.fetchExtraAPI()
+                me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
+            },
+            fetchExtraAPI () {
+                const me = this
                 me.$axios.get('api/studios?enabled=1').then(res => {
                     me.studios = res.data.studios
                 })
-                me.$axios.get(`api/instructors?enabled=1&studio_id=${studio_id}`).then(res => {
+                me.$axios.get(`api/instructors?enabled=1`).then(res => {
                     me.instructors = res.data.instructors.data
                 })
-                me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
-            },
-            getStudio (event) {
-                const me = this
-                let value = event.target.value
-                me.$axios.get(`api/instructors?enabled=1&studio_id=${value}`).then(res => {
-                    me.instructors = res.data.instructors.data
+                me.$axios.get(`api/packages/class-types?enabled=1&get=1`).then(res => {
+                    me.classTypes = res.data.classTypes
+                })
+                me.$axios.get(`api/extras/month-by-scheduled-dates`).then(res => {
+                    me.monthsByScheduledDates = res.data.monthsByScheduledDates
                 })
             }
         },
@@ -327,7 +332,6 @@
                         setTimeout( () => {
                             me.fetchData()
                             me.form.studio_id = res.data.user.current_studio_id
-                            me.loader(false)
                         }, 500)
                     }
                 }).catch(err => {
