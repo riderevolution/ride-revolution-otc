@@ -151,7 +151,6 @@
             },
             async generateCalendar (year, month, highlight, search) {
                 const me = this
-                let studio_id = me.$cookies.get('CSID')
                 me.loader(true)
                 me.clearTableRows()
                 me.currentDate = me.$moment().date()
@@ -169,7 +168,7 @@
                         me.schedules = res.data.schedules
                     })
                 } else {
-                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${studio_id}`).then(res => {
+                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}`).then(res => {
                         me.schedules = res.data.schedules
                     })
                 }
@@ -516,6 +515,7 @@
                 me.$axios.get(`api/instructors?enabled=1&studio_id=${studio_id}`).then(res => {
                     me.instructors = res.data.instructors.data
                 })
+                me.form.studio_id = me.$cookies.get('CSID')
                 me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
             },
             getStudio (event) {
@@ -541,7 +541,6 @@
                         me.loaded = true
                         setTimeout( () => {
                             me.fetchData()
-                            me.form.studio_id = res.data.user.current_studio_id
                         }, 500)
                     }
                 }).catch(err => {
