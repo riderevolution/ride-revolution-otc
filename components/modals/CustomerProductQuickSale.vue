@@ -51,7 +51,7 @@
                                                     <option value="" disabled selected>Select a Value</option>
                                                     <option :value="classPackage.sku_id" v-for="(classPackage, key) in classPackages" :key="key">{{ classPackage.name }}</option>
                                                 </select>
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.class_package_sku_id') && showErrors">{{ errors.first('custom_gift_form.class_package_sku_id') | properFormat }}</span></transition>
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.class_package_sku_id')">{{ errors.first('custom_gift_form.class_package_sku_id') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group no_margin">
                                                 <label for="custom_card_code">Card Code <span>*</span></label>
@@ -61,13 +61,13 @@
                                         <div class="form_main_group">
                                             <div class="form_group">
                                                 <label for="custom_card_from">From <span>*</span></label>
-                                                <input type="text" name="custom_card_from" class="default_text" autocomplete="off" v-model="customGiftCard.customCardFrom" v-validate="'required'">
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_from') && showErrors">{{ errors.first('custom_gift_form.custom_card_from') | properFormat }}</span></transition>
+                                                <input type="text" name="custom_card_from" class="default_text" data-vv-name="custom_gift_form.custom_card_from" autocomplete="off" v-model="customGiftCard.customCardFrom" v-validate="'required'">
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_from')">{{ errors.first('custom_gift_form.custom_card_from') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group">
                                                 <label for="custom_card_to">To <span>*</span></label>
-                                                <input type="text" name="custom_card_to" class="default_text" autocomplete="off" v-model="customGiftCard.customCardTo" v-validate="'required'">
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_to') && showErrors">{{ errors.first('custom_gift_form.custom_card_to') | properFormat }}</span></transition>
+                                                <input type="text" name="custom_card_to" class="default_text" data-vv-name="custom_gift_form.custom_card_to" autocomplete="off" v-model="customGiftCard.customCardTo" v-validate="'required'">
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_to')">{{ errors.first('custom_gift_form.custom_card_to') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group">
                                                 <label for="custom_card_predefined_title">Title</label>
@@ -91,13 +91,13 @@
                                         <div class="form_main_group no_border">
                                             <div class="form_group">
                                                 <label for="customer_card_recipient_number">Recipient's Mobile Number <span>*</span></label>
-                                                <input type="text" name="customer_card_recipient_number" autocomplete="off" class="default_text" v-model="customGiftCard.customCardRecipientNumber" v-validate="'required|numeric'">
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.customer_card_recipient_number') && showErrors">{{ errors.first('custom_gift_form.customer_card_recipient_number') | properFormat }}</span></transition>
+                                                <input type="text" name="customer_card_recipient_number" autocomplete="off" class="default_text" v-model="customGiftCard.customCardRecipientNumber" v-validate="'required|numeric'" data-vv-name="custom_gift_form.customer_card_recipient_number">
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.customer_card_recipient_number')">{{ errors.first('custom_gift_form.customer_card_recipient_number') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group">
                                                 <label for="custom_card_recipient_email">Recipient's Email <span>*</span></label>
-                                                <input type="email" name="custom_card_recipient_email" autocomplete="off" class="default_text" v-model="customGiftCard.customCardRecipientEmail" v-validate="'required|email'">
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_recipient_email') && showErrors">{{ errors.first('custom_gift_form.custom_card_recipient_email') | properFormat }}</span></transition>
+                                                <input type="email" name="custom_card_recipient_email" autocomplete="off" class="default_text" v-model="customGiftCard.customCardRecipientEmail" v-validate="'required|email'" data-vv-name="custom_gift_form.custom_card_recipient_email">
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_gift_form.custom_card_recipient_email')">{{ errors.first('custom_gift_form.custom_card_recipient_email') | properFormat }}</span></transition>
                                             </div>
                                             <div class="form_group_disclaimer">
                                                 <div class="form_disclaimer"><img src="/icons/disclaimer-icon.svg" /> <span>The custom gift card will be sent after payment has been processed.</span></div>
@@ -373,25 +373,65 @@
             }
         },
         filters: {
-            properFormat: function (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
+            properFormat (value) {
+                let newValue = value.split('The ')[1].split(' field')[0].split('.')
                 if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
+                    newValue = newValue[1].split('[]')
                     if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        let lastValue = ''
-                        for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
                         }
-                        newValue = firstValue + ' ' + lastValue
                     } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
+                    }
+                } else {
+                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
+                    if (newValue.length > 1) {
+                        let nextValue = newValue[0].split('_')
+                        if (nextValue.length > 1) {
+                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
+                        } else {
+                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                        }
+                    } else {
+                        newValue = value.split('The ')[1].split(' field')[0].split('_')
+                        if (newValue.length > 1) {
+                            let firstValue = ''
+                            let lastValue = ''
+                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
+                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
+                            }
+                            for (let i = 1; i < newValue.length; i++) {
+                                if (newValue[i] != 'id') {
+                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
+                                }
+                            }
+                            newValue = firstValue + ' ' + lastValue
+                        } else {
+                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
+                        }
                     }
                 }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
+                let message = value.split('The ')[1].split(' field')
+                if (message.length > 1) {
+                    message = message[1]
+                    return `The ${newValue} field${message}`
+                } else {
+                    if (message[0].split('file').length > 1) {
+                        message = message[0].split('file')[1]
+                        return `The ${newValue} field${message}`
+                    } else {
+                        return `The ${newValue}`
+                    }
+                }
             }
         },
         computed: {
@@ -848,36 +888,45 @@
                 let customIndex = null
                 me.$validator.validateAll('custom_gift_form').then(valid => {
                     if (valid) {
-                        if (me.customGiftCard.classPackages != '') {
-                            me.totalPrice.forEach((data, index) => {
-                                if (data.id == 9999999) {
-                                    customIndex = index
-                                }
-                            })
-                            if (customIndex != null) {
-                                me.totalPrice[customIndex].price = parseFloat(me.customGiftCard.classPackagePrice)
-                                me.totalPrice[customIndex].item.origPrice = parseFloat(me.customGiftCard.classPackagePrice)
-                            } else {
-                                me.totalPrice.push(
-                                    {
-                                        id: 9999999,
-                                        quantity: 1,
-                                        item: {
-                                            name: 'Custom Gift Card',
-                                            origPrice: parseFloat(me.customGiftCard.classPackagePrice)
-                                        },
-                                        price: parseFloat(me.customGiftCard.classPackagePrice),
-                                        type: 'custom-gift-card'
+                        me.$axios.get(`api/customers/${me.$route.params.param}`).then(res => {
+                            if (res.data) {
+                                if (me.customGiftCard.customCardRecipientEmail == res.data.user.email) {
+                                    me.$store.state.errorList = ['You cannot send an email to yourself.']
+                                    me.$store.state.errorQuickSaleStatus = true
+                                } else {
+                                    if (me.customGiftCard.classPackages != '') {
+                                        me.totalPrice.forEach((data, index) => {
+                                            if (data.id == 9999999) {
+                                                customIndex = index
+                                            }
+                                        })
+                                        if (customIndex != null) {
+                                            me.totalPrice[customIndex].price = parseFloat(me.customGiftCard.classPackagePrice)
+                                            me.totalPrice[customIndex].item.origPrice = parseFloat(me.customGiftCard.classPackagePrice)
+                                        } else {
+                                            me.totalPrice.push(
+                                                {
+                                                    id: 9999999,
+                                                    quantity: 1,
+                                                    item: {
+                                                        name: 'Custom Gift Card',
+                                                        origPrice: parseFloat(me.customGiftCard.classPackagePrice)
+                                                    },
+                                                    price: parseFloat(me.customGiftCard.classPackagePrice),
+                                                    type: 'custom-gift-card'
+                                                }
+                                            )
+                                        }
+                                        me.message = 'You have successfully added your custom gift card.'
+                                        setTimeout( () => {
+                                            me.showErrors = false
+                                            me.$store.state.promptQuickSaleStatus = true
+                                            document.querySelector('.nonsense').scrollIntoView({block: 'center', behavior: 'smooth'})
+                                        }, 10)
                                     }
-                                )
+                                }
                             }
-                            me.message = 'You have successfully added your custom gift card.'
-                            setTimeout( () => {
-                                me.showErrors = false
-                                me.$store.state.promptQuickSaleStatus = true
-                                document.querySelector('.nonsense').scrollIntoView({block: 'center', behavior: 'smooth'})
-                            }, 10)
-                        }
+                        })
                     } else {
                         me.showErrors = true
                         setTimeout( () => {
@@ -1004,7 +1053,7 @@
                                 })
                             }
                         })
-                        me.$axios.get('api/extras/class-packages-for-gift-cards').then(res => {
+                        me.$axios.get('api/extras/class-packages-for-gift-cards?forWeb=1').then(res => {
                             me.classPackages = res.data.classPackages
                         })
                         me.$axios.get('api/extras/gift-card-titles').then(res => {
