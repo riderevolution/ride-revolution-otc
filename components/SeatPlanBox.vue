@@ -172,19 +172,25 @@
                             formData.append('scheduled_date_id', me.$store.state.scheduleID)
                             formData.append('user_id', me.$store.state.customerID)
                             me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
-                                if (res.data.guests >= 5) {
-                                    me.$parent.message = 'The user has already reached the guest limit.'
+                                if (res.data.guestHere) {
+                                    me.$parent.message = 'This customer is already booked as a guest here.'
                                     me.$store.state.promptBookerStatus = true
                                     document.body.classList.add('no_scroll')
                                 } else {
-                                    if (res.data.result == 0) {
-                                        me.$store.state.customerPackageStatus = true
-                                        me.$parent.$parent.$parent.packageMethod = 'create'
+                                    if (res.data.guests >= 5) {
+                                        me.$parent.message = 'The user has already reached the guest limit.'
+                                        me.$store.state.promptBookerStatus = true
                                         document.body.classList.add('no_scroll')
                                     } else {
-                                        me.$store.state.customerPackageStatus = true
-                                        me.$parent.$parent.$parent.packageMethod = 'create-guest'
-                                        document.body.classList.add('no_scroll')
+                                        if (res.data.result == 0) {
+                                            me.$store.state.customerPackageStatus = true
+                                            me.$parent.$parent.$parent.packageMethod = 'create'
+                                            document.body.classList.add('no_scroll')
+                                        } else {
+                                            me.$store.state.customerPackageStatus = true
+                                            me.$parent.$parent.$parent.packageMethod = 'create-guest'
+                                            document.body.classList.add('no_scroll')
+                                        }
                                     }
                                 }
                             }).catch(err => {

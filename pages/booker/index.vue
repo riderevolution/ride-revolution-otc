@@ -187,125 +187,125 @@
                                 <button id="reload">Reload</button>
                             </div>
                         </div>
-                        <panZoom @init="panZoomInit" :options="{
-                            bounds: true,
-                            boundsPadding: 0.2,
-                            minZoom: 0.25,
-                            maxZoom: 1,
-                            zoomDoubleClickSpeed: 1,
-                            beforeWheel: panZoomBeforeWheel,
-                            onDoubleClick: panZoomDoubleClick,
-                            smoothScroll: false,
-                            onTouch: panZoomTouch
-                        }">
-                        <seat-plan ref="plan" />
-                    </panZoom>
-                    <div class="seat_legends">
-                        <div class="legend_title gray"><span></span> Booked</div>
-                        <div class="legend_title margin green"><span></span> Signed In</div>
-                        <div class="legend_title margin white"><span></span> Available</div>
-                        <div class="legend_title margin gradient"><span></span> Blocked/Comp</div>
-                        <div class="action_cancel_btn" @click="toggleDisabled()" v-if="$store.state.disableBookerUI">Cancel</div>
-                    </div>
-                </div>
-                <div :class="`booker_footer ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
-                    <div class="booker_notepad">
-                        <h2 class="footer_title">Notepad</h2>
-                        <div class="notepad_text">
-                            <textarea name="notepad" rows="10" v-model="notePad" @focusout="updateNotes($event)"></textarea>
+                            <panZoom @init="panZoomInit" :options="{
+                                bounds: true,
+                                boundsPadding: 0.2,
+                                minZoom: 0.25,
+                                maxZoom: 1,
+                                zoomDoubleClickSpeed: 1,
+                                beforeWheel: panZoomBeforeWheel,
+                                onDoubleClick: panZoomDoubleClick,
+                                smoothScroll: false,
+                                onTouch: panZoomTouch
+                            }">
+                            <seat-plan ref="plan" />
+                            </panZoom>
+                            <div class="seat_legends">
+                                <div class="legend_title gray"><span></span> Booked</div>
+                                <div class="legend_title margin green"><span></span> Signed In</div>
+                                <div class="legend_title margin white"><span></span> Available</div>
+                                <div class="legend_title margin gradient"><span></span> Blocked/Comp</div>
+                                <div class="action_cancel_btn" @click="toggleDisabled()" v-if="$store.state.disableBookerUI">Cancel</div>
+                            </div>
+                        </div>
+                        <div :class="`booker_footer ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
+                            <div class="booker_notepad">
+                                <h2 class="footer_title">Notepad</h2>
+                                <div class="notepad_text">
+                                    <textarea name="notepad" rows="10" v-model="notePad" @focusout="updateNotes($event)"></textarea>
+                                </div>
+                            </div>
+                            <div class="booker_waitlist">
+                                <div class="footer_header">
+                                    <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
+                                    <a href="javascript:void(0)" :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
+                                </div>
+                                <table class="cms_waitlist">
+                                    <thead>
+                                        <tr>
+                                            <th>Last Name</th>
+                                            <th>First Name</th>
+                                            <th class="action">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody v-if="waitlists.length > 0">
+                                        <tr v-for="(waitlist, key) in waitlists" :key="key">
+                                            <td>{{ waitlist.user.last_name }}</td>
+                                            <td>{{ waitlist.user.first_name }}</td>
+                                            <td class="action">
+                                                <a href="javascript:void(0)" @click="prioritizeWaitlist(waitlist)" :class="`${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</a>
+                                                <a href="javascript:void(0)" :class="`margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody class="no_results" v-else>
+                                        <tr>
+                                            <td colspan="3">The Waitlist is empty.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <div class="booker_waitlist">
-                        <div class="footer_header">
-                            <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
-                            <a href="javascript:void(0)" :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
-                        </div>
-                        <table class="cms_waitlist">
-                            <thead>
-                                <tr>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th class="action">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody v-if="waitlists.length > 0">
-                                <tr v-for="(waitlist, key) in waitlists" :key="key">
-                                    <td>{{ waitlist.user.last_name }}</td>
-                                    <td>{{ waitlist.user.first_name }}</td>
-                                    <td class="action">
-                                        <a href="javascript:void(0)" @click="prioritizeWaitlist(waitlist)" :class="`${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</a>
-                                        <a href="javascript:void(0)" :class="`margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tbody class="no_results" v-else>
-                                <tr>
-                                    <td colspan="3">The Waitlist is empty.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
-            </div>
+            </section>
         </div>
-    </section>
-</div>
-<transition name="fade">
-    <prompt v-if="$store.state.promptStatus" :message="($refs.plan.hasCancel) ? $refs.plan.message : message" :hasCancel="$refs.plan.hasCancel" />
-</transition>
-<transition name="fade">
-    <prompt-broken-bike v-if="$store.state.promptBrokenBikeStatus" :message="brokenMessage" />
-</transition>
-<transition name="fade">
-    <prompt-booker v-if="$store.state.promptBookerStatus" :message="$refs.plan.message" />
-</transition>
-<transition name="fade">
-    <prompt-booker-action v-if="$store.state.promptBookerActionStatus" :message="actionMessage" />
-</transition>
-<transition name="fade">
-    <prompt-sign-out v-if="$store.state.promptSignOutStatus" />
-</transition>
-<transition name="fade">
-    <prompt-switch-seat v-if="$store.state.promptSwitchSeatStatus" />
-</transition>
-<transition name="fade">
-    <prompt-cancel v-if="$store.state.promptCancelStatus" />
-</transition>
-<transition name="fade">
-    <prompt-waitlist v-if="$store.state.promptWaitlistStatus" :value="waitlistID" />
-</transition>
-<transition name="fade">
-    <assign v-if="$store.state.assignStatus" :type="$refs.plan.assignType" />
-</transition>
-<transition name="fade">
-    <remove-assign v-if="$store.state.removeAssignStatus" />
-</transition>
-<transition name="fade">
-    <customer-package v-if="$store.state.customerPackageStatus" :studioID="studioID" :type="packageMethod" />
-</transition>
-<transition name="fade">
-    <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
-</transition>
-<transition name="fade">
-    <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
-</transition>
-<transition name="fade">
-    <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
-</transition>
-<transition name="fade">
-    <attendance-layout v-if="$store.state.attendanceLayoutStatus" :customer="customer" />
-</transition>
-<transition name="fade">
-    <package-layout v-if="$store.state.packageLayoutStatus" :customer="customer" />
-</transition>
-<transition name="fade">
-    <redeem-gift-card v-if="$store.state.redeemGiftCardStatus" :customer="customer" />
-</transition>
-<transition name="fade">
-    <redeem-gift-card-success v-if="$store.state.redeemGiftCardSuccessStatus" />
-</transition>
-<foot v-if="$store.state.isAuth" />
-</div>
+            <transition name="fade">
+                <prompt v-if="$store.state.promptStatus" :message="($refs.plan.hasCancel) ? $refs.plan.message : message" :hasCancel="$refs.plan.hasCancel" />
+            </transition>
+            <transition name="fade">
+                <prompt-broken-bike v-if="$store.state.promptBrokenBikeStatus" :message="brokenMessage" />
+            </transition>
+            <transition name="fade">
+                <prompt-booker v-if="$store.state.promptBookerStatus" :message="$refs.plan.message" />
+            </transition>
+            <transition name="fade">
+                <prompt-booker-action v-if="$store.state.promptBookerActionStatus" :message="actionMessage" />
+            </transition>
+            <transition name="fade">
+                <prompt-sign-out v-if="$store.state.promptSignOutStatus" />
+            </transition>
+            <transition name="fade">
+                <prompt-switch-seat v-if="$store.state.promptSwitchSeatStatus" />
+            </transition>
+            <transition name="fade">
+                <prompt-cancel v-if="$store.state.promptCancelStatus" />
+            </transition>
+            <transition name="fade">
+                <prompt-waitlist v-if="$store.state.promptWaitlistStatus" :value="waitlistID" />
+            </transition>
+            <transition name="fade">
+                <assign v-if="$store.state.assignStatus" :type="$refs.plan.assignType" />
+            </transition>
+            <transition name="fade">
+                <remove-assign v-if="$store.state.removeAssignStatus" />
+            </transition>
+            <transition name="fade">
+                <customer-package v-if="$store.state.customerPackageStatus" :studioID="studioID" :type="packageMethod" />
+            </transition>
+            <transition name="fade">
+                <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
+            </transition>
+            <transition name="fade">
+                <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
+            </transition>
+            <transition name="fade">
+                <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
+            </transition>
+            <transition name="fade">
+                <attendance-layout v-if="$store.state.attendanceLayoutStatus" :customer="customer" />
+            </transition>
+            <transition name="fade">
+                <package-layout v-if="$store.state.packageLayoutStatus" :customer="customer" />
+            </transition>
+            <transition name="fade">
+                <redeem-gift-card v-if="$store.state.redeemGiftCardStatus" :customer="customer" />
+            </transition>
+            <transition name="fade">
+                <redeem-gift-card-success v-if="$store.state.redeemGiftCardSuccessStatus" />
+            </transition>
+            <foot v-if="$store.state.isAuth" />
+        </div>
     </transition>
 </template>
 

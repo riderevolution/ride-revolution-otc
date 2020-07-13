@@ -156,6 +156,7 @@
                             }
                         }).catch(err => {
                             setTimeout( () => {
+                                me.$store.state.errorOverlayStatus = true
                                 me.$store.state.errorList = err.response.data.errors
                                 me.$store.state.errorStatus = true
                             }, 500)
@@ -197,6 +198,7 @@
                             }
                         }).catch(err => {
                             setTimeout( () => {
+                                me.$store.state.errorOverlayStatus = true
                                 me.$store.state.errorList = err.response.data.errors
                                 me.$store.state.errorStatus = true
                             }, 500)
@@ -230,6 +232,7 @@
                             me.$parent.$refs.plan.assignType = 1
                         }
                     }).catch(err => {
+                        me.$store.state.errorOverlayStatus = true
                         me.$store.state.errorList = err.response.data.errors
                         me.$store.state.errorStatus = true
                     })
@@ -255,6 +258,7 @@
                         }
                     }).catch(err => {
                         setTimeout( () => {
+                            me.$store.state.errorOverlayStatus = true
                             me.$store.state.errorList = err.response.data.errors
                             me.$store.state.errorStatus = true
                         }, 500)
@@ -289,7 +293,7 @@
                                         me.res.push(data)
                                     }
                                 })
-                                if (me.$store.state.seat.bookings.length > 0) {
+                                if (me.$store.state.seat && me.$store.state.seat.bookings.length > 0) {
                                     if (me.res.length > 0) {
                                         me.res.forEach((data, index) => {
                                             if (data.id == me.$store.state.seat.bookings[0].user_package_count_id) {
