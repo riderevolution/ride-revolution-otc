@@ -105,7 +105,8 @@
                         <div class="table_notepad">
                             <h2 class="footer_title">Notepad</h2>
                             <div class="notepad_text">
-                                <textarea name="notepad" v-model="res.notepad" @focusout="updateNotes($event)" rows="10"></textarea>
+                                <!-- <textarea name="notepad" @focusout="updateNotes($event)" rows="10"></textarea> -->
+                                <textarea name="notepad" rows="10"></textarea>
                             </div>
                         </div>
                     </div>
@@ -350,7 +351,8 @@
                             <div class="table_notepad">
                                 <h2 class="footer_title">Notepad</h2>
                                 <div class="notepad_text">
-                                    <textarea name="notepad" v-model="res.notepad" @focusout="updateNotes($event)" rows="10"></textarea>
+                                    <!-- <textarea name="notepad" @focusout="updateNotes($event)" rows="10"></textarea> -->
+                                    <textarea name="notepad" rows="10"></textarea>
                                 </div>
                             </div>
                         </div>

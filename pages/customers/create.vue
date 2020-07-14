@@ -50,8 +50,9 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="email">Email Address <span>*</span></label>
-                                        <input type="email" name="email" autocomplete="off" class="default_text" v-validate="{required: true, email: true, max: 70}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
+                                        <input type="email" name="email" @keyup="checkValidity('email', $event)" autocomplete="off" class="default_text" v-validate="{required: true, email: true, max: 70}">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email') && !checkEmailValidity">{{ errors.first('email') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="checkEmailValidity">Email is already taken</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="co_contact_number">Contact Number <span>*</span></label>
@@ -358,6 +359,7 @@
                 access: true,
                 loaded: false,
                 checkUsernameValidity: false,
+                checkEmailValidity: false,
                 tooltip: false,
                 error: false,
                 previewImage: false,
