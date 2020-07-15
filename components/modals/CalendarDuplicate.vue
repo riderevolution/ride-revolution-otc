@@ -33,7 +33,7 @@
                             <div class="form_group" v-for="(data, key) in populateWeeks" :key="key">
                                 <label class="flex_label">{{ data.name }} {{ data.year }}</label>
                                 <div class="form_check" v-for="(week, wkey) in data.weeks" :key="wkey">
-                                    <input type="checkbox" :id="`week_${data.month}_${week}`" name="target_weeks[]" :value="`${getWeekRange(data.year, data.month, data.day, wkey)}`" class="action_check" checked>
+                                    <input type="checkbox" :id="`week_${data.month}_${week}`" name="target_weeks[]" :value="`${getWeekRange(data.year, data.month, data.day, wkey)}`" class="action_check">
                                     <label :for="`week_${data.month}_${week}`">{{ convertNumbertoString(wkey) }} Week</label>
                                 </div>
                             </div>

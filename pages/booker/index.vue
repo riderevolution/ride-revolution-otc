@@ -143,10 +143,10 @@
                                 <div class="seat_controls">
                                     <div class="left_side">
                                         <div class="class_options">
-                                            <!-- <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options">
+                                        <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options">
                                             <option value="" disabled selected>Class Options</option>
                                             <option :value="key" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
-                                        </select> -->
+                                        </select>
                                         <div class="class_info">
                                             <div class="action_calendar_btn" id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
                                             <div class="overlay">
@@ -378,7 +378,7 @@
                 customerLength: 0,
                 schedules: [],
                 customerTypes: [],
-                classOptions: ['Email Class', 'Print Sign-in Sheet', 'Print Room', 'Print Waitlist', 'Customers with Pending Payment', 'Customer Info', 'Attendance Log'],
+                classOptions: ['Print Sign-in Sheet w/ Measurements', 'Print Room'],
                 notePad: '',
                 studioID: 0,
                 current: 0,
