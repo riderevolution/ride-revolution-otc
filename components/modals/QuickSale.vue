@@ -147,7 +147,7 @@
                         <div class="form_main_group" v-if="form.paymentType == 0 || form.paymentType == 2">
                             <div class="form_group">
                                 <label for="bank">Bank <span>*</span></label>
-                                <select class="default_select alternate" name="bank" v-validate="'required'">
+                                <select class="default_select alternate" name="bank" key="bank" v-validate="'required'">
                                     <option value="" selected disabled>Select a Bank</option>
                                     <option value="bpi">Bank of the Philippines Islands</option>
                                     <option value="bdo">Banco de Oro</option>
@@ -157,40 +157,36 @@
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ errors.first('checkout_form.bank') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
-                                <label for="type_of_card">Type of Card <span>*</span></label>
-                                <select class="default_select alternate" name="type_of_card" v-validate="'required'" v-model="cardType">
-                                    <option value="" selected disabled>Select Type of Card</option>
-                                    <option value="mastercard">Mastercard</option>
-                                    <option value="visa">Visa</option>
-                                    <option value="cirrus">Cirrus</option>
-                                    <option value="jcb">JCB</option>
-                                    <option value="amex">American Express</option>
-                                    <option value="others">Others</option>
+                                <label for="terminal">Terminal <span>*</span></label>
+                                <select class="default_select alternate" name="terminal" key="terminal" v-validate="'required'" v-model="cardType">
+                                    <option value="" selected disabled>Select Terminal</option>
+                                    <option value="paymaya">Paymaya</option>
+                                    <option value="bdo">BDO</option>
                                 </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.type_of_card')">{{ errors.first('checkout_form.type_of_card') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.terminal')">{{ errors.first('checkout_form.terminal') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group" v-if="cardType == 'others'">
                                 <label for="others">Others <span>*</span></label>
-                                <input type="text" name="others" class="default_text" v-validate="'required'">
+                                <input type="text" name="others" class="default_text" v-validate="'required'" key="others">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.others')">{{ errors.first('checkout_form.others') | properFormat }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 1">
                             <div class="form_group">
                                 <label for="bank">Bank <span>*</span></label>
-                                <input type="text" name="bank" class="default_text" v-validate="'required'">
+                                <input type="text" name="bank" class="default_text" v-validate="'required'" key="bank">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ errors.first('checkout_form.bank') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="check_number">Check Number <span>*</span></label>
-                                <input type="text" name="check_number" class="default_text" v-validate="'required'">
+                                <input type="text" name="check_number" class="default_text" v-validate="'required'" key="check_number">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.check_number')">{{ errors.first('checkout_form.check_number') | properFormat }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 3">
                             <div class="form_group">
                                 <label for="comp_reason">Comp Reason <span>*</span></label>
-                                <select class="default_select alternate" name="comp_reason" v-validate="'required'" v-model="form.comp">
+                                <select class="default_select alternate" name="comp_reason" v-validate="'required'" key="comp_reason" v-model="form.comp">
                                     <option value="" selected disabled>Select a Reason</option>
                                     <option value="so-sick">So Sick of love song</option>
                                     <option value="other">Other</option>
@@ -200,19 +196,20 @@
                             <transition name="fade">
                                 <div class="form_group" v-if="form.comp == 'other'">
                                     <label for="other">Indicate Reason</label>
-                                    <input type="text" name="indicate_reason" class="default_text">
+                                    <input type="text" name="indicate_reason" class="default_text" v-validate="'required'" key="indicate_reason">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.indicate_reason')">{{ errors.first('checkout_form.indicate_reason') | properFormat }}</span></transition>
                                 </div>
                             </transition>
                             <div class="form_group">
                                 <label for="note">Note <span>*</span></label>
-                                <input type="text" name="note" class="default_text" v-validate="'required'">
+                                <input type="text" name="note" class="default_text" key="note" v-validate="'required'">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ errors.first('checkout_form.note') | properFormat }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 4">
                             <div class="form_group">
                                 <label for="cash_tendered">Cash Tendered (PHP) <span>*</span></label>
-                                <input type="text" name="cash_tendered" class="default_text" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', min_value: form.total, max_value: 9999999}" v-model="form.change">
+                                <input type="text" name="cash_tendered" class="default_text" key="cash_tendered" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', min_value: form.total, max_value: 9999999}" v-model="form.change">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.cash_tendered')">{{ errors.first('checkout_form.cash_tendered') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group">

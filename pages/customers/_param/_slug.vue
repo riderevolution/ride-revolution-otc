@@ -31,6 +31,7 @@
                             <div class="user_action">
                                 <div class="action_user_btn" @click="toggleQuickSale('credit')">Buy Credits</div>
                                 <div class="action_user_btn margin" @click="toggleQuickSale('product')">Buy Products</div>
+                                <div class="action_success_btn alternate margin" @click="getCurrentCustomer()">Booker</div>
                             </div>
                         </div>
                     </div>
@@ -101,6 +102,19 @@
             }
         },
         methods: {
+            getCurrentCustomer () {
+                const me = this
+                me.$axios.get(`api/customers/${me.$route.params.param}`).then(res => {
+                    if (res.data) {
+                        me.$store.state.customer = res.data.user
+                        me.$store.state.customerID = res.data.user.id
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                })
+                me.$router.push('/booker')
+            },
             fetchData () {
                 const me = this
                 me.loader(true)

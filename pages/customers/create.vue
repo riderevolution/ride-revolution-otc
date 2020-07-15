@@ -62,9 +62,9 @@
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
-                                        <label for="co_birthdate">Birthdate <span>*</span></label>
-                                        <input type="date" name="co_birthdate" autocomplete="off" class="default_text date" v-model="form.birth_date" v-validate="'required|date_format:yyyy-MM-dd'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_birthdate')">{{ errors.first('co_birthdate') | properFormat }}</span></transition>
+                                        <label for="co_birthdate">Birth Date <span>*</span></label>
+                                        <input type="text" name="co_birthdate" autocomplete="off" maxlength="10" class="default_text" v-model="form.birth_date" @keyup="inputDate($event)" placeholder="YYYY-MM-DD" v-validate="{required: true, max: 10, date_format: 'yyyy-MM-dd'}">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_birthdate')">The Birth Date must be in the format YYYY-MM-DD</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="co_weight">Weight (in kilograms)</label>
@@ -368,7 +368,7 @@
                 prevRoute: '',
                 form: {
                     toggled: false,
-                    birth_date: 'YYYY-MM-DD',
+                    birth_date: '',
                     pa_address: '',
                     pa_address_2: '',
                     pa_country: 174,
@@ -467,6 +467,10 @@
             }
         },
         methods: {
+            inputDate (event) {
+                const me = this
+                me.form.birth_date = me.parseInputToDate(event.target.value)
+            },
             toggleWorld (event, type, category) {
                 const me = this
                 let country_id = (category == 'pa') ? me.form.pa_country : me.form.ba_country
@@ -546,10 +550,10 @@
                         ctr++
                     }
                 })
-                if (ctr == me.histories.length) {
-                    me.error = false
-                } else {
-                    me.error = true
+                if (me.error) {
+                    if (ctr == me.histories.length) {
+                        me.error = false
+                    }
                 }
             },
             copyPersonal (status) {
@@ -587,7 +591,7 @@
                                 setTimeout( () => {
                                     if (res.data) {
                                         me.notify('Content has been Added')
-                                        me.$router.push(`/${me.lastRoute}`)
+                                        me.$router.push(`/customers/${res.data.user.id}/packages`)
                                     }
                                 }, 500)
                             }).catch(err => {

@@ -3,7 +3,7 @@
         <div class="background" @click="toggleClose()"></div>
         <form id="default_form" class="overlay" @submit.prevent="submissionCreateSuccess()" v-if="type == 'create'">
             <div class="modal_wrapper">
-                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
+                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class {{ ($parent.schedule.schedule.class_credits <= 1) ? 'CREDIT' : 'CREDITS' }} will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
@@ -26,7 +26,7 @@
         </form>
         <form id="default_form" class="overlay" @submit.prevent="submissionCreateGuestSuccess()" v-if="type == 'create-guest'">
             <div class="modal_wrapper">
-                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
+                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class {{ ($parent.schedule.schedule.class_credits <= 1) ? 'CREDIT' : 'CREDITS' }} will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
@@ -49,7 +49,7 @@
         </form>
         <form id="default_form" class="overlay" @submit.prevent="submissionUpdateSuccess()" v-if="type == 'update'">
             <div class="modal_wrapper">
-                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
+                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class {{ ($parent.schedule.schedule.class_credits <= 1) ? 'CREDIT' : 'CREDITS' }} will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
@@ -72,7 +72,7 @@
         </form>
         <form id="default_form" class="overlay" @submit.prevent="submissionWaitlistSuccess()" v-if="type == 'waitlist'">
             <div class="modal_wrapper">
-                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class credits will be deducted)</span></h2>
+                <h2 class="form_title">Choose a Package <br><span>({{ $parent.schedule.schedule.class_credits }} class {{ ($parent.schedule.schedule.class_credits <= 1) ? 'CREDIT' : 'CREDITS' }} will be deducted)</span></h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">

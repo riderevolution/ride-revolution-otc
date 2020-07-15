@@ -41,7 +41,7 @@
                             </div>
                         </div>
                         <div class="package_action">
-                            <nuxt-link to="/booker" :class="`action_success_btn ${(data.frozen) ? 'disabled' : ''}`" @click.prevent="getCurrentCustomer()">Book a Class</nuxt-link>
+                            <div :class="`action_success_btn ${(data.frozen) ? 'disabled' : ''}`" @click="getCurrentCustomer()">Book a Class</div>
                             <div class="package_options" v-if="data.class_package.class_count_unlimited != 1">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
@@ -292,6 +292,10 @@
                         <div class="wrapper">
                             <label>Occupation</label>
                             <p>{{ value.customer_details.profession }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Shoe Size</label>
+                            <p>{{ value.customer_details.co_shoe_size }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Customer Type</label>

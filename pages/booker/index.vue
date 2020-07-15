@@ -54,7 +54,7 @@
                                                 </div>
                                                 <div class="customer_details">
                                                     <h2 class="customer_name">
-                                                        {{ customer.first_name }} {{ customer.last_name }}
+                                                        <nuxt-link class="name" :to="`/customers/${customer.id}/packages`">{{ customer.first_name }} {{ customer.last_name }}</nuxt-link>
                                                         <div class="types" v-if="customer.customer_details.customer_type.images.length > 0"><img :src="customer.customer_details.customer_type.images[0].path_resized" /></div>
                                                         <div class="types" v-if="customer.has_first_timer"><img src="/icons/first-timer-package-icon.png" /></div>
                                                         <a :href="`mailto:${customer.email}`" class="email">
@@ -688,7 +688,7 @@
                         me.$store.state.attendanceLayoutStatus = true
                         break
                     case 'package':
-                        me.$store.state.packageLayoutStatus = true
+                        me.$router.push(`/customers/${me.customer.id}/packages`)
                         break
                     case 'redeem':
                         me.$store.state.redeemGiftCardStatus = true
@@ -712,7 +712,6 @@
             },
             getCustomer (data) {
                 const me = this
-                console.log(data);
                 me.toggleCustomers = false
                 me.$store.state.customerID = data.id
                 me.customer = data
@@ -1013,11 +1012,8 @@
                 me.loader(true)
                 me.$axios.post('api/customers/search', formData).then(res => {
                     if (res.data) {
-                        if (me.$store.state.customer !== null) {
+                        if (me.$store.state.customer != null) {
                             me.customer = me.$store.state.customer
-                            setTimeout( () => {
-                                me.$refs.plan.hasCustomer = true
-                            }, 10)
                         }
                         me.customers = res.data.customers
                         me.customerLength = me.customers.length
@@ -1029,6 +1025,9 @@
                         }).then(res => {
                             if (res.data != 0) {
                                 setTimeout( () => {
+                                    setTimeout( () => {
+                                        me.$refs.plan.hasCustomer = true
+                                    }, 10)
                                     me.user = res.data.user
                                     me.studioID = res.data.user.current_studio_id
                                     me.loaded = true

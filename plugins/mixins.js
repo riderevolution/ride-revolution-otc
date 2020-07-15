@@ -2,6 +2,25 @@ import Vue from 'vue'
 
 Vue.mixin({
     methods: {
+        parseInputToDate (target) {
+            const me = this
+            let lastValue = ''
+            let value = target.split('-').join('')
+            if (value.length > 0) {
+                value = value.match(new RegExp('.{1,4}', 'g')).join('-')
+                let valueArrayChecker = value.split('-')
+                if (valueArrayChecker[1]) {
+                    if (valueArrayChecker[1].length > 0) {
+                        value = value.split('-')
+                        lastValue = `${value[0]}-`
+                        lastValue += value[1].match(new RegExp('.{1,2}', 'g')).join('-')
+                    }
+                } else {
+                    lastValue = value
+                }
+            }
+            return lastValue
+        },
         checkPagePermission (page) {
             const me = this
             return new Promise((resolve, reject) => {
