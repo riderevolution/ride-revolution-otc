@@ -5731,7 +5731,7 @@ input::placeholder
                                 position: absolute
                                 bottom: 0
                                 left: 0
-                                padding: 0 5px 5px 5px
+                                padding: 0 5px 25px 5px
                                 text-align: left
                                 .info_image
                                     display: flex
@@ -5744,10 +5744,19 @@ input::placeholder
                                         height: 30px
                                     &:last-child
                                         margin-right: 0px
-                                h2
-                                    sf_pro_regular(18px)
-                                    color: $black
-                                    flex: 0 0 100%
+                            h2
+                                position: absolute
+                                bottom: calc(0% + 5px)
+                                padding: 0 5px
+                                left: 0
+                                right: 0
+                                sf_pro_medium(18px)
+                                color: $black
+                                z-index: 9
+                                text-align: left
+                                &.info_link
+                                    color: $green
+                                    text-decoration: underline
                             .seat_available
                                 position: absolute
                                 top: 0

@@ -70,9 +70,13 @@
                     <div class="info_image" v-if="seat.bookings.length > 0 && seat.bookings[0].is_guest == 1">
                         <img src="/icons/guest-icon.svg" />
                     </div>
-                    <h2 v-line-clamp="1">{{ (seat.comp.length > 0) ? (seat.comp[0].user_id != null ? seat.comp[0].user.first_name : seat.comp[0].email) : (seat.bookings.length > 0 && seat.bookings[0].user != null ? seat.bookings[0].user.first_name : seat.bookings[0].guest_first_name) }} {{ (seat.comp.length > 0) ? (seat.comp[0].user_id != null ? seat.comp[0].user.last_name : '') : (seat.bookings.length > 0 && seat.bookings[0].user != null ? seat.bookings[0].user.last_name : seat.bookings[0].guest_last_name) }}</h2>
                 </div>
             </div>
+            <h2 v-line-clamp="1" v-if="seat.comp.length > 0">{{ (seat.comp[0].user_id != null) ? `${seat.comp[0].user.first_name} ${seat.comp[0].user.last_name}` : seat.comp[0].email }}</h2>
+
+            <h2 class="info_link" v-line-clamp="1" @click.self="getCurrentCustomer(seat)" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">{{ seat.bookings[0].user.first_name }} {{ seat.bookings[0].user.last_name }}</h2>
+
+            <h2 v-line-clamp="1" v-if="seat.bookings.length > 0 && seat.bookings[0].user == null">{{ seat.bookings[0].guest_first_name }} {{ seat.bookings[0].guest_last_name }}</h2>
             <!-- <div class="seat_info_blocked">
                 <div class="info_image">
                     <img src="/icons/broken-bike-icon.svg" />
@@ -102,6 +106,23 @@
             }
         },
         methods: {
+            getCurrentCustomer (seat) {
+                const me = this
+                me.loader(true)
+                me.$axios.get(`api/customers/${seat.bookings[0].user.id}`).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.$parent.$parent.$parent.customer = res.data.user
+                            me.$store.state.customer = res.data.user
+                            me.$store.state.customerID = res.data.user.id
+                            me.loader(false)
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                })
+            },
             toggle (seat, unique, type) {
                 const me = this
                 let target = document.getElementById(`seat_${me.position}_${unique}`)
@@ -122,10 +143,6 @@
                 if (me.$parent.hasCustomer) {
                     if (seat.bookings.length > 0 && (seat.bookings[0].original_booker_id == me.$parent.$parent.$parent.customer.id)) {
                         result += 'highlight '
-                    } else {
-                        if (seat.status != 'open' && seat.status != 'comp' && seat.status != 'blocked') {
-                            result += 'disabled '
-                        }
                     }
                 }
                 if (me.$store.state.disableBookerUI) {
@@ -209,8 +226,15 @@
                         break
                     case 'reserved':
                     case 'reserved-guest':
-                        me.$store.state.bookerMenuPromptStatus = true
-                        document.body.classList.add('no_scroll')
+                        if (me.$parent.$parent.$parent.customer) {
+                            if (seat.bookings.length > 0 && (seat.bookings[0].original_booker_id == me.$parent.$parent.$parent.customer.id)) {
+                                me.$store.state.bookerMenuPromptStatus = true
+                                document.body.classList.add('no_scroll')
+                            }
+                        } else {
+                            me.$store.state.bookerMenuPromptStatus = true
+                            document.body.classList.add('no_scroll')
+                        }
                         break
                     case 'signed-in':
                         if (seat.past == 1) {
