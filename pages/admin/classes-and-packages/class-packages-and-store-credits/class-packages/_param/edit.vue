@@ -21,20 +21,6 @@
                             </div>
                             <transition name="fade">
                                 <div class="form_main_group alternate" v-if="isPromo">
-                                    <div class="form_flex_radio_alternate">
-                                        <label>Allow sharing of package? <span>*</span></label>
-                                        <div class="radio_wrapper">
-                                            <div class="form_radio">
-                                                <input type="radio" id="por_allow_yes" value="Yes" :checked="res.por_allow_sharing_of_package == 1" v-validate="'required'" name="por_allow_sharing_of_package" class="action_radio">
-                                                <label for="por_allow_yes">Yes</label>
-                                            </div>
-                                            <div class="form_radio">
-                                                <input type="radio" id="por_allow_no" value="No" :checked="res.por_allow_sharing_of_package == 0" v-validate="'required'" name="por_allow_sharing_of_package" class="action_radio">
-                                                <label for="por_allow_no">No</label>
-                                            </div>
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('por_restrict_to_new_customers')">{{ errors.first('por_restrict_to_new_customers') | properFormat }}</span></transition>
-                                        </div>
-                                    </div>
                                     <div class="form_group">
                                         <label for="discounted_package_price">Discounted Package Price <span>*</span></label>
                                         <div class="form_flex_input full">
@@ -132,6 +118,25 @@
                                     <label for="gift_card_description">Gift Card Description <span>*</span></label>
                                     <textarea name="gift_card_description" rows="2" id="gift_card_description" class="default_text" v-validate="'required|max:200'"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('gift_card_description')">{{ errors.first('gift_card_description') | properFormat }}</span></transition>
+                                </div>
+                                <div class="form_flex">
+                                    <div class="form_flex_radio">
+                                        <label class="radio_label">Allow sharing of package? <span>*</span></label>
+                                        <div class="form_radio">
+                                            <input type="radio" id="por_allow_yes" value="Yes" :checked="res.por_allow_sharing_of_package == 1" v-validate="'required'" name="por_allow_sharing_of_package" class="action_radio">
+                                            <label for="por_allow_yes">Yes</label>
+                                        </div>
+                                        <div class="form_radio">
+                                            <input type="radio" id="por_allow_no" value="No" :checked="res.por_allow_sharing_of_package == 0" v-validate="'required'" name="por_allow_sharing_of_package" class="action_radio">
+                                            <label for="por_allow_no">No</label>
+                                        </div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('por_restrict_to_new_customers')">{{ errors.first('por_restrict_to_new_customers') | properFormat }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="max_per_class">Max Number of Bookings Per Class <span>*</span></label>
+                                        <input type="text" name="max_per_class" class="default_text number" v-model="res.max_per_class" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('max_per_class')">{{ errors.first('max_per_class') | properFormat }}</span></transition>
+                                    </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group flex">

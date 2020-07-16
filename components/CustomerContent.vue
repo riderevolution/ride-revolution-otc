@@ -193,7 +193,8 @@
             <table class="cms_table_accordion">
                 <thead>
                     <tr>
-                        <th>Transanction Date</th>
+                        <th>Reference Number</th>
+                        <th>Transaction Date</th>
                         <th>Branch</th>
                         <th>Total Qty.</th>
                         <th>Payment Method</th>
@@ -203,7 +204,8 @@
                 </thead>
                 <tbody :class="`${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
                     <tr class="parent alt">
-                        <td class="toggler" @click.self="toggleAccordion($event, key)">{{ formatDate(data.created_at, true) }}</td>
+                        <td class="toggler" @click.self="toggleAccordion($event, key)">{{ (data.studio_id != null) ? data.payment_code : (data.payment_method.method == 'paypal') ? data.payment_method.paypal_transaction_id : (data.payment_method.method == 'store-credits') ? data.payment_code : data.payment_method.paymaya_transaction_id }}</td>
+                        <td>{{ formatDate(data.created_at, true) }}</td>
                         <td>{{ (data.studio_id != null) ? data.studio.name : 'Website' }}</td>
                         <td>{{ countVariantQty(data.payment_items) }}</td>
                         <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>

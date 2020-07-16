@@ -7,8 +7,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div class="form_radio" v-for="(data, key) in res" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" :key="key">
-                            <input type="radio" :id="`package_${key}`" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${(key == 0) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="key == 0" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -30,8 +30,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div class="form_radio" v-for="(data, key) in res" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" :key="key">
-                            <input type="radio" :id="`package_${key}`" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${(key == 0) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="key == 0" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -225,6 +225,7 @@
                     let formData = new FormData()
                     formData.append('scheduled_date_id', me.$store.state.scheduleID)
                     formData.append('user_id', me.$store.state.customerID)
+                    formData.append('user_package_count_id', me.user_package_count_id)
                     me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
                         if (res.data.result > 0) {
                             me.$store.state.customerPackageStatus = false
@@ -290,16 +291,20 @@
                             if (res.data.customer.user_package_counts.length > 0) {
                                 res.data.customer.user_package_counts.forEach((data, index) => {
                                     if (parseInt(me.$moment(data.class_package.computed_expiration_date).diff(me.$moment(), 'days')) > 0 || data.class_package.computed_expiration_date == null) {
-                                        me.res.push(data)
+                                        if (parseInt(data.count) >= me.$parent.schedule.schedule.class_credits) {
+                                            if (index == 0) {
+                                                me.user_package_count_id = data.id
+                                                me.new_package_count_id = data.id
+                                                me.$store.state.userPackageCountId = data.id
+                                            }
+                                            me.res.push(data)
+                                        }
                                     }
                                 })
                                 if (me.$store.state.seat && me.$store.state.seat.bookings.length > 0) {
                                     if (me.res.length > 0) {
-                                        me.res.forEach((data, index) => {
-                                            if (data.id == me.$store.state.seat.bookings[0].user_package_count_id) {
-                                                me.old_package_count_id = data.id
-                                            }
-                                        })
+                                        console.log(me.$store.state.seat);
+                                        me.old_package_count_id = me.$store.state.seat.bookings[0].user_package_count_id
                                     } else {
                                         me.$store.state.customerPackageStatus = false
                                         setTimeout( () => {

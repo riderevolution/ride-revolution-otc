@@ -17,13 +17,13 @@
         methods: {
             toggleClose () {
                 const me = this
-                if (!me.$store.state.pendingTransactionsStatus || !me.$store.state.customerPackageStatus) {
-                    document.body.classList.remove('no_scroll')
-                }
                 if (me.$store.state.errorOverlayStatus) {
                     me.$store.state.errorStatus = false
                     me.$store.state.errorOverlayStatus = false
                 } else {
+                    if (!me.$store.state.pendingTransactionsStatus || !me.$store.state.customerPackageStatus) {
+                        document.body.classList.remove('no_scroll')
+                    }
                     me.$store.state.errorStatus = false
                     document.body.classList.remove('no_scroll')
                 }
