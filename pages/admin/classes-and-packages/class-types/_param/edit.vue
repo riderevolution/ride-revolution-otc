@@ -8,7 +8,7 @@
                         <h1 class="header_title">Update {{ res.name }}</h1>
                     </div>
                 </section>
-                <section id="content" v-if="loaded">
+                <section id="content">
                     <form id="default_form" @submit.prevent="submissionSuccess()" enctype="multipart/form-data">
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">

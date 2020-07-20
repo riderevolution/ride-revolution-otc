@@ -43,7 +43,7 @@
                                 <label for="month">Month</label>
                                 <select class="default_select alternate" name="month" v-model="form.month">
                                     <option value="" disabled>Choose a month</option>
-                                    <option :value="monthsByScheduledDates" v-for="(monthsByScheduledDates, key) in monthsByScheduledDates" :key="key">{{ monthsByScheduledDates }}</option>
+                                    <option :value="monthsByScheduledDate" v-for="(monthsByScheduledDate, key) in monthsByScheduledDates" :key="key">{{ monthsByScheduledDate }}</option>
                                 </select>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
@@ -52,7 +52,7 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div class="total">Avg Attendance: 24.6</div>
+                        <div class="total">Avg Attendance: {{ computeAvg() }}</div>
                     </div>
                     <div class="calendar_wrapper">
                         <div class="calendar_actions">
@@ -120,11 +120,31 @@
                     studio_id: 0,
                     class_type_id: 0,
                     instructor_id: 0,
-                    month: this.$moment().format('MMM YYYY')
+                    month: this.$moment().format('MMMM YYYY')
                 }
             }
         },
         methods: {
+            computeAvg () {
+                const me = this
+                let hasSchedules = false
+                let result = 0
+                if (me.schedules.length > 0) {
+                    me.schedules.forEach((schedule, index) => {
+                        result += schedule.bookings.length
+                    })
+                    hasSchedules = true
+                } else {
+                    result = '0.0'
+                }
+
+                if (hasSchedules) {
+                    result = result / me.schedules.length
+                    result = me.totalCount(result)
+                }
+
+                return result
+            },
             async submissionSuccess () {
                 const me = this
                 me.generateCalendar(me.currentYear, me.currentMonth, 0, 1)
@@ -165,15 +185,17 @@
                 let calendarTable = document.querySelector('.cms_table_calendar tbody')
                 let current = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d')
                 let excess = 0
-                if (search) {
-                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}`).then(res => {
-                        me.schedules = res.data.schedules
-                    })
-                } else {
-                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${studio_id}`).then(res => {
-                        me.schedules = res.data.schedules
-                    })
-                }
+
+                let formData = new FormData()
+                formData.append('date', me.form.month)
+                formData.append('studio_id', studio_id)
+                formData.append('instructor_id', me.form.instructor_id)
+                formData.append('class_type_id', me.form.class_type_id)
+
+                await me.$axios.post(`api/reporting/classes/attendance-by-month`, formData).then(res => {
+                    me.schedules = res.data.schedules
+                })
+                
                 /**
                  * Generate Rows **/
                 for (let i = 0; i < 6; i++) {
@@ -246,7 +268,6 @@
                     calendarTable.appendChild(tableRow)
                 }
                 setTimeout( () => {
-                    // me.clickDates(0, endDate, excess)
                     me.loader(false)
                 }, 500)
             },
@@ -256,25 +277,23 @@
             populateScheduler (date) {
                 const me = this
                 let result = ''
-                result += `
-                    <div class="attendance">
-                        <div class="atd_left">
-                            <p>${me.$moment().format('h:mm A')}</p>
-                            <p>Sample Text</p>
-                        </div>
-                        <div class="atd_right">
-                            15
-                        </div>
-                    </div>
-                    `
+                me.schedules.forEach((schedule, index) => {
+                    if (date == me.$moment(schedule.date).format('DD')) {
+                        result += `
+                            <div class="attendance">
+                                <div class="atd_left">
+                                    <p>${me.$moment(schedule.schedule.start_time, 'hh:mm A').format('h:mm A')}</p>
+                                    <p>${schedule.schedule.class_type.name} (${schedule.schedule.class_length_formatted})</p>
+                                </div>
+                                <div class="atd_right">
+                                    ${schedule.bookings.length}
+                                </div>
+                            </div>
+                        `
+                    }
+                })
                 return result
             },
-            // clickDates (startNum, endNum, firstDayExcess) {
-            //     const me = this
-            //     do {
-            //         startNum++
-            //     } while (startNum < endNum + firstDayExcess)
-            // },
             getFirstDayofWeek (startDate, excess) {
                 const me = this
                 let firstDayofWeek = parseInt(me.$moment(`${me.currentYear}-${me.currentMonth}-${startDate}`, 'YYYY-MM-D').startOf('week').format('D')) + parseInt(excess)

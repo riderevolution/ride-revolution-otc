@@ -8,7 +8,7 @@
                     <div class="header_side">
                         <h2 class="header_title">Checkout</h2>
                         <div class="header_subtitle">
-                            <span>ID: {{ form.id }}</span>
+                            <span>ID: {{ value.payment_code }}</span>
                         </div>
                     </div>
                     <div class="left_side">

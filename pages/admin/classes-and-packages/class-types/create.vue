@@ -338,6 +338,7 @@
                 const me = this
                 me.$axios.get('api/studios').then(res => {
                     me.studios = res.data.studios
+                    me.loaded = true
                 })
             }
         },

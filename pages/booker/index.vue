@@ -21,7 +21,7 @@
                                 </div>
                                 <div class="form_group selection margin" v-click-outside="closeMe">
                                     <label for="q">Find a Customer</label>
-                                    <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @click="toggleCustomers ^= true" @input="searchCustomer($event)">
+                                    <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @click="toggleCustomers = true" @input="searchCustomer($event)">
                                     <transition name="slide"><span class="validation_errors alt" v-if="!findCustomer && customer == ''">Select Customer</span></transition>
                                     <div :class="`customer_selection ${(customerLength > 6) ? 'scrollable' : ''}`" v-if="toggleCustomers">
                                         <div class="customer_selection_list">
@@ -54,7 +54,7 @@
                                                 </div>
                                                 <div class="customer_details">
                                                     <h2 class="customer_name">
-                                                        <nuxt-link class="name" :to="`/customers/${customer.id}/packages`">{{ customer.first_name }} {{ customer.last_name }}</nuxt-link>
+                                                        <nuxt-link to="" class="name" @click.native.prevent="openWindow(`/customers/${customer.id}/packages`)">{{ customer.first_name }} {{ customer.last_name }}</nuxt-link>
                                                         <div class="types" v-if="customer.customer_details.customer_type.images.length > 0"><img :src="customer.customer_details.customer_type.images[0].path_resized" /></div>
                                                         <div class="types" v-if="customer.has_first_timer"><img src="/icons/first-timer-package-icon.png" /></div>
                                                         <a :href="`mailto:${customer.email}`" class="email">
@@ -411,6 +411,10 @@
             }
         },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             toggleDisabled () {
                 const me = this
                 me.$store.state.disableBookerUI = false
@@ -722,19 +726,21 @@
             searchCustomer (event) {
                 const me = this
                 let value = event.target.value
-                let formData = new FormData()
-                formData.append('q', value)
-                formData.append('forBooker', 1)
-                formData.append('enabled', 1)
-                me.$axios.post('api/customers/search', formData).then(res => {
-                    if (res.data) {
-                        me.customers = res.data.customers
-                        me.customerLength = me.customers.length
-                    }
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                })
+                if (value.length > 1) {
+                    let formData = new FormData()
+                    formData.append('q', value)
+                    formData.append('forBooker', 1)
+                    formData.append('enabled', 1)
+                    me.$axios.post('api/customers/search', formData).then(res => {
+                        if (res.data) {
+                            me.customers = res.data.customers
+                            me.customerLength = me.customers.length
+                        }
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    })
+                }
             },
             getSeats () {
                 const me = this

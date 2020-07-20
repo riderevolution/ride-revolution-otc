@@ -46,14 +46,26 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('class_type_id')">{{ errors.first('class_type_id') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
-                                        <label for="class_length_temp">Class Length</label>
-                                        <input type="text" name="class_length_temp" readonly autocomplete="off" class="default_text disabled" v-model="form.classLengthTemp">
+                                        <div class="form_check mb_10">
+                                            <input type="checkbox" id="set_custom_name" name="set_custom_name" class="action_check" v-model="form.setCustomName">
+                                            <label for="set_custom_name">Set Custom Name</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form_flex">
+                                    <div class="form_group" v-if="form.setCustomName">
+                                        <label for="custom_name">Custom Class Type Name <span>*</span></label>
+                                        <input type="text" name="custom_name" autocomplete="off" class="default_text" key="custom_name" v-model="res.custom_name" v-validate="'required'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_name')">{{ errors.first('custom_name') | properFormat }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="temp_class_length">Class Length</label>
+                                        <input type="text" name="temp_class_length" readonly autocomplete="off" class="default_text disabled" v-model="form.classLengthTemp">
                                     </div>
                                 </div>
                                 <div class="form_group">
-                                    <label for="description">Description <span>*</span></label>
-                                    <input type="text" name="description" autocomplete="off" class="default_text" v-validate="'required|max:200'" v-model="res.description">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
+                                    <label for="description">Description</label>
+                                    <textarea name="description" rows="8" class="default_text" v-model="res.description"></textarea>
                                 </div>
                                 <transition name="fade">
                                     <div class="form_group" v-if="isPrivate">
@@ -126,12 +138,11 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('instructor_id')">{{ errors.first('instructor_id') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
-                                        <label for="substitute_instructor_id">Substitute Instructor <span>*</span></label>
-                                        <select class="default_select alternate" name="substitute_instructor_id" v-validate="'required'">
+                                        <label for="substitute_instructor_id">Substitute Instructor</label>
+                                        <select class="default_select alternate" name="substitute_instructor_id">
                                             <option value="" selected disabled>Select an Instructor</option>
                                             <option :value="instructor.id" v-for="(instructor, key) in instructors" :selected="res.instructor_schedules[1].user_id == instructor.id" :key="key" v-if="form.instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('substitute_instructor_id')">{{ errors.first('substitute_instructor_id') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -143,15 +154,14 @@
                                 </div>
                                 <div class="form_main_group">
                                     <div class="form_flex select_all">
-                                        <label class="flex_label alternate">Restrict class to customer types: <span>*</span></label>
+                                        <label class="flex_label alternate">Restrict class to package types:</label>
                                         <div class="form_check select_all">
                                             <div :class="`custom_action_check ${(checkData) ? 'checked' : ''}`" @click.prevent="toggleSelectAll($event)">Select All</div>
                                         </div>
-                                        <div class="form_check" v-for="(customerType, key) in customerTypes" :key="key">
-                                            <input type="checkbox" :id="`data_${key}`" name="filter_data" class="action_check" v-model="customerType.checkedForReal">
+                                        <div class="form_check" v-for="(customerType, key) in packageTypes" :key="key">
+                                            <input type="checkbox" :id="`data_${key}`" name="filter_data" class="action_check" v-model="customerType.checked">
                                             <label :for="`data_${key}`">{{ customerType.name }}</label>
                                         </div>
-                                        <transition name="slide"><span class="validation_errors" v-if="hasCustomerTypes">The Type field is required</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -207,12 +217,13 @@
                 loaded: false,
                 lastRoute: '',
                 classTypes: [],
-                customerTypes: [],
+                packageTypes: [],
                 instructors: [],
                 prompt: false,
                 form: {
                     hasTime: false,
                     classLengthTemp: '',
+                    setCustomName: '',
                     classLength: '',
                     start_time: '',
                     instructor_id: '',
@@ -288,12 +299,12 @@
                 const me = this
                 let count = 0
                 let result = false
-                me.customerTypes.forEach((data, index) => {
-                    if (data.checkedForReal) {
+                me.packageTypes.forEach((data, index) => {
+                    if (data.checked) {
                         count++
                     }
                 })
-                if (count == me.customerTypes.length) {
+                if (count == me.packageTypes.length) {
                     result = true
                 } else {
                     result = false
@@ -337,14 +348,14 @@
             toggleSelectAll (event) {
                 const me = this
                 if (me.checkData) {
-                    me.customerTypes.forEach((data, index) => {
-                        data.checkedForReal = false
-                        me.hasCustomerTypes = true
+                    me.packageTypes.forEach((data, index) => {
+                        data.checked = false
+                        me.packageTypes = true
                     })
                 } else {
-                    me.customerTypes.forEach((data, index) => {
-                        data.checkedForReal = true
-                        me.hasCustomerTypes = false
+                    me.packageTypes.forEach((data, index) => {
+                        data.checked = true
+                        me.packageTypes = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {
@@ -357,18 +368,12 @@
                 const me = this
                 let ctr = 0
                 me.$validator.validateAll().then(valid => {
-                    me.customerTypes.forEach((data, index) => {
-                        if (data.checkedForReal) {
-                            ctr++
-                        }
-                    })
-                    me.hasCustomerTypes = (ctr > 0) ? false : true
                     if (valid) {
                         if (!me.prompt) {
                             let formData = new FormData(document.getElementById('default_form'))
                             formData.append('_method', 'PATCH')
                             formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
-                            formData.append('customer_type_restrictions', JSON.stringify(me.customerTypes))
+                            formData.append('package_type_restrictions', JSON.stringify(me.packageTypes))
                             formData.append('class_length', me.form.classLength)
                             formData.append('scheduled_date_id', me.$route.query.i)
                             me.loader(true)
@@ -409,11 +414,28 @@
                 me.$axios.get(`api/schedules/${me.$route.query.i}`).then(res => {
                     setTimeout( () => {
                         if (res.data) {
+                            let temp = res.data.schedule
                             me.res = res.data.schedule
                             me.form.classLengthTemp = me.res.class_length_unformatted
                             me.form.classLength = me.res.class_length
                             me.form.credits = me.res.class_credits
-                            me.customerTypes = res.data.schedule.customer_types
+
+                            me.$axios.get('api/packages/package-types?no_paginate=1').then(res => {
+                                res.data.packageTypes.forEach((data, index) => {
+                                    temp.package_types.forEach((type, index) => {
+                                        data.checked = false
+                                        if (data.id == type.id) {
+                                            data.checked = true
+                                        }
+                                    })
+                                    me.packageTypes.push(data)
+                                })
+                            })
+
+                            if (res.data.schedule.set_custom_name) {
+                                me.form.setCustomName = res.data.schedule.set_custom_name
+                            }
+
                             // me.isRepeat = (me.res.repeat == 1) ? true : false
                             // me.prompt = (me.res.repeat == 1) ? true : false
                             me.isPrivate = (me.res.private_class == 1) ? true : false

@@ -1,7 +1,7 @@
 <template>
 	<div class="form_image_group">
-        <label>Image <span>*</span> <strong v-if="dimension.imageWidth != 0">( Max: 2MB: Dimension: {{ dimension.imageWidth }} x {{ dimension.imageHeight }} )</strong></label>
-		<image-handler v-for="(image, key) in images" :key="key" :unique="key" :item="image" ref="imagePicker" :parent="parent" :tableName="tableName" :dimension="dimension" />
+        <label>Image <span>{{ (notRequired) ? '*' : '' }}</span> <strong v-if="dimension.imageWidth != 0">( Max: 2MB: Dimension: {{ dimension.imageWidth }} x {{ dimension.imageHeight }} )</strong></label>
+		<image-handler v-for="(image, key) in images" :key="key" :unique="key" :item="image" ref="imagePicker" :parent="parent" :tableName="tableName" :notRequired="notRequired" :dimension="dimension" />
 		<!-- <button type="button" class="action_image_add" v-if="multiple" @click="addImage()">Add Image</button> -->
 	</div>
 </template>
@@ -13,6 +13,10 @@
 			multiple: {
 				type: Boolean,
 				default: false
+			},
+			notRequired: {
+				type: Boolean,
+				default: true
 			},
 			data: {
 				default: ''
