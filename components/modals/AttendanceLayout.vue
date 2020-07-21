@@ -31,7 +31,7 @@
                         <tr v-for="(data, key) in res.classHistory" :key="key">
                             <td>{{ formatClassDate(data.created_at, true) }}</td>
                             <td>{{ data.seat.number }}</td>
-                            <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
+                            <td>{{ (data.scheduled_date.schedule.custom_name != null) ? data.scheduled_date.schedule.custom_name : data.scheduled_date.schedule.class_type.name }}</td>
                             <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                             <td>
                                 <div class="thumb">

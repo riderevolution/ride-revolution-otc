@@ -9,7 +9,7 @@
             <div class="confirmation_marked">
                 <div class="label">Your classes:</div>
                 <div class="marked_dates" v-for="(data, key) in schedules" :key="key">
-                    <div class="date">{{ data.schedule.studio.name }}, {{ data.schedule.start_time }} - {{ data.schedule.class_type.name }}</div>
+                    <div class="date">{{ data.schedule.studio.name }}, {{ data.schedule.start_time }} - {{ (data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name }}</div>
                 </div>
                 <div class="form_group">
                     <label for="remarks">Remarks <span>*</span></label>
