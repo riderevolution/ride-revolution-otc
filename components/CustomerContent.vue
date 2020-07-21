@@ -19,7 +19,7 @@
                         <div class="package_status">
                             <div class="box">
                                 <div class="overlay">
-                                    <p>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</p>
+                                    <p>{{ parseInt(data.count) - parseInt(data.original_package_count) }}</p>
                                     <label>Used</label>
                                 </div>
                             </div>
