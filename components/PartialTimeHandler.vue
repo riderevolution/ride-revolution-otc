@@ -3,13 +3,15 @@
         <div v-if="$parent.showCloser" class="form_close alternate" @click="removeImage()"></div>
         <div class="form_group">
             <label for="start_time">Start Time <span>*</span></label>
-            <input type="time" name="start_time[]" v-validate="'required'" :data-vv-name="`time_form_${unique}.start_time[]`" class="default_text" @change="getFrom($event)">
+            <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'start_time'" :name="'start_time[]'" :label="'Select start time'" @input="getFrom($event)" :data-vv-name="`time_form_${unique}.start_time[]`" v-validate="'required'"></v-ctk>
             <transition name="slideY"><span class="validation_errors" v-if="errors.has(`time_form_${unique}.start_time[]`)">{{ errors.first(`time_form_${unique}.start_time[]`) | properFormat }}</span></transition>
         </div>
         <div class="form_group">
             <label for="end_time">End Time <span>*</span></label>
-            <input type="time" name="end_time[]" :min="$moment(form.timeTo, 'HH:mm').format('HH:mm')" :data-vv-name="`time_form_${unique}.end_time[]`" v-validate="'required'" :class="`default_text ${(form.hasTimeFrom) ? '' : 'disabled'}`">
-            <transition name="slideY"><span class="validation_errors" v-if="errors.has(`time_form_${unique}.end_time[]`)">{{ errors.first(`time_form_${unique}.end_time[]`) | properFormat }}</span></transition>
+            <v-ctk v-model="form.end_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'end_time'" :name="'end_time[]'" :min="form.end_time" :min-date="form.end_time" :label="'Select end time'" @input="checkTime()" :data-vv-name="`time_form_${unique}.end_time[]`" v-validate="'required'" :class="`${(form.hasTimeFrom) ? '' : 'disabled'}`"></v-ctk>
+            <transition name="slideY"><span class="validation_errors" v-if="errors.has(`time_form_${unique}.end_time[]`) && !form.lowerThanStart">{{ errors.first(`time_form_${unique}.end_time[]`) | properFormat }}</span></transition>
+
+            <transition name="slideY"><span class="validation_errors" v-if="form.lowerThanStart">The End Time field is required</span></transition>
         </div>
     </div>
 </template>
@@ -24,7 +26,10 @@
         data () {
             return {
                 form: {
-                    timeTo: '',
+                    start_time: '',
+                    end_time: '',
+                    min_time: '',
+                    lowerThanStart: false,
                     hasTimeFrom: false,
                 },
                 enabled: true
@@ -89,8 +94,8 @@
         methods: {
             getFrom (event) {
                 const me = this
-                let target = event.target.value
-                me.form.timeTo = target
+                let target = event
+                me.form.min_time = target
                 me.form.hasTimeFrom = true
             },
             removeImage () {
@@ -99,6 +104,14 @@
 					me.enabled = false
 					me.$parent.determineIfShowCloser()
 				}
+            },
+            checkTime () {
+                const me = this
+                if (me.$moment(`${me.$parent.$parent.targetDate} ${me.form.end_time}`).diff(me.$moment(`${me.$parent.$parent.targetDate} ${me.form.start_time}`), 'seconds') < 0) {
+                    me.form.lowerThanStart = true
+                } else {
+                    me.form.lowerThanStart = false
+                }
             },
             changeConvention (type) {
                 const me = this

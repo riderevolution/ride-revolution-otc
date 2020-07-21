@@ -356,7 +356,9 @@
         mounted () {
             const me = this
             me.checkHeightViewport()
-            me.getNavItems(this)
+            if (me.$store.state.user.staff_details != null) {
+                me.getNavItems(this)
+            }
         },
         beforeMount () {
             window.addEventListener('load', this.checkHeightViewport)

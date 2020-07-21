@@ -41,6 +41,7 @@ export default {
       { src: '~/plugins/vue-scrollto', ssr: false },
       { src: '~/plugins/vue-apexcharts', ssr: false },
       { src: '~/plugins/v-calendar', ssr: false },
+      { src: '~/plugins/vue-ctk-date-time-picker', ssr: false },
       { src: '~/plugins/vue-line-clamp', ssr: false },
       { src: '~/plugins/vue-moment' },
       { src: '~/plugins/vue-click-outside' },

@@ -1756,6 +1756,26 @@ input::placeholder
     color: $gray
     text-transform: none
 
+.date-time-picker
+    &.disabled
+        pointer-events: none
+        .field-input
+            pointer-events: none
+            background-color: $border_alt !important
+    .field-input
+        border: 1px solid #ccc !important
+        height: auto !important
+        min-height: unset !important
+        padding: 10px 44px 10px 15px !important
+        sf_pro_regular(12px)
+        font-size: 12px !important
+        color: $black !important
+        transition: .3s ease-in-out
+        &:hover,
+        &:focus
+            border: 1px solid $black !important
+            transition: .3s ease-in-out
+
 .default_text
     width: 100%
     background-color: $white

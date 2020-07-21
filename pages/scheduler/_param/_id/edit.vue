@@ -23,7 +23,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="start_time">Start Time <span>*</span></label>
-                                        <input type="time" name="start_time" v-model="res.start_time_military" v-validate="'required'" class="default_text" @change="getTime($event, 'dynamic')">
+                                        <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :auto-close="true" :id="'start_time'" :name="'start_time'" :label="'Select start time'" @input="getTime($event, 'dynamic')" v-validate="'required'"></v-ctk>
                                         <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -439,7 +439,7 @@
                             me.isPrivate = (me.res.private_class == 1) ? true : false
                             me.form.instructor_id = me.res.instructor_schedules[0].user_id
                             me.form.class_type_id = me.res.class_type_id
-                            me.form.start_time = me.res.start_time_military
+                            me.form.start_time = me.res.start_time
                             me.$axios.get('api/packages/class-types').then(res => {
                                 me.classTypes = res.data.classTypes.data
                             })
