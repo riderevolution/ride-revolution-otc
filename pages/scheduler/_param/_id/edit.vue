@@ -141,7 +141,7 @@
                                         <label for="substitute_instructor_id">Substitute Instructor</label>
                                         <select class="default_select alternate" name="substitute_instructor_id">
                                             <option value="" selected disabled>Select an Instructor</option>
-                                            <option :value="instructor.id" v-for="(instructor, key) in instructors" :selected="res.instructor_schedules[1].user_id == instructor.id" :key="key" v-if="form.instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                                            <option :value="instructor.id" v-for="(instructor, key) in instructors" :selected="(res.instructor_schedules[1]) ? res.instructor_schedules[1].user_id == instructor.id : ''" :key="key" v-if="form.instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                         </select>
                                     </div>
                                 </div>
