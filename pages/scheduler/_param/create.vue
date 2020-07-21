@@ -212,7 +212,6 @@
             return {
                 loaded: false,
                 message: '',
-                hasPackageTypes: false,
                 isRepeat: false,
                 isPrivate: false,
                 lastRoute: '',
@@ -344,12 +343,10 @@
                 if (me.checkData) {
                     me.packageTypes.forEach((data, index) => {
                         data.checked = false
-                        me.hasPackageTypes = true
                     })
                 } else {
                     me.packageTypes.forEach((data, index) => {
                         data.checked = true
-                        me.hasPackageTypes = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {

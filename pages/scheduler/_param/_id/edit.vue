@@ -171,7 +171,8 @@
                                 <h2 class="form_title">Image Upload</h2>
                             </div>
                             <div class="form_main_group">
-                                <image-handler-container ref="image_handler" :data="res.images" :parent="res.id" :multiple="false" />
+                                <image-handler-container ref="image_handler" :multiple="false" :notRequired="false" v-if="res.images" />
+                                <image-handler-container ref="image_handler" :data="res.images" :parent="res.id" :multiple="false" :notRequired="false" v-else />
                             </div>
                         </div>
                         <div class="form_footer_wrapper">
@@ -209,7 +210,6 @@
         },
         data () {
             return {
-                hasCustomerTypes: false,
                 isRepeat: false,
                 isPrivate: false,
                 name: 'Scheduler',
@@ -350,12 +350,10 @@
                 if (me.checkData) {
                     me.packageTypes.forEach((data, index) => {
                         data.checked = false
-                        me.packageTypes = true
                     })
                 } else {
                     me.packageTypes.forEach((data, index) => {
                         data.checked = true
-                        me.packageTypes = false
                     })
                 }
                 if (event.target.classList.contains('checked')) {
@@ -422,15 +420,20 @@
 
                             me.$axios.get('api/packages/package-types?no_paginate=1').then(res => {
                                 res.data.packageTypes.forEach((data, index) => {
-                                    temp.package_types.forEach((type, index) => {
-                                        data.checked = false
-                                        if (data.id == type.id) {
-                                            data.checked = true
+                                    temp.package_type_restrictions.forEach((type, index) => {
+                                        if (type.package_type.checked) {
+                                            if (data.id == type.id) {
+                                                data.checked = true
+                                            }
+                                        } else {
+                                            data.checked = false
                                         }
                                     })
                                     me.packageTypes.push(data)
                                 })
                             })
+
+                            console.log(me.packageTypes);
 
                             if (res.data.schedule.set_custom_name) {
                                 me.form.setCustomName = res.data.schedule.set_custom_name
