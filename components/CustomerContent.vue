@@ -89,7 +89,7 @@
                     <tr v-for="(data, key) in value.upcomingClasses" :key="key">
                         <td><div class="table_data_link link" @click="toggleLayout(data.scheduled_date.schedule.studio.id, data.scheduled_date_id)">{{ formatClassDate(data.created_at, true) }}</div></td>
                         <td>{{ data.seat.number }}</td>
-                        <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
+                        <td>{{ (data.scheduled_date.schedule.custom_name != null) ? data.scheduled_date.schedule.custom_name : data.scheduled_date.schedule.class_type.name }}</td>
                         <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                         <td>
                             <div class="thumb">

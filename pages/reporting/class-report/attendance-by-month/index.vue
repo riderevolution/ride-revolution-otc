@@ -195,7 +195,7 @@
                 await me.$axios.post(`api/reporting/classes/attendance-by-month`, formData).then(res => {
                     me.schedules = res.data.schedules
                 })
-                
+
                 /**
                  * Generate Rows **/
                 for (let i = 0; i < 6; i++) {
@@ -277,16 +277,16 @@
             populateScheduler (date) {
                 const me = this
                 let result = ''
-                me.schedules.forEach((schedule, index) => {
-                    if (date == me.$moment(schedule.date).format('DD')) {
+                me.schedules.forEach((data, index) => {
+                    if (date == me.$moment(data.date).format('DD')) {
                         result += `
                             <div class="attendance">
                                 <div class="atd_left">
-                                    <p>${me.$moment(schedule.schedule.start_time, 'hh:mm A').format('h:mm A')}</p>
-                                    <p>${schedule.schedule.class_type.name} (${schedule.schedule.class_length_formatted})</p>
+                                    <p>${me.$moment(data.schedule.start_time, 'hh:mm A').format('h:mm A')}</p>
+                                    <p>${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</p>
                                 </div>
                                 <div class="atd_right">
-                                    ${schedule.bookings.length}
+                                    ${data.bookings.length}
                                 </div>
                             </div>
                         `
