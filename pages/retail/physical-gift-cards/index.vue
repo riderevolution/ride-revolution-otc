@@ -50,8 +50,8 @@
                                 <td>{{ formatDate(data.created_at) }}</td>
                                 <td>
                                     <div class="table_actions">
-                                        <div class="table_action_cancel" @click.self="toggleStatus(data.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
-                                        <div class="table_action_success" @click.self="toggleStatus(data.id, 1, 'Activated')" v-if="status == 0">Activate</div>
+                                        <div class="table_action_cancel link" @click.self="toggleStatus(data.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
+                                        <div class="table_action_success link" @click.self="toggleStatus(data.id, 1, 'Activated')" v-if="status == 0">Activate</div>
                                     </div>
                                 </td>
                             </tr>

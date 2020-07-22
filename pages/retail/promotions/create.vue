@@ -52,25 +52,25 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="start_date">Start Date <span>*</span></label>
-                                        <input type="date" name="start_date" autocomplete="off" :min="$moment().format('YYYY-MM-DD')" class="default_text date" v-validate="'required|date_format:yyyy-MM-dd'" v-model="form.start_date">
+                                        <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :min-date="$moment().format('YYYY-MM-DD')" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="start_time">Start Time <span>*</span></label>
-                                        <input type="time" name="start_time" v-validate="'required'" class="default_text">
-                                        <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
+                                        <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'start_time'" :name="'start_time'" :label="'Select start time'" v-validate="'required'"></v-ctk>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(start_time)">{{ errors.first(start_time) | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="end_date">End Date <span>*</span></label>
-                                        <input type="date" name="end_date" autocomplete="off" :min="$moment(form.start_date).format('YYYY-MM-DD')" class="default_text date" v-validate="'required|date_format:yyyy-MM-dd'">
+                                        <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" :label="'Select end date'" v-validate="'required'"></v-ctk>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="end_time">End Time <span>*</span></label>
-                                        <input type="time" name="end_time" v-validate="'required'" class="default_text">
-                                        <transition name="slideY"><span class="validation_errors" v-if="errors.has('end_time')">{{ errors.first('end_time') | properFormat }}</span></transition>
+                                        <v-ctk v-model="form.end_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'end_time'" :name="'end_time'" :label="'Select end time'" v-validate="'required'"></v-ctk>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(end_time)">{{ errors.first(end_time) | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
@@ -188,6 +188,9 @@
                 filterData: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_time: '',
+                    end_start: '',
+                    end_time: '',
                     query: '',
                     categoryID: ''
                 }

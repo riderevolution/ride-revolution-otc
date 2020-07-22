@@ -215,6 +215,10 @@
                                 <p class="alt">{{ value.instructor_details.io_sex }}</p>
                             </div>
                             <div class="wrapper">
+                                <label>Shoe Size</label>
+                                <p>{{ value.instructor_details.io_shoe_size }}</p>
+                            </div>
+                            <div class="wrapper">
                                 <label>Occupation</label>
                                 <p>{{ value.instructor_details.profession }}</p>
                             </div>
