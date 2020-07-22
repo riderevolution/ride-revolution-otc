@@ -63,8 +63,8 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="co_birthdate">Birth Date <span>*</span></label>
-                                        <input type="text" name="co_birthdate" autocomplete="off" maxlength="10" class="default_text" v-model="form.birth_date" @keyup="inputDate($event)" placeholder="YYYY-MM-DD" v-validate="{required: true, max: 10, date_format: 'yyyy-MM-dd'}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_birthdate')">The Birth Date must be in the format YYYY-MM-DD</span></transition>
+                                        <v-ctk v-model="form.birth_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'co_birthdate'" :name="'co_birthdate'" :max-date="$moment().format('YYYY-MM-DD')" :label="'Select birth date'" v-validate="'required'"></v-ctk>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_birthdate')">{{ errors.first('co_birthdate') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="co_weight">Weight (in kilograms)</label>

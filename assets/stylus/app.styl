@@ -2275,6 +2275,11 @@ input::placeholder
             transition: .3s ease-in-out
 
 .form_time_group
+    &.scrollable
+        height: 100%
+        max-height: 500px
+        overflow-y: auto
+        overflow-x: hidden
     .form_flex
         margin-bottom: 20px
         padding: 25px 20px
@@ -2628,6 +2633,19 @@ input::placeholder
             flex: 0 0 100%
             border-bottom: 2px dashed $border
             padding: 30px 15px
+            &.disabled
+                pointer-events: none
+                label
+                    color: $border_alt2
+                    transition: .3s ease-in-out
+                    .id
+                        color: $border_alt2
+                .action_radio
+                    filter: grayscale(1)
+                    transition: .3s ease-in-out
+                    &:checked
+                        filter: grayscale(1)
+                        transition: .3s ease-in-out
             &:first-child
                 padding: 0 0 20px
             &:last-child

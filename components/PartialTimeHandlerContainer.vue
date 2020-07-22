@@ -1,5 +1,5 @@
 <template>
-	<div class="form_time_group">
+	<div :class="`form_time_group ${(times.length > 4) ? 'scrollable' : ''}`">
 		<partial-time-handler v-for="(image, key) in times" :key="key" :unique="key" ref="timePicker" />
 		<!-- <button type="button" class="action_image_add" v-if="multiple" @click="addImage()">Add Image</button> -->
 	</div>

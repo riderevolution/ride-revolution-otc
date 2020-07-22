@@ -49,10 +49,14 @@
                                     case 'available':
                                         me.$parent.message = 'You have added your available dates.'
                                         break
+                                    case 'partially-available':
+                                        me.$parent.message = 'You have added your partially available dates.'
+                                        break
                                     case 'unavailable':
                                         me.$parent.message = 'You have added your unavailable dates.'
                                         break
                                 }
+                                me.$store.state.calendarAvailabilityPromptStatus = false
                                 me.$store.state.calendarAvailabilityActionStatus = false
                                 me.$store.state.calendarAvailabilitySuccessStatus = true
                             }, 500)
@@ -67,9 +71,8 @@
                         }, 500)
                     })
                 } else {
-                    document.body.classList.remove('no_scroll')
+                    me.$store.state.calendarAvailabilityPromptStatus = false
                 }
-                me.$store.state.calendarAvailabilityPromptStatus = false
             }
         }
     }

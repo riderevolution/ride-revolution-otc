@@ -4,7 +4,7 @@
         <form id="default_form" class="overlay" @submit.prevent="submit()">
             <div class="modal_wrapper">
                 <h2 class="form_title alt">{{ $moment(targetDate, 'YYYY-MM-D').format('ddd, MMM DD, YYYY') }}</h2>
-                <div class="modal_main_group scrollable">
+                <div class="modal_main_group">
 
                     <partial-time-handler-container ref="timePicker" v-if="availabilityStatus == 'partially-available'" />
 
@@ -17,7 +17,7 @@
                     <div class="form_flex">
                         <div class="form_group">
                             <label for="repetition">Repetition</label>
-                            <select :class="`default_select alternate ${(form.hasRepeat) ? '' : 'disabled'}`" name="repetition" v-model="form.repetition">
+                            <select :class="`default_select alternate ${(form.hasRepeat) ? '' : 'disabled'}`" v-validate="'required'" name="repetition" v-model="form.repetition">
                                 <option value="" selected disabled>Choose a Repetition</option>
                                 <option value="every-day">Every Day</option>
                                 <option value="every-week">Every Week</option>
@@ -27,7 +27,7 @@
                         </div>
                         <div class="form_group">
                             <label for="end_date">End Date</label>
-                            <input type="date" name="end_date" autocomplete="off" v-validate="`${(form.repetition != '') ? 'required' : '' }`" :class="`default_text date ${(form.hasRepeat) ? '' : 'disabled'}`" :min="$moment(targetDate, 'YYYY-MM-D').format('YYYY-MM-DD')">
+                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :class="`${(form.hasRepeat) ? '' : 'disabled'}`" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :min-date="$moment(targetDate, 'YYYY-MM-D').format('YYYY-MM-DD')" :label="'Select end date'" v-validate="`${(form.repetition != '') ? 'required' : '' }`"></v-ctk>
                             <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                         </div>
                     </div>
@@ -66,6 +66,7 @@
         data () {
             return {
                 form: {
+                    end_date: '',
                     repetition: '',
                     hasRepeat: false
                 }

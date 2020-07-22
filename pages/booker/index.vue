@@ -117,7 +117,7 @@
                                     <div class="accordion_content">
                                         <div :id="`class_${dkey}_${key}`" class="class_content" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
                                             <div class="class_title">
-                                                <span>{{ data.schedule.start_time }}, {{ data.schedule.class_type.name }}</span>
+                                                <span>{{ data.schedule.start_time }}, {{ (data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name }}</span>
                                                 <div :class="`class_status ${(data.isFull) ? 'full' : ''}`">
                                                     {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.signedIn}` }}
                                                 </div>

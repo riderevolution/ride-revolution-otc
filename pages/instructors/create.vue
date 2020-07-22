@@ -55,8 +55,8 @@
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
-                                        <label for="io_birthdate">Birthdate <span>*</span></label>
-                                        <input type="date" name="io_birthdate" autocomplete="off" class="default_text date" v-validate="'required'">
+                                        <label for="io_birthdate">Birth Date <span>*</span></label>
+                                        <v-ctk v-model="form.birth_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'io_birthdate'" :name="'io_birthdate'" :max-date="$moment().format('YYYY-MM-DD')" :label="'Select birth date'" v-validate="'required'"></v-ctk>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('io_birthdate')">{{ errors.first('io_birthdate') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -490,10 +490,10 @@
                         ctr++
                     }
                 })
-                if (ctr == me.histories.length) {
-                    me.error = false
-                } else {
-                    me.error = true
+                if (me.error) {
+                    if (ctr == me.histories.length) {
+                        me.error = false
+                    }
                 }
             },
             copyPersonal (status) {

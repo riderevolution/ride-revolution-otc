@@ -7,8 +7,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(key == 0) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" :key="key">
-                            <input type="radio" :id="`package_${key}`" :checked="key == 0" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${(key == 0) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : ''}`}`" v-for="(data, key) in res" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="(parseInt(data.count) >= $parent.schedule.schedule.class_credits) ? key == 0 : false" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -30,8 +30,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(key == 0) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" :key="key">
-                            <input type="radio" :id="`package_${key}`" :checked="key == 0" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${(key == 0) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}`}`" v-for="(data, key) in res" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="(parseInt(data.count) >= $parent.schedule.schedule.class_credits) ? key == 0 : false" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -53,8 +53,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" v-for="(data, key) in res" :key="key">
-                            <input type="radio" :id="`package_${key}`" :checked="old_package_count_id == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${(old_package_count_id == data.id) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}`}`" v-for="(data, key) in res" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="(parseInt(data.count) >= $parent.schedule.schedule.class_credits) ? old_package_count_id == data.id : false" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -76,8 +76,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(old_package_count_id == data.id) ? 'toggled' : ''}`" v-if="parseInt(data.count) >= $parent.schedule.schedule.class_credits" v-for="(data, key) in res" :key="key">
-                            <input type="radio" :id="`package_${key}`" :checked="old_package_count_id == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                        <div :class="`form_radio ${(old_package_count_id == data.id) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}`}`" v-for="(data, key) in res" :key="key">
+                            <input type="radio" :id="`package_${key}`" :checked="(parseInt(data.count) >= $parent.schedule.schedule.class_credits) ? old_package_count_id == data.id : false" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -297,8 +297,8 @@
                                                 me.new_package_count_id = data.id
                                                 me.$store.state.userPackageCountId = data.id
                                             }
-                                            me.res.push(data)
                                         }
+                                        me.res.push(data)
                                     }
                                 })
                                 if (me.$store.state.seat && me.$store.state.seat.bookings.length > 0) {

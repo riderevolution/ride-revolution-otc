@@ -155,7 +155,7 @@
                                 </div>
                                 <div class="form_main_group">
                                     <div class="form_flex select_all">
-                                        <label class="flex_label alternate">Restrict class to package types:</label>
+                                        <label class="flex_label alternate">Allow class to package types:</label>
                                         <div class="form_check select_all">
                                             <div :class="`custom_action_check ${(checkData) ? 'checked' : ''}`" @click.prevent="toggleSelectAll($event)">Select All</div>
                                         </div>
