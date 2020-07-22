@@ -84,10 +84,6 @@
             }
         },
         methods: {
-            toggleInnerReport (type, path, id) {
-                const me = this
-                me.$router.push(`${path}?status=${me.status}&slug=${type}&id=${me.form.id}&variant_id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
-            },
             fetchData (value) {
                 const me = this
                 if (me.$route.query.studio_id) {

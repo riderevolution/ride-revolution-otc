@@ -12,8 +12,8 @@
                             <h2 class="header_subtitle">Instructor Subbing per class schedule.</h2>
                         </div>
                         <div class="actions">
-                            <a href="javascript:void(0)" class="action_btn">Print</a>
-                            <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                            <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -33,12 +33,14 @@
                                 </select>
                             </div>
                             <div class="form_group margin">
-                                <label for="start_date">Start Date</label>
-                                <input type="date" name="start_date" class="default_text date" />
+                                <label for="start_date">Start Date <span>*</span></label>
+                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group margin">
-                                <label for="end_date">End Date</label>
-                                <input type="date" name="end_date" class="default_text date" />
+                                <label for="end_date">End Date <span>*</span></label>
+                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -108,9 +110,9 @@
                 status: 'all',
                 res: [],
                 types: [],
-                range: {
-                    start: new Date(),
-                    end: new Date()
+                form: {
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
                 },
                 transaction: []
             }

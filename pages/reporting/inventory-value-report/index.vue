@@ -72,7 +72,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <table class="cms_table">
+                        <table class="cms_table alt">
                             <thead>
                                 <tr>
                                     <th colspan="3" class="cms_table_title">Gift Cards</th>
@@ -133,7 +133,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <table class="cms_table" v-else>
+                        <table class="cms_table alt" v-else>
                             <thead>
                                 <tr>
                                     <th colspan="3" class="cms_table_title">Gift Cards</th>
