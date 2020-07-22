@@ -242,12 +242,12 @@
                                 <form id="filter" class="date_form">
                                     <div class="flex">
                                         <div class="form_group">
-                                            <label for="start_date">Start Date</label>
-                                            <input type="date" name="start_date" v-model="form.start_date" class="default_text date" />
+                                            <label for="start_date">Start Date <span>*</span></label>
+                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'"></v-ctk>
                                         </div>
                                         <div class="form_group margin">
-                                            <label for="end_date">End Date</label>
-                                            <input type="date" name="end_date" v-model="form.end_date"  class="default_text date" />
+                                            <label for="end_date">End Date <span>*</span></label>
+                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')"></v-ctk>
                                         </div>
                                     </div>
                                     <div class="button">
@@ -280,34 +280,22 @@
                             <div class="stats_header">
                                 <h2>Riders with Pending Payments</h2>
                                 <div class="button">
-                                    <div class="action_btn">Export List</div>
+                                    <div class="action_btn alternate">Export List</div>
                                 </div>
                             </div>
                             <div class="stats_content alt">
-                                <div class="wrapper alt" v-for="(n, key) in 4">
+                                <div class="wrapper alt" v-for="(data, key) in pendingPayments">
                                     <div class="info_left">
-                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
-                                        <div class="info">
-                                            <div class="name">Sample</div>
-                                            <div class="violator pending">Pending: <b>Php 120.00</b></div>
-                                            <div class="violator label">Days Outstanding: 20 Days</div>
-                                        </div>
-                                    </div>
-                                    <div class="info_right">
-                                        <div class="action_success_btn">Pay Now</div>
-                                    </div>
-                                </div>
-                                <div class="wrapper alt" v-for="(n, key) in 4">
-                                    <div class="info_left">
-                                        <div class="image">
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="image" v-else>
                                             <div class="overlay">
-                                                SA
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <div class="name">Sample</div>
-                                            <div class="violator pending">Pending: <b>Php 120.00</b></div>
-                                            <div class="violator label">Days Outstanding: 20 Days</div>
+                                            <div class="name">{{ data.first_name }} {{ data.last_name }}</div>
+                                            <div class="violator pending">Pending: <b>Php {{ computePayment(data.payments) }}</b></div>
+                                            <div class="violator label">Days Outstanding: {{ getDaysOutstanding(data.payments) }}</div>
                                         </div>
                                     </div>
                                     <div class="info_right">
@@ -339,6 +327,7 @@
             return {
                 loaded: false,
                 res: [],
+                pendingPayments: [],
                 form: {
                     notes: '',
                     note_date: this.$moment().format('YYYY-MM-DD'),
@@ -512,6 +501,20 @@
             }
         },
         methods: {
+            getDaysOutstanding (items) {
+                const me = this
+                let result = me.$moment(items[0].created_at).toNow()
+                result = result.split('in ')[1]
+                return result
+            },
+            computePayment (items) {
+                const me = this
+                let result = ''
+                items.forEach((item, index) => {
+                    result += parseFloat(item.total)
+                })
+                return me.totalCount(result)
+            },
             toggleAttendance () {
                 const me = this
                 me.$store.state.dashboardAttendanceStatus = true
@@ -565,6 +568,15 @@
                         me.loader(false)
                     }, 500)
                 })
+            },
+            initial () {
+                const me = this
+                me.$axios.get('api/portal-dashboard').then(res => {
+                    if (res.data) {
+                        me.pendingPayments = res.data.usersWithPendingPayments
+                    }
+                })
+                me.getNotes(me.form.note_date)
             }
         },
         mounted () {
@@ -579,7 +591,7 @@
                 setTimeout( () => {
                     me.loaded = true
                     me.res = res.data.user
-                    me.getNotes(me.form.note_date)
+                    me.initial()
                 }, 500)
             }).catch(err => {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

@@ -8060,8 +8060,11 @@ input::placeholder
                         align-items: center
                         justify-content: flex-start
                         .form_group
-                            flex: 1 0 auto
+                            flex: 0 0 calc(50% - 7.5px)
                             margin-bottom: 0
+                            #start_date-wrapper,
+                            #end_date-wrapper
+                                width: auto
                     .button
                         flex: 0 0 auto
             .stats_content
@@ -8169,6 +8172,7 @@ input::placeholder
                             margin: 5px 0
                             b
                                 color: $red_alt
+                                padding-left: 5px
                         &.label
                             color: $gray_alternate
                         span
