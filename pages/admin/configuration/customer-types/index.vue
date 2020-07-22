@@ -20,6 +20,8 @@
                             <tr>
                                 <th class="stick">Name</th>
                                 <th class="stick">Icon</th>
+                                <th class="stick">Created At</th>
+                                <th class="stick">Updated At</th>
                                 <th class="stick">Action</th>
                             </tr>
                         </thead>
@@ -27,6 +29,8 @@
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>{{ data.name }}</td>
                                 <td><img width="36px" height="36px" :src="data.images[0].path" /></td>
+                                <td>{{ formatDate(data.created_at) }}</td>
+                                <td>{{ formatDate(data.updated_at) }}</td>
                                 <td>
                                     <div class="table_actions">
                                         <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
@@ -71,6 +75,11 @@
             }
         },
         methods: {
+            formatDate (value) {
+                if (value) {
+                    return this.$moment(value).format('MMM DD, YYYY')
+                }
+            },
             toggleDelete (id) {
                 const me = this
                 me.$store.state.deleteStatus = true

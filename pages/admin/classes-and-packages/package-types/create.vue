@@ -20,12 +20,12 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="name">Package Type Name <span>*</span></label>
-                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required'">
+                                    <input type="text" name="name" autocomplete="off" class="default_text" placeholder="Enter name" v-validate="'required|min:5|max:200'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="description">Description <span>*</span></label>
-                                    <textarea name="description" rows="8" class="default_text" v-validate="'required'"></textarea>
+                                    <textarea name="description" rows="8" class="default_text" placeholder="Enter description" v-validate="'required'"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_flex select_all">

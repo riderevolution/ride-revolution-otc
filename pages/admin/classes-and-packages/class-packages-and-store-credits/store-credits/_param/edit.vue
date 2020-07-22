@@ -18,13 +18,13 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="name">Store Credits Name <span>*</span></label>
-                                        <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'" v-model="res.name">
+                                        <input type="text" name="name" autocomplete="off" class="default_text" placeholder="Enter name" v-validate="'required|min:5|max:150'" v-model="res.name">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="amount">Store Credits Amount <span>*</span></label>
                                         <div class="form_flex_input full">
-                                            <input type="text" name="amount" autocomplete="off" class="default_text" v-model="res.amount" v-validate="'required|numeric|min_value:0|max_value:99999'">
+                                            <input type="text" name="amount" autocomplete="off" class="default_text" placeholder="Enter amount" v-model="res.amount" v-validate="'required|numeric|min_value:0|max_value:99999'">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('amount')">{{ errors.first('amount') | properFormat }}</span></transition>
                                         </div>
                                     </div>

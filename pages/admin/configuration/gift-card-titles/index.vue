@@ -32,7 +32,7 @@
                                 <td>
                                     <div class="table_actions">
                                         <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
-                                        <div class="table_action_cancel" @click="toggleDelete(data.id)">Delete</div>
+                                        <div class="table_action_cancel link" @click="toggleDelete(data.id)">Delete</div>
                                     </div>
                                 </td>
                             </tr>
