@@ -299,7 +299,7 @@
                                         </div>
                                     </div>
                                     <div class="info_right">
-                                        <div class="action_success_btn">Pay Now</div>
+                                        <div class="action_success_btn" @click="togglePending(data.id)">Pay Now</div>
                                     </div>
                                 </div>
                             </div>
@@ -312,20 +312,31 @@
         <transition name="fade">
             <dashboard-attendance v-if="$store.state.dashboardAttendanceStatus" />
         </transition>
+        <transition name="fade">
+            <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
+        </transition>
+        <transition name="fade">
+            <customer-pending-quick-sale :value="transaction" v-if="$store.state.customerPendingQuickSaleStatus" />
+        </transition>
     </div>
 </template>
 
 <script>
     import DashboardAttendance from '../components/modals/DashboardAttendance'
+    import PendingTransactions from '../components/modals/PendingTransactions'
+    import CustomerPendingQuickSale from '../components/modals/CustomerPendingQuickSale'
     import Foot from '../components/Foot'
     export default {
         components: {
             DashboardAttendance,
+            PendingTransactions,
+            CustomerPendingQuickSale,
             Foot
         },
         data () {
             return {
                 loaded: false,
+                transaction: [],
                 res: [],
                 pendingPayments: [],
                 form: {
@@ -501,6 +512,12 @@
             }
         },
         methods: {
+            togglePending (user_id) {
+                const me = this
+                me.$store.state.pendingCustomerID = user_id
+                me.$store.state.pendingTransactionsStatus = true
+                document.body.classList.add('no_scroll')
+            },
             getDaysOutstanding (items) {
                 const me = this
                 let result = me.$moment(items[0].created_at).toNow()
