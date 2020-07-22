@@ -9,10 +9,10 @@
                     <div class="form_group">
                         <label for="name">Choose a Role <span>*</span></label>
                         <select class="default_select alternate" name="role_id" v-validate="'required'" v-model="form.role">
-                            <option value="0" selected disabled>Choose a Role</option>
+                            <option value="" selected disabled>Choose a Role</option>
                             <option :value="role.id" v-for="(role, index) in roles">{{ role.display_name }}</option>
                         </select>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role_id')">{{ errors.first('role_id') | properFormat }}</span></transition>
                     </div>
                     <div class="form_flex select_all" v-if="form.role == 1">
                         <label class="flex_label alternate">Restrict user to studios: <span>*</span></label>
@@ -186,7 +186,7 @@
                     }
                 },
                 form: {
-                    role: 0
+                    role: ''
                 },
                 roles: [],
                 studios: [],
@@ -287,7 +287,9 @@
                             ctr++
                         }
                     })
-                    me.hasStudio = (ctr > 0) ? false : true
+                    if (me.form.role == 1) {
+                        me.hasStudio = (ctr > 0) ? false : true
+                    }
                     if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         if (me.form.role != 2) {
@@ -333,7 +335,9 @@
                             ctr++
                         }
                     })
-                    me.hasStudio = (ctr > 0) ? false : true
+                    if (me.form.role == 1) {
+                        me.hasStudio = (ctr > 0) ? false : true
+                    }
                     if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         if (formData.get('password').length <= 0) {

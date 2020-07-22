@@ -19,7 +19,7 @@
                         <div class="package_status">
                             <div class="box">
                                 <div class="overlay">
-                                    <p>{{ parseInt(data.count) - parseInt(data.original_package_count) }}</p>
+                                    <p>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</p>
                                     <label>Used</label>
                                 </div>
                             </div>
@@ -227,6 +227,7 @@
                                             <th>Category</th>
                                             <th>Qty</th>
                                             <th>Price</th>
+                                            <th v-if="data.status == 'paid'">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody  v-if="data.payment_items.length > 0">
@@ -237,6 +238,11 @@
                                             <td class="price">
                                                 <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.originalTotal) }}</p>
                                                 <p>PHP {{ totalCount(item.total) }}</p>
+                                            </td>
+                                            <td v-if="data.status == 'paid'">
+                                                <div class="table_actions">
+                                                    <div class="table_action_cancel link" @click="toggleForm(data.id)" v-if="data.status == 'paid'">Refund</div>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -250,7 +256,7 @@
                         </td>
                     </tr>
                 </tbody>
-                <tbody class="no_results" v-else>
+                <tbody class="no_results" v-if="res.data.length == 0">
                     <tr>
                         <td :colspan="rowCount">No Result(s) Found.</td>
                     </tr>
@@ -261,6 +267,9 @@
         </div>
         <div v-if="type == 'details' && loaded">
             <div id="default_form">
+                <div class="cta" v-if="user.staff_details.role_id == 1">
+                    <nuxt-link :to="`/customers/${value.id}/update`" class="action_btn alternate">Edit Details</nuxt-link>
+                </div>
                 <div class="form_wrapper">
                     <div class="form_header_wrapper">
                         <h2 class="form_title">Customer Overview</h2>
@@ -289,7 +298,7 @@
                         </div>
                         <div class="wrapper">
                             <label>Gender</label>
-                            <p class="alt">{{ value.customer_details.co_sex }}</p>
+                            <p class="alt">{{ (value.customer_details.co_sex == 'M') ? 'Male' : 'Female' }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Occupation</label>
@@ -315,8 +324,12 @@
                     </div>
                     <div class="form_overview">
                         <div class="wrapper">
-                            <label>Address</label>
-                            <p>{{ value.customer_details.pa_address }} {{ value.customer_details.pa_address_2 }}</p>
+                            <label>Address Line 1</label>
+                            <p>{{ value.customer_details.pa_address }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Address Line 2</label>
+                            <p>{{ value.customer_details.pa_address_2 }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Country</label>
@@ -342,8 +355,12 @@
                     </div>
                     <div class="form_overview">
                         <div class="wrapper">
-                            <label>Address</label>
-                            <p>{{ value.customer_details.ba_address }} {{ value.customer_details.ba_address_2 }}</p>
+                            <label>Address Line 1</label>
+                            <p>{{ value.customer_details.ba_address }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Address Line 2</label>
+                            <p>{{ value.customer_details.ba_address_2 }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Country</label>
@@ -464,6 +481,11 @@
                 },
                 packageStatus: 'all',
                 classesHistoryStatus: 'all',
+                user: {
+                    staff_details: {
+                        role_id: 0
+                    }
+                },
                 res: [],
                 transaction: []
             }
@@ -781,6 +803,16 @@
         mounted () {
             const me = this
             me.res = []
+            let token = me.$cookies.get('70hokcotc3hhhn5')
+            me.$axios.get('api/user', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(res => {
+                if (res.data != 0) {
+                    me.user = res.data.user
+                }
+            })
             if (me.$route.params.slug == 'transactions') {
                 me.res = me.value.payments
             } else {

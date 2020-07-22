@@ -3,9 +3,9 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
-                    <nuxt-link :to="`/instructors/${lastRoute}/details`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Instructors</span></nuxt-link>
+                    <nuxt-link :to="`/customers/${lastRoute}/details`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Instructors</span></nuxt-link>
                     <div class="action_wrapper">
-                        <h1 class="header_title">Update Instructor</h1>
+                        <h1 class="header_title">Update Customer</h1>
                     </div>
                 </section>
                 <section id="content">
@@ -15,7 +15,7 @@
                         </div>
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
-                                <h2 class="form_title">Instructor Overview</h2>
+                                <h2 class="form_title">Customer Overview</h2>
                                 <div class="form_photo" @mouseover="tooltip = true" @mouseout="tooltip = false">
                                     <transition name="slide">
                                         <div class="tooltip" v-if="tooltip">
@@ -49,39 +49,39 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
-                                        <label for="io_contact_number">Contact Number <span>*</span></label>
-                                        <input type="text" name="io_contact_number" autocomplete="off" v-model="res.instructor_details.io_contact_number" class="default_text" v-validate="'required|numeric|min:7|max:11'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_contact_number')">{{ errors.first('io_contact_number') | properFormat }}</span></transition>
+                                        <label for="co_contact_number">Contact Number <span>*</span></label>
+                                        <input type="text" name="co_contact_number" autocomplete="off" v-model="res.customer_details.co_contact_number" class="default_text" v-validate="'required|numeric|min:7|max:11'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_contact_number')">{{ errors.first('co_contact_number') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
-                                        <label for="io_birthdate">Birth Date <span>*</span></label>
-                                        <v-ctk v-model="form.birth_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'io_birthdate'" :name="'io_birthdate'" :label="'Select birth date'" v-validate="'required'"></v-ctk>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_birthdate')">{{ errors.first('io_birthdate') | properFormat }}</span></transition>
+                                        <label for="co_birthdate">Birth Date <span>*</span></label>
+                                        <v-ctk v-model="form.birth_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'co_birthdate'" :name="'co_birthdate'" :label="'Select birth date'" v-validate="'required'"></v-ctk>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_birthdate')">{{ errors.first('co_birthdate') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
-                                        <label for="io_weight">Weight (in kilograms)</label>
-                                        <input type="text" name="io_weight" autocomplete="off" v-model="res.instructor_details.io_weight" class="default_text" v-validate="'numeric|min_value:1|max_value:200'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_weight')">{{ errors.first('io_weight') | properFormat }}</span></transition>
+                                        <label for="co_weight">Weight (in kilograms)</label>
+                                        <input type="text" name="co_weight" autocomplete="off" v-model="res.customer_details.co_weight" class="default_text" v-validate="'numeric|min_value:1|max_value:200'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_weight')">{{ errors.first('co_weight') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_flex_radio">
                                         <label class="radio_label">Sex <span>*</span></label>
                                         <div class="form_radio">
-                                            <input type="radio" id="female" value="F" name="io_sex" v-validate="'required'" class="action_radio" :checked="res.instructor_details.io_sex == 'F'">
+                                            <input type="radio" id="female" value="F" name="co_sex" v-validate="'required'" class="action_radio" :checked="res.customer_details.co_sex == 'F'">
                                             <label for="female">Female</label>
                                         </div>
                                         <div class="form_radio">
-                                            <input type="radio" id="male" value="M" name="io_sex" v-validate="'required'" class="action_radio" :checked="res.instructor_details.io_sex == 'M'">
+                                            <input type="radio" id="male" value="M" name="co_sex" v-validate="'required'" class="action_radio" :checked="res.customer_details.co_sex == 'M'">
                                             <label for="male">Male</label>
                                         </div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_sex')">{{ errors.first('io_sex') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_sex')">{{ errors.first('co_sex') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="profession">Occupation <span>*</span></label>
-                                        <select class="default_select alternate" name="profession" v-model="res.instructor_details.profession" v-validate="'required'">
+                                        <select class="default_select alternate" name="profession" v-model="res.customer_details.profession" v-validate="'required'">
                                             <option value="" selected disabled>Choose a Occupation</option>
                                             <option :value="data" v-for="(data, index) in professions">{{ data }}</option>
                                         </select>
@@ -90,41 +90,12 @@
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
-                                        <label for="io_shoe_size">Shoe Size <span>*</span></label>
-                                        <select class="default_select alternate" name="io_shoe_size" v-model="res.instructor_details.io_shoe_size" v-validate="'required'">
+                                        <label for="co_shoe_size">Shoe Size <span>*</span></label>
+                                        <select class="default_select alternate" name="co_shoe_size" v-model="res.customer_details.co_shoe_size" v-validate="'required'">
                                             <option value="" selected disabled>Choose Shoe Size</option>
                                             <option :value="size" v-for="(size, index) in sizes">{{ size }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_shoe_size')">{{ errors.first('io_shoe_size') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_group">
-                                        <label for="io_nickname">Nickname <span>*</span></label>
-                                        <input type="text" name="io_nickname" autocomplete="off" v-model="res.instructor_details.nickname" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 30}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_nickname')">{{ errors.first('io_nickname') | properFormat }}</span></transition>
-                                    </div>
-                                </div>
-                                <div class="form_group">
-                                    <label for="youtube_link">Youtube Link <span>*</span></label>
-                                    <input type="text" name="youtube_link" autocomplete="off" class="default_text" v-model="res.instructor_details.youtube_link" placeholder="Enter youtube link" v-validate="{required: true, url: {require_protocol: true }}">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('youtube_link')">{{ errors.first('youtube_link') | properFormat }}</span></transition>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form_wrapper">
-                            <div class="form_header_wrapper">
-                                <h2 class="form_title">Password</h2>
-                            </div>
-                            <div class="form_main_group">
-                                <div class="form_flex">
-                                    <div class="form_group">
-                                        <label for="password">Password</label>
-                                        <input type="password" name="password" autocomplete="off" class="default_text" ref="password" v-validate="{regex: '^[a-zA-Z0-9-|/!|/@]*$', min: 8}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') | properFormat }}</span></transition>
-                                    </div>
-                                    <div class="form_group">
-                                        <label for="password_confirmation">Password Confirmation</label>
-                                        <input type="password" name="password_confirmation" autocomplete="off" class="default_text" v-validate="{regex: '^[a-zA-Z0-9-|/!|/@]*$', confirmed: 'password'}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ errors.first('password_confirmation') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_shoe_size')">{{ errors.first('co_shoe_size') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -227,6 +198,21 @@
                         </div>
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
+                                <h2 class="form_title">Customer Management</h2>
+                            </div>
+                            <div class="form_main_group">
+                                <div class="form_group">
+                                    <label for="name">Choose a Type <span>*</span></label>
+                                    <select class="default_select alternate" name="type" v-validate="'required'">
+                                        <option value="" selected disabled>Choose a Type</option>
+                                        <option :value="type.id" :selected="type.id == res.customer_details.customer_type.id" v-for="(type, index) in types">{{ type.name }}</option>
+                                    </select>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('type')">{{ errors.first('type') | properFormat }}</span></transition>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form_wrapper">
+                            <div class="form_header_wrapper">
                                 <h2 class="form_title">Emergency Contact</h2>
                             </div>
                             <div class="form_main_group alternate">
@@ -234,19 +220,19 @@
                                     <div class="form_flex">
                                         <div class="form_group">
                                             <label for="ec_full_name">Full Name <span>*</span></label>
-                                            <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-model="res.instructor_details.ec_full_name" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
+                                            <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-model="res.customer_details.ec_full_name" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_full_name')">{{ errors.first('ec_full_name') | properFormat }}</span></transition>
                                         </div>
                                         <div class="form_group">
                                             <label for="ec_contact_number">Contact Number <span>*</span></label>
-                                            <input type="text" name="ec_contact_number" autocomplete="off" v-model="res.instructor_details.ec_contact_number" class="default_text" v-validate="'required|numeric|min:7|max:11'">
+                                            <input type="text" name="ec_contact_number" autocomplete="off" v-model="res.customer_details.ec_contact_number" class="default_text" v-validate="'required|numeric|min:7|max:11'">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_contact_number')">{{ errors.first('ec_contact_number') | properFormat }}</span></transition>
                                         </div>
                                     </div>
                                     <div class="form_flex">
                                         <div class="form_group">
                                             <label for="ec_relationship">Relationship <span>*</span></label>
-                                            <input type="text" name="ec_relationship" autocomplete="off" v-model="res.instructor_details.ec_relationship" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 50}">
+                                            <input type="text" name="ec_relationship" autocomplete="off" v-model="res.customer_details.ec_relationship" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 50}">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_relationship')">{{ errors.first('ec_relationship') | properFormat }}</span></transition>
                                         </div>
                                     </div>
@@ -260,7 +246,7 @@
                                     <label for="enabled">Activate</label>
                                 </div>
                                 <div class="button_group">
-                                    <nuxt-link :to="`/instructors/${lastRoute}/details`" class="action_cancel_btn">Cancel</nuxt-link>
+                                    <nuxt-link :to="`/customers/${lastRoute}/details`" class="action_cancel_btn">Cancel</nuxt-link>
                                     <button type="submit" name="submit" class="action_btn alternate margin">Save</button>
                                 </div>
                             </div>
@@ -282,7 +268,7 @@
         data () {
             return {
                 tooltip: false,
-                name: 'Instructors',
+                name: 'Customers',
                 access: true,
                 loaded: false,
                 error: false,
@@ -312,6 +298,7 @@
                 pa_states: [],
                 ba_countries: [],
                 ba_states: [],
+                types: [],
                 professions: ['Accounting/Finance', 'Admin/Human Resources', 'Arts/Media/Communications', 'Building/Construction', 'Information Technology', 'Education/Training', 'Engineering', 'Healthcare', 'Hotel/Restaurant', 'Manufacturing', 'Sales/Marketing', 'Sciences', 'Services', 'Others'],
                 studios: []
             }
@@ -440,15 +427,15 @@
                     me.form.ba_city = me.form.pa_city
                     me.form.ba_zip_code = me.form.pa_zip_code
                 } else {
-                    if (me.res.instructor_details.ba_state_id != null) {
-                        me.form.ba_state = me.res.instructor_details.ba_state_id
+                    if (me.res.customer_details.ba_state_id != null) {
+                        me.form.ba_state = me.res.customer_details.ba_state_id
                     } else {
                         me.form.ba_state = ''
                     }
-                    me.form.ba_address = me.res.instructor_details.ba_address
-                    me.form.ba_address_2 = me.res.instructor_details.ba_address_2
-                    me.form.ba_city = me.res.instructor_details.ba_city
-                    me.form.ba_zip_code = me.res.instructor_details.ba_zip_code
+                    me.form.ba_address = me.res.customer_details.ba_address
+                    me.form.ba_address_2 = me.res.customer_details.ba_address_2
+                    me.form.ba_city = me.res.customer_details.ba_city
+                    me.form.ba_zip_code = me.res.customer_details.ba_zip_code
                 }
             },
             submissionSuccess () {
@@ -458,11 +445,11 @@
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
                         me.loader(true)
-                        me.$axios.post(`api/instructors/${me.$route.params.param}`, formData).then(res => {
+                        me.$axios.post(`api/customers/${me.$route.params.param}?otc=1`, formData).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Instructor has been Updated')
-                                    me.$router.push(`/instructors/${me.lastRoute}/details`)
+                                    me.$router.push(`/customers/${me.lastRoute}/details`)
                                 }
                             }, 500)
                         }).catch(err => {
@@ -485,56 +472,72 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.loader(true)
-                me.$axios.get(`api/instructors/${me.$route.params.param}`).then(res => {
-                    setTimeout( () => {
-                        me.loaded = true
-                        me.previewImage = true
-                        me.res = res.data.user
-                        me.$axios.get('api/world/countries').then(res => {
-                            if (res.data) {
-                                me.pa_countries = res.data.countries
-                                me.ba_countries = res.data.countries
-                                if (me.res.instructor_details.pa_country_id != null) {
-                                    me.$axios.get(`api/world/states?country_id=${me.res.instructor_details.pa_country_id}`).then(res => {
-                                        me.pa_states = res.data.states
-                                        me.form.pa_country = me.res.instructor_details.pa_country_id
-                                        me.form.pa_state = me.res.instructor_details.pa_state_id
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                me.$axios.get('api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data != 0) {
+                        if (res.data.user.staff_details.role_id == 1) {
+                            me.loader(true)
+                            me.$axios.get('api/extras/customer-types').then(res => {
+                                me.types = res.data.customerTypes
+                            })
+                            me.$axios.get(`api/customers/${me.$route.params.param}`).then(res => {
+                                setTimeout( () => {
+                                    me.loaded = true
+                                    me.previewImage = true
+                                    me.res = res.data.user
+                                    me.$axios.get('api/world/countries').then(res => {
+                                        if (res.data) {
+                                            me.pa_countries = res.data.countries
+                                            me.ba_countries = res.data.countries
+                                            if (me.res.customer_details.pa_country_id != null) {
+                                                me.$axios.get(`api/world/states?country_id=${me.res.customer_details.pa_country_id}`).then(res => {
+                                                    me.pa_states = res.data.states
+                                                    me.form.pa_country = me.res.customer_details.pa_country_id
+                                                    me.form.pa_state = me.res.customer_details.pa_state_id
+                                                })
+                                            }
+                                            if (me.res.customer_details.ba_country_id != null) {
+                                                me.$axios.get(`api/world/states?country_id=${me.res.customer_details.ba_country_id}`).then(res => {
+                                                    me.ba_states = res.data.states
+                                                    me.form.ba_country = me.res.customer_details.ba_country_id
+                                                    me.form.ba_state = me.res.customer_details.ba_state_id
+                                                })
+                                            }
+                                        }
                                     })
-                                }
-                                if (me.res.instructor_details.ba_country_id != null) {
-                                    me.$axios.get(`api/world/states?country_id=${me.res.instructor_details.ba_country_id}`).then(res => {
-                                        me.ba_states = res.data.states
-                                        me.form.ba_country = me.res.instructor_details.ba_country_id
-                                        me.form.ba_state = me.res.instructor_details.ba_state_id
-                                    })
-                                }
-                            }
-                        })
 
-                        me.form.pa_address = res.data.user.instructor_details.pa_address
-                        me.form.pa_address_2 = res.data.user.instructor_details.pa_address_2
-                        me.form.pa_city = res.data.user.instructor_details.pa_city
-                        me.form.pa_zip_code = res.data.user.instructor_details.pa_zip_code
-                        me.form.ba_address = res.data.user.instructor_details.ba_address
-                        me.form.ba_address_2 = res.data.user.instructor_details.ba_address_2
-                        me.form.ba_city = res.data.user.instructor_details.ba_city
-                        me.form.ba_zip_code = res.data.user.instructor_details.ba_zip_code
+                                    me.form.pa_address = res.data.user.customer_details.pa_address
+                                    me.form.pa_address_2 = res.data.user.customer_details.pa_address_2
+                                    me.form.pa_city = res.data.user.customer_details.pa_city
+                                    me.form.pa_zip_code = res.data.user.customer_details.pa_zip_code
+                                    me.form.ba_address = res.data.user.customer_details.ba_address
+                                    me.form.ba_address_2 = res.data.user.customer_details.ba_address_2
+                                    me.form.ba_city = res.data.user.customer_details.ba_city
+                                    me.form.ba_zip_code = res.data.user.customer_details.ba_zip_code
 
-                        me.form.birth_date = me.$moment(res.data.user.instructor_details.io_birthdate).format('YYYY-MM-DD')
+                                    me.form.birth_date = me.$moment(res.data.user.customer_details.co_birthdate).format('YYYY-MM-DD')
 
-                    }, 500)
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                        if (me.res.instructor_details.images.length > 0) {
-                            me.hasImage = true
-                            document.getElementById('preview_image').src = me.res.instructor_details.images[0].path
+                                }, 500)
+                            }).catch(err => {
+                                me.$store.state.errorList = err.response.data.errors
+                                me.$store.state.errorStatus = true
+                            }).then(() => {
+                                setTimeout( () => {
+                                    me.loader(false)
+                                    if (me.res.customer_details.images.length > 0) {
+                                        me.hasImage = true
+                                        document.getElementById('preview_image').src = me.res.customer_details.images[0].path
+                                    }
+                                }, 500)
+                            })
+                        } else {
+                            me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
                         }
-                    }, 500)
+                    }
                 })
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

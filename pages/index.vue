@@ -103,10 +103,16 @@
                     </div>
                     <div class="right">
                         <div class="table_notepad">
-                            <h2 class="footer_title">Notepad</h2>
+                            <div class="notepad_header">
+                                <h2 class="footer_title">Notepad</h2>
+                                <div class="form_group">
+                                    <label for="note_date">Date</label>
+                                    <v-ctk v-model="form.note_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'note_date'" :name="'note_date'" :label="'Select note date'" @input="getNotes($event)"></v-ctk>
+                                </div>
+                            </div>
                             <div class="notepad_text">
-                                <!-- <textarea name="notepad" @focusout="updateNotes($event)" rows="10"></textarea> -->
-                                <textarea name="notepad" rows="10"></textarea>
+                                <textarea name="notepad" rows="10" v-model="form.notes"></textarea>
+                                <div class="action_btn alternate" @click="updateNotes()">Save</div>
                             </div>
                         </div>
                     </div>
@@ -334,6 +340,8 @@
                 loaded: false,
                 res: [],
                 form: {
+                    notes: '',
+                    note_date: this.$moment().format('YYYY-MM-DD'),
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
@@ -511,18 +519,51 @@
             },
             updateNotes (event) {
                 const me = this
-                let id = me.$store.state.user.id
+                me.loader(true)
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
-                formData.append('_method', 'PATCH')
-                formData.append('user_id', id)
-                formData.append('note', event.target.value)
-                me.$axios.post('api/extras/update-user-notepad', formData).then(res => {
+                formData.append('body', me.form.notes)
+                formData.append('date', me.form.note_date)
+                me.$axios.post('api/daily-notepads', formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     if (res.data) {
-                        console.log(res.data.message)
+                        setTimeout( () => {
+                            me.form.notes = res.data.body
+                        }, 500)
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
+            getNotes (date) {
+                const me = this
+                me.loader(true)
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                me.$axios.get(`api/daily-notepads?date=${date}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.form.notes = res.data.body
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
                 })
             }
         },
@@ -538,13 +579,14 @@
                 setTimeout( () => {
                     me.loaded = true
                     me.res = res.data.user
+                    me.getNotes(me.form.note_date)
                 }, 500)
             }).catch(err => {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }).then(() => {
                 setTimeout( () => {
-                    document.querySelector('.target_wrapper .right .table_notepad textarea').style.height = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
-                    document.querySelector('.target_wrapper .right .table_notepad textarea').style.maxHeight = `${document.querySelector('.target_wrapper .left').offsetHeight - 60}px`
+                    document.querySelector('.target_wrapper .right .table_notepad textarea').style.height = `${document.querySelector('.target_wrapper .left').offsetHeight - 80 - 46}px`
+                    document.querySelector('.target_wrapper .right .table_notepad textarea').style.maxHeight = `${document.querySelector('.target_wrapper .left').offsetHeight - 80 - 46}px`
                     me.loader(false)
                 }, 500)
             })

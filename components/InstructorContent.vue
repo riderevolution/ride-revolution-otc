@@ -184,6 +184,10 @@
         <transition name="fade">
             <div v-if="type == 'details'">
                 <div id="default_form">
+                    <div class="cta">
+                        <nuxt-link :to="`/instructors/${$route.params.param}/update`" class="action_btn alternate" v-if="!isDashboard">Edit</nuxt-link>
+                        <nuxt-link :to="`/instructor/${value.id}/update`" class="action_btn alternate" v-else>Edit</nuxt-link>
+                    </div>
                     <div class="form_wrapper">
                         <div class="form_header_wrapper">
                             <h2 class="form_title">Customer Overview</h2>
@@ -212,7 +216,7 @@
                             </div>
                             <div class="wrapper">
                                 <label>Gender</label>
-                                <p class="alt">{{ value.instructor_details.io_sex }}</p>
+                                <p class="alt">{{ (value.instructor_details.io_sex == 'M') ? 'Male' : 'Female' }}</p>
                             </div>
                             <div class="wrapper">
                                 <label>Shoe Size</label>
@@ -230,8 +234,12 @@
                         </div>
                         <div class="form_overview">
                             <div class="wrapper">
-                                <label>Address</label>
-                                <p>{{ value.instructor_details.pa_address }} {{ value.instructor_details.pa_address_2 }}</p>
+                                <label>Address Line 1</label>
+                                <p>{{ value.instructor_details.pa_address }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>Address Line 2</label>
+                                <p>{{ value.instructor_details.pa_address_2 }}</p>
                             </div>
                             <div class="wrapper">
                                 <label>Country</label>
@@ -257,8 +265,12 @@
                         </div>
                         <div class="form_overview">
                             <div class="wrapper">
-                                <label>Address</label>
-                                <p>{{ value.instructor_details.ba_address }} {{ value.instructor_details.ba_address_2 }}</p>
+                                <label>Address Line 1</label>
+                                <p>{{ value.instructor_details.ba_address }}</p>
+                            </div>
+                            <div class="wrapper">
+                                <label>Address Line 2</label>
+                                <p>{{ value.instructor_details.ba_address_2 }}</p>
                             </div>
                             <div class="wrapper">
                                 <label>Country</label>
@@ -275,15 +287,6 @@
                             <div class="wrapper">
                                 <label>Zip Code</label>
                                 <p>{{ value.instructor_details.ba_zip_code }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form_footer_wrapper">
-                        <div class="form_flex">
-                            <div class="form_check"></div>
-                            <div class="button_group">
-                                <nuxt-link :to="`/instructors/${$route.params.param}/update`" class="action_btn alternate" v-if="!isDashboard">Edit</nuxt-link>
-                                <nuxt-link :to="`/instructor/${value.id}/update`" class="action_btn alternate" v-else>Edit</nuxt-link>
                             </div>
                         </div>
                     </div>

@@ -2007,6 +2007,11 @@ input::placeholder
                     justify-content: center
         &.alternate
             max-width: 75%
+    .cta
+        text-align: right
+        margin-bottom: 15px
+        .action_btn
+            margin-left: 0
     .form_wrapper
         background-color: $white
         box-shadow: 5px 5px 40px rgba(0, 0, 0, 0.05)
@@ -3005,6 +3010,8 @@ input::placeholder
         width: 125px
         height: 125px
         border-radius: 6px
+        object-fit: cover
+        object-position: top
     .action_photo
         opacity: 0
         visibility: hidden
@@ -3547,6 +3554,27 @@ input::placeholder
     width: 500px
     background-color: $white
     margin: 0 0 40px
+    .notepad_header
+        display: flex
+        flex-flow: row wrap
+        align-items: center
+        justify-content: space-between
+        padding: 20px
+        .footer_title
+            padding: 0
+        .form_group
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            justify-content: flex-end
+            margin-bottom: 0
+            label
+                flex: 0 0 auto
+                padding-right: 10px
+                margin-bottom: 0
+            #note_date-wrapper
+                width: auto
+                margin: 0
     .footer_title
         sf_pro_semibold(16px)
         color: $black
@@ -3562,6 +3590,10 @@ input::placeholder
             padding: 15px
             max-height: 400px
             overflow-y: auto
+        .action_btn
+            width: 100%
+            padding: 15px
+            margin-left: 0
 .form_table
     .cms_table
         thead
