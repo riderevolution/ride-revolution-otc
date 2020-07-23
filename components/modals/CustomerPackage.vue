@@ -7,7 +7,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(key == 0) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : ''}`}`" v-for="(data, key) in res" :key="key">
+                        <div :class="`form_radio ${(key == 0) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : ''}`}`" v-for="(data, key) in res" :key="key" v-if="data.count > 0">
                             <input type="radio" :id="`package_${key}`" :checked="(parseInt(data.count) >= $parent.schedule.schedule.class_credits) ? key == 0 : false" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
@@ -30,7 +30,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(key == 0) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}`}`" v-for="(data, key) in res" :key="key">
+                        <div :class="`form_radio ${(key == 0) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}`}`" v-for="(data, key) in res" :key="key" v-if="data.count > 0">
                             <input type="radio" :id="`package_${key}`" :checked="(parseInt(data.count) >= $parent.schedule.schedule.class_credits) ? key == 0 : false" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
@@ -53,7 +53,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(old_package_count_id == data.id) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}`}`" v-for="(data, key) in res" :key="key">
+                        <div :class="`form_radio ${(old_package_count_id == data.id) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}`}`" v-for="(data, key) in res" :key="key" v-if="data.count > 0">
                             <input type="radio" :id="`package_${key}`" :checked="(parseInt(data.count) >= $parent.schedule.schedule.class_credits) ? old_package_count_id == data.id : false" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
@@ -76,7 +76,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
-                        <div :class="`form_radio ${(old_package_count_id == data.id) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}`}`" v-for="(data, key) in res" :key="key">
+                        <div :class="`form_radio ${(old_package_count_id == data.id) ? `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}` : `${(parseInt(data.count) < $parent.schedule.schedule.class_credits) ? 'disabled' : 'toggled'}`}`" v-for="(data, key) in res" v-if="data.count > 0" :key="key">
                             <input type="radio" :id="`package_${key}`" :checked="(parseInt(data.count) >= $parent.schedule.schedule.class_credits) ? old_package_count_id == data.id : false" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>

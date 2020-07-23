@@ -283,7 +283,7 @@
                                     <div class="action_btn alternate">Export List</div>
                                 </div>
                             </div>
-                            <div class="stats_content alt">
+                            <div class="stats_content alt" v-if="pendingPayments.length > 0">
                                 <div class="wrapper alt" v-for="(data, key) in pendingPayments">
                                     <div class="info_left">
                                         <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
@@ -302,6 +302,9 @@
                                         <div class="action_success_btn" @click="togglePending(data.id)">Pay Now</div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="" v-else>
+                                No Results
                             </div>
                         </div>
                     </div>
