@@ -239,15 +239,15 @@
                         <div class="parent_column">
                             <div class="stats_header">
                                 <h2>Top Riders</h2>
-                                <form id="filter" class="date_form">
-                                    <div class="flex">
+                                <form id="filter" class="date_form" @submit.prevent="getTopRiders()">
+                                    <div class="flex_date">
                                         <div class="form_group">
                                             <label for="start_date">Start Date <span>*</span></label>
-                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'"></v-ctk>
+                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :max-date="$moment().format('YYYY-MM-DD')" :label="'Select start date'"></v-ctk>
                                         </div>
                                         <div class="form_group margin">
                                             <label for="end_date">End Date <span>*</span></label>
-                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')"></v-ctk>
+                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :max-date="$moment(form.start_date).format('YYYY-MM-DD')"></v-ctk>
                                         </div>
                                     </div>
                                     <div class="button">
@@ -255,25 +255,22 @@
                                     </div>
                                 </form>
                             </div>
-                            <div class="stats_content alt">
-                                <div class="wrapper" v-for="(n, key) in 4">
-                                    <div class="count">{{ n }}</div>
-                                    <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
-                                    <div class="info">
-                                        <div class="name">Sample</div>
-                                    </div>
-                                </div>
-                                <div class="wrapper" v-for="(n, key) in 4">
-                                    <div class="count">{{ n + 4 }}</div>
-                                    <div class="image">
+                            <div class="stats_content alt" v-if="topRiders.length > 0">
+                                <div class="wrapper" v-for="(data, key) in topRiders">
+                                    <div class="count">{{ key + 1 }}</div>
+                                    <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
+                                    <div class="image" v-else>
                                         <div class="overlay">
-                                            SA
+                                            {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                         </div>
                                     </div>
                                     <div class="info">
-                                        <div class="name">Sample</div>
+                                        <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="no_results" v-else>
+                                No top riders as of now
                             </div>
                         </div>
                         <div class="parent_column">
@@ -293,7 +290,7 @@
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <div class="name">{{ data.first_name }} {{ data.last_name }}</div>
+                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                             <div class="violator pending">Pending: <b>Php {{ computePayment(data.payments) }}</b></div>
                                             <div class="violator label">Days Outstanding: {{ getDaysOutstanding(data.payments) }}</div>
                                         </div>
@@ -303,8 +300,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="" v-else>
-                                No Results
+                            <div class="no_results" v-else>
+                                No pending as of now
                             </div>
                         </div>
                     </div>
@@ -341,12 +338,13 @@
                 loaded: false,
                 transaction: [],
                 res: [],
+                topRiders: [],
                 pendingPayments: [],
                 form: {
                     notes: '',
                     note_date: this.$moment().format('YYYY-MM-DD'),
-                    start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    start_date: this.$moment().startOf('month').format('YYYY-MM-DD'),
+                    end_date: this.$moment().endOf('month').format('YYYY-MM-DD')
                 },
                 attendanceSeries: [85],
                 packageSalesSeries: [85],
@@ -589,10 +587,33 @@
                     }, 500)
                 })
             },
+            getTopRiders () {
+                const me = this
+                me.loader(true)
+                let formData = new FormData
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                me.$axios.post('api/portal-dashboard/top-riders', formData).then(res => {
+                    me.topRiders = res.data.topRiders
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
             initial () {
                 const me = this
                 me.$axios.get('api/portal-dashboard').then(res => {
                     if (res.data) {
+                        let formData = new FormData
+                        formData.append('start_date', me.form.start_date)
+                        formData.append('end_date', me.form.end_date)
+                        me.$axios.post('api/portal-dashboard/top-riders', formData).then(res => {
+                            me.topRiders = res.data.topRiders
+                        })
                         me.pendingPayments = res.data.usersWithPendingPayments
                     }
                 })

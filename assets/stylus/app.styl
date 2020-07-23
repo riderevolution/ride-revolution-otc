@@ -3820,7 +3820,10 @@ input::placeholder
                     cursor: pointer
                     sf_pro_regular(14px)
                     color: $blue
-                    text-decoration: none
+                    text-decoration: underline
+                    transition: .3s ease-in-out
+                    &:hover
+                        text-shadow: 0px 0px 15px rgba(0, 177, 255, 0.75)
                     &.alternate
                         text-transform: uppercase
                 .table_color_code
@@ -8036,6 +8039,12 @@ input::placeholder
             flex-flow: row wrap
             align-items: flex-start
             margin: 30px 0
+            .no_results
+                text-align: center
+                color: $gray_alternate
+                neutra_text(22px)
+                padding: 45px 20px
+                transition: .3s ease-in-out
             .stats_header
                 display: flex
                 flex-flow: row wrap
@@ -8052,8 +8061,8 @@ input::placeholder
                     display: flex
                     flex-flow: row wrap
                     align-items: flex-end
-                    justify-content: space-between
-                    .flex
+                    justify-content: flex-start
+                    .flex_date
                         flex: 0 0 50%
                         display: flex
                         flex-flow: row wrap
@@ -8150,6 +8159,11 @@ input::placeholder
                         padding-left: 15px
                         sf_pro_regular(16px)
                         color: $black
+                        transition: .3s ease-in-out
+                        &.link
+                            color: $blue
+                            &:hover
+                                text-shadow: 0px 0px 15px rgba(0, 177, 255, 0.75)
                     .violator
                         margin-top: 5px
                         padding-left: 15px
