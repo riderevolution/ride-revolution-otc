@@ -99,7 +99,6 @@
         },
         data () {
             return {
-                lastRoute: '',
                 name: 'Attendance by Month',
                 access: true,
                 loaded: false,
@@ -339,7 +338,6 @@
             await me.checkPagePermission(me)
             if (me.access) {
                 me.loader(true)
-                me.lastRoute = me.$route.path.split('/')[1]
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.$axios.get('api/user', {
                     headers: {
