@@ -303,7 +303,6 @@
                                 })
                                 if (me.$store.state.seat && me.$store.state.seat.bookings.length > 0) {
                                     if (me.res.length > 0) {
-                                        console.log(me.$store.state.seat);
                                         me.old_package_count_id = me.$store.state.seat.bookings[0].user_package_count_id
                                     } else {
                                         me.$store.state.customerPackageStatus = false
