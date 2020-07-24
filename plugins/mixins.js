@@ -154,7 +154,9 @@ Vue.mixin({
             }).catch(err => {
                 console.log(err)
             }).then(() => {
-                window.location.assign('/login')
+                if (!this.$store.state.isAuth) {
+                    window.location.assign('/login')
+                }
             })
         },
         validateToken () {
@@ -175,7 +177,6 @@ Vue.mixin({
                             this.logout()
                         }
                     }).catch(err => {
-                        console.log(err)
                         this.logout()
                     }).then(() =>{
                         resolve('ok')

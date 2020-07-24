@@ -171,7 +171,6 @@
             },
             async generateCalendar (year, month, highlight, search) {
                 const me = this
-                let studio_id = me.$cookies.get('CSID')
                 me.loader(true)
                 me.clearTableRows()
                 me.currentDate = me.$moment().date()
@@ -187,7 +186,7 @@
 
                 let formData = new FormData()
                 formData.append('date', me.form.month)
-                formData.append('studio_id', studio_id)
+                formData.append('studio_id', me.form.studio_id)
                 formData.append('instructor_id', me.form.instructor_id)
                 formData.append('class_type_id', me.form.class_type_id)
 
@@ -313,7 +312,6 @@
             },
             fetchData () {
                 const me = this
-                let studio_id = me.$cookies.get('CSID')
                 me.fetchExtraAPI()
                 me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
             },
@@ -352,7 +350,7 @@
                         }, 500)
                     }
                 }).catch(err => {
-                    console.log(err);
+                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
                 })
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

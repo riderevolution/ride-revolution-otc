@@ -87,6 +87,7 @@
         data () {
             return {
                 form: {
+                    studio_id: 0,
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
@@ -103,9 +104,9 @@
             },
             fetchData () {
                 const me = this
-                me.loader(true)
                 let formData = new FormData
-                formData.append('start_date', me.form.start_date)
+                formData.append('studio_id', me.form.studio_id)
+                formData.append('end_date', me.form.end_date)
                 formData.append('end_date', me.form.end_date)
                 me.$axios.post('api/reporting/packages/remaining-class-package-value', formData).then(res => {
                     if (res.data) {
@@ -128,7 +129,22 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData()
+                me.loader(true)
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                me.$axios.get('api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data != 0) {
+                        setTimeout( () => {
+                            me.form.studio_id = res.data.user.current_studio_id
+                            me.fetchData()
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                })
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
