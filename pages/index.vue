@@ -122,7 +122,7 @@
                         <div class="stats_header">
                             <h2>Alerts</h2>
                             <div class="button">
-                                <select class="default_select" name="type">
+                                <select class="default_select" name="period" v-model="form.period">
                                     <option value="today" selected>Today</option>
                                     <option value="Upcoming">Upcoming</option>
                                 </select>
@@ -133,25 +133,21 @@
                                 <div class="column_header">
                                     <h2>VIPs</h2>
                                 </div>
-                                <div class="column_content">
-                                    <div class="wrapper" v-for="(n, key) in 4">
-                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
-                                        <div class="info">
-                                            <div class="name">Sample</div>
-                                            <div class="violator label">Bea Antonio ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
-                                        </div>
-                                    </div>
-                                    <div class="wrapper" v-for="(n, key) in 4">
-                                        <div class="image">
+                                <div class="column_content" v-if="alerts.vips.length > 0">
+                                    <div class="wrapper" v-for="(data, key) in alerts.vips" :key="key">
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="image" v-else>
                                             <div class="overlay">
-                                                SA
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <div class="name">Sample</div>
-                                            <div class="violator label">Bea Antonio ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
+                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
+                                            <div class="violator label">Bea Antonio ({{ $moment(data.bookins[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookins[0].scheduled_date.schedule.start_time).format('hh:mm A') }})</div>
                                         </div>
                                     </div>
+                                </div><div class="no_results" v-else>
+                                    No alerts for vips as of now
                                 </div>
                             </div>
                             <div class="stat_column">
@@ -185,52 +181,45 @@
                                 <div class="column_header">
                                     <h2>First Class</h2>
                                 </div>
-                                <div class="column_content">
-                                    <div class="wrapper" v-for="(n, key) in 4">
-                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
-                                        <div class="info">
-                                            <div class="name">Sample</div>
-                                            <div class="violator label">Bea Antonio ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
-                                        </div>
-                                    </div>
-                                    <div class="wrapper" v-for="(n, key) in 4">
-                                        <div class="image">
+                                <div class="column_content" v-if="alerts.firstClass.length > 0">
+                                    <div class="wrapper" v-for="(data, key) in alerts.firstClass" :key="key">
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="image" v-else>
                                             <div class="overlay">
-                                                SA
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <div class="name">Sample</div>
-                                            <div class="violator label">Bea Antonio ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
+                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
+                                            <div class="violator label">Bea Antonio ({{ $moment(data.bookins[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookins[0].scheduled_date.schedule.start_time).format('hh:mm A') }})</div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="no_results" v-else>
+                                    No alerts for first class as of now
                                 </div>
                             </div>
                             <div class="stat_column">
                                 <div class="column_header">
                                     <h2>Last Class</h2>
                                 </div>
-                                <div class="column_content">
-                                    <div class="wrapper" v-for="(n, key) in 4">
-                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
-                                        <div class="info">
-                                            <div class="name">Sample</div>
-                                            <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
-                                            <div class="violator label">Bea Antonio ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
-                                        </div>
-                                    </div>
-                                    <div class="wrapper" v-for="(n, key) in 4">
-                                        <div class="image">
+                                <div class="column_content" v-if="alerts.lastClass.length > 0">
+                                    <div class="wrapper" v-for="(data, key) in alerts.lastClass" :key="key">
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="image" v-else>
                                             <div class="overlay">
-                                                SA
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <div class="name">Sample</div>
+                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                             <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
-                                            <div class="violator label">Bea Antonio ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
+                                            <div class="violator label">Bea Antonio ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time).format('hh:mm A') }})</div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="no_results" v-else>
+                                    No alerts for last class as of now
                                 </div>
                             </div>
                         </div>
@@ -256,7 +245,7 @@
                                 </form>
                             </div>
                             <div class="stats_content alt" v-if="topRiders.length > 0">
-                                <div class="wrapper" v-for="(data, key) in topRiders">
+                                <div class="wrapper" v-for="(data, key) in topRiders" :key="key">
                                     <div class="count">{{ key + 1 }}</div>
                                     <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
                                     <div class="image" v-else>
@@ -281,7 +270,7 @@
                                 </div>
                             </div>
                             <div class="stats_content alt" v-if="pendingPayments.length > 0">
-                                <div class="wrapper alt" v-for="(data, key) in pendingPayments">
+                                <div class="wrapper alt" v-for="(data, key) in pendingPayments" :key="key">
                                     <div class="info_left">
                                         <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
                                         <div class="image" v-else>
@@ -340,7 +329,13 @@
                 res: [],
                 topRiders: [],
                 pendingPayments: [],
+                alerts: {
+                    vips: [],
+                    firstClass: [],
+                    lastClass: [],
+                },
                 form: {
+                    period: 'today',
                     notes: '',
                     note_date: this.$moment().format('YYYY-MM-DD'),
                     start_date: this.$moment().startOf('month').format('YYYY-MM-DD'),
@@ -614,6 +609,19 @@
                         me.$axios.post('api/portal-dashboard/top-riders', formData).then(res => {
                             me.topRiders = res.data.topRiders
                         })
+
+                        me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}`).then(res => {
+                            if (res.data) {
+                                me.alerts.vips = res.data.vips
+                                me.alerts.firstClass = res.data.firstClass
+                                me.alerts.lastClass = res.data.lastClass
+                            }
+                        })
+
+                        me.$axios.get('api/portal-dashboard/targets').then(res => {
+                            console.log(res.data);
+                        })
+
                         me.pendingPayments = res.data.usersWithPendingPayments
                     }
                 })
