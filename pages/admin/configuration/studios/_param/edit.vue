@@ -18,7 +18,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="name">Studio Name <span>*</span></label>
-                                        <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'" v-model="res.name">
+                                        <input type="text" name="name" autocomplete="off" class="default_text" placeholder="Enter studio name" v-validate="'required|max:100'" v-model="res.name">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -29,31 +29,62 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="address">Address <span>*</span></label>
-                                    <input type="text" name="address" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.address">
+                                    <input type="text" name="address" autocomplete="off" placeholder="Enter address" class="default_text" v-validate="'required'" v-model="res.address">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('address')">{{ errors.first('address') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="city">City<span>*</span></label>
-                                        <input type="text" name="city" autocomplete="off" class="default_text" v-validate="'required|max:50'" v-model="res.city">
+                                        <input type="text" name="city" autocomplete="off" placeholder="Enter city" class="default_text" v-validate="'required|max:50'" v-model="res.city">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('city')">{{ errors.first('city') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="state">State</label>
-                                        <input type="text" name="state" autocomplete="off" class="default_text" v-validate="'required|max:50'" v-model="res.state">
+                                        <input type="text" name="state" autocomplete="off" placeholder="Enter state" class="default_text" v-validate="'required|max:50'" v-model="res.state">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('state')">{{ errors.first('state') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="country">Country<span>*</span></label>
-                                        <input type="text" name="country" autocomplete="off" class="default_text" v-validate="'required|max:50'" v-model="res.country">
+                                        <input type="text" name="country" autocomplete="off" placeholder="Enter country" class="default_text" v-validate="'required|max:50'" v-model="res.country">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('country')">{{ errors.first('country') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="phone">Phone</label>
-                                        <input type="text" name="phone" autocomplete="off" class="default_text" v-validate="'numeric|min:7|max:15'" v-model="res.phone">
+                                        <input type="text" name="phone" autocomplete="off" placeholder="Enter phone" class="default_text" v-validate="'numeric|min:7|max:15'" v-model="res.phone">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('phone')">{{ errors.first('phone') | properFormat }}</span></transition>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form_wrapper">
+                            <div class="form_header_wrapper">
+                                <h2 class="form_title">Targets</h2>
+                            </div>
+                            <div class="form_main_group">
+                                <div class="form_flex">
+                                    <div class="form_group">
+                                        <label for="total_attendance">Total Attendace <span>*</span></label>
+                                        <input type="text" name="total_attendance" placeholder="Enter total attendance" v-model="res.total_attendance" autocomplete="off" class="default_text" v-validate="'required|number|min:1|max:99999'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('total_attendance')">{{ errors.first('total_attendance') | properFormat }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="package_sales">Package Sales <span>*</span></label>
+                                        <input type="text" name="package_sales" placeholder="Eneter package sales" v-model="res.package_sales" autocomplete="off" class="default_text" v-validate="'required|number|min:1|max:99999'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('package_sales')">{{ errors.first('package_sales') | properFormat }}</span></transition>
+                                    </div>
+                                </div>
+                                <div class="form_flex">
+                                    <div class="form_group">
+                                        <label for="first_time_riders">First Time Riders <span>*</span></label>
+                                        <input type="text" name="first_time_riders" placeholder="Enter first time riders" autocomplete="off" v-model="res.first_time_riders" class="default_text" v-validate="'required|number|min:1|max:99999'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('first_time_riders')">{{ errors.first('first_time_riders') | properFormat }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="returning_riders">Returning Riders <span>*</span></label>
+                                        <input type="text" name="returning_riders" placeholder="Enter returning riders" v-model="res.returning_riders" autocomplete="off" class="default_text" v-validate="'required|number|min:1|max:99999'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('returning_riders')">{{ errors.first('returning_riders') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                             </div>

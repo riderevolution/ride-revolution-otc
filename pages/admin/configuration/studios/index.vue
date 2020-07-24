@@ -24,6 +24,7 @@
                             <tr>
                                 <th class="stick">Color</th>
                                 <th class="stick">Studio</th>
+                                <th class="stick">City</th>
                                 <th class="stick">Phone</th>
                                 <th class="stick">Action</th>
                             </tr>
@@ -34,6 +35,7 @@
                                     <div class="table_color_code" :style="`background-color: ${data.color_code}`"></div>
                                 </td>
                                 <td>{{ data.name }}</td>
+                                <td>{{ data.city }}</td>
                                 <td>{{ data.phone }}</td>
                                 <td>
                                     <div class="table_actions">
