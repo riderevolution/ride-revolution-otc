@@ -41,9 +41,9 @@
                                         </no-ssr>
                                     </div>
                                     <div class="content_right">
-                                        <b class="blue">2,000</b>
+                                        <b class="blue">{{ totalItems(targets.totalAttendance.bookingsCount) }}</b>
                                         <p>Actual no. of Riders for this Month</p>
-                                        <b class="blue">3,000</b>
+                                        <b class="blue">{{ totalItems(targets.totalAttendance.target) }}</b>
                                         <p>Target no. of Riders for this Month</p>
                                     </div>
                                 </div>
@@ -74,9 +74,9 @@
                                         </no-ssr>
                                     </div>
                                     <div class="content_right">
-                                        <b class="green">50</b>
+                                        <b class="green">{{ totalItems(targets.firstTimerRiders.firstTimeRiders) }}</b>
                                         <p>Total First Time Riders this Month</p>
-                                        <b class="green">200</b>
+                                        <b class="green">{{ totalItems(targets.firstTimerRiders.firstTimeRidersTarget) }}</b>
                                         <p>Target no. of Riders for this Month</p>
                                     </div>
                                 </div>
@@ -92,9 +92,9 @@
                                         </no-ssr>
                                     </div>
                                     <div class="content_right">
-                                        <b class="violet">850</b>
+                                        <b class="violet">{{ totalItems(targets.returningRiders.returningRiders) }}</b>
                                         <p>Actual no. of Returning Riders for this Month</p>
-                                        <b class="violet">1,500</b>
+                                        <b class="violet">{{ totalItems(targets.returningRiders.returningRidersTarget) }}</b>
                                         <p>Target no. of Returning Riders for this Month</p>
                                     </div>
                                 </div>
@@ -143,7 +143,7 @@
                                         </div>
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
-                                            <div class="violator label">Bea Antonio ({{ $moment(data.bookins[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookins[0].scheduled_date.schedule.start_time).format('hh:mm A') }})</div>
+                                            <div class="violator label">Bea Antonio ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div><div class="no_results" v-else>
@@ -191,7 +191,7 @@
                                         </div>
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
-                                            <div class="violator label">Bea Antonio ({{ $moment(data.bookins[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookins[0].scheduled_date.schedule.start_time).format('hh:mm A') }})</div>
+                                            <div class="violator label">Bea Antonio ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -214,7 +214,7 @@
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                             <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
-                                            <div class="violator label">Bea Antonio ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time).format('hh:mm A') }})</div>
+                                            <div class="violator label">Bea Antonio ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -331,8 +331,15 @@
                 pendingPayments: [],
                 alerts: {
                     vips: [],
+                    milestones: [],
                     firstClass: [],
                     lastClass: [],
+                },
+                targets: {
+                    totalAttendance: [],
+                    packageSales: [],
+                    firstTimerRiders: [],
+                    returningRiders: []
                 },
                 form: {
                     period: 'today',
@@ -341,10 +348,10 @@
                     start_date: this.$moment().startOf('month').format('YYYY-MM-DD'),
                     end_date: this.$moment().endOf('month').format('YYYY-MM-DD')
                 },
-                attendanceSeries: [85],
-                packageSalesSeries: [85],
-                firstTimeRidersSeries: [85],
-                returningRidersSeries: [85],
+                attendanceSeries: [],
+                packageSalesSeries: [],
+                firstTimeRidersSeries: [],
+                returningRidersSeries: [],
                 attendanceOptions: {
                     chart: {
                         height: 150,
@@ -374,9 +381,10 @@
                                 },
                                 value: {
                                     color: "#5686fb",
-                                    fontSize: "30px",
+                                    fontSize: "26px",
                                     show: true,
-                                    fontFamily: 'SFProDisplay-Bold'
+                                    fontFamily: 'SFProDisplay-Bold',
+                                    offsetY: 10
                                 }
                             }
                         }
@@ -414,9 +422,10 @@
                                 },
                                 value: {
                                     color: "#fbc918",
-                                    fontSize: "30px",
+                                    fontSize: "26px",
                                     show: true,
-                                    fontFamily: 'SFProDisplay-Bold'
+                                    fontFamily: 'SFProDisplay-Bold',
+                                    offsetY: 10
                                 }
                             }
                         }
@@ -454,9 +463,10 @@
                                 },
                                 value: {
                                     color: "#38b09d",
-                                    fontSize: "30px",
+                                    fontSize: "26px",
                                     show: true,
-                                    fontFamily: 'SFProDisplay-Bold'
+                                    fontFamily: 'SFProDisplay-Bold',
+                                    offsetY: 10
                                 }
                             }
                         }
@@ -494,9 +504,10 @@
                                 },
                                 value: {
                                     color: "#c264fd",
-                                    fontSize: "30px",
+                                    fontSize: "26px",
                                     show: true,
-                                    fontFamily: 'SFProDisplay-Bold'
+                                    fontFamily: 'SFProDisplay-Bold',
+                                    offsetY: 10
                                 }
                             }
                         }
@@ -619,13 +630,28 @@
                         })
 
                         me.$axios.get('api/portal-dashboard/targets').then(res => {
+                            me.targets.totalAttendance = res.data.totalAttendance
+                            me.targets.packageSales = res.data.packageSales
+                            me.targets.firstTimerRiders = res.data.ridersBehaviour
+                            me.targets.returningRiders = res.data.ridersBehaviour
+
+                            me.attendanceSeries.push(res.data.totalAttendance.percent)
+                            me.packageSalesSeries.push(res.data.packageSales.percent)
+                            me.firstTimeRidersSeries.push(res.data.ridersBehaviour.firstTimeRidersPercent)
+                            me.returningRidersSeries.push(res.data.ridersBehaviour.returningRidersPercent)
                             console.log(res.data);
                         })
 
                         me.pendingPayments = res.data.usersWithPendingPayments
                     }
+                }).catch(err => {
+                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                        me.getNotes(me.form.note_date)
+                    }, 500)
                 })
-                me.getNotes(me.form.note_date)
             }
         },
         mounted () {
@@ -648,7 +674,6 @@
                 setTimeout( () => {
                     document.querySelector('.target_wrapper .right .table_notepad textarea').style.height = `${document.querySelector('.target_wrapper .left').offsetHeight - 80 - 46}px`
                     document.querySelector('.target_wrapper .right .table_notepad textarea').style.maxHeight = `${document.querySelector('.target_wrapper .left').offsetHeight - 80 - 46}px`
-                    me.loader(false)
                 }, 500)
             })
         }
