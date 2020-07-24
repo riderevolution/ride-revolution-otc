@@ -31,7 +31,8 @@
             return {
                 form: {
                     email: 'superadmin@admin.com',
-                    type: 0
+                    type: 0,
+                    otc: 1
                 }
             }
         },
