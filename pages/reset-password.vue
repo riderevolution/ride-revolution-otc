@@ -51,7 +51,7 @@
                 me.$validator.validateAll().then(res => {
                     if (res) {
                         let formData = new FormData(document.getElementById('reset_form'))
-                        formData.append('token', me.$route.query.token)
+                        formData.append('token', me.$route.query.resetToken)
                         formData.append('_method', 'PATCH')
                         me.loader(true)
                         me.$axios.post('api/forgot-password', formData).then(res => {
