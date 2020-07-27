@@ -48,7 +48,7 @@
                         <tr class="parent">
                             <td class="toggler" @click.self="toggleAccordion($event, key)">{{ role.display_name }}</td>
                             <td>{{ countActivatedUsers(role.staff_details) }}</td>
-                            <td>{{ countPermissions(parser(role.permissions)) }}</td>
+                            <td>{{ countPermissions(parser(role.permissions_pages), parser(role.permissions_reporting)) }}</td>
                             <td width="20%">
                                 <div class="table_actions">
                                     <nuxt-link class="table_action_edit link" :to="`/admin/users-and-roles/roles/${role.id}/edit`">Edit Role</nuxt-link>
@@ -113,7 +113,7 @@
                         <tr v-for="(role, key) in res" :key="key">
                             <td>{{ role.display_name }}</td>
                             <td>{{ role.staff_details.length }}</td>
-                            <td>{{ countPermissions(parser(role.permissions)) }}</td>
+                            <td>{{ countPermissions(parser(role.permissions_pages), parser(role.permissions_reporting)) }}</td>
                             <td>
                                 <div class="table_actions">
                                     <nuxt-link class="table_action_edit link" :to="`/admin/users-and-roles/roles/${role.id}/edit`">Edit Role</nuxt-link>
@@ -222,23 +222,28 @@
             },
             /**
              * Count Permissions per role
-             * @param  {[array]} values
+             * @param  {[array]} pages
+             * @param  {[array]} reportings
              * @return {[ctr]}
              */
-            countPermissions (values) {
+            countPermissions (pages, reportings) {
                 const me = this
-                if (values !== undefined) {
-                    let ctr = 0
-                    values.forEach((value, index) => {
-                        if (value.checked) {
-                            ctr++
-                        }
-                    })
-                    if (ctr == 13) {
-                        return 'All'
-                    } else {
-                        return ctr
+                let pagesCtr = 0
+                let reportingsCtr = 0
+                pages.forEach((value, index) => {
+                    if (value.checked) {
+                        pagesCtr++
                     }
+                })
+                reportings.forEach((value, index) => {
+                    if (value.checked) {
+                        reportingsCtr++
+                    }
+                })
+                if ((pagesCtr + reportingsCtr) == 45) {
+                    return 'All'
+                } else {
+                    return pagesCtr + reportingsCtr
                 }
             },
             /**
