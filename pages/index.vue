@@ -23,7 +23,7 @@
                             <h2>Targets</h2>
                             <div class="view">
                                 <label for="month">View</label>
-                                <select class="default_select" name="month">
+                                <select class="default_select" name="month" v-model="form.month">
                                     <option :value="n" v-for="(n, key) in 12" :key="key" :selected="n == $moment().format('M')">{{ $moment(n, 'M').format('MMMM') }}</option>
                                 </select>
                             </div>
@@ -343,6 +343,7 @@
                 },
                 form: {
                     studio_id: 0,
+                    month: this.$moment().format('M'),
                     period: 'today',
                     notes: '',
                     note_date: this.$moment().format('YYYY-MM-DD'),
@@ -630,7 +631,10 @@
                             }
                         })
 
-                        me.$axios.get(`api/portal-dashboard/targets?studio_id=${me.form.studio_id}`).then(res => {
+                        let targetFormData = new FormData
+                        targetFormData.append('month', me.form.month)
+                        targetFormData.append('studio_id', me.form.studio_id)
+                        me.$axios.post('api/portal-dashboard/targets', targetFormData).then(res => {
                             me.targets.totalAttendance = res.data.totalAttendance
                             me.targets.packageSales = res.data.packageSales
                             me.targets.firstTimerRiders = res.data.ridersBehaviour
