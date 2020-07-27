@@ -30,7 +30,7 @@
                         <tbody v-if="res.packageTypes.data.length > 0">
                             <tr v-for="(data, key) in res.packageTypes.data" :key="key">
                                 <td>{{ data.name }}</td>
-                                <td width="50%"><div v-line-clamp="1">{{ data.description }}</div></td>
+                                <td width="50%"><div v-line-clamp="1" v-html="data.description"></div></td>
                                 <td>
                                     <div class="table_actions">
                                         <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>

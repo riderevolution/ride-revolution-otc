@@ -33,8 +33,6 @@
             toggleSuccess () {
                 const me = this
                 if (me.hasChanged) {
-                    me.$store.state.studioChangerPromptStatus = false
-                    document.body.classList.remove('no_scroll')
                     window.location.reload(true)
                 } else {
                     me.$store.state.studioChangerPromptStatus = false

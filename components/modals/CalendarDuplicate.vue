@@ -9,7 +9,7 @@
                     <div class="modal_main_group" v-if="type == 'day'">
                         <div class="form_flex check">
                             <div class="form_group check">
-                                <input type="date" name="target_date" autocomplete="off" class="default_text date" v-validate="'required'">
+                                <v-ctk v-model="form.target_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'target_date'" :name="'target_date'" :label="'Select target date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('target_date')">{{ errors.first('target_date') | properFormat }}</span></transition>
                             </div>
                             <div class="form_group flex check">
@@ -84,6 +84,13 @@
             type: {
                 type: String,
                 default: 'day'
+            }
+        },
+        data () {
+            return {
+                form: {
+                    target_date: this.$moment(this.datePicked).format('YYYY-MM-DD')
+                }
             }
         },
         filters: {

@@ -116,7 +116,7 @@
                                         </div>
                                         <div class="form_group">
                                             <label for="end_date">End Date <span>*</span></label>
-                                            <input type="date" name="end_date" autocomplete="off" class="default_text date" :min="$moment(parseInt($route.params.param)).add(1, 'd').format('YYYY-MM-DD')" v-validate="'required'" v-model="res.end_date">
+                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :min-date="$moment(parseInt($route.params.param)).add(1, 'd').format('YYYY-MM-DD')" :label="'Select end date'" v-validate="'required'"></v-ctk>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                                         </div>
                                     </div>
@@ -228,7 +228,8 @@
                     start_time: '',
                     instructor_id: '',
                     class_type_id: '',
-                    credits: 0
+                    credits: 0,
+                    end_date: this.$moment(parseInt(this.$route.params.param)).add(1, 'd').format('YYYY-MM-DD')
                 }
             }
         },
@@ -443,6 +444,10 @@
                             me.$axios.get('api/packages/class-types').then(res => {
                                 me.classTypes = res.data.classTypes.data
                             })
+
+                            if (me.res.repeat == 1) {
+                                me.form.end_date = me.$moment(me.res.end_date, 'YYYY-MM-DD').add(1, 'd').format('YYYY-MM-DD')
+                            }
 
                             if (me.res.start_time_military) {
                                 me.form.hasTime = true

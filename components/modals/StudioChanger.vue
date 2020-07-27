@@ -3,11 +3,10 @@
         <div class="background" @click="toggleClose()"></div>
         <form id="default_form" class="overlay" @submit.prevent="submissionSuccess()">
             <div class="modal_wrapper">
-                <h2 class="form_title">Current: {{ currentStudio.name }}</h2>
+                <h2 class="form_title">Select a Studio (Current: {{ currentStudio.name }})</h2>
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group alternate">
                     <div class="form_flex_button">
-                        <label for="studio">Select a Studio <span>*</span></label>
                         <div :id="`studio_${key}`" :class="`flex_button ${(data.id == currentStudio.id) ? 'active' : ''}`" v-for="(data, key) in studios" :key="key" @click="selectStudio(data, key)">
                             {{ data.name }}
                         </div>

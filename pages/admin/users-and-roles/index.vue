@@ -352,8 +352,10 @@
                 me.rowCount = 4
                 if (value != -1) {
                     me.$axios.get(`api/roles?enabled=${value}`).then(res => {
-                        me.res = res.data.roles
-                        me.total_count = me.res.length
+                        setTimeout( () => {
+                            me.res = res.data.roles
+                            me.total_count = me.res.length
+                        }, 500)
                     }).catch(err => {
                         me.$store.state.errorList = err.response.data.errors
                         me.$store.state.errorStatus = true
@@ -363,6 +365,7 @@
                             const elements = document.querySelectorAll('.cms_table_accordion tbody')
                             elements.forEach((element, index) => {
                                 element.classList.remove('toggled')
+                                element.querySelector('.accordion_table').style.height = 0
                             })
                         }, 500)
                     })

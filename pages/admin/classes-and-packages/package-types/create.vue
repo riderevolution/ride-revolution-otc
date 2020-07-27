@@ -25,7 +25,7 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="description">Description <span>*</span></label>
-                                    <textarea name="description" rows="8" class="default_text" placeholder="Enter description" v-validate="'required'"></textarea>
+                                    <textarea name="description" rows="8" class="default_text" id="description" placeholder="Enter description" v-validate="'required'"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_flex select_all">
@@ -223,6 +223,26 @@
                 const me = this
                 me.$axios.get('api/studios').then(res => {
                     me.studios = res.data.studios
+                    setTimeout( () => {
+                        $('#description').summernote({
+                            tabsize: 4,
+                            height: 200,
+                            followingToolbar: false,
+                            toolbar: [
+                                [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                                [ 'color', [ 'color' ] ],
+                                [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                                [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                            ],
+                            codemirror: {
+                                lineNumbers: true,
+                                htmlMode: true,
+                                mode: "text/html",
+                                tabMode: 'indent',
+                                lineWrapping: true
+                            }
+                        })
+                    }, 100)
                     me.loaded = true
                 })
             }
