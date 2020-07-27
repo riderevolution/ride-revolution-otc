@@ -66,24 +66,24 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="total_attendance">Total Attendace <span>*</span></label>
-                                        <input type="text" name="total_attendance" placeholder="Enter total attendance" v-model="res.total_attendance" autocomplete="off" class="default_text" v-validate="'required|numeric|min:1|max:99999'">
+                                        <input type="text" name="total_attendance" placeholder="Enter total attendance" v-model="res.target_total_attendance" autocomplete="off" class="default_text" v-validate="'required|numeric|min:1|max:99999'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('total_attendance')">{{ errors.first('total_attendance') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="package_sales">Package Sales <span>*</span></label>
-                                        <input type="text" name="package_sales" placeholder="Enter package sales" v-model="res.package_sales" autocomplete="off" class="default_text" v-validate="'required|numeric|min:1|max:99999'">
+                                        <input type="text" name="package_sales" placeholder="Enter package sales" v-model="res.target_package_sales" autocomplete="off" class="default_text" v-validate="'required|numeric|min:1|max:99999'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('package_sales')">{{ errors.first('package_sales') | properFormat }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="first_time_riders">First Time Riders <span>*</span></label>
-                                        <input type="text" name="first_time_riders" placeholder="Enter first time riders" autocomplete="off" v-model="res.first_time_riders" class="default_text" v-validate="'required|numeric|min:1|max:99999'">
+                                        <input type="text" name="first_time_riders" placeholder="Enter first time riders" autocomplete="off" v-model="res.target_first_time_riders" class="default_text" v-validate="'required|numeric|min:1|max:99999'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('first_time_riders')">{{ errors.first('first_time_riders') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="returning_riders">Returning Riders <span>*</span></label>
-                                        <input type="text" name="returning_riders" placeholder="Enter returning riders" v-model="res.returning_riders" autocomplete="off" class="default_text" v-validate="'required|numeric|min:1|max:99999'">
+                                        <input type="text" name="returning_riders" placeholder="Enter returning riders" v-model="res.target_returning_riders" autocomplete="off" class="default_text" v-validate="'required|numeric|min:1|max:99999'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('returning_riders')">{{ errors.first('returning_riders') | properFormat }}</span></transition>
                                     </div>
                                 </div>

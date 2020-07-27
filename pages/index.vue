@@ -342,6 +342,7 @@
                     returningRiders: []
                 },
                 form: {
+                    studio_id: 0,
                     period: 'today',
                     notes: '',
                     note_date: this.$moment().format('YYYY-MM-DD'),
@@ -629,7 +630,7 @@
                             }
                         })
 
-                        me.$axios.get('api/portal-dashboard/targets').then(res => {
+                        me.$axios.get(`api/portal-dashboard/targets?studio_id=${me.form.studio_id}`).then(res => {
                             me.targets.totalAttendance = res.data.totalAttendance
                             me.targets.packageSales = res.data.packageSales
                             me.targets.firstTimerRiders = res.data.ridersBehaviour
@@ -639,7 +640,6 @@
                             me.packageSalesSeries.push(res.data.packageSales.percent)
                             me.firstTimeRidersSeries.push(res.data.ridersBehaviour.firstTimeRidersPercent)
                             me.returningRidersSeries.push(res.data.ridersBehaviour.returningRidersPercent)
-                            console.log(res.data);
                         })
 
                         me.pendingPayments = res.data.usersWithPendingPayments
@@ -666,6 +666,7 @@
                 setTimeout( () => {
                     me.loaded = true
                     me.res = res.data.user
+                    me.form.studio_id = res.data.user.current_studio_id
                     me.initial()
                 }, 500)
             }).catch(err => {
