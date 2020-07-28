@@ -259,7 +259,6 @@
                 me.$axios.post('api/reporting/inventory-value-report', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            console.log(res.data);
                             me.res.tabs = res.data.tabs
                             me.res.variants = res.data.productVariants
                             me.res.gift_cards = res.data.giftCards

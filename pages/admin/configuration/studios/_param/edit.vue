@@ -52,7 +52,7 @@
                                     </div>
                                     <div class="form_group">
                                         <label for="phone">Phone</label>
-                                        <input type="text" name="phone" autocomplete="off" placeholder="Enter phone" class="default_text" v-validate="'numeric|min:7|max:15'" v-model="res.phone">
+                                        <input type="text" name="phone" autocomplete="off" placeholder="Enter phone number" class="default_text" v-validate="'numeric|min:7|max:15'" v-model="res.phone">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('phone')">{{ errors.first('phone') | properFormat }}</span></transition>
                                     </div>
                                 </div>

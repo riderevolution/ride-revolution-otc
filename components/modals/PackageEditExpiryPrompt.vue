@@ -7,8 +7,8 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_group">
-                        <input type="date" name="date" autocomplete="off" :min="$moment(data.class_package.computed_expiration_date).format('YYYY-MM-DD')" class="default_text date" v-validate="'required'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('date')">{{ errors.first('date') }}</span></transition>
+                        <v-ctk v-model="form.date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'date'" :name="'date'" :label="'Select extension date'" :min-date="$moment(data.class_package.computed_expiration_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('date')">{{ errors.first('date') | properFormat }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="button_group">
@@ -27,6 +27,13 @@
         props: {
             data: {
                 default: null
+            }
+        },
+        data () {
+            return {
+                form: {
+                    date: this.$moment(this.data.class_package.computed_expiration_date).format('YYYY-MM-DD')
+                }
             }
         },
         methods: {

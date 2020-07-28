@@ -56,8 +56,8 @@
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
-                                        <label for="io_birthdate">Birthdate <span>*</span></label>
-                                        <input type="date" name="io_birthdate" autocomplete="off" v-model="res.instructor_details.io_birthdate" class="default_text date" v-validate="'required'">
+                                        <label for="io_birthdate">Birth Date <span>*</span></label>
+                                        <v-ctk v-model="form.birth_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'io_birthdate'" :name="'io_birthdate'" :max-date="$moment().format('YYYY-MM-DD')" :label="'Select birth date'" v-validate="'required'"></v-ctk>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('io_birthdate')">{{ errors.first('io_birthdate') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -296,7 +296,8 @@
                     ba_country: '',
                     ba_state: '',
                     ba_city: '',
-                    ba_zip_code: ''
+                    ba_zip_code: '',
+                    birth_date: this.$moment().format('YYYY-MM-DD')
                 },
                 res: [],
                 pa_countries: [],
@@ -518,6 +519,8 @@
                             me.form.ba_address_2 = res.data.user.instructor_details.ba_address_2
                             me.form.ba_city = res.data.user.instructor_details.ba_city
                             me.form.ba_zip_code = res.data.user.instructor_details.ba_zip_code
+
+                            me.form.birth_date = me.$moment(res.data.user.instructor_details.io_birthdate).format('YYYY-MM-DD')
                         }, 500)
                     }).catch(err => {
                         me.$store.state.errorList = err.response.data.errors

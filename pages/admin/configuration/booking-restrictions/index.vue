@@ -21,15 +21,15 @@
                                         <div class="form_flex_input">
                                             <input type="text" name="booking_hours" class="default_text number" autocomplete="off" v-model="form.booking.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'">
                                             <div class="placeholder">hours</div>
-                                            <div class="up" @click="addCount('booking', 'hour')"></div>
-                                            <div class="down" @click="subtractCount('booking', 'hour')"></div>
+                                            <!-- <div class="up" @click="addCount('booking', 'hour')"></div>
+                                            <div class="down" @click="subtractCount('booking', 'hour')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_hours')">{{ errors.first('booking_hours') | properFormat }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <input type="text" name="booking_minutes" class="default_text number" autocomplete="off" v-model="form.booking.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
                                             <div class="placeholder">mins.</div>
-                                            <div class="up" @click="addCount('booking', 'mins')"></div>
-                                            <div class="down" @click="subtractCount('booking', 'mins')"></div>
+                                            <!-- <div class="up" @click="addCount('booking', 'mins')"></div>
+                                            <div class="down" @click="subtractCount('booking', 'mins')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_minutes')">{{ errors.first('booking_minutes') | properFormat }}</span></transition>
                                         </div>
                                     </div>
@@ -38,15 +38,15 @@
                                         <div class="form_flex_input">
                                             <input type="text" name="cancel_hours" class="default_text number" autocomplete="off" v-model="form.cancel.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'">
                                             <div class="placeholder">hours</div>
-                                            <div class="up" @click="addCount('cancel', 'hour')"></div>
-                                            <div class="down" @click="subtractCount('cancel', 'hour')"></div>
+                                            <!-- <div class="up" @click="addCount('cancel', 'hour')"></div>
+                                            <div class="down" @click="subtractCount('cancel', 'hour')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_hours')">{{ errors.first('cancel_hours') | properFormat }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <input type="text" name="cancel_minutes" class="default_text number" autocomplete="off" v-model="form.cancel.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
                                             <div class="placeholder">mins.</div>
-                                            <div class="up" @click="addCount('cancel', 'mins')"></div>
-                                            <div class="down" @click="subtractCount('cancel', 'mins')"></div>
+                                            <!-- <div class="up" @click="addCount('cancel', 'mins')"></div>
+                                            <div class="down" @click="subtractCount('cancel', 'mins')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_minutes')">{{ errors.first('cancel_minutes') | properFormat }}</span></transition>
                                         </div>
                                     </div>
@@ -57,15 +57,15 @@
                                         <div class="form_flex_input">
                                             <input type="text" name="no_show_hours" class="default_text number" autocomplete="off" v-model="form.noShow.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'">
                                             <div class="placeholder">hours</div>
-                                            <div class="up" @click="addCount('noShow', 'hour')"></div>
-                                            <div class="down" @click="subtractCount('noShow', 'hour')"></div>
+                                            <!-- <div class="up" @click="addCount('noShow', 'hour')"></div>
+                                            <div class="down" @click="subtractCount('noShow', 'hour')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('no_show_hours')">{{ errors.first('no_show_hours') | properFormat }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <input type="text" name="no_show_minutes" class="default_text number" autocomplete="off" v-model="form.noShow.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
                                             <div class="placeholder">mins.</div>
-                                            <div class="up" @click="addCount('noShow', 'mins')"></div>
-                                            <div class="down" @click="subtractCount('noShow', 'mins')"></div>
+                                            <!-- <div class="up" @click="addCount('noShow', 'mins')"></div>
+                                            <div class="down" @click="subtractCount('noShow', 'mins')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('no_show_minutes')">{{ errors.first('no_show_minutes') | properFormat }}</span></transition>
                                         </div>
                                     </div>

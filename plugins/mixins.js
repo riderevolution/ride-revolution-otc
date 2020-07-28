@@ -154,9 +154,11 @@ Vue.mixin({
             }).catch(err => {
                 console.log(err)
             }).then(() => {
-                if (!this.$store.state.isAuth) {
-                    window.location.assign('/login')
-                }
+                setTimeout(() => {
+                    if (!this.$store.state.isAuth) {
+                        window.location.assign('/login')
+                    }
+                }, 500)
             })
         },
         validateToken () {
