@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="description">Description</label>
-                                    <textarea name="description" rows="8" class="default_text" placeholder="Enter description"></textarea>
+                                    <textarea name="description" rows="8" id="description" class="default_text" placeholder="Enter description"></textarea>
                                 </div>
                                 <transition name="fade">
                                     <div class="form_group" v-if="isPrivate">
@@ -400,10 +400,11 @@
             },
             fetchTypes () {
                 const me = this
-                me.$axios.get('api/packages/class-types').then(res => {
-                    me.classTypes = res.data.classTypes.data
+                let studio_id = me.$cookies.get('CSID')
+                me.$axios.get(`api/packages/class-types?studio_id=${studio_id}&get=1`).then(res => {
+                    me.classTypes = res.data.classTypes
                 })
-                me.$axios.get('api/packages/package-types?no_paginate=1').then(res => {
+                me.$axios.get(`api/packages/package-types?no_paginate=1&studio_id=${studio_id}`).then(res => {
                     res.data.packageTypes.forEach((data, index) => {
                         data.checked = false
                         me.packageTypes.push(data)
@@ -418,9 +419,27 @@
 
                 me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
                 setTimeout( () => {
-                    me.loaded = true
+                    $('#description').summernote({
+                        tabsize: 4,
+                        height: 200,
+                        followingToolbar: false,
+                        toolbar: [
+                            [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                            [ 'color', [ 'color' ] ],
+                            [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                            [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                        ],
+                        codemirror: {
+                            lineNumbers: true,
+                            htmlMode: true,
+                            mode: "text/html",
+                            tabMode: 'indent',
+                            lineWrapping: true
+                        }
+                    })
                     me.loader(false)
-                }, 500)
+                }, 100)
+                me.loaded = true
             },
             getTime (event, type) {
                 const me = this

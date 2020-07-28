@@ -23,6 +23,7 @@
                         <thead>
                             <tr>
                                 <th class="stick">Class Type</th>
+                                <th class="stick">Studio Access</th>
                                 <th class="stick">Class Length</th>
                                 <th class="stick">Bookable</th>
                                 <th class="stick">Action</th>
@@ -31,6 +32,14 @@
                         <tbody v-if="res.classTypes.data.length > 0">
                             <tr v-for="(data, key) in res.classTypes.data" :key="key">
                                 <td>{{ data.name }}</td>
+                                <td>
+                                    <div v-for="(studio, key) in data.studio_access" :key="key" v-if="data.studio_access.length != studios.length">
+                                        {{ studio.studio.name }} <br />
+                                    </div>
+                                    <div v-if="data.studio_access.length == studios.length">
+                                        All Studios
+                                    </div>
+                                </td>
                                 <td>{{ formatToLength(data.class_length) }}</td>
                                 <td>{{ (data.bookable == 1) ? 'Yes' : 'No' }}</td>
                                 <td>
@@ -77,6 +86,7 @@
                 lastRoute: '',
                 rowCount: 0,
                 status: 1,
+                studios: [],
                 res: []
             }
         },
@@ -107,8 +117,13 @@
                 const me = this
                 me.loader(true)
                 me.$axios.get(`api/packages/class-types?enabled=${value}`).then(res => {
-                    me.res = res.data
-                    me.loaded = true
+                    setTimeout( () => {
+                        me.res = res.data
+                        me.$axios.get('api/studios').then(res => {
+                            me.studios = res.data.studios
+                        })
+                        me.loaded = true
+                    }, 500)
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
