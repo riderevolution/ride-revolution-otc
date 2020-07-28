@@ -57,7 +57,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="co_birthdate">Birth Date <span>*</span></label>
-                                        <v-ctk v-model="form.birth_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'co_birthdate'" :name="'co_birthdate'" :label="'Select birth date'" v-validate="'required'"></v-ctk>
+                                        <v-ctk v-model="form.birth_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'co_birthdate'" :name="'co_birthdate'" :max-date="$moment().format('YYYY-MM-DD')" :label="'Select birth date'" v-validate="'required'"></v-ctk>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('co_birthdate')">{{ errors.first('co_birthdate') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
