@@ -23,15 +23,24 @@
                         <thead>
                             <tr>
                                 <th class="stick">Package Type</th>
-                                <th class="stick">Description</th>
+                                <th class="stick">Studio Access</th>
+                                <th class="stick">Created At</th>
                                 <th class="stick">Action</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.packageTypes.data.length > 0">
                             <tr v-for="(data, key) in res.packageTypes.data" :key="key">
                                 <td>{{ data.name }}</td>
-                                <td width="50%"><div v-line-clamp="1" v-html="data.description"></div></td>
                                 <td>
+                                    <div v-for="(studio, key) in data.studio_access" :key="key" v-if="data.studio_access.length != studios.length">
+                                        {{ studio.studio.name }} <br />
+                                    </div>
+                                    <div v-if="data.studio_access.length == studios.length">
+                                        All Studios
+                                    </div>
+                                </td>
+                                <td>{{ formatDate(data.created_at) }}</td>
+                                <td width="15%">
                                     <div class="table_actions">
                                         <nuxt-link class="table_action_edit" :to="`${$route.path}/${data.id}/edit`">Edit</nuxt-link>
                                         <div class="table_action_cancel link" @click.self="toggleStatus(data.id, 0, 'Deactivated')" v-if="status == 1">Deactivate</div>
@@ -75,10 +84,16 @@
                 lastRoute: '',
                 rowCount: 0,
                 status: 1,
+                studios: [],
                 res: []
             }
         },
         methods: {
+            formatDate (value) {
+                if (value) {
+                    return this.$moment(value).format('MMM DD, YYYY')
+                }
+            },
             toggleStatus (id, enabled, status) {
                 const me = this
                 me.$store.state.confirmStatus = true
@@ -100,8 +115,13 @@
                 const me = this
                 me.loader(true)
                 me.$axios.get(`api/packages/package-types?enabled=${value}`).then(res => {
-                    me.res = res.data
-                    me.loaded = true
+                    setTimeout( () => {
+                        me.res = res.data
+                        me.$axios.get('api/studios').then(res => {
+                            me.studios = res.data.studios
+                        })
+                        me.loaded = true
+                    }, 500)
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true

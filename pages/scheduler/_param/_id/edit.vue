@@ -23,7 +23,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="start_time">Start Time <span>*</span></label>
-                                        <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :auto-close="true" :id="'start_time'" :name="'start_time'" :label="'Select start time'" @input="getTime($event, 'dynamic')" v-validate="'required'"></v-ctk>
+                                        <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'start_time'" :name="'start_time'" :label="'Select start time'" @input="getTime($event, 'dynamic')" v-validate="'required'"></v-ctk>
                                         <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -63,9 +63,14 @@
                                         <input type="text" name="temp_class_length" readonly autocomplete="off" class="default_text disabled" v-model="form.classLengthTemp">
                                     </div>
                                 </div>
+                                <div class="form_group" v-if="studio.online_class">
+                                    <label for="zoom_link">Zoom Link <span>*</span></label>
+                                    <input type="text" name="zoom_link" autocomplete="off" v-model="res.zoom_link" class="default_text" placeholder="Enter zoom link" v-validate="{required: true, url: {require_protocol: true }}">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('zoom_link')">{{ errors.first('zoom_link') | properFormat }}</span></transition>
+                                </div>
                                 <div class="form_group">
                                     <label for="description">Description</label>
-                                    <textarea name="description" rows="8" class="default_text" v-model="res.description"></textarea>
+                                    <textarea name="description" rows="8" class="default_text" v-model="res.description" placeholder="Enter description"></textarea>
                                 </div>
                                 <transition name="fade">
                                     <div class="form_group" v-if="isPrivate">
@@ -216,6 +221,7 @@
                 access: true,
                 loaded: false,
                 lastRoute: '',
+                studio: [],
                 classTypes: [],
                 packageTypes: [],
                 instructors: [],
@@ -228,6 +234,7 @@
                     start_time: '',
                     instructor_id: '',
                     class_type_id: '',
+                    studio_id: 0,
                     credits: 0,
                     end_date: this.$moment(parseInt(this.$route.params.param)).add(1, 'd').format('YYYY-MM-DD')
                 }
@@ -445,6 +452,12 @@
                                 me.classTypes = res.data.classTypes.data
                             })
 
+                            me.form.studio_id = me.$cookies.get('CSID')
+
+                            me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                                me.studio = res.data.studio
+                            })
+
                             if (me.res.repeat == 1) {
                                 me.form.end_date = me.$moment(me.res.end_date, 'YYYY-MM-DD').add(1, 'd').format('YYYY-MM-DD')
                             }
@@ -484,7 +497,7 @@
                         target = me.form.start_time
                         break
                     case 'dynamic':
-                        target = event.target.value
+                        target = event
                         break
                 }
                 me.form.start_time = target

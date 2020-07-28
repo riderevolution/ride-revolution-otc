@@ -22,7 +22,7 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="description">Description <span>*</span></label>
-                                    <textarea name="description" rows="8" class="default_text" placeholder="Enter description" v-validate="'required'" v-model="res.description"></textarea>
+                                    <textarea name="description" rows="8" id="description" class="default_text" placeholder="Enter description" v-validate="'required'"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
                                 </div>
                                 <div class="form_flex">
@@ -31,15 +31,15 @@
                                         <div class="form_flex_input">
                                             <input type="text" name="class_length_hours" class="default_text number" autocomplete="off" v-model="form.classLength.hour" maxlength="10" v-validate="'required|numeric|max_value:9999999999|min_value:0'">
                                             <div class="placeholder">hours</div>
-                                            <div class="up" @click="addCount('classLength', 'hour')"></div>
-                                            <div class="down" @click="subtractCount('classLength', 'hour')"></div>
+                                            <!-- <div class="up" @click="addCount('classLength', 'hour')"></div>
+                                            <div class="down" @click="subtractCount('classLength', 'hour')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_hours')">{{ errors.first('class_length_hours') | properFormat }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <input type="text" name="class_length_minutes" class="default_text number" autocomplete="off" v-model="form.classLength.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
                                             <div class="placeholder">mins.</div>
-                                            <div class="up" @click="addCount('classLength', 'mins')"></div>
-                                            <div class="down" @click="subtractCount('classLength', 'mins')"></div>
+                                            <!-- <div class="up" @click="addCount('classLength', 'mins')"></div> -->
+                                            <!-- <div class="down" @click="subtractCount('classLength', 'mins')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_minutes')">{{ errors.first('class_length_minutes') | properFormat }}</span></transition>
                                         </div>
                                     </div>
@@ -63,7 +63,7 @@
                                         <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
                                     </div>
                                     <div class="form_check" v-for="(studio, key) in studios" :key="key">
-                                        <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checkedForReal" class="action_check">
+                                        <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checkedForReal" @change="toggleStudio()" class="action_check">
                                         <label :for="`studio_${key}`">{{ studio.name }}</label>
                                     </div>
                                     <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
@@ -196,6 +196,12 @@
             }
         },
         methods: {
+            toggleStudio () {
+                const me = this
+                if (me.hasStudio) {
+                    me.hasStudio = false
+                }
+            },
             toggleSelectAllStudio (event) {
                 const me = this
                 if (me.checkStudio) {
@@ -347,6 +353,27 @@
                     me.studios = me.res.studios
                     me.form.classLength.hour = me.res.class_length.split('+')[1].split(':')[0]
                     me.form.classLength.mins = me.res.class_length.split('+')[1].split(':')[1]
+                    setTimeout( () => {
+                        $('#description').summernote({
+                            tabsize: 4,
+                            height: 200,
+                            followingToolbar: false,
+                            toolbar: [
+                                [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                                [ 'color', [ 'color' ] ],
+                                [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                                [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                            ],
+                            codemirror: {
+                                lineNumbers: true,
+                                htmlMode: true,
+                                mode: "text/html",
+                                tabMode: 'indent',
+                                lineWrapping: true
+                            }
+                        })
+                        $('#description').summernote('code', me.res.description)
+                    }, 100)
                     me.loaded = true
                 })
             } else {

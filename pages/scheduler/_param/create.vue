@@ -23,7 +23,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="start_time">Start Time <span>*</span></label>
-                                        <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :auto-close="true" :id="'start_time'" :name="'start_time'" :label="'Select start time'" @input="getTime($event, 'dynamic')" v-validate="'required'"></v-ctk>
+                                        <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'start_time'" :name="'start_time'" :label="'Select start time'" @input="getTime($event, 'dynamic')" v-validate="'required'"></v-ctk>
                                         <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -55,7 +55,7 @@
                                 <div class="form_flex">
                                     <div class="form_group" v-if="form.setCustomName">
                                         <label for="custom_name">Custom Class Type Name <span>*</span></label>
-                                        <input type="text" name="custom_name" autocomplete="off" class="default_text" key="custom_name" v-validate="'required'">
+                                        <input type="text" name="custom_name" autocomplete="off" class="default_text" placeholder="Enter customer class type name" key="custom_name" v-validate="'required'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_name')">{{ errors.first('custom_name') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -63,9 +63,14 @@
                                         <input type="text" name="temp_class_length" readonly autocomplete="off" class="default_text disabled" v-model="form.classLengthTemp">
                                     </div>
                                 </div>
+                                <div class="form_group" v-if="studio.online_class">
+                                    <label for="zoom_link">Zoom Link <span>*</span></label>
+                                    <input type="text" name="zoom_link" autocomplete="off" class="default_text" placeholder="Enter zoom link" v-validate="{required: true, url: {require_protocol: true }}">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('zoom_link')">{{ errors.first('zoom_link') | properFormat }}</span></transition>
+                                </div>
                                 <div class="form_group">
                                     <label for="description">Description</label>
-                                    <textarea name="description" rows="8" class="default_text"></textarea>
+                                    <textarea name="description" rows="8" class="default_text" placeholder="Enter description"></textarea>
                                 </div>
                                 <transition name="fade">
                                     <div class="form_group" v-if="isPrivate">
@@ -210,11 +215,14 @@
         },
         data () {
             return {
+                name: 'Scheduler',
+                access: true,
                 loaded: false,
                 message: '',
                 isRepeat: false,
                 isPrivate: false,
                 lastRoute: '',
+                studio: [],
                 classTypes: [],
                 packageTypes: [],
                 instructors: [],
@@ -227,6 +235,7 @@
                     instructor_id: '',
                     class_type_id: '',
                     credits: 0,
+                    studio_id: 0,
                     end_date: this.$moment(parseInt(this.$route.params.param)).add(1, 'd').format('YYYY-MM-DD')
                 }
             }
@@ -364,16 +373,14 @@
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
                         formData.append('package_type_restrictions', JSON.stringify(me.packageTypes))
-                        formData.append('studio_id', me.$store.state.user.current_studio_id)
+                        formData.append('studio_id', me.form.studio_id)
                         formData.append('class_length', me.form.classLength)
                         me.loader(true)
                         me.$axios.post('api/schedules', formData).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Added')
-                                } else {
-                                    me.$store.state.errorList.push('Sorry, Something went wrong')
-                                    me.$store.state.errorStatus = true
+                                    me.$router.push(`/${me.lastRoute}`)
                                 }
                             }, 500)
                         }).catch(err => {
@@ -381,9 +388,6 @@
                             me.$store.state.errorStatus = true
                         }).then(() => {
                             setTimeout( () => {
-                                if (!me.$store.state.errorStatus) {
-                                    me.$router.push(`/${me.lastRoute}`)
-                                }
                                 me.loader(false)
                             }, 500)
                         })
@@ -405,10 +409,17 @@
                         me.packageTypes.push(data)
                     })
                 })
+
+                me.form.studio_id = me.$cookies.get('CSID')
+
+                me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                    me.studio = res.data.studio
+                })
+
                 me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 3]
                 setTimeout( () => {
-                    me.loader(false)
                     me.loaded = true
+                    me.loader(false)
                 }, 500)
             },
             getTime (event, type) {
@@ -440,12 +451,17 @@
                 }
             }
         },
-        mounted () {
+        async mounted () {
             const me = this
-            me.loader(true)
-            setTimeout( () => {
-                me.fetchTypes()
-            }, 500)
+            await me.checkPagePermission(me)
+            if (me.access) {
+                me.loader(true)
+                setTimeout( () => {
+                    me.fetchTypes()
+                }, 500)
+            } else {
+                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+            }
         }
     }
 </script>

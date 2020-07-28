@@ -515,7 +515,7 @@
                 me.$axios.get(`api/instructors?enabled=1&studio_id=${studio_id}`).then(res => {
                     me.instructors = res.data.instructors.data
                 })
-                me.form.studio_id = me.$cookies.get('CSID')
+                me.form.studio_id = studio_id
                 me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
             },
             getStudio (event) {
