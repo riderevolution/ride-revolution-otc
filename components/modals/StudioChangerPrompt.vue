@@ -33,7 +33,11 @@
             toggleSuccess () {
                 const me = this
                 if (me.hasChanged) {
-                    window.location.reload(true)
+                    if (me.$route.query.i) {
+                        window.location.assign('/scheduler')
+                    } else {
+                        window.location.reload(true)
+                    }
                 } else {
                     me.$store.state.studioChangerPromptStatus = false
                 }

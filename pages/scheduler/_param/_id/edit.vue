@@ -23,7 +23,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="start_time">Start Time <span>*</span></label>
-                                        <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :auto-close="true" :id="'start_time'" :name="'start_time'" :label="'Select start time'" @input="getTime($event, 'dynamic')" v-validate="'required'"></v-ctk>
+                                        <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'start_time'" :name="'start_time'" :label="'Select start time'" @input="getTime($event, 'dynamic')" v-validate="'required'"></v-ctk>
                                         <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
                                     </div>
                                     <div class="form_group">
@@ -63,9 +63,14 @@
                                         <input type="text" name="temp_class_length" readonly autocomplete="off" class="default_text disabled" v-model="form.classLengthTemp">
                                     </div>
                                 </div>
+                                <div class="form_group" v-if="studio.online_class">
+                                    <label for="zoom_link">Zoom Link <span>*</span></label>
+                                    <input type="text" name="zoom_link" autocomplete="off" v-model="res.zoom_link" class="default_text" placeholder="Enter zoom link" v-validate="{required: true, url: {require_protocol: true }}">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('zoom_link')">{{ errors.first('zoom_link') | properFormat }}</span></transition>
+                                </div>
                                 <div class="form_group">
                                     <label for="description">Description</label>
-                                    <textarea name="description" rows="8" class="default_text" v-model="res.description"></textarea>
+                                    <textarea name="description" rows="8" id="description" class="default_text" placeholder="Enter description"></textarea>
                                 </div>
                                 <transition name="fade">
                                     <div class="form_group" v-if="isPrivate">
@@ -216,6 +221,7 @@
                 access: true,
                 loaded: false,
                 lastRoute: '',
+                studio: [],
                 classTypes: [],
                 packageTypes: [],
                 instructors: [],
@@ -228,6 +234,7 @@
                     start_time: '',
                     instructor_id: '',
                     class_type_id: '',
+                    studio_id: 0,
                     credits: 0,
                     end_date: this.$moment(parseInt(this.$route.params.param)).add(1, 'd').format('YYYY-MM-DD')
                 }
@@ -411,62 +418,90 @@
                 const me = this
                 me.loader(true)
                 me.$axios.get(`api/schedules/${me.$route.query.i}`).then(res => {
-                    setTimeout( () => {
-                        if (res.data) {
-                            let temp = res.data.schedule
-                            me.res = res.data.schedule
-                            me.form.classLengthTemp = me.res.class_length_unformatted
-                            me.form.classLength = me.res.class_length
-                            me.form.credits = me.res.class_credits
-
-                            me.$axios.get('api/packages/package-types?no_paginate=1').then(res => {
-                                res.data.packageTypes.forEach((data, index) => {
-                                    data.checked = false
-                                    temp.package_type_restrictions.forEach((type, index) => {
-                                        if (data.id == type.package_type.id) {
-                                            data.checked = true
-                                        }
-                                    })
-                                    me.packageTypes.push(data)
-                                })
+                    if (res.data) {
+                        me.loaded = true
+                        setTimeout( () => {
+                            $('#description').summernote({
+                                tabsize: 4,
+                                height: 200,
+                                followingToolbar: false,
+                                toolbar: [
+                                    [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear'] ],
+                                    [ 'color', [ 'color' ] ],
+                                    [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                                    [ 'view', [ 'undo', 'redo', 'fullscreen', 'codeview' ] ]
+                                ],
+                                codemirror: {
+                                    lineNumbers: true,
+                                    htmlMode: true,
+                                    mode: "text/html",
+                                    tabMode: 'indent',
+                                    lineWrapping: true
+                                }
                             })
+                            $('#description').summernote('code', me.res.description)
+                        }, 100)
 
-                            if (res.data.schedule.set_custom_name) {
-                                me.form.setCustomName = res.data.schedule.set_custom_name
-                            }
+                        let studio_id = me.$cookies.get('CSID')
+                        let temp = res.data.schedule
+                        me.res = res.data.schedule
+                        me.form.classLengthTemp = me.res.class_length_unformatted
+                        me.form.classLength = me.res.class_length
+                        me.form.credits = me.res.class_credits
 
-                            // me.isRepeat = (me.res.repeat == 1) ? true : false
-                            // me.prompt = (me.res.repeat == 1) ? true : false
-                            me.isPrivate = (me.res.private_class == 1) ? true : false
-                            me.form.instructor_id = me.res.instructor_schedules[0].user_id
-                            me.form.class_type_id = me.res.class_type_id
-                            me.form.start_time = me.res.start_time
-                            me.$axios.get('api/packages/class-types').then(res => {
-                                me.classTypes = res.data.classTypes.data
-                            })
-
-                            if (me.res.repeat == 1) {
-                                me.form.end_date = me.$moment(me.res.end_date, 'YYYY-MM-DD').add(1, 'd').format('YYYY-MM-DD')
-                            }
-
-                            if (me.res.start_time_military) {
-                                me.form.hasTime = true
-                                let formData = new FormData()
-                                formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-MM-DD'))
-                                formData.append('start_time', me.res.start_time_military)
-                                formData.append('class_type_id', me.form.class_type_id)
-                                formData.append('studio_id', me.res.studio_id)
-                                me.$axios.post(`api/available-instructors`, formData).then(res => {
-                                    me.instructors = res.data.instructors
+                        me.$axios.get(`api/packages/package-types?no_paginate=1&studio_id=${studio_id}`).then(res => {
+                            res.data.packageTypes.forEach((data, index) => {
+                                data.checked = false
+                                temp.package_type_restrictions.forEach((type, index) => {
+                                    if (data.id == type.package_type.id) {
+                                        data.checked = true
+                                    }
                                 })
-                            } else {
-                                me.form.hasTime = false
-                            }
+                                me.packageTypes.push(data)
+                            })
+                        })
 
-                            me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 4]
-                            me.loaded = true
+                        if (res.data.schedule.set_custom_name) {
+                            me.form.setCustomName = res.data.schedule.set_custom_name
                         }
-                    }, 500)
+
+                        // me.isRepeat = (me.res.repeat == 1) ? true : false
+                        // me.prompt = (me.res.repeat == 1) ? true : false
+                        me.isPrivate = (me.res.private_class == 1) ? true : false
+                        me.form.instructor_id = me.res.instructor_schedules[0].user_id
+                        me.form.class_type_id = me.res.class_type_id
+                        me.form.start_time = me.res.start_time
+
+                        me.$axios.get(`api/packages/class-types?studio_id=${studio_id}&get=1`).then(res => {
+                            me.classTypes = res.data.classTypes
+                        })
+
+                        me.form.studio_id = me.$cookies.get('CSID')
+
+                        me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                            me.studio = res.data.studio
+                        })
+
+                        if (me.res.repeat == 1) {
+                            me.form.end_date = me.$moment(me.res.end_date, 'YYYY-MM-DD').add(1, 'd').format('YYYY-MM-DD')
+                        }
+
+                        if (me.res.start_time_military) {
+                            me.form.hasTime = true
+                            let formData = new FormData()
+                            formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-MM-DD'))
+                            formData.append('start_time', me.res.start_time_military)
+                            formData.append('class_type_id', me.form.class_type_id)
+                            formData.append('studio_id', me.res.studio_id)
+                            me.$axios.post(`api/available-instructors`, formData).then(res => {
+                                me.instructors = res.data.instructors
+                            })
+                        } else {
+                            me.form.hasTime = false
+                        }
+
+                        me.lastRoute = me.$route.path.split('/')[me.$route.path.split('/').length - 4]
+                    }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
@@ -484,7 +519,7 @@
                         target = me.form.start_time
                         break
                     case 'dynamic':
-                        target = event.target.value
+                        target = event
                         break
                 }
                 me.form.start_time = target
