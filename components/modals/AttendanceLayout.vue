@@ -96,6 +96,7 @@
             toggleClose () {
                 const me = this
                 me.$store.state.attendanceLayoutStatus = false
+                document.body.classList.remove('no_scroll')
             },
             toggleOverlays (e) {
                 const me = this
