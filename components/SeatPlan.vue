@@ -61,7 +61,7 @@
         methods: {
             toggleOnlineAttendance () {
                 const me = this
-                me.$store.state.onlineAttendancePrompt = true
+                me.$store.state.onlineAttendanceLayoutStatus = true
                 document.body.classList.add('no_scroll')
             },
             fetchSeats (schedule_id, id) {
