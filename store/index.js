@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 const createStore = () => {
     return new Vuex.Store({
         state: () => ({
-            onlineAttendancePrompt: false,
+            onlineAttendanceLayoutStatus: false,
             editPackageExpiryStatus: false,
             redeemGiftCardSuccessStatus: false,
             redeemGiftCardStatus: false,

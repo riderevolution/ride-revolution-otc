@@ -297,6 +297,9 @@
                 <package-layout v-if="$store.state.packageLayoutStatus" :customer="customer" />
             </transition>
             <transition name="fade">
+                <online-attendance-layout v-if="$store.state.onlineAttendanceLayoutStatus" :schedule="schedule" />
+            </transition>
+            <transition name="fade">
                 <redeem-gift-card v-if="$store.state.redeemGiftCardStatus" :customer="customer" />
             </transition>
             <transition name="fade">
@@ -325,6 +328,7 @@
     import CustomerPendingQuickSale from '../../components/modals/CustomerPendingQuickSale'
     import AttendanceLayout from '../../components/modals/AttendanceLayout'
     import PackageLayout from '../../components/modals/PackageLayout'
+    import OnlineAttendanceLayout from '../../components/modals/OnlineAttendanceLayout'
     import RedeemGiftCard from '../../components/modals/RedeemGiftCard'
     import RedeemGiftCardSuccess from '../../components/modals/RedeemGiftCardSuccess'
     import BookerMenuPrompt from '../../components/modals/BookerMenuPrompt'
@@ -347,6 +351,7 @@
             CustomerPendingQuickSale,
             AttendanceLayout,
             PackageLayout,
+            OnlineAttendanceLayout,
             RedeemGiftCard,
             RedeemGiftCardSuccess,
             BookerMenuPrompt
