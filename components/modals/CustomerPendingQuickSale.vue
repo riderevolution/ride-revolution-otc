@@ -309,7 +309,7 @@
                     formData.append('customGiftCard', JSON.stringify(Object.fromEntries(customGiftCard)))
                     formData.append('productForm', JSON.stringify(Object.fromEntries(productForm)))
                     formData.append('checkout', JSON.stringify(Object.fromEntries(checkout)))
-                    formData.append('studio_id', me.$store.state.user.current_studio_id)
+                    formData.append('studio_id', me.value.studio_id)
                     formData.append('user_id', me.$store.state.customerID)
                     formData.append('payment_id', me.value.id)
                     if (me.promoApplied) {
@@ -360,7 +360,7 @@
                 formData.append('customGiftCard', JSON.stringify(Object.fromEntries(customGiftCard)))
                 formData.append('productForm', JSON.stringify(Object.fromEntries(productForm)))
                 formData.append('checkout', JSON.stringify(Object.fromEntries(checkout)))
-                formData.append('studio_id', me.$store.state.user.current_studio_id)
+                formData.append('studio_id', me.value.studio_id)
                 formData.append('user_id', me.$store.state.customerID)
                 formData.append('payment_id', me.value.id)
                 formData.append('payCredit', 1)

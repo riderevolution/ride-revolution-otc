@@ -1,8 +1,14 @@
 <template>
     <div class="plan_wrapper">
-        <seat-plan-box v-for="(seat, key) in seats" :data="seat.data" :position="seat.position" :layout="seat.layout" :total="ctr" :key="key" v-if="hasFetchSeat" />
+        <seat-plan-box v-for="(seat, key) in seats" :data="seat.data" :position="seat.position" :layout="seat.layout" :total="ctr" :key="key" v-if="hasFetchSeat && !onlineClass" />
         <div class="no_results" v-if="!hasFetchSeat">
             Please select a studio before viewing classes.
+        </div>
+        <div class="no_results" v-if="hasFetchSeat && onlineClass">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <div class="cta">
+                <div class="action_btn alternate" @click="toggleOnlineAttendance()">Update Online Attendance</div>
+            </div>
         </div>
     </div>
 </template>
@@ -12,6 +18,12 @@
     export default {
         components: {
             SeatPlanBox
+        },
+        props: {
+            onlineClass: {
+                type: Boolean,
+                default: false
+            }
         },
         data () {
             return {
@@ -47,6 +59,11 @@
             }
         },
         methods: {
+            toggleOnlineAttendance () {
+                const me = this
+                me.$store.state.onlineAttendancePrompt = true
+                document.body.classList.add('no_scroll')
+            },
             fetchSeats (schedule_id, id) {
                 const me = this
                 let layout = `layout_${id}`

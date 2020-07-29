@@ -115,19 +115,17 @@
                                 <div class="class_accordion" v-for="(result, key) in results" :key="key">
                                     <div class="accordion_header" @click.self="toggleClass($event, $moment(result.date).format('M'), $moment(result.date).format('D'), $moment(result.date).format('YYYY'))">{{ result.abbr }} | {{ result.date }}</div>
                                     <div class="accordion_content">
-                                        <div :id="`class_${dkey}_${key}`" class="class_content" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
+                                        <div :id="`class_${dkey}_${key}`" :class="`class_content ${(data.schedule.studio.online_class) ? 'online' : ''}`" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
                                             <div class="class_title">
-                                                <span>{{ data.schedule.start_time }}, {{ (data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name }}</span>
+                                                <span>{{ data.schedule.start_time }}, {{ (data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name }} {{ (!data.schedule.studio.online_class) ? '' : '(Online Class)' }}</span>
                                                 <div :class="`class_status ${(data.isFull) ? 'full' : ''}`">
                                                     {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.signedIn}` }}
                                                 </div>
                                             </div>
-                                            <div class="class_text">
-                                                {{ data.schedule.description }}
-                                            </div>
+                                            <div class="class_text" v-html="(data.schedule.description != null) ? data.schedule.description : data.schedule.class_type.description"></div>
                                             <div class="class_text alternate">
                                                 <span>Signed-in: {{ data.signedIn }}</span>
-                                                <span>Available: {{ data.availableSeatsCount }}</span>
+                                                <span>Available: {{ (data.schedule.studio.online_class) ? 'Unlimited' : data.availableSeatsCount }}</span>
                                                 <span>No show: {{ data.noShow }}</span>
                                             </div>
                                         </div>
@@ -187,7 +185,7 @@
                                 <button id="reload">Reload</button>
                             </div>
                             </div>
-                                <panZoom @init="panZoomInit" :options="{
+                                <panZoom :key="ctr" @init="panZoomInit" :options="{
                                     bounds: true,
                                     boundsPadding: 0.2,
                                     minZoom: 0.25,
@@ -198,7 +196,7 @@
                                     smoothScroll: false,
                                     onTouch: panZoomTouch
                                 }">
-                                <seat-plan ref="plan" />
+                                <seat-plan ref="plan" :onlineClass="(studio.online_class) ? true : false" />
                                 </panZoom>
                                 <div class="seat_legends">
                                     <div class="legend_title gray"><span></span> Booked</div>
@@ -358,11 +356,13 @@
                 name: 'Booker',
                 access: true,
                 loaded: false,
+                ctr: 0,
                 assignType: 0,
                 brokenMessage: '',
                 inWaitlist: false,
                 past: false,
                 waitlistID: 0,
+                studio: [],
                 transaction: [],
                 actionMessage: '',
                 packageMethod: 'create',
@@ -648,6 +648,7 @@
                 }
                 me.$store.state.scheduleID = data.id
                 me.fetchWaitlist(data.id)
+                me.ctr++
             },
             fetchWaitlist (schedule_id) {
                 const me = this
@@ -758,6 +759,10 @@
                     me.$refs.plan.fetchSeats(null, me.studioID)
                     document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
                 }, 10)
+                me.$axios.get(`api/studios/${me.studioID}`).then(res => {
+                    me.studio = res.data.studio
+                })
+                me.$store.state.scheduleID = 0
                 me.selectStudio = true
             },
             updateNotes (event) {
@@ -778,6 +783,11 @@
             },
             panZoomInit (instance, id) {
                 const me = this
+                if (me.studio.online_class) {
+                    instance.pause()
+                } else {
+                    instance.resume()
+                }
                 me.customInstance = instance
                 let planWidth = document.querySelector('.booker_wrapper .booker_content .booker_seats .vue-pan-zoom-scene').getBoundingClientRect().width
                 let planHeight = document.querySelector('.plan_wrapper').getBoundingClientRect().height
@@ -1035,6 +1045,7 @@
                                         me.$refs.plan.hasCustomer = true
                                     }, 10)
                                     me.user = res.data.user
+                                    me.studio = res.data.user.studio
                                     me.studioID = res.data.user.current_studio_id
                                     me.loaded = true
                                     me.populateClasses()
