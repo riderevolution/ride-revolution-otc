@@ -4,9 +4,12 @@
             <div class="background"></div>
             <div class="action_back_btn" @click="toggleClose()"><img src="/icons/back-icon.svg"><span>Booker</span></div>
             <form id="action" class="table_layout" @submit.prevent="submitAttendance()">
-                <h2>Online Class Attendance ({{ (schedule.schedule.custom_name != null) ? schedule.schedule.custom_name : schedule.schedule.class_type.name }})</h2>
+                <h2>Online Class Attendance</h2>
+                <h3><span>{{ (schedule.schedule.custom_name != null) ? schedule.schedule.custom_name : schedule.schedule.class_type.name }} ({{ schedule.schedule.start_time }})</span></h3>
                 <div class="actions">
                     <div class="total">Total: {{ totalItems(res.length) }}</div>
+                    <a href="javascript:void(0)" v-if="res.length > 0" class="action_btn alternate">Print</a>
+                    <a href="javascript:void(0)" v-if="res.length > 0" class="action_btn alternate margin">Export</a>
                 </div>
                 <table class="cms_table alt">
                     <thead>
@@ -18,7 +21,7 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="res.length > 0">
                         <tr v-for="(data, key) in res" :key="key">
                             <td>
                                 <div class="thumb">
@@ -38,11 +41,11 @@
                                 <div class="form_flex select_all no_m">
                                     <div class="form_flex_radio no_m">
                                         <div class="form_radio">
-                                            <input type="radio" :id="`status_si_${key}`" value="signed-in" @change="toggleStatus(data)" :name="`status[${key}]`" class="action_radio">
+                                            <input type="radio" :id="`status_si_${key}`" value="signed-in" :checked="data.status == 'signed-in'" @change="toggleStatus(data)" :name="`status[${key}]`" class="action_radio">
                                             <label :for="`status_si_${key}`">Signed-in</label>
                                         </div>
                                         <div class="form_radio">
-                                            <input type="radio" :id="`status_ns_${key}`" value="no-show" @change="toggleStatus(data)" :name="`status[${key}]`" class="action_radio">
+                                            <input type="radio" :id="`status_ns_${key}`" value="no-show" :checked="data.status == 'no-show'" @change="toggleStatus(data)" :name="`status[${key}]`" class="action_radio">
                                             <label :for="`status_ns_${key}`">No Show</label>
                                         </div>
                                     </div>
@@ -51,8 +54,13 @@
                             </td>
                         </tr>
                     </tbody>
+                    <tbody class="no_results" v-else>
+                        <tr>
+                            <td colspan="5">No Result(s) Found.</td>
+                        </tr>
+                    </tbody>
                 </table>
-                <div class="cta">
+                <div class="cta" v-if="res.length > 0">
                     <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                     <button type="submit" name="submit" :class="`action_btn alternate ${(ctr == res.length) ? '' : 'disabled'}`">Submit</button>
                 </div>
@@ -106,12 +114,12 @@
                 const me = this
                 if (me.ctr == me.res.length) {
                     let formData = new FormData(document.getElementById('action'))
-                    // me.loader(true)
+                    me.loader(true)
                     me.$axios.post('api/online-class-bookings/bulk-update', formData).then(res => {
                         setTimeout( () => {
                             if (res.data) {
-                                console.log(res.data);
-                                // me.$store.state.onlineAttendanceLayoutStatus = false
+                                me.$store.state.onlineAttendanceLayoutStatus = false
+                                me.$store.state.onlineAttendancePrompt = true
                             }
                         }, 500)
                     }).catch(err => {
@@ -136,7 +144,12 @@
                     if (res.data) {
                         setTimeout( () => {
                             res.data.bookings.forEach((data, index) => {
-                                data.checked = false
+                                if (data.status == 'signed-in' || data.status == 'no-show') {
+                                    me.ctr++
+                                    data.checked = true
+                                } else {
+                                    data.checked = false
+                                }
                                 me.res.push(data)
                             })
                             me.loaded = true
