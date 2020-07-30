@@ -185,7 +185,7 @@
                                 <button id="reload">Reload</button>
                             </div>
                             </div>
-                                <panZoom :key="ctr" @init="panZoomInit" :options="{
+                                <panZoom @init="panZoomInit" :options="{
                                     bounds: true,
                                     boundsPadding: 0.2,
                                     minZoom: 0.25,
@@ -196,7 +196,7 @@
                                     smoothScroll: false,
                                     onTouch: panZoomTouch
                                 }">
-                                <seat-plan ref="plan" :onlineClass="(studio.online_class) ? true : false" />
+                                <seat-plan ref="plan" :customer="customer" :onlineClass="(studio.online_class) ? true : false" />
                                 </panZoom>
                                 <div class="seat_legends">
                                     <div class="legend_title gray"><span></span> Booked</div>
@@ -366,7 +366,6 @@
                 name: 'Booker',
                 access: true,
                 loaded: false,
-                ctr: 0,
                 assignType: 0,
                 brokenMessage: '',
                 inWaitlist: false,
@@ -658,7 +657,6 @@
                 }
                 me.$store.state.scheduleID = data.id
                 me.fetchWaitlist(data.id)
-                me.ctr++
             },
             fetchWaitlist (schedule_id) {
                 const me = this

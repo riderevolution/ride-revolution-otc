@@ -1,6 +1,6 @@
 <template>
     <div class="plan_wrapper">
-        <seat-plan-box v-for="(seat, key) in seats" :data="seat.data" :position="seat.position" :layout="seat.layout" :total="ctr" :key="key" v-if="hasFetchSeat && !onlineClass" />
+        <seat-plan-box v-for="(seat, key) in seats" :data="seat.data" :customer="customer" :position="seat.position" :layout="seat.layout" :total="ctr" :key="key" v-if="hasFetchSeat && !onlineClass" />
         <div class="no_results" v-if="!hasFetchSeat">
             Please select a studio before viewing classes.
         </div>
@@ -20,6 +20,9 @@
             SeatPlanBox
         },
         props: {
+            customer: {
+                default: null
+            },
             onlineClass: {
                 type: Boolean,
                 default: false

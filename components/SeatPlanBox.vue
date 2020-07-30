@@ -103,6 +103,9 @@
             },
             data: {
                 default: null
+            },
+            customer: {
+                default: null
             }
         },
         methods: {
@@ -141,7 +144,7 @@
                 const me = this
                 let result = ''
                 if (me.$parent.hasCustomer) {
-                    if (seat.bookings.length > 0 && (seat.bookings[0].original_booker_id == me.$parent.$parent.$parent.customer.id)) {
+                    if (seat.bookings.length > 0 && (seat.bookings[0].original_booker_id == me.customer.id)) {
                         result += 'highlight '
                     }
                 }
@@ -184,7 +187,7 @@
                 me.$store.state.seat = seat
                 switch (status) {
                     case 'open':
-                        if (me.$parent.hasCustomer && me.$parent.$parent.$parent.customer.id != '') {
+                        if (me.$parent.hasCustomer && me.customer.id != '') {
                             let formData = new FormData()
                             formData.append('scheduled_date_id', me.$store.state.scheduleID)
                             formData.append('user_id', me.$store.state.customerID)
@@ -226,8 +229,8 @@
                         break
                     case 'reserved':
                     case 'reserved-guest':
-                        if (me.$parent.$parent.$parent.customer) {
-                            if (seat.bookings.length > 0 && (seat.bookings[0].original_booker_id == me.$parent.$parent.$parent.customer.id)) {
+                        if (me.customer) {
+                            if (seat.bookings.length > 0 && (seat.bookings[0].original_booker_id == me.customer.id)) {
                                 me.$store.state.bookerMenuPromptStatus = true
                                 document.body.classList.add('no_scroll')
                             }
