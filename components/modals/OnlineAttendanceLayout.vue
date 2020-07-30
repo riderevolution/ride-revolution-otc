@@ -2,7 +2,7 @@
     <transition name="fade">
         <div class="upcoming_classes_layout table" v-if="loaded">
             <div class="background"></div>
-            <div class="action_back_btn" @click="toggleClose()"><img src="/icons/back-icon.svg"><span>Booker</span></div>
+            <div class="action_back_btn" @click="toggleClose()"><img src="/icons/back-icon.svg"><span>{{ (instructorDashboard) ? 'Class Schedules' : 'Booker' }}</span></div>
             <form id="action" class="table_layout" @submit.prevent="submitAttendance()">
                 <h2>Online Class Attendance</h2>
                 <h3><span>{{ (schedule.schedule.custom_name != null) ? schedule.schedule.custom_name : schedule.schedule.class_type.name }} ({{ schedule.schedule.start_time }})</span></h3>
@@ -74,6 +74,9 @@
         props: {
             schedule: {
                 default: null
+            },
+            instructorDashboard: {
+                default: false
             }
         },
         data () {
@@ -120,10 +123,10 @@
                             if (res.data) {
                                 me.$store.state.onlineAttendanceLayoutStatus = false
                                 me.$store.state.onlineAttendancePrompt = true
+                                document.body.classList.add('no_scroll')
                             }
                         }, 500)
                     }).catch(err => {
-                        me.$store.state.errorOverlayStatus = true
                         me.$store.state.errorList = err.response.data.errors
                         me.$store.state.errorStatus = true
                     }).then(() => {
@@ -132,7 +135,6 @@
                         }, 500)
                     })
                 } else {
-                    me.$store.state.errorOverlayStatus = true
                     me.$store.state.errorList = ['Please fill the status for each customer']
                     me.$store.state.errorStatus = true
                 }

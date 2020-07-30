@@ -22,7 +22,7 @@
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" name="studio_id" v-model="form.studio_id" @change="generateCalendar(currentYear, currentMonth, 0, 0)">
-                                    <option value="" disabled>Choose a Studio</option>
+                                    <option value="0" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
@@ -632,6 +632,7 @@
             },
             async generateCalendar (year, month, highlight) {
                 const me = this
+                me.loader(true)
                 me.clearTableRows()
                 me.currentDate = me.$moment().date()
                 me.monthName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('MMMM')
@@ -644,9 +645,16 @@
                 let current = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d')
                 let excess = 0
 
-                await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&instructor_id=${me.value.id}&studio_id=${me.form.studio_id}`).then(res => {
-                    me.schedules = res.data.schedules
-                })
+                if (me.form.studio_id == 0) {
+                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&instructor_id=${me.value.id}`).then(res => {
+                        me.schedules = res.data.schedules
+                    })
+                } else {
+                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&instructor_id=${me.value.id}&studio_id=${me.form.studio_id}`).then(res => {
+                        me.schedules = res.data.schedules
+                    })
+                }
+
                 /**
                  * Generate Rows **/
                 for (let i = 0; i < 6; i++) {
@@ -737,9 +745,21 @@
                                 element.addEventListener('click', function(e) {
                                     let values = this.getAttribute('s1He3DL').split('_')[1].split('+')
                                     me.loader(true)
-                                    me.$parent.layout.studio = values[1]
-                                    me.$parent.layout.schedule = values[0]
-                                    me.$store.state.classScheduleLayoutStatus = true
+                                    me.$axios.get(`api/studios/${values[1]}`).then(res => {
+                                        if (res.data) {
+                                            if (res.data.studio.online_class) {
+                                                me.$axios.get(`api/schedules/${values[0]}`).then(res => {
+                                                    me.$parent.schedule.id = values[0]
+                                                    me.$parent.schedule.schedule = res.data.schedule
+                                                    me.$store.state.onlineAttendanceLayoutStatus = true
+                                                })
+                                            } else {
+                                                me.$parent.layout.schedule = values[0]
+                                                me.$parent.layout.studio = values[1]
+                                                me.$store.state.classScheduleLayoutStatus = true
+                                            }
+                                        }
+                                    })
                                 })
                             })
                         }
@@ -758,7 +778,7 @@
                     let scheduleDate = me.$moment()
                     if (date == scheduleCurrent) {
                         result += `
-                            <div s1He3DL="SwhGt2GF_${data.id}+${data.schedule.studio_id}" class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : ''}" ${(currentDate.diff(scheduleDate) < 0) ? '' : `style="background-color: ${data.schedule.studio.color_code}"`}>
+                            <div s1He3DL="SwhGt2GF_${data.id}+${data.schedule.studio_id}+${data.schedule_id}" class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : ''}" ${(currentDate.diff(scheduleDate) < 0) ? '' : `style="background-color: ${data.schedule.studio.color_code}"`}>
                                 <div class="class_text margin">${data.schedule.start_time}</div>
                                 <div class="class_text">${data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                             </div>`
@@ -790,7 +810,6 @@
                     me.$axios.get('api/studios?enabled=1').then(res => {
                         if (res.data) {
                             me.studios = res.data.studios
-                            me.form.studio_id = me.studios[0].id
                         }
                         me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
                     })
