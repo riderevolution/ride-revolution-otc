@@ -37,6 +37,12 @@
             <transition name="fade">
                 <class-schedule-layout :layout="layout" v-if="$store.state.classScheduleLayoutStatus" />
             </transition>
+            <transition name="fade">
+                <online-attendance-layout v-if="$store.state.onlineAttendanceLayoutStatus" :schedule="schedule" :instructorDashboard="true" />
+            </transition>
+            <transition name="fade">
+                <online-attendance-prompt v-if="$store.state.onlineAttendancePrompt" />
+            </transition>
             <foot v-if="$store.state.isAuth" />
         </div>
     </transition>
@@ -45,10 +51,14 @@
 <script>
     import InstructorContent from '../../../components/InstructorContent'
     import ClassScheduleLayout from '../../../components/modals/ClassScheduleLayout'
+    import OnlineAttendanceLayout from '../../../components/modals/OnlineAttendanceLayout'
+    import OnlineAttendancePrompt from '../../../components/modals/OnlineAttendancePrompt'
     import Foot from '../../../components/Foot'
     export default {
         components: {
             InstructorContent,
+            OnlineAttendanceLayout,
+            OnlineAttendancePrompt,
             ClassScheduleLayout,
             Foot
         },
@@ -61,6 +71,10 @@
                     studio: null,
                     schedule: null,
                     instructor_id: null
+                },
+                schedule: {
+                    id: 0,
+                    schedule: []
                 },
                 lastRoute: '',
                 instructor: [],
