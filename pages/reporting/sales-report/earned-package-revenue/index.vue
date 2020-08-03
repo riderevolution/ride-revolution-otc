@@ -13,8 +13,8 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                <a href="javascript:void(0)" class="action_btn">Print</a>
-                                <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                                <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                                <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                             </div>
                         </div>
                     </div>
@@ -35,20 +35,17 @@
                     </div>
                 </section>
                 <section id="content">
-                    <div class="cms_table_toggler">
-                        <div class="total">Grand Total: {{ totalItems(total_count) }}</div>
-                    </div>
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th>Revenu</th>
+                                <th>Revenue</th>
                                 <th>Subtotal Revenue</th>
                             </tr>
                         </thead>
-                        <tbody :class="`${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res" v-if="res.length > 0">
+                        <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="res.length > 0">
                             <tr class="parent">
-                                <td class="toggler" @click.self="toggleAccordion($event, key)">Revenue from Enrollment</td>
-                                <td>Php 3,000</td>
+                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.name }}</td>
+                                <td>Php {{ computeSubTotal(data, key) }}</td>
                             </tr>
                             <tr>
                                 <td class="pads" colspan="8">
@@ -56,14 +53,14 @@
                                         <table class="cms_table">
                                             <thead>
                                                 <tr>
-                                                    <th>Branch  </th>
+                                                    <th>Branch</th>
                                                     <th>Total</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="(n, key) in 5" :key="key">
-                                                    <td>Greenbelt 5</td>
-                                                    <td>Php 1,100</td>
+                                                <tr v-for="(value, key) in data.values" :key="key">
+                                                    <td>{{ value.name }}</td>
+                                                    <td>Php {{ totalCount(value.revenue) }}</td>
                                                 </tr>
                                             </tbody>
                                             <!-- <tbody class="no_results" v-else>
@@ -103,36 +100,31 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
-                rowCount: 0,
-                status: 1,
-                res: [],
-                total_count: 0,
+                res: [
+                    {
+                        name: 'Revenue from Enrollment',
+                        open: false,
+                        values: []
+                    }
+                ],
                 name: 'Earned Package Revenue',
                 access: true,
                 loaded: false,
             }
         },
         methods: {
+            computeSubTotal (value, unique) {
+                const me = this
+                let total = 0
+                me.res[unique].values.forEach((value, index) => {
+                    total += parseFloat(value.revenue)
+                })
+
+                return me.totalCount(total)
+            },
             submissionSuccess () {
                 const me = this
-                let formData = new FormData(document.getElementById('filter'))
-                formData.append('enabled', me.status)
-                me.loader(true)
-                me.$axios.post(`api/staff/search`, formData).then(res => {
-                    me.res = res.data.roles
-                    me.rowCount = 4
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
-                        elements.forEach((element, index) => {
-                            element.querySelector('.accordion_table').style.height = 0
-                        })
-                    }, 500)
-                })
+                me.fetchData()
             },
             /**
              * Custom toggler for accordion
@@ -150,47 +142,34 @@
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
                 }
             },
-            fetchData (value) {
+            fetchData () {
                 const me = this
                 me.loader(true)
-                me.rowCount = 4
-                if (value != -1) {
-                    me.$axios.get(`api/roles?enabled=${value}`).then(res => {
-                        me.loaded = true
-                        me.res = res.data.roles
-                        me.total_count = me.res.length
-                    }).catch(err => {
-                        me.$store.state.errorList = err.response.data.errors
-                        me.$store.state.errorStatus = true
-                    }).then(() => {
+                let formData = new FormData()
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                me.$axios.post('api/reporting/sales/earned-class-package-revenue', formData).then(res => {
+                    if (res.data) {
                         setTimeout( () => {
-                            me.loader(false)
-                            const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
-                            elements.forEach((element, index) => {
-                                element.querySelector('.accordion_table').style.height = 0
-                            })
+                            me.res[0].values = res.data.studios
+                            me.loaded = true
                         }, 500)
-                    })
-                } else {
-                    me.$axios.get(`api/staff?enabled=0`).then(res => {
-                        me.res = res.data.staff.data
-                        me.total_count = me.res.length
-                    }).catch(err => {
-                        me.$store.state.errorList = err.response.data.errors
-                        me.$store.state.errorStatus = true
-                    }).then(() => {
-                        setTimeout( () => {
-                            me.loader(false)
-                        }, 500)
-                    })
-                }
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
             }
         },
         async mounted () {
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData(1)
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
