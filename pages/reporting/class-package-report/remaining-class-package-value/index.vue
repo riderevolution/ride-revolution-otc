@@ -106,7 +106,7 @@
                 const me = this
                 let formData = new FormData
                 formData.append('studio_id', me.form.studio_id)
-                formData.append('end_date', me.form.end_date)
+                formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 me.$axios.post('api/reporting/packages/remaining-class-package-value', formData).then(res => {
                     if (res.data) {
