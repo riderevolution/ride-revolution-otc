@@ -3,7 +3,7 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
-                    <nuxt-link :to="`/customers/${lastRoute}/details`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Instructors</span></nuxt-link>
+                    <nuxt-link :to="`/customers/${lastRoute}/details`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Customers</span></nuxt-link>
                     <div class="action_wrapper">
                         <h1 class="header_title">Update Customer</h1>
                     </div>
@@ -22,7 +22,7 @@
                                             Max dimension: 600x600
                                         </div>
                                     </transition>
-                                    <input type="file" id="image" name="image[]" class="action_photo" @change="getFile($event)" v-validate="`${(hasImage) ? '' : 'required|'}image|size:1000|image|ext:jpeg,jpg,png`">
+                                    <input type="file" id="image" name="image[]" class="action_photo" @change="getFile($event)" v-validate="'image|size:1000|image|ext:jpeg,jpg,png'">
                                     <input type="hidden" name="image_id[]" v-model="res.customer_details.images[0].id" v-if="res.customer_details.images[0].path != null">
                                     <label for="image" :class="`${(previewImage) ? 'active' : ''}`"><span>Upload Photo</span></label>
                                     <img id="preview_image" src="/" v-if="previewImage" />
@@ -528,9 +528,11 @@
                             }).then(() => {
                                 setTimeout( () => {
                                     me.loader(false)
-                                    if (me.res.customer_details.images.length > 0) {
+                                    if (me.res.customer_details.images[0].path != null) {
                                         me.hasImage = true
                                         document.getElementById('preview_image').src = me.res.customer_details.images[0].path
+                                    } else {
+                                        me.previewImage = false
                                     }
                                 }, 500)
                             })

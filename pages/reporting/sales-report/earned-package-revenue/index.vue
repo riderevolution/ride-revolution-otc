@@ -19,7 +19,7 @@
                         </div>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
@@ -53,21 +53,21 @@
                                         <table class="cms_table">
                                             <thead>
                                                 <tr>
-                                                    <th>Branch</th>
+                                                    <th>{{ (data.packages) ? 'Package' : 'Branch' }}</th>
                                                     <th>Total</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody v-if="data.values.length > 0">
                                                 <tr v-for="(value, key) in data.values" :key="key">
                                                     <td>{{ value.name }}</td>
-                                                    <td>Php {{ totalCount(value.revenue) }}</td>
+                                                    <td>Php {{ totalCount((data.expired) ? value.expiredRevenue : value.revenue) }}</td>
                                                 </tr>
                                             </tbody>
-                                            <!-- <tbody class="no_results" v-else>
+                                            <tbody class="no_results" v-else>
                                                 <tr>
-                                                    <td :colspan="rowCount">No Result(s) Found.</td>
+                                                    <td colspan="2">No Result(s) Found.</td>
                                                 </tr>
-                                            </tbody> -->
+                                            </tbody>
                                         </table>
                                     </div>
                                 </td>
@@ -100,13 +100,7 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
-                res: [
-                    {
-                        name: 'Revenue from Enrollment',
-                        open: false,
-                        values: []
-                    }
-                ],
+                res: [],
                 name: 'Earned Package Revenue',
                 access: true,
                 loaded: false,
@@ -117,7 +111,7 @@
                 const me = this
                 let total = 0
                 me.res[unique].values.forEach((value, index) => {
-                    total += parseFloat(value.revenue)
+                    total += parseFloat((me.res[unique].expired) ? value.expiredRevenue : value.revenue)
                 })
 
                 return me.totalCount(total)
@@ -151,7 +145,7 @@
                 me.$axios.post('api/reporting/sales/earned-class-package-revenue', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res[0].values = res.data.studios
+                            me.res = res.data.revenues
                             me.loaded = true
                         }, 500)
                     }
@@ -161,6 +155,11 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion tbody')
+                        elements.forEach((element, index) => {
+                            element.classList.remove('toggled')
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                 })
             }
