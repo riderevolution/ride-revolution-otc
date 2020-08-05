@@ -64,7 +64,7 @@
                             </tr>
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native="toggleInnerReport('class-package', `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
+                                    <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
                                 </td>
                                 <td>{{ (data.sold) ? data.sold : 0 }}</td>
                                 <td>0</td>

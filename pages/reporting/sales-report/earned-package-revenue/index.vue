@@ -59,7 +59,10 @@
                                             </thead>
                                             <tbody v-if="data.values.length > 0">
                                                 <tr v-for="(value, key) in data.values" :key="key">
-                                                    <td>{{ value.name }}</td>
+                                                    <td v-if="!data.packages">{{ value.name }}</td>
+                                                    <td v-else>
+                                                        <div class="table_data_link" @click="toggleInnerReport(`${$route.path}/${convertToSlug(value.name)}`, value.id)">{{ value.name }}</div>
+                                                    </td>
                                                     <td>Php {{ totalCount((data.expired) ? value.expiredRevenue : value.revenue) }}</td>
                                                 </tr>
                                             </tbody>
@@ -107,6 +110,10 @@
             }
         },
         methods: {
+            toggleInnerReport (path, id) {
+                const me = this
+                me.$router.push(`${path}?id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+            },
             computeSubTotal (value, unique) {
                 const me = this
                 let total = 0
