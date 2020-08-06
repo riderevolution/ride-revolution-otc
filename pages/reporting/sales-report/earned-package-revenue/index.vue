@@ -35,6 +35,9 @@
                     </div>
                 </section>
                 <section id="content">
+                    <div class="cms_table_toggler">
+                        <div class="total">Total: Php {{ form.total }}</div>
+                    </div>
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
@@ -42,7 +45,7 @@
                                 <th>Subtotal Revenue</th>
                             </tr>
                         </thead>
-                        <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="res.length > 0">
+                        <tbody :class="`${(data.open) ? 'toggled' : ''} tbp`" v-for="(data, key) in res" v-if="res.length > 0">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.name }}</td>
                                 <td>Php {{ computeSubTotal(data, key) }}</td>
@@ -101,7 +104,8 @@
             return {
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    end_date: this.$moment().format('YYYY-MM-DD'),
+                    total: 0
                 },
                 res: [],
                 name: 'Earned Package Revenue',
@@ -120,7 +124,6 @@
                 me.res[unique].values.forEach((value, index) => {
                     total += parseFloat((me.res[unique].expired) ? value.expiredRevenue : value.revenue)
                 })
-
                 return me.totalCount(total)
             },
             submissionSuccess () {
@@ -145,6 +148,7 @@
             },
             fetchData () {
                 const me = this
+                me.form.total = 0
                 me.loader(true)
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
@@ -153,6 +157,7 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.revenues
+                            me.form.total = me.totalCount(res.data.total)
                             me.loaded = true
                         }, 500)
                     }
@@ -162,7 +167,7 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion tbody')
+                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
                         elements.forEach((element, index) => {
                             element.classList.remove('toggled')
                             element.querySelector('.accordion_table').style.height = 0

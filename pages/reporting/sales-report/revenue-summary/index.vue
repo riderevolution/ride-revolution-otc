@@ -13,13 +13,13 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                <a href="javascript:void(0)" class="action_btn">Print</a>
-                                <a href="javascript:void(0)" class="action_btn margin">Export</a>
+                                <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                                <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                             </div>
                         </div>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
@@ -41,7 +41,7 @@
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th>Revenu</th>
+                                <th>Revenue</th>
                                 <th>Subtotal Revenue</th>
                             </tr>
                         </thead>
@@ -56,7 +56,7 @@
                                         <table class="cms_table">
                                             <thead>
                                                 <tr>
-                                                    <th>Branch  </th>
+                                                    <th>Branch</th>
                                                     <th>Total</th>
                                                 </tr>
                                             </thead>
