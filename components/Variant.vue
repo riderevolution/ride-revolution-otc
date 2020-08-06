@@ -42,7 +42,7 @@
             </td>
             <td>
                 <div class="form_check">
-                    <input type="checkbox" :id="`refundable_${unique}`" name="refundable[]" class="action_check" :checked="(value.refundable == 1) ? true : false">
+                    <input type="checkbox" :id="`refundable_${unique}`" :name="`refundable[${unique}]`" class="action_check" :checked="(value.refundable == 1) ? true : false">
                     <label :for="`refundable_${unique}`">Refundable</label>
                 </div>
             </td>
