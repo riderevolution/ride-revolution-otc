@@ -2119,6 +2119,8 @@ input::placeholder
                         tr
                             td
                                 padding: 10px 20px
+                                .form_group
+                                    margin-bottom: 0
                                 &.table_actions
                                     .table_action_edit,
                                     .table_action_cancel
@@ -3685,6 +3687,12 @@ input::placeholder
         border-radius: 3px
         box-shadow: 15px 25px 40px rgba(0, 0, 0, 0.05)
         background-color: $white
+        &.active
+            tr
+                border-bottom: 2px dashed $border
+        &.not_active
+            tr
+                border-bottom: none
         tr
             background-color: transparent
             border-bottom: 2px dashed $border
