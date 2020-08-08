@@ -99,7 +99,27 @@
                                 <a href="javascript:void(0)" class="action_success_btn" @click="addVariant()"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add a Variant</a>
                             </div>
                             <div class="form_main_group alternate_2">
-                                <div class="cms_table_input">
+                                <table class="cms_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Variant</th>
+                                            <th>SKU ID</th>
+                                            <th>Inventory Qty.</th>
+                                            <th>Reorder Point</th>
+                                            <th>Unit Price (PHP)</th>
+                                            <th>Sale Price (PHP)</th>
+                                            <th>Refundable</th>
+                                            <th v-if="showClose">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <variant ref="productVariant" :unique="key" :type="0" :data-vv-scope="`variant_form_${key}`" v-for="(variant, key) in variants" :key="key" v-if="variants.length > 0" />
+                                    <tbody class="no_results" v-else>
+                                        <tr>
+                                            <td colspan="6">No Result(s) Found.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- <div class="cms_table_input">
                                     <div class="header_wrapper">
                                         <div class="input_header">Variant</div>
                                         <div class="input_header">SKU ID</div>
@@ -115,7 +135,7 @@
                                     <div class="no_results" v-if="variants.length == 0">
                                         No Variant(s) Found. Please add a variant.
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         <div class="form_footer_wrapper">
@@ -328,7 +348,7 @@
                         }
                     })
                     me.hasStudio = (ctr > 0) ? false : true
-                    if (valid && me.hasStudio) {
+                    if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('studios', JSON.stringify(me.studios))
                         me.loader(true)

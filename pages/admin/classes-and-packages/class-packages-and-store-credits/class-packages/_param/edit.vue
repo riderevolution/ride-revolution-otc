@@ -244,6 +244,10 @@
                         </div>
                         <div class="form_footer_wrapper">
                             <div class="form_check">
+                                <input type="checkbox" id="refundable" name="refundable" class="action_check" :checked="res.refundable == 1">
+                                <label for="refundable">Refundable</label>
+                            </div>
+                            <div class="form_check">
                                 <input type="checkbox" id="show_on_web" name="show_on_web" class="action_check" :checked="res.show_on_web == 1">
                                 <label for="show_on_web">Show on Web</label>
                             </div>

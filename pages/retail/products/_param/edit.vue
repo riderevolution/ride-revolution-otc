@@ -61,7 +61,7 @@
                                     <div class="form_group">
                                         <label>Restrict to which studios: <span>*</span></label>
                                         <div class="form_select_custom" v-click-outside="closeCheckboxes">
-                                            <span @click="toggleCheckboxes ^= true">Select Studios</span>
+                                            <span @click="toggleCheckboxes ^= true">{{ studioLabel }}</span>
                                             <div :class="`form_check_custom ${(toggleCheckboxes) ? 'active' : ''}`">
                                                 <div class="check_custom select_all">
                                                     <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
@@ -72,7 +72,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <transition name="slide"><span class="validation_errors" v-if="!hasStudio">The studios field is required</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="hasStudio">The studios field is required</span></transition>
                                     </div>
                                     <div class="form_flex_radio_alternate">
                                         <label>Is this sellable? <span>*</span></label>
@@ -99,23 +99,26 @@
                                 <a href="javascript:void(0)" class="action_success_btn" @click="addVariant()"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add a Variant</a>
                             </div>
                             <div class="form_main_group alternate_2">
-                                <div class="cms_table_input">
-                                    <div class="header_wrapper">
-                                        <div class="input_header">Variant</div>
-                                        <div class="input_header">SKU ID</div>
-                                        <div class="input_header">Inventory Qty.</div>
-                                        <div class="input_header">Reorder Point</div>
-                                        <div class="input_header">Unit Price (PHP)</div>
-                                        <div class="input_header">Sale Price (PHP)</div>
-                                        <div class="input_header image_upload" v-if="showClose">Action</div>
-                                    </div>
-                                    <div class="content_wrapper" v-if="variants.length > 0">
-                                        <variant ref="productVariant" :value="variant" :type="1" :unique="key" v-for="(variant, key) in variants" :key="key" />
-                                    </div>
-                                    <div class="no_results" v-if="variants.length == 0">
-                                        No Variant(s) Found. Please add a variant.
-                                    </div>
-                                </div>
+                                <table class="cms_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Variant</th>
+                                            <th>SKU ID</th>
+                                            <th>Inventory Qty.</th>
+                                            <th>Reorder Point</th>
+                                            <th>Unit Price (PHP)</th>
+                                            <th>Sale Price (PHP)</th>
+                                            <th>Refundable</th>
+                                            <th v-if="showClose">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <variant ref="productVariant" :unique="key" :type="1" :data-vv-scope="`variant_form_${key}`" :value="variant" v-for="(variant, key) in variants" :key="key" v-if="variants.length > 0" />
+                                    <tbody class="no_results" v-else>
+                                        <tr>
+                                            <td colspan="6">No Result(s) Found.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         <div class="form_footer_wrapper">
@@ -157,6 +160,7 @@
                 error: false,
                 lastRoute: '',
                 prevRoute: '',
+                studioLabel: 'Select Studios',
                 form: {
                     title: '',
                     category: [],
@@ -167,7 +171,7 @@
                 categories: [],
                 suppliers: [],
                 variants: [],
-                hasStudio: true
+                hasStudio: false
             }
         },
         filters: {
@@ -251,20 +255,37 @@
             }
         },
         methods: {
+            checkStudioValue () {
+                const me = this
+                let count = 0
+                if (me.checkStudio) {
+                    me.studios.forEach((data, index) => {
+                        if (data.checkedForReal) {
+                            count++
+                        }
+                    })
+                }
+                if (count == me.studios.length) {
+                    me.studioLabel = 'All Studios Selected'
+                } else {
+                    me.studioLabel = 'Select Studios'
+                }
+            },
             toggleSelectAllStudio (event) {
                 const me = this
-                let ctr = 0
                 if (me.checkStudio) {
                     me.studios.forEach((data, index) => {
                         data.checkedForReal = false
+                        me.hasStudio = true
+                        me.studioLabel = 'Select Studios'
                     })
                 } else {
                     me.studios.forEach((data, index) => {
                         data.checkedForReal = true
-                        ctr++
+                        me.hasStudio = false
+                        me.studioLabel = 'All Studios Selected'
                     })
                 }
-                me.hasStudio = (ctr > 0) ? true : false
                 if (event.target.classList.contains('checked')) {
                     event.target.classList.remove('checked')
                 } else {
@@ -306,8 +327,8 @@
                             ctr++
                         }
                     })
-                    me.hasStudio = (ctr > 0) ? true : false
-                    if (valid && me.hasStudio) {
+                    me.hasStudio = (ctr > 0) ? false : true
+                    if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
                         formData.append('studios', JSON.stringify(me.studios))
@@ -364,6 +385,7 @@
                         me.variants = [0]
                     }
                     me.studios = me.res.studios
+                    me.checkStudioValue()
                     me.loaded = true
                 })
                 if (me.$route.query.s) {
