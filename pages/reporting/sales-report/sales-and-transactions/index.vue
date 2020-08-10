@@ -121,6 +121,7 @@
                                     <th>DC/EPS</th>
                                     <th>CQ</th>
                                     <th>PP</th>
+                                    <th>PM</th>
                                     <th>SC</th>
                                 </tr>
                             </thead>
@@ -135,6 +136,7 @@
                                     <td>{{ (data.paymentModes) ? data.paymentModes.debitCard : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paypal : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.paymaya : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
                                 </tr>
                                 <tr>
@@ -147,6 +149,7 @@
                                     <td class="green">{{ res.item_payment_mode_total.debitCard }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.check }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.paymaya }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
                                 </tr>
                             </tbody>
@@ -199,7 +202,6 @@
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post(`${apiRoute}`, formData).then(res => {
-                    console.log(res.data);
                     if (res.data) {
                         setTimeout( () => {
                             me.slug = slug

@@ -2566,7 +2566,7 @@ input::placeholder
         background-image: url('/icons/uncheck-icon.svg')
         background-position: center
         background-repeat: no-repeat
-        background-size: contain
+        background-size: 19px
         transition: .3s ease-in-out
         &:checked
             background-image: url('/icons/check-icon.svg')
@@ -3888,6 +3888,13 @@ input::placeholder
                             background-color: $light_red
                             color: $red
                             transition: .3s ease-in-out
+                            &.disabled
+                                cursor: not-allowed
+                                pointer-events: none
+                                color: $black
+                                background-color: $border_alt
+                                border: 1px solid #ccc
+                                transition: .3s ease-in-out
                             &:hover
                                 background-color: $red
                                 color: $white
@@ -4722,6 +4729,11 @@ input::placeholder
                         &.red
                             background-color: $light_red
                             color: $red
+                        &.gray
+                            background-color: $border_alt
+                            color: $black
+                        &.ml
+                            margin-left: 10px
                     .link,
                     a
                         flex: 0 0 auto

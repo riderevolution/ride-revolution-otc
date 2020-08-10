@@ -25,6 +25,9 @@
                 if (me.$route.params.slug == 'packages') {
                     document.getElementById('packages').click()
                 }
+                if (me.$route.params.slug == 'transactions') {
+                    document.getElementById('transactions').click()
+                }
                 me.$parent.$parent.fetchData()
             }
         }
