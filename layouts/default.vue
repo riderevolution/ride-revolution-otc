@@ -47,6 +47,9 @@
         <transition name="fade">
             <studio-changer v-if="$store.state.changeStudioStatus" />
         </transition>
+        <transition name="fade">
+            <refund-success v-if="$store.state.refundSuccessStatus" />
+        </transition>
     </div>
 </template>
 
@@ -64,6 +67,7 @@
     import Successful from '../components/modals/Successful'
     import SuccessfulLater from '../components/modals/SuccessfulLater'
     import StudioChanger from '../components/modals/StudioChanger'
+    import RefundSuccess from '../components/modals/RefundSuccess'
     export default {
         components: {
             Navbar,
@@ -78,7 +82,8 @@
             QuickSale,
             Successful,
             SuccessfulLater,
-            StudioChanger
+            StudioChanger,
+            RefundSuccess
         },
         watch:{
             $route (to, from){

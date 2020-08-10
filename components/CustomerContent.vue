@@ -48,6 +48,7 @@
                                     <div v-if="data.class_package.class_count_unlimited != 1 && !data.frozen" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
                                     <div v-if="data.class_package.class_count_unlimited != 1 && !data.frozen" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
                                     <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
+                                    <div v-if="data.class_package.refundable == 1 && (data.payment_item != null && data.payment_item.refunded == 0) && (data.count == data.original_package_count)" class="option_link red" @click="togglePackageAction(data, 'refund')">Refund Package</div>
                                     <!-- <div class="option_link">Print Receipt</div> -->
                                 </div>
                             </div>
@@ -428,6 +429,9 @@
         <transition name="fade">
             <package-edit-expiry-prompt :data="expiryData" v-if="$store.state.editPackageExpiryStatus" />
         </transition>
+        <transition name="fade">
+            <refund :paymentItemId="paymentItemId" v-if="$store.state.refundStatus" />
+        </transition>
     </div>
 </template>
 
@@ -438,6 +442,7 @@
     import PackageActionPrompt from '../components/modals/PackageActionPrompt'
     import PackageActionValidate from '../components/modals/PackageActionValidate'
     import PackageEditExpiryPrompt from '../components/modals/PackageEditExpiryPrompt'
+    import Refund from '../components/modals/Refund'
     import Pagination from '../components/Pagination'
     export default {
         components: {
@@ -447,6 +452,7 @@
             PackageActionPrompt,
             PackageActionValidate,
             PackageEditExpiryPrompt,
+            Refund,
             Pagination
         },
         props: {
@@ -460,6 +466,7 @@
         },
         data () {
             return {
+                paymentItemId: 0,
                 expiryData: [],
                 packageCount: 0,
                 tempData: null,
@@ -578,7 +585,12 @@
                         me.expiryData = data
                         me.$store.state.editPackageExpiryStatus = true
                         document.body.classList.add('no_scroll')
-                        break;
+                        break
+                    case 'refund':
+                        me.paymentItemId = data.payment_item.id
+                        me.$store.state.refundStatus = true
+                        document.body.classList.add('no_scroll')
+                        break
                 }
                 me.userPackageCountId = data.id
             },

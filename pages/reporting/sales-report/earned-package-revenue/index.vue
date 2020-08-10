@@ -7,7 +7,7 @@
                         <div>
                             <div class="header_title">
                                 <h1>Earned Class Package Revenue</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income for each payment type</h2>
                         </div>
