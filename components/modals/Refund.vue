@@ -6,7 +6,7 @@
                 <h2>Choose an action</h2>
             </div>
             <ul class="side_menu">
-                <li :id="`item_${key}`" :class="`side_item ${(item.toggled) ? 'active' : ''}`" @click="toggleMenu(item, key)" v-for="(item, key) in items" :key="key">
+                <li :id="`item_${key}`" :class="`side_item ${(item.toggled) ? 'active' : ''}`" @click="toggleMenu(item, key)" v-for="(item, key) in populateMenu" :key="key">
                     <div class="item">{{ item.name }}</div>
                     <svg id="check" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
                         <g transform="translate(-804.833 -312)">
@@ -35,6 +35,9 @@
             RefundConfirm
         },
         props: {
+            payment: {
+                default: null
+            },
             paymentItemId: {
                 default: 0
             }
@@ -49,15 +52,29 @@
                         id: 0,
                         name: 'Store Credits',
                         value: 'store-credits',
-                        toggled: false
+                        toggled: false,
+                        excludedMethods: ['paypal', 'paymaya']
                     },
                     {
                         id: 1,
                         name: 'Cash',
                         value: 'cash',
-                        toggled: false
+                        toggled: false,
+                        excludedMethods: []
                     }
                 ]
+            }
+        },
+        computed: {
+            populateMenu () {
+                const me = this
+                let results = []
+                me.items.forEach((item, index) => {
+                    if (!item.excludedMethods.includes(me.payment.payment_method.method)) {
+                        results.push(item)
+                    }
+                })
+                return results
             }
         },
         methods: {

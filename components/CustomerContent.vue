@@ -243,7 +243,7 @@
                                             </td>
                                             <td v-if="data.status == 'paid'">
                                                 <div class="table_actions" v-if="item.type != 'store-credit'">
-                                                    <div class="table_action_cancel link" @click="toggleRefund(item.id)" v-if="checkRefund(item)">Refund</div>
+                                                    <div class="table_action_cancel link" @click="toggleRefund(data, item)" v-if="checkRefund(item)">Refund</div>
                                                     <div class="table_action_cancel disabled link" v-else>Refunded</div>
                                                 </div>
                                                 <div class="table_actions" v-else>
@@ -435,7 +435,7 @@
             <package-edit-expiry-prompt :data="expiryData" v-if="$store.state.editPackageExpiryStatus" />
         </transition>
         <transition name="fade">
-            <refund :paymentItemId="paymentItemId" v-if="$store.state.refundStatus" />
+            <refund :payment="payment" :paymentItemId="paymentItemId" v-if="$store.state.refundStatus" />
         </transition>
     </div>
 </template>
@@ -471,6 +471,7 @@
         },
         data () {
             return {
+                payment: [],
                 paymentItemId: 0,
                 expiryData: [],
                 packageCount: 0,
@@ -583,9 +584,10 @@
                         }
                 }
             },
-            toggleRefund (id) {
+            toggleRefund (data, item) {
                 const me = this
-                me.paymentItemId = id
+                me.payment = data
+                me.paymentItemId = item.id
                 me.$store.state.refundStatus = true
                 document.body.classList.add('no_scroll')
             },
@@ -624,6 +626,7 @@
                         document.body.classList.add('no_scroll')
                         break
                     case 'refund':
+                        me.payment = data.payment_item.payment
                         me.paymentItemId = data.payment_item.id
                         me.$store.state.refundStatus = true
                         document.body.classList.add('no_scroll')
