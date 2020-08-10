@@ -60,7 +60,7 @@
                             <tr>
                                 <td><b>{{ total.name }}</b></td>
                                 <td><b>{{ total.sold }}</b></td>
-                                <td><b>0</b></td>
+                                <td><b>{{ total.returned }}</b></td>
                                 <td><b>{{ total.comp }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
@@ -74,7 +74,7 @@
                                     <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native="toggleInnerReport(`${(data.name == 'Gift Cards') ? 'gift-card' : 'product-variant'}`, `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
                                 </td>
                                 <td>{{ (data.sold) ? data.sold : 0 }}</td>
-                                <td>0</td>
+                                <td>{{ (data.returned) ? data.returned : 0 }}</td>
                                 <td>{{ (data.comp) ? data.comp : 0 }}</td>
                                 <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
                                 <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
