@@ -48,6 +48,11 @@
                             link: '/admin/configuration/booking-restrictions'
                         },
                         {
+                            label: 'Online Booking Restrictions',
+                            imgSrc: '/icons/studio-icon.svg',
+                            link: '/admin/configuration/online-booking-restrictions'
+                        },
+                        {
                             label: 'Customer Types',
                             imgSrc: '/icons/types-icon.svg',
                             link: '/admin/configuration/customer-types'
