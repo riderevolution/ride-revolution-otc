@@ -191,7 +191,7 @@
             <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
         </div>
         <div v-if="type == 'transactions' && loaded">
-            <table class="cms_table_accordion">
+            <table class="cms_table_accordion tbp">
                 <thead>
                     <tr>
                         <th>Reference Number</th>
@@ -214,6 +214,7 @@
                         <td>
                             <div class="table_actions">
                                 <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
+                                <div class="action_status ml gray" v-if="data.refund_status != 'none'">{{ (data.refund_status == 'fully-refunded') ? 'Fully Refunded' : 'Partially Refunded' }}</div>
                                 <div class="table_action_edit link" @click="toggleForm(data.id)" v-if="data.status == 'pending'">Pay Now</div>
                             </div>
                         </td>
@@ -241,8 +242,12 @@
                                                 <p>PHP {{ totalCount(item.total) }}</p>
                                             </td>
                                             <td v-if="data.status == 'paid'">
-                                                <div class="table_actions">
-                                                    <div class="table_action_cancel link" @click="toggleForm(data.id)" v-if="data.status == 'paid'">Refund</div>
+                                                <div class="table_actions" v-if="item.type != 'store-credit'">
+                                                    <div class="table_action_cancel link" @click="toggleRefund(item.id)" v-if="checkRefund(item)">Refund</div>
+                                                    <div class="table_action_cancel disabled link" v-else>Refunded</div>
+                                                </div>
+                                                <div class="table_actions" v-else>
+                                                    <div class="table_action_cancel disabled link">Non-refundable</div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -552,6 +557,38 @@
             }
         },
         methods: {
+            checkRefund (item) {
+                const me = this
+                switch (item.type) {
+                    case 'class-package':
+                        if (item.refunded == 0) {
+                            if (item.user_package_count) {
+                                if (item.user_package_count.count == item.user_package_count.original_package_count) {
+                                    return true
+                                } else {
+                                    return false
+                                }
+                            } else {
+                                return false
+                            }
+                        } else {
+                            return false
+                        }
+                    break
+                    default:
+                        if (item.refunded == 0) {
+                            return true
+                        } else {
+                            return false
+                        }
+                }
+            },
+            toggleRefund (id) {
+                const me = this
+                me.paymentItemId = id
+                me.$store.state.refundStatus = true
+                document.body.classList.add('no_scroll')
+            },
             togglePackageAction (data, type) {
                 const me = this
                 switch (type) {
@@ -646,8 +683,10 @@
             },
             populateTransactions () {
                 const me = this
+                me.loader(true)
                 me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}`).then(res => {
                     if (res.data) {
+                        me.$parent.customer = res.data.customer
                         me.res = res.data.customer.payments
                         if (me.res) {
                             me.$parent.pendingPayment = 0
@@ -658,6 +697,18 @@
                             })
                         }
                     }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
+                        elements.forEach((element, index) => {
+                            element.classList.remove('toggled')
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
+                        me.loader(false)
+                    }, 500)
                 })
             },
             toggleForm (id) {
@@ -780,6 +831,7 @@
                 me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${status}`).then(res => {
                     if (res.data) {
                         me.packageCount = 0
+                        me.$parent.customer = res.data.customer
                         me.res = res.data.customer
                     }
                 }).catch(err => {
