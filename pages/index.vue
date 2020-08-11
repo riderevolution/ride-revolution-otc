@@ -128,7 +128,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="stats_content">
+                        <div class="stats_content pd">
                             <div class="stat_column">
                                 <div class="column_header">
                                     <h2>VIPs</h2>
@@ -625,6 +625,16 @@
 
                         me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}`).then(res => {
                             if (res.data) {
+                                for (let key in res.data.milestones) {
+                                    if (!res.data.milestones.hasOwnProperty(key)) continue
+                                    let obj = res.data.milestones[key]
+                                    for (let prop in obj) {
+                                        if (!obj.hasOwnProperty(prop)) continue
+
+                                        console.log(prop + " = " + obj[prop]);
+                                    }
+                                }
+
                                 me.alerts.vips = res.data.vips
                                 me.alerts.firstClass = res.data.firstClass
                                 me.alerts.lastClass = res.data.lastClass
