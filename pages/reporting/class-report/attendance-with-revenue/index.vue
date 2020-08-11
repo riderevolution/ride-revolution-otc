@@ -19,38 +19,38 @@
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
-                                <label for="type">Branch</label>
-                                <select class="default_select alternate" name="type">
-                                    <option value="" selected>All Customer Types</option>
-                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
+                                    <option value="" selected>All Studios</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
-                                <label for="type">Class Type</label>
-                                <select class="default_select alternate" name="type">
-                                    <option value="" selected>All Customer Types</option>
-                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                <label for="class_type_id">Class Type</label>
+                                <select class="default_select alternate" name="class_type_id">
+                                    <option value="" selected>All Class Types</option>
+                                    <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key">{{ classType.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
-                                <label for="type">Class Package</label>
-                                <select class="default_select alternate" name="type">
-                                    <option value="" selected>All Customer Types</option>
-                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                <label for="class_package_id">Class Package</label>
+                                <select class="default_select alternate" name="class_package_id">
+                                    <option value="" selected>All Class Packages</option>
+                                    <option :value="classPackage.id" v-for="(classPackage, key) in classPackages" :key="key">{{ classPackage.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
-                                <label for="type">Instructor</label>
-                                <select class="default_select alternate" name="type">
-                                    <option value="" selected>All Customer Types</option>
-                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                                <label for="instructor_id">Instructor</label>
+                                <select class="default_select alternate" name="instructor_id">
+                                    <option value="" selected>All Instructors</option>
+                                    <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                 </select>
                             </div>
-                            <div class="form_group margin">
-                                <label for="type">Customer Type</label>
-                                <select class="default_select alternate" name="type">
-                                    <option value="" selected>All Customer Types</option>
-                                    <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
+                            <div class="form_group">
+                                <label for="customer_type_id">Customer Type</label>
+                                <select class="default_select alternate" name="customer_type_id">
+                                    <option value="" selected>All Customer Type</option>
+                                    <option :value="type.id" v-for="(type, index) in types">{{ type.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
@@ -152,6 +152,7 @@
         data () {
             return {
                 form: {
+                    studio_id: '',
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
@@ -164,6 +165,9 @@
                 total_count: 0,
                 studios: [],
                 types: [],
+                classTypes: [],
+                classPackages: [],
+                instructors: [],
                 name: 'Attendance with Revenue',
                 access: true,
                 loaded: false,
@@ -243,9 +247,12 @@
                 if (value != -1) {
                     me.$axios.get(`api/roles?enabled=${value}`).then(res => {
                         setTimeout( () => {
-                            me.loaded = true
+                            let studio_id = me.$cookies.get('CSID')
+                            me.form.studio_id = studio_id
                             me.res = res.data.roles
                             me.total_count = me.res.length
+                            me.fetchExtraAPI()
+                            me.loaded = true
                         }, 500)
                     }).catch(err => {
                         me.$store.state.errorList = err.response.data.errors
@@ -259,27 +266,24 @@
                             })
                         }, 500)
                     })
-                } else {
-                    me.$axios.get(`api/staff?enabled=0`).then(res => {
-                        setTimeout( () => {
-                            me.loaded = true
-                            me.res = res.data.staff.data
-                            me.total_count = me.res.length
-                        }, 500)
-                    }).catch(err => {
-                        me.$store.state.errorList = err.response.data.errors
-                        me.$store.state.errorStatus = true
-                    }).then(() => {
-                        setTimeout( () => {
-                            me.loader(false)
-                        }, 500)
-                    })
                 }
             },
-            async fetchStudios () {
+            fetchExtraAPI () {
                 const me = this
-                me.$axios.get('api/studios').then(res => {
+                me.$axios.get('api/studios?enabled=1').then(res => {
                     me.studios = res.data.studios
+                })
+                me.$axios.get(`api/instructors?enabled=1`).then(res => {
+                    me.instructors = res.data.instructors.data
+                })
+                me.$axios.get('api/extras/customer-types').then(res => {
+                    me.types = res.data.customerTypes
+                })
+                me.$axios.get(`api/packages/class-types?enabled=1&get=1`).then(res => {
+                    me.classTypes = res.data.classTypes
+                })
+                me.$axios.get(`api/packages/class-packages?enabled=1&get=1`).then(res => {
+                    me.classPackages = res.data.classPackages
                 })
             }
         },
@@ -288,7 +292,6 @@
             await me.checkPagePermission(me)
             if (me.access) {
                 me.fetchData(1)
-                me.fetchStudios()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
