@@ -79,8 +79,12 @@ Vue.mixin({
             return Math.random().toString(36).substring(2)
         },
         totalItems (value) {
-            if (value != 0) {
-                return parseFloat(value).toFixed().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            if (value) {
+                if (value != 0) {
+                    return parseFloat(value).toFixed().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                } else {
+                    return 0
+                }
             } else {
                 return 0
             }
