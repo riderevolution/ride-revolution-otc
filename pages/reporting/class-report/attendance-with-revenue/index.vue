@@ -17,39 +17,39 @@
                         </div>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
-                                    <option value="" selected>All Studios</option>
+                                    <option value="0" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
                                 <label for="class_type_id">Class Type</label>
                                 <select class="default_select alternate" name="class_type_id">
-                                    <option value="" selected>All Class Types</option>
+                                    <option value="0" selected>All Class Types</option>
                                     <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key">{{ classType.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
                                 <label for="class_package_id">Class Package</label>
                                 <select class="default_select alternate" name="class_package_id">
-                                    <option value="" selected>All Class Packages</option>
+                                    <option value="0" selected>All Class Packages</option>
                                     <option :value="classPackage.id" v-for="(classPackage, key) in classPackages" :key="key">{{ classPackage.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
                                 <label for="instructor_id">Instructor</label>
                                 <select class="default_select alternate" name="instructor_id">
-                                    <option value="" selected>All Instructors</option>
+                                    <option value="0" selected>All Instructors</option>
                                     <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                 </select>
                             </div>
-                            <div class="form_group">
+                            <div class="form_group margin">
                                 <label for="customer_type_id">Customer Type</label>
                                 <select class="default_select alternate" name="customer_type_id">
-                                    <option value="" selected>All Customer Type</option>
+                                    <option value="0" selected>All Customer Type</option>
                                     <option :value="type.id" v-for="(type, index) in types">{{ type.name }}</option>
                                 </select>
                             </div>
@@ -81,16 +81,16 @@
                                 <th>Total Net Revenue</th>
                             </tr>
                         </thead>
-                        <tbody :class="`${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res" v-if="res.length > 0">
+                        <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="res.length > 0">
                             <tr class="parent">
-                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment().format('MMMM DD, YYYY') }}</td>
-                                <td>{{ $moment().format('h:mm A') }}</td>
-                                <td>Ride Rev</td>
-                                <td>Billie Capistrano</td>
-                                <td>4</td>
-                                <td>Php 3,000</td>
-                                <td>4</td>
-                                <td>Php 3,000</td>
+                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment(data.date).format('MMMM DD, YYYY') }}</td>
+                                <td>{{ $moment(data.schedule.start_time).format('h:mm A') }}</td>
+                                <td>{{ (data.schedule.set_custom_name) ? data.schedule.custom_name : data.schedule.class_type.name }}</td>
+                                <td>{{ data.schedule.instructor_schedules[0].user.first_name }} {{ data.schedule.instructor_schedules[0].user.last_name }}</td>
+                                <td>{{ data.bookings.length }}</td>
+                                <td>Php {{ totalCount(data.total_revenue) }}</td>
+                                <td>0</td>
+                                <td>Php {{ totalCount(data.total_net_revenue) }}</td>
                             </tr>
                             <tr>
                                 <td class="pads" colspan="8">
@@ -107,15 +107,15 @@
                                                     <th>Net Revenue</th>
                                                 </tr>
                                             </thead>
-                                            <tbody v-if="role.staff_details.length > 0">
-                                                <tr v-for="(staff, key) in role.staff_details" :key="key">
-                                                    <td>{{ key + 1 }}</td>
-                                                    <td>Anna Walker</td>
-                                                    <td>Paying</td>
-                                                    <td>First Timer Package</td>
-                                                    <td>Php 1,100</td>
+                                            <tbody v-if="data.bookings.length > 0">
+                                                <tr v-for="(booking, key) in data.bookings" :key="key">
+                                                    <td>{{ booking.seat.number }}</td>
+                                                    <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+                                                    <td>{{ replacer(booking.status).charAt(0).toUpperCase()}}{{ replacer(booking.status).slice(1) }}</td>
+                                                    <td>{{ booking.user_package_count.class_package.name }}</td>
+                                                    <td>Php {{ totalCount(booking.revenue) }}</td>
                                                     <td>Php 0</td>
-                                                    <td>Php 1,100</td>
+                                                    <td>Php {{ totalCount(booking.net_revenue) }}</td>
                                                 </tr>
                                             </tbody>
                                             <tbody class="no_results" v-else>
@@ -152,9 +152,13 @@
         data () {
             return {
                 form: {
-                    studio_id: '',
+                    studio_id: 0,
+                    instructor_id: 0,
+                    class_type_id: 0,
+                    class_package_id: 0,
+                    customer_type_id: 0,
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    end_date: this.$moment('2020-10-01').format('YYYY-MM-DD')
                 },
                 isUser: 0,
                 id: 0,
@@ -176,45 +180,7 @@
         methods: {
             submissionSuccess () {
                 const me = this
-                let formData = new FormData(document.getElementById('filter'))
-                formData.append('enabled', me.status)
-                me.loader(true)
-                me.$axios.post(`api/staff/search`, formData).then(res => {
-                    me.res = res.data.roles
-                    me.rowCount = 4
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
-                        elements.forEach((element, index) => {
-                            element.querySelector('.accordion_table').style.height = 0
-                        })
-                    }, 500)
-                })
-            },
-            /**
-             * Count Permissions per role
-             * @param  {[array]} values
-             * @return {[ctr]}
-             */
-            countPermissions (values) {
-                const me = this
-                if (values !== undefined) {
-                    let ctr = 0
-                    values.forEach((value, index) => {
-                        if (value.checked) {
-                            ctr++
-                        }
-                    })
-                    if (ctr == 16) {
-                        return 'All'
-                    } else {
-                        return ctr
-                    }
-                }
+                me.fetchData()
             },
             /**
              * Custom toggler for accordion
@@ -232,41 +198,46 @@
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
                 }
             },
-            toggleOnOff (value) {
-                const me = this
-                me.status = value
-                me.fetchData(value)
-                setTimeout( () => {
-                    me.rowCount = document.getElementsByTagName('th').length
-                }, 10)
-            },
-            async fetchData (value) {
+            fetchData () {
                 const me = this
                 me.loader(true)
-                me.rowCount = 4
-                if (value != -1) {
-                    me.$axios.get(`api/roles?enabled=${value}`).then(res => {
-                        setTimeout( () => {
-                            let studio_id = me.$cookies.get('CSID')
-                            me.form.studio_id = studio_id
-                            me.res = res.data.roles
-                            me.total_count = me.res.length
-                            me.fetchExtraAPI()
-                            me.loaded = true
-                        }, 500)
-                    }).catch(err => {
-                        me.$store.state.errorList = err.response.data.errors
-                        me.$store.state.errorStatus = true
-                    }).then(() => {
-                        setTimeout( () => {
-                            me.loader(false)
-                            const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
-                            elements.forEach((element, index) => {
-                                element.querySelector('.accordion_table').style.height = 0
+                let studio_id = me.$cookies.get('CSID')
+                me.form.studio_id = studio_id
+
+                let formData = new FormData()
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                formData.append('studio_id', me.form.studio_id)
+                formData.append('instructor_id', me.form.instructor_id)
+                formData.append('class_type_id', me.form.class_type_id)
+                formData.append('class_package_id', me.form.class_package_id)
+                formData.append('customer_type_id', me.form.customer_type_id)
+                me.$axios.post(`api/reporting/classes/attendance-with-revenue`, formData).then(res => {
+                    setTimeout( () => {
+                        let temp_bookings = []
+                        res.data.scheduled_dates.forEach((schedule_date, pindex) => {
+                            schedule_date.bookings.forEach((booking, cindex) => {
+                                if (booking.user_package_count !== null) {
+                                    res.data.scheduled_dates[pindex].bookings.splice(0, cindex)
+                                }
                             })
-                        }, 500)
-                    })
-                }
+                        })
+                        me.res = res.data.scheduled_dates
+                        me.fetchExtraAPI()
+                        me.loaded = true
+                    }, 500)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
+                    }, 500)
+                })
             },
             fetchExtraAPI () {
                 const me = this
@@ -291,7 +262,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData(1)
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
