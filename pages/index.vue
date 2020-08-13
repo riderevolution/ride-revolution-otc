@@ -122,7 +122,7 @@
                         <div class="stats_header">
                             <h2>Alerts</h2>
                             <div class="button">
-                                <select class="default_select" name="period" v-model="form.period">
+                                <select class="default_select" name="period" v-model="form.period" @change="getAlerts($event)">
                                     <option value="today" selected>Today</option>
                                     <option value="Upcoming">Upcoming</option>
                                 </select>
@@ -143,7 +143,7 @@
                                         </div>
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
-                                            <div class="violator label">Bea Antonio ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <div class="violator label">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div><div class="no_results" v-else>
@@ -154,27 +154,35 @@
                                 <div class="column_header">
                                     <h2>Milestone</h2>
                                 </div>
-                                <div class="column_content">
-                                    <div class="wrapper" v-for="(n, key) in 4">
-                                        <img src="https://ride-revolution.s3-ap-southeast-1.amazonaws.com/uploads/BEAANTONIO_riderevolution_headshot_1589192424_thumbnail.png" />
-                                        <div class="info">
-                                            <div class="name">Sample</div>
-                                            <div class="violator violet"><img src="/icons/star-violet.svg" /><span>100th Ride</span></div>
-                                            <div class="violator label">Bea Antonio ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
-                                        </div>
-                                    </div>
-                                    <div class="wrapper" v-for="(n, key) in 4">
-                                        <div class="image">
+                                <div class="column_content" v-if="alerts.milestones.length > 0">
+                                    <div class="wrapper" v-for="(data, key) in alerts.milestones" :key="key">
+
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null && data.identifier != 'teachingAnniversaries'" />
+                                        <img :src="data.instructor_details.images[0].path" v-else-if="data.instructor_details.images[0].path != null && data.identifier == 'teachingAnniversaries'" />
+
+                                        <div class="image" v-else>
                                             <div class="overlay">
-                                                SA
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <div class="name">Sample</div>
-                                            <div class="violator blue"><img src="/icons/star-blue.svg" /><span>Teaching Anniversary</span></div>
-                                            <div class="violator label">Bea Antonio ({{ $moment().format('MMM DD, YYYY hh:mm A') }})</div>
+                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
+                                            <div :class="`violator ${checkIdentifierClass(data.identifier)}`">
+                                                <svg id="icon_star" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
+                                                    <g id="Star" transform="translate(20471 6893)">
+                                                        <circle id="fill_1" data-name="Ellipse 10352" cx="8.5" cy="8.5" r="8.5" transform="translate(-20471 -6893)" opacity="0.2"/>
+                                                        <path id="fill_2" data-name="Path 8481" d="M1150.568,284.065l1.225,2.482,2.739.4-1.982,1.932.468,2.728-2.45-1.288-2.45,1.288.468-2.728-1.982-1.932,2.739-.4Z" transform="translate(-21613.117 -7172.592)"/>
+                                                    </g>
+                                                </svg>
+                                                <span>{{ checkIdentifierText(data.identifier) }}</span>
+                                            </div>
+                                            <div class="violator label" v-if="data.identifier != 'teachingAnniversaries'">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <div class="violator label" v-else>{{ data.first_name }} {{ data.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="no_results" v-else>
+                                    No alerts for milestones as of now
                                 </div>
                             </div>
                             <div class="stat_column">
@@ -191,7 +199,7 @@
                                         </div>
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
-                                            <div class="violator label">Bea Antonio ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <div class="violator label">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -214,7 +222,7 @@
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                             <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
-                                            <div class="violator label">Bea Antonio ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <div class="violator label">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -521,6 +529,36 @@
             }
         },
         methods: {
+            checkIdentifierClass (identifier) {
+                const me = this
+                switch (identifier) {
+                    case '50thRide':
+                    case '100thRide':
+                    case '200thRide':
+                        return 'violet'
+                        break
+                    case 'rideAnniversaries':
+                        return 'blue'
+                        break
+                }
+            },
+            checkIdentifierText (identifier) {
+                const me = this
+                switch (identifier) {
+                    case '50thRide':
+                        return '50th Ride'
+                        break
+                    case '100thRide':
+                        return '100th Ride'
+                        break
+                    case '200thRide':
+                        return '200th Ride'
+                        break
+                    case 'rideAnniversaries':
+                        return 'Ride Anniversary'
+                        break
+                }
+            },
             togglePending (user_id) {
                 const me = this
                 me.$store.state.pendingCustomerID = user_id
@@ -612,6 +650,40 @@
                     }, 500)
                 })
             },
+            getAlerts (event) {
+                const me = this
+                me.form.period = event.target.value
+                me.loader(true)
+                me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}`).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            let tempMilestone = [];
+
+                            for (let key in res.data.milestones) {
+                                if (!res.data.milestones.hasOwnProperty(key)) continue
+                                let obj = res.data.milestones[key]
+                                console.log(key);
+                                for (let prop in obj) {
+                                    if (!obj.hasOwnProperty(prop)) continue
+                                    obj[prop]['identifier'] = key
+                                    tempMilestone.push(obj[prop])
+                                }
+                            }
+
+                            me.alerts.vips = res.data.vips
+                            me.alerts.milestones = tempMilestone
+                            me.alerts.firstClass = res.data.firstClass
+                            me.alerts.lastClass = res.data.lastClass
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
             initial () {
                 const me = this
                 me.$axios.get('api/portal-dashboard').then(res => {
@@ -625,17 +697,21 @@
 
                         me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}`).then(res => {
                             if (res.data) {
+                                let tempMilestone = [];
+
                                 for (let key in res.data.milestones) {
                                     if (!res.data.milestones.hasOwnProperty(key)) continue
                                     let obj = res.data.milestones[key]
+                                    console.log(key);
                                     for (let prop in obj) {
                                         if (!obj.hasOwnProperty(prop)) continue
-
-                                        console.log(prop + " = " + obj[prop]);
+                                        obj[prop]['identifier'] = key
+                                        tempMilestone.push(obj[prop])
                                     }
                                 }
 
                                 me.alerts.vips = res.data.vips
+                                me.alerts.milestones = tempMilestone
                                 me.alerts.firstClass = res.data.firstClass
                                 me.alerts.lastClass = res.data.lastClass
                             }
