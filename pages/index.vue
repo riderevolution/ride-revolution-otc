@@ -157,14 +157,16 @@
                                 <div class="column_content" v-if="alerts.milestones.length > 0">
                                     <div class="wrapper" v-for="(data, key) in alerts.milestones" :key="key">
 
-                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null && data.identifier != 'teachingAnniversaries'" />
-                                        <img :src="data.instructor_details.images[0].path" v-else-if="data.instructor_details.images[0].path != null && data.identifier == 'teachingAnniversaries'" />
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details && data.customer_details.images[0].path != null" />
 
-                                        <div class="image" v-else>
+                                        <img :src="data.instructor_details.images[0].path" v-if="data.instructor_details && data.instructor_details.images[0].path != null" />
+
+                                        <div class="image" v-if="(data.instructor_details && data.instructor_details.images[0].path == null) || data.customer_details && data.customer_details.images[0].path == null">
                                             <div class="overlay">
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
+
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                             <div :class="`violator ${checkIdentifierClass(data.identifier)}`">
@@ -176,8 +178,8 @@
                                                 </svg>
                                                 <span>{{ checkIdentifierText(data.identifier) }}</span>
                                             </div>
-                                            <div class="violator label" v-if="data.identifier != 'teachingAnniversaries'">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
-                                            <div class="violator label" v-else>{{ data.first_name }} {{ data.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <div class="violator label" v-if="data.type == 1">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <!-- <div class="violator label" v-else>{{ data.first_name }} {{ data.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -538,6 +540,7 @@
                         return 'violet'
                         break
                     case 'rideAnniversaries':
+                    case 'instructorEvery100Rides':
                         return 'blue'
                         break
                 }
@@ -556,6 +559,9 @@
                         break
                     case 'rideAnniversaries':
                         return 'Ride Anniversary'
+                        break
+                    case 'instructorEvery100Rides':
+                        return 'Instructor Every 100 Rides'
                         break
                 }
             },
@@ -702,7 +708,6 @@
                                 for (let key in res.data.milestones) {
                                     if (!res.data.milestones.hasOwnProperty(key)) continue
                                     let obj = res.data.milestones[key]
-                                    console.log(key);
                                     for (let prop in obj) {
                                         if (!obj.hasOwnProperty(prop)) continue
                                         obj[prop]['identifier'] = key
@@ -712,6 +717,7 @@
 
                                 me.alerts.vips = res.data.vips
                                 me.alerts.milestones = tempMilestone
+                                console.log(me.alerts.milestones);
                                 me.alerts.firstClass = res.data.firstClass
                                 me.alerts.lastClass = res.data.lastClass
                             }
