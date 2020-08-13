@@ -388,6 +388,16 @@
                 </div>
                 <div class="form_wrapper" v-if="value.top5Instructors.length > 0">
                     <div class="form_header_wrapper">
+                        <h2 class="form_title">Notes/Alerts</h2>
+                    </div>
+                    <div class="form_main_group">
+                        <div class="form_group no_margin">
+                            <textarea name="notes" rows="8" id="notes" class="default_text" placeholder="Enter notes/alerts" ></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper" v-if="value.top5Instructors.length > 0">
+                    <div class="form_header_wrapper">
                         <h2 class="form_title">Top 5 Instructors</h2>
                     </div>
                     <div class="form_overview_instructor">
