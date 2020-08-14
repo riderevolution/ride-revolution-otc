@@ -271,11 +271,19 @@
                             me.res.sales_breakdown_total = res.data.salesBreakdownTotal
                             me.res.income_breakdown = res.data.incomeBreakdown
                             me.res.income_breakdown_total = res.data.incomeBreakdownTotal
-                            me.$axios.get('api/studios?enabled=1').then(res => {
+
+                            let token = me.$cookies.get('70hokcotc3hhhn5')
+
+                            me.$axios.get('api/studios', {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 if (res.data) {
                                     me.studios = res.data.studios
                                 }
                             })
+
                             me.$axios.get('api/inventory/product-categories?enabled=1').then(res => {
                                 if (res.data) {
                                     me.categories = res.data.productCategories
