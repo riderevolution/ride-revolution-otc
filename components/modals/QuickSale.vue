@@ -140,6 +140,10 @@
                                 <label for="comp">Comp</label>
                             </div>
                             <div class="form_radio">
+                                <input type="radio" id="gcash" value="gcash" name="payment_method" class="action_radio" @change="checkPayment('gcash')">
+                                <label for="gcash">GCash</label>
+                            </div>
+                            <div class="form_radio">
                                 <input type="radio" id="cash" value="cash" name="payment_method" class="action_radio" @change="checkPayment('cash')">
                                 <label for="cash">Cash</label>
                             </div>
@@ -171,7 +175,7 @@
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.others')">{{ errors.first('checkout_form.others') | properFormat }}</span></transition>
                             </div>
                         </div>
-                        <div class="form_main_group" v-if="form.paymentType == 1">
+                        <div class="form_main_group" v-else-if="form.paymentType == 1">
                             <div class="form_group">
                                 <label for="bank">Bank <span>*</span></label>
                                 <input type="text" name="bank" class="default_text" v-validate="'required'" key="bank">
@@ -183,7 +187,7 @@
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.check_number')">{{ errors.first('checkout_form.check_number') | properFormat }}</span></transition>
                             </div>
                         </div>
-                        <div class="form_main_group" v-if="form.paymentType == 3">
+                        <div class="form_main_group" v-else-if="form.paymentType == 3">
                             <div class="form_group">
                                 <label for="comp_reason">Comp Reason <span>*</span></label>
                                 <select class="default_select alternate" name="comp_reason" v-validate="'required'" key="comp_reason" v-model="form.comp">
@@ -206,7 +210,7 @@
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ errors.first('checkout_form.note') | properFormat }}</span></transition>
                             </div>
                         </div>
-                        <div class="form_main_group" v-if="form.paymentType == 4">
+                        <div class="form_main_group" v-else-if="form.paymentType == 4">
                             <div class="form_group">
                                 <label for="cash_tendered">Cash Tendered (PHP) <span>*</span></label>
                                 <input type="text" name="cash_tendered" class="default_text" key="cash_tendered" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', min_value: form.total, max_value: 9999999}" v-model="form.change">
@@ -215,6 +219,13 @@
                             <div class="form_group">
                                 <label for="change">Change (PHP)</label>
                                 <input type="text" name="change" class="default_text disabled" v-model="computeChange" v-validate="'required'">
+                            </div>
+                        </div>
+                        <div class="form_main_group" v-else-if="form.paymentType == 5">
+                            <div class="form_group">
+                                <label for="reference_number">Reference Number <span>*</span></label>
+                                <input type="text" name="reference_number" class="default_text" v-validate="'required'" key="reference_number">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.reference_number')">{{ errors.first('checkout_form.reference_number') | properFormat }}</span></transition>
                             </div>
                         </div>
                     </div>
@@ -650,6 +661,9 @@
                         break
                     case 'cash':
                         me.form.paymentType = 4
+                        break
+                    case 'gcash':
+                        me.form.paymentType = 5
                         break
                 }
                 me.cardType = ''
