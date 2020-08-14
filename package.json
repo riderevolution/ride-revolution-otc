@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nuxt --port 3010",
     "build": "nuxt build",
-    "start": "nuxt start",
+    "start": "nuxt start --port 3010",
     "generate": "nuxt generate"
   },
   "dependencies": {

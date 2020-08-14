@@ -38,17 +38,17 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
-      { src: '~/plugins/vue-scrollto', ssr: false },
-      { src: '~/plugins/vue-apexcharts', ssr: false },
-      { src: '~/plugins/v-calendar', ssr: false },
-      { src: '~/plugins/vue-ctk-date-time-picker', ssr: false },
-      { src: '~/plugins/vue-line-clamp', ssr: false },
-      { src: '~/plugins/vue-moment' },
-      { src: '~/plugins/vue-click-outside' },
-      { src: '~/plugins/vue-cookie' },
-      { src: '~/plugins/vee-validate' },
-      { src: '~/plugins/vue-panzoom' },
-      { src: '~/plugins/mixins'}
+    { src: '~/plugins/vue-scrollto', ssr: false },
+    { src: '~/plugins/vue-apexcharts', ssr: false },
+    { src: '~/plugins/v-calendar', ssr: false },
+    { src: '~/plugins/vue-ctk-date-time-picker', ssr: false },
+    { src: '~/plugins/vue-line-clamp', ssr: false },
+    { src: '~/plugins/vue-moment' },
+    { src: '~/plugins/vue-click-outside' },
+    { src: '~/plugins/vue-cookie' },
+    { src: '~/plugins/vee-validate' },
+    { src: '~/plugins/vue-panzoom' },
+    { src: '~/plugins/mixins'}
   ],
 
   /*
