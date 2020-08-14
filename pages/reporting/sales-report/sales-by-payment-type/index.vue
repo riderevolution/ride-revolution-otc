@@ -209,7 +209,13 @@
                             me.payment_total = res.data.payment_grand_total
                             me.studio_res = res.data.studio_sales_summary
                             me.studio_total = res.data.studio_grand_total
-                            me.$axios.get('api/studios?enabled=1').then(res => {
+                            let token = me.$cookies.get('70hokcotc3hhhn5')
+
+                            me.$axios.get('api/studios', {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 if (res.data) {
                                     me.studios = res.data.studios
                                 }
