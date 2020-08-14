@@ -18,7 +18,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="title">Title <span>*</span></label>
-                                        <input type="text" name="title" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'">
+                                        <input type="text" name="title" autocomplete="off" class="default_text" autofocus v-validate="'required|max:500'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('title')">{{ errors.first('title') | properFormat}}</span></transition>
                                     </div>
                                     <div class="form_group">
