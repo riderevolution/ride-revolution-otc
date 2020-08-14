@@ -44,7 +44,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody :class="`${(role.open) ? 'toggled' : ''}`" v-for="(role, key) in res" v-if="res.length > 0">
+                    <tbody :class="`${(role.open) ? 'toggled' : ''} tbp`" v-for="(role, key) in res" v-if="res.length > 0">
                         <tr class="parent">
                             <td class="toggler" @click.self="toggleAccordion($event, key)">{{ role.display_name }}</td>
                             <td>{{ countActivatedUsers(role.staff_details) }}</td>
@@ -367,7 +367,7 @@
                     }).then(() => {
                         setTimeout( () => {
                             me.loader(false)
-                            const elements = document.querySelectorAll('.cms_table_accordion tbody')
+                            const elements = document.querySelectorAll('.cms_table_accordion .tbp')
                             elements.forEach((element, index) => {
                                 element.classList.remove('toggled')
                                 element.querySelector('.accordion_table').style.height = 0

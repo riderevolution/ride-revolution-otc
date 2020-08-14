@@ -386,13 +386,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="form_wrapper" v-if="value.top5Instructors.length > 0">
+                <div class="form_wrapper">
                     <div class="form_header_wrapper">
                         <h2 class="form_title">Notes/Alerts</h2>
+                        <button type="button" class="action_btn alternate" @click="saveNotes(value)">Update</button>
                     </div>
                     <div class="form_main_group">
                         <div class="form_group no_margin">
-                            <textarea name="notes" rows="8" id="notes" class="default_text" placeholder="Enter notes/alerts" ></textarea>
+                            <textarea name="notes" rows="8" id="notes" class="default_text" placeholder="Enter notes/alerts" v-model="value.customer_details.notes"></textarea>
                         </div>
                     </div>
                 </div>
@@ -421,6 +422,21 @@
                                     <p>Total Rides: {{ data.bookCount }}</p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="type == 'health-waiver' && loaded">
+            <div id="default_form">
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Health Waiver</h2>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper" v-for="(data, key) in parser(value.customer_details.medical_history)" :key="key">
+                            <label>{{ data.title }}</label>
+                            <p>{{ (data.value == 1) ? 'Yes' : 'No' }}</p>
                         </div>
                     </div>
                 </div>
@@ -509,6 +525,9 @@
                         role_id: 0
                     }
                 },
+                form: {
+                    notes: ''
+                },
                 res: [],
                 transaction: []
             }
@@ -568,6 +587,22 @@
             }
         },
         methods: {
+            saveNotes (data) {
+                const me = this
+                let formData = new FormData()
+                formData.append('notes', data.customer_details.notes)
+                formData.append('customer_id', data.id)
+                me.$axios.post('api/extras/update-customer-notes', formData).then(res => {
+                    me.loader(true)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
             checkRefund (item) {
                 const me = this
                 switch (item.type) {

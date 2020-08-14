@@ -208,8 +208,16 @@
                         me.loader(false)
                     }, 500)
                 })
-                me.$axios.get('api/studios').then(res => {
-                    me.studios = res.data.studios
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+
+                me.$axios.get('api/studios', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data) {
+                        me.studios = res.data.studios
+                    }
                 })
                 me.$axios.get('api/suppliers').then(res => {
                     me.suppliers = res.data.suppliers.data

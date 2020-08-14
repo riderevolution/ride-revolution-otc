@@ -14,21 +14,13 @@
                         </select>
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('role_id')">{{ errors.first('role_id') | properFormat }}</span></transition>
                     </div>
-                    <div class="form_flex select_all" v-if="form.role == 1">
+                    <div class="form_flex select_all">
                         <label class="flex_label alternate">Restrict user to studios: <span>*</span></label>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
                         </div>
                         <div class="form_check" v-for="(studio, key) in studios" :key="key">
                             <input type="checkbox" :id="`studio_${key}`" name="studios" v-model="studio.checked" @change="toggleStudio()" class="action_check">
-                            <label :for="`studio_${key}`">{{ studio.name }}</label>
-                        </div>
-                        <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
-                    </div>
-                    <div class="form_flex_radio select_all" v-if="form.role != 1">
-                        <label class="radio_label">Restrict class to studios: <span>*</span></label>
-                        <div class="form_radio" v-for="(studio, key) in studios" :key="key">
-                            <input type="radio" :id="`studio_${key}`" name="studios" :value="studio.id" @change="toggleStudio()" class="action_radio">
                             <label :for="`studio_${key}`">{{ studio.name }}</label>
                         </div>
                         <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
@@ -90,7 +82,7 @@
                         </select>
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') | properFormat }}</span></transition>
                     </div>
-                    <div class="form_flex select_all" v-if="form.role == 1">
+                    <div class="form_flex select_all">
                         <label class="flex_label alternate">Restrict user to studios: <span>*</span></label>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkStudio) ? 'checked' : ''}`" @click.prevent="toggleSelectAllStudio($event)">Select All</div>
@@ -100,13 +92,6 @@
                             <label :for="`studio_${key}`">{{ studio.name }}</label>
                         </div>
                         <transition name="slide"><span class="validation_errors" v-if="hasStudio">The Studio field is required</span></transition>
-                    </div>
-                    <div class="form_flex_radio select_all" v-if="form.role != 1">
-                        <label class="radio_label">Restrict class to studios: <span>*</span></label>
-                        <div class="form_radio" v-for="(studio, key) in studios" :key="key">
-                            <input type="radio" :id="`studio_${key}`" name="studios" :value="studio.id" class="action_radio" :checked="studio.checkedForReal">
-                            <label :for="`studio_${key}`">{{ studio.name }}</label>
-                        </div>
                     </div>
                     <div class="form_flex">
                         <div class="form_group">
@@ -287,14 +272,10 @@
                             ctr++
                         }
                     })
-                    if (me.form.role == 1) {
-                        me.hasStudio = (ctr > 0) ? false : true
-                    }
+                    me.hasStudio = (ctr > 0) ? false : true
                     if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        if (me.form.role != 2) {
-                            formData.append('studios', JSON.stringify(me.studios))
-                        }
+                        formData.append('studios', JSON.stringify(me.studios))
                         me.loader(true)
                         me.$axios.post('api/staff', formData).then(res => {
                             setTimeout( () => {
@@ -335,18 +316,14 @@
                             ctr++
                         }
                     })
-                    if (me.form.role == 1) {
-                        me.hasStudio = (ctr > 0) ? false : true
-                    }
+                    me.hasStudio = (ctr > 0) ? false : true
                     if (valid && !me.hasStudio) {
                         let formData = new FormData(document.getElementById('default_form'))
                         if (formData.get('password').length <= 0) {
                             formData.delete('password')
                         }
                         formData.append('_method', 'PATCH')
-                        if (me.form.role != 2) {
-                            formData.append('studios', JSON.stringify(me.studios))
-                        }
+                        formData.append('studios', JSON.stringify(me.studios))
                         me.loader(true)
                         me.$axios.post(`api/staff/${me.id}`, formData).then(res => {
                             setTimeout( () => {

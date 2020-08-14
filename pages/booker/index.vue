@@ -370,6 +370,7 @@
                 brokenMessage: '',
                 inWaitlist: false,
                 past: false,
+                scheduledDateID: 0,
                 waitlistID: 0,
                 studio: [],
                 transaction: [],
@@ -563,9 +564,10 @@
                 const me = this
                 if (me.$store.state.seat != '') {
                     let formData = new FormData()
+                    formData.append('scheduled_date_id', me.scheduledDateID)
                     formData.append('_method', 'PATCH')
                     me.loader(true)
-                    me.$axios.get(`api/seats/${me.$store.state.seat.id}`).then(res => {
+                    me.$axios.get(`api/seats/${me.$store.state.seat.id}?scheduled_date_id=${me.scheduledDateID}`).then(res => {
                         if (res.data) {
                             if (res.data.seat.status == 'open') {
                                 formData.append('status', 'blocked')
@@ -655,6 +657,7 @@
                         // me.past = false
                     }
                 }
+                me.scheduledDateID = data.id
                 me.$store.state.scheduleID = data.id
                 me.fetchWaitlist(data.id)
             },
