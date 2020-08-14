@@ -36,7 +36,7 @@
                             </td>
                             <td>{{ data.user.email }}</td>
                             <td>{{ data.user.customer_details.co_contact_number }}</td>
-                            <td>{{ data.user_package_count.class_package.name }}</td>
+                            <td>{{ (data.user_package_count.class_package) ? data.user_package_count.class_package.name : 'N/A' }}</td>
                             <td>
                                 <div class="form_flex select_all no_m">
                                     <div class="form_flex_radio no_m">
