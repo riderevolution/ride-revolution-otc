@@ -567,7 +567,7 @@
                     formData.append('scheduled_date_id', me.scheduledDateID)
                     formData.append('_method', 'PATCH')
                     me.loader(true)
-                    me.$axios.get(`api/seats/${me.$store.state.seat.id}`).then(res => {
+                    me.$axios.get(`api/seats/${me.$store.state.seat.id}?scheduled_date_id=${me.scheduledDateID}`).then(res => {
                         if (res.data) {
                             if (res.data.seat.status == 'open') {
                                 formData.append('status', 'blocked')
