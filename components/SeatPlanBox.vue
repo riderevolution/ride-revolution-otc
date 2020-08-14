@@ -9,6 +9,7 @@
                     <span>Blocked Bike</span>
                 </div>
             </div>
+
             <div class="seat_details" v-if="seat.status == 'signed-in' || seat.status == 'reserved'">
                 <div class="seat_name">{{ seat.number }} - {{ seat.bookings[0].user.first_name }} {{ seat.bookings[0].user.last_name }}</div>
                 <div class="seat_violator">{{ seat.status.charAt(0).toUpperCase() }}{{ seat.status.slice(1) }}</div>
@@ -29,6 +30,7 @@
                     <span>Php {{ totalCount(seat.userPendingPaymentsTotal) }} (Pending)</span>
                 </div>
             </div>
+
             <div class="seat_details" v-if="seat.status == 'reserved-guest'">
                 <div class="seat_name">{{ seat.number }} - {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.first_name : seat.bookings[0].guest_first_name }} {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.last_name : seat.bookings[0].guest_last_name }}</div>
                 <div class="seat_violator">{{ seat.status.charAt(0).toUpperCase() }}{{ seat.status.slice(1) }}</div>
@@ -55,9 +57,13 @@
                     <span>Php {{ totalCount(seat.userPendingPaymentsTotal) }} (Pending)</span>
                 </div>
             </div>
+
             <div class="seat_available" @click="toggleSwitchSeat(seat)" v-if="seat.status == 'open' && $store.state.disableBookerUI && seat.bookings.length <= 0"></div>
+
             <div class="seat_action" @click.self="toggleAction(seat.status, (seat.bookings.length > 0) ? seat.bookings[0].id : null)"></div>
+
             <div class="seat_pending" @click.self="checkPending((seat.bookings.length > 0) ? seat.bookings[0].user_id : null)" v-if="!$store.state.disableBookerUI && seat.userPendingPayments > 0 && seat.status != 'no-show' && seat.past == 0"></div>
+
             <div class="seat_overlay" @click="toggleMenu(seat, seat.status)">
                 <div class="seat_number">{{ seat.number }}</div>
                 <div class="seat_info" v-if="seat.comp.length > 0 || seat.bookings.length > 0">
@@ -72,6 +78,7 @@
                     </div>
                 </div>
             </div>
+
             <h2 v-line-clamp="1" v-if="seat.comp.length > 0">{{ (seat.comp[0].user_id != null) ? `${seat.comp[0].user.first_name} ${seat.comp[0].user.last_name}` : seat.comp[0].email }}</h2>
 
             <h2 class="info_link" v-line-clamp="1" @click.self="getCurrentCustomer(seat)" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">{{ seat.bookings[0].user.first_name }} {{ seat.bookings[0].user.last_name }}</h2>
@@ -187,7 +194,7 @@
                 me.$store.state.seat = seat
                 switch (status) {
                     case 'open':
-                        if (me.$parent.hasCustomer && me.customer.id != '') {
+                        if (me.$parent.hasCustomer && me.customer.id !== undefined) {
                             let formData = new FormData()
                             formData.append('scheduled_date_id', me.$store.state.scheduleID)
                             formData.append('user_id', me.$store.state.customerID)
