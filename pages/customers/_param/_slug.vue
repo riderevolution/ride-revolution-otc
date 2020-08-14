@@ -97,6 +97,10 @@
                     {
                         name: 'Details',
                         link: `/customers/${this.$route.params.param}/details`
+                    },
+                    {
+                        name: 'Health Waiver',
+                        link: `/customers/${this.$route.params.param}/health-waiver`
                     }
                 ],
             }
