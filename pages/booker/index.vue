@@ -119,7 +119,7 @@
                                             <div class="class_title">
                                                 <span>{{ data.schedule.start_time }}, {{ (data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name }} {{ (!data.schedule.studio.online_class) ? '' : '(Online Class)' }}</span>
                                                 <div :class="`class_status ${(data.isFull) ? 'full' : ''}`">
-                                                    {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.signedIn}` }}
+                                                    {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.reserved}` }}
                                                 </div>
                                             </div>
                                             <div class="class_text" v-html="(data.schedule.description != null) ? data.schedule.description : data.schedule.class_type.description"></div>

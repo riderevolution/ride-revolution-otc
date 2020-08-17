@@ -245,6 +245,10 @@
                         </div>
                         <div class="form_footer_wrapper">
                             <div class="form_check">
+                                <input type="checkbox" id="featured" name="featured" class="action_check">
+                                <label for="featured">Home Page</label>
+                            </div>
+                            <div class="form_check">
                                 <input type="checkbox" id="refundable" name="refundable" class="action_check" checked>
                                 <label for="refundable">Refundable</label>
                             </div>
