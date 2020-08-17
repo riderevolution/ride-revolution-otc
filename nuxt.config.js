@@ -69,7 +69,7 @@ export default {
     credentials: false
   },
   env: {
-    baseUrl: process.env.BASE_URL || 'https://beta.designbluemanila.ph'
+    baseUrl: process.env.BASE_URL || 'https://portal.riderevolution.ph'
   },
   /*
   ** Build configuration
