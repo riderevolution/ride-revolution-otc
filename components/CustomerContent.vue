@@ -431,12 +431,22 @@
             <div id="default_form">
                 <div class="form_wrapper">
                     <div class="form_header_wrapper">
-                        <h2 class="form_title">Health Waiver</h2>
+                        <h2 class="form_title">Medical History</h2>
                     </div>
                     <div class="form_overview">
-                        <div class="wrapper" v-for="(data, key) in parser(value.customer_details.medical_history)" :key="key">
-                            <label>{{ data.title }}</label>
-                            <p>{{ (data.value == 1) ? 'Yes' : 'No' }}</p>
+                        <div class="wrapper" v-for="(data, key) in value.medical_history" :key="key">
+                            <label>{{ data.question }}</label>
+                            <p :class="`highlight ${(data.answer == 'Yes') ? 'r' : 'g'}`">{{ data.answer }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">If you have marked YES to any of the above, please elaborate</h2>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>{{ value.health_waiver_text_answer.body }}</label>
                         </div>
                     </div>
                 </div>
