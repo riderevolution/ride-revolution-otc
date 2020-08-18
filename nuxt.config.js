@@ -50,6 +50,9 @@ export default {
     { src: '~/plugins/vue-panzoom' },
     { src: '~/plugins/mixins'}
   ],
+  buildModules: [
+    '@nuxtjs/dotenv'
+  ],
 
   /*
   ** Nuxt.js modules
@@ -63,12 +66,11 @@ export default {
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
-    baseURL: (process.env.NODE_ENV == "development") ? 'http://api.riderevolution.test' : 'https://api.riderevolution.ph',
-    // baseURL: (process.env.NODE_ENV == "development") ? 'http://127.0.0.1:8000' : 'https://api.riderevolution.ph',
+    baseURL: process.env.API_URL,
     credentials: false
   },
   env: {
-    baseUrl: process.env.BASE_URL || 'https://portal.riderevolution.ph'
+    baseUrl: process.env.BASE_URL
   },
   /*
   ** Build configuration
