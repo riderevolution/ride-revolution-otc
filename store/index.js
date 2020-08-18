@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 const createStore = () => {
     return new Vuex.Store({
         state: () => ({
+            onlineAttendanceCustomer: false,
             refundSuccessStatus: false,
             refundConfirmStatus: false,
             refundStatus: false,

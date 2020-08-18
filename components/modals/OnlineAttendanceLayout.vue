@@ -4,8 +4,15 @@
             <div class="background"></div>
             <div class="action_back_btn" @click="toggleClose()"><img src="/icons/back-icon.svg"><span>{{ (instructorDashboard) ? 'Class Schedules' : 'Booker' }}</span></div>
             <form id="action" class="table_layout" @submit.prevent="submitAttendance()">
-                <h2>Online Class Attendance</h2>
-                <h3><span>{{ (schedule.schedule.custom_name != null) ? schedule.schedule.custom_name : schedule.schedule.class_type.name }} ({{ schedule.schedule.start_time }})</span></h3>
+                <div class="info">
+                    <div class="text">
+                        <h2>Online Class Attendance</h2>
+                        <h3><span>{{ (schedule.schedule.custom_name != null) ? schedule.schedule.custom_name : schedule.schedule.class_type.name }} ({{ schedule.schedule.start_time }})</span></h3>
+                    </div>
+                    <div class="action_buttons">
+                        <div class="action_btn" @click="toggleCustomer()"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg><span>Add Customer</span></div>
+                    </div>
+                </div>
                 <div class="actions">
                     <div class="total">Total: {{ totalItems(res.length) }}</div>
                     <a href="javascript:void(0)" v-if="res.length > 0" class="action_btn alternate">Print</a>
@@ -64,6 +71,7 @@
                     <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                     <button type="submit" name="submit" :class="`action_btn alternate ${(ctr == res.length) ? '' : 'disabled'}`">Submit</button>
                 </div>
+                <button type="button" class="hidden" id="online" @click="initial()"></button>
             </form>
         </div>
     </transition>
@@ -88,6 +96,11 @@
             }
         },
         methods: {
+            toggleCustomer () {
+                const me = this
+                me.$store.state.onlineAttendanceCustomer = true
+                document.body.classList.add('no_scroll')
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)

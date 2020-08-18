@@ -300,6 +300,9 @@
                 <online-attendance-layout v-if="$store.state.onlineAttendanceLayoutStatus" :schedule="schedule" />
             </transition>
             <transition name="fade">
+                <online-attendance-customer v-if="$store.state.onlineAttendanceCustomer" :schedule="schedule" />
+            </transition>
+            <transition name="fade">
                 <online-attendance-prompt v-if="$store.state.onlineAttendancePrompt" />
             </transition>
             <transition name="fade">
@@ -332,6 +335,7 @@
     import AttendanceLayout from '../../components/modals/AttendanceLayout'
     import PackageLayout from '../../components/modals/PackageLayout'
     import OnlineAttendanceLayout from '../../components/modals/OnlineAttendanceLayout'
+    import OnlineAttendanceCustomer from '../../components/modals/OnlineAttendanceCustomer'
     import OnlineAttendancePrompt from '../../components/modals/OnlineAttendancePrompt'
     import RedeemGiftCard from '../../components/modals/RedeemGiftCard'
     import RedeemGiftCardSuccess from '../../components/modals/RedeemGiftCardSuccess'
@@ -356,6 +360,7 @@
             AttendanceLayout,
             PackageLayout,
             OnlineAttendanceLayout,
+            OnlineAttendanceCustomer,
             OnlineAttendancePrompt,
             RedeemGiftCard,
             RedeemGiftCardSuccess,
