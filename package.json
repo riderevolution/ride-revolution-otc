@@ -5,9 +5,9 @@
   "author": "Designblue",
   "private": true,
   "scripts": {
-    "dev": "nuxt --port 3010",
+    "dev": "nuxt",
     "build": "nuxt build",
-    "start": "nuxt start --port 3010",
+    "start": "nuxt start",
     "generate": "nuxt generate"
   },
   "dependencies": {
