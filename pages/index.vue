@@ -23,7 +23,7 @@
                             <h2>Targets</h2>
                             <div class="view">
                                 <label for="month">View</label>
-                                <select class="default_select" name="month" v-model="form.month">
+                                <select class="default_select" name="month" v-model="form.month" @change="toggleTargets()">
                                     <option :value="n" v-for="(n, key) in 12" :key="key" :selected="n == $moment().format('M')">{{ $moment(n, 'M').format('MMMM') }}</option>
                                 </select>
                             </div>
@@ -122,7 +122,7 @@
                         <div class="stats_header">
                             <h2>Alerts</h2>
                             <div class="button">
-                                <select class="default_select" name="period" v-model="form.period" @change="getAlerts($event)">
+                                <select class="default_select" name="period" v-model="form.period" @change="getAlerts()">
                                     <option value="today" selected>Today</option>
                                     <option value="Upcoming">Upcoming</option>
                                 </select>
@@ -531,6 +531,36 @@
             }
         },
         methods: {
+            toggleTargets () {
+                const me = this
+                me.loader(true)
+                let targetFormData = new FormData()
+                targetFormData.append('month', me.form.month)
+                targetFormData.append('studio_id', me.form.studio_id)
+                me.$axios.post('api/portal-dashboard/targets', targetFormData).then(res => {
+                    me.targets.totalAttendance = res.data.totalAttendance
+                    me.targets.packageSales = res.data.packageSales
+                    me.targets.firstTimerRiders = res.data.ridersBehaviour
+                    me.targets.returningRiders = res.data.ridersBehaviour
+
+                    me.attendanceSeries = []
+                    me.packageSalesSeries = []
+                    me.firstTimeRidersSeries = []
+                    me.returningRidersSeries = []
+
+                    me.attendanceSeries.push(res.data.totalAttendance.percent)
+                    me.packageSalesSeries.push(res.data.packageSales.percent)
+                    me.firstTimeRidersSeries.push(res.data.ridersBehaviour.firstTimeRidersPercent)
+                    me.returningRidersSeries.push(res.data.ridersBehaviour.returningRidersPercent)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
             checkIdentifierClass (identifier) {
                 const me = this
                 switch (identifier) {
@@ -597,6 +627,7 @@
                 let formData = new FormData()
                 formData.append('body', me.form.notes)
                 formData.append('date', me.form.note_date)
+                formData.append('studio_id', me.form.studio_id)
                 me.$axios.post('api/daily-notepads', formData, {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -620,7 +651,7 @@
                 const me = this
                 me.loader(true)
                 let token = me.$cookies.get('70hokcotc3hhhn5')
-                me.$axios.get(`api/daily-notepads?date=${date}`, {
+                me.$axios.get(`api/daily-notepads?date=${date}&studio_id=${me.form.studio_id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -642,9 +673,10 @@
             getTopRiders () {
                 const me = this
                 me.loader(true)
-                let formData = new FormData
+                let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
+                formData.append('studio_id', me.form.studio_id)
                 me.$axios.post('api/portal-dashboard/top-riders', formData).then(res => {
                     me.topRiders = res.data.topRiders
                 }).catch(err => {
@@ -656,19 +688,17 @@
                     }, 500)
                 })
             },
-            getAlerts (event) {
+            getAlerts () {
                 const me = this
-                me.form.period = event.target.value
                 me.loader(true)
-                me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}`).then(res => {
+                me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}&studio_id=${me.form.studio_id}`).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            let tempMilestone = [];
+                            let tempMilestone = []
 
                             for (let key in res.data.milestones) {
                                 if (!res.data.milestones.hasOwnProperty(key)) continue
                                 let obj = res.data.milestones[key]
-                                console.log(key);
                                 for (let prop in obj) {
                                     if (!obj.hasOwnProperty(prop)) continue
                                     obj[prop]['identifier'] = key
@@ -694,16 +724,17 @@
                 const me = this
                 me.$axios.get('api/portal-dashboard').then(res => {
                     if (res.data) {
-                        let formData = new FormData
+                        let formData = new FormData()
                         formData.append('start_date', me.form.start_date)
                         formData.append('end_date', me.form.end_date)
+                        formData.append('studio_id', me.form.studio_id)
                         me.$axios.post('api/portal-dashboard/top-riders', formData).then(res => {
                             me.topRiders = res.data.topRiders
                         })
 
-                        me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}`).then(res => {
+                        me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}&studio_id=${me.form.studio_id}`).then(res => {
                             if (res.data) {
-                                let tempMilestone = [];
+                                let tempMilestone = []
 
                                 for (let key in res.data.milestones) {
                                     if (!res.data.milestones.hasOwnProperty(key)) continue
@@ -717,13 +748,12 @@
 
                                 me.alerts.vips = res.data.vips
                                 me.alerts.milestones = tempMilestone
-                                console.log(me.alerts.milestones);
                                 me.alerts.firstClass = res.data.firstClass
                                 me.alerts.lastClass = res.data.lastClass
                             }
                         })
 
-                        let targetFormData = new FormData
+                        let targetFormData = new FormData()
                         targetFormData.append('month', me.form.month)
                         targetFormData.append('studio_id', me.form.studio_id)
                         me.$axios.post('api/portal-dashboard/targets', targetFormData).then(res => {

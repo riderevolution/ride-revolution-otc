@@ -270,7 +270,7 @@
             toggleAction (status, id) {
                 const me = this
                 let formData = new FormData()
-                if (status == 'reserved' && id != null) {
+                if ((status == 'reserved-guest' || status == 'reserved') && id != null) {
                     me.$axios.post(`api/bookings/sign-in/${id}`, formData).then(res => {
                         if (res.data) {
                             setTimeout( () => {
