@@ -1,5 +1,5 @@
 <template>
-    <div class="default_modal">
+    <div class="default_modal alternate">
         <div class="background" @click="toggleClose()"></div>
         <form id="default_form" class="overlay assign" @submit.prevent="submissionSuccess()">
             <div class="modal_wrapper">
@@ -9,7 +9,7 @@
                     <div class="customer_filter">
                         <div class="form_group" v-click-outside="closeMe">
                             <label for="customer">Find a Member</label>
-                            <input type="text" name="customer" autocomplete="off" placeholder="Search for a customer" class="default_text search_alternate" @click="toggleCustomers ^= true" @input="searchCustomer($event)">
+                            <input type="text" name="customer" autocomplete="off" placeholder="Search for a customer" class="default_text search_alternate" @click="toggleCustomers = true" @input="searchCustomer($event)">
                             <transition name="slide"><span class="validation_errors" v-if="findCustomer && customer == ''">Select Member</span></transition>
                             <div :class="`customer_selection ${(customerLength > 6) ? 'scrollable' : ''}`" v-if="toggleCustomers">
                                 <div class="customer_selection_list">
@@ -62,11 +62,18 @@
                 </div>
             </div>
         </form>
+        <transition name="fade">
+            <online-attendance-package v-if="$store.state.onlineAttendancePackage" :type="'create'" :customer="customer" :schedule="schedule" />
+        </transition>
     </div>
 </template>
 
 <script>
+    import OnlineAttendancePackage from './OnlineAttendancePackage'
     export default {
+        components: {
+            OnlineAttendancePackage
+        },
         props: {
             schedule: {
                 default: null
@@ -108,7 +115,7 @@
                 let formData = new FormData()
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
-                        document.getElementById('online').click()
+                        me.$store.state.onlineAttendancePackage = true
                     } else {
                         if (me.customer == '') {
                             me.findCustomer = true

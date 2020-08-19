@@ -6,7 +6,7 @@
                 {{ message }}
             </div>
             <div class="button_group">
-                <div class="action_success_btn confirm margin" @click.once="toggleClose()">Confirm</div>
+                <div class="action_success_btn confirm" @click.once="toggleClose()">Confirm</div>
             </div>
         </div>
     </div>
@@ -24,7 +24,9 @@
             toggleClose () {
                 const me = this
                 me.$store.state.promptBookerStatus = false
-                document.body.classList.remove('no_scroll')
+                if (!me.$store.state.onlineAttendanceCustomer) {
+                    document.body.classList.remove('no_scroll')
+                }
                 me.$scrollTo('.validation_errors', {
                     offset: -250
                 })

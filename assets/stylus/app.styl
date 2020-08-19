@@ -1237,7 +1237,7 @@ table
     position: fixed
     top: 0
     left: 0
-    z-index: 4
+    z-index: 999
     width: 100%
     height: 100%
     &.alternate
@@ -2683,6 +2683,7 @@ input::placeholder
             padding: 30px 15px
             &.disabled
                 pointer-events: none
+                opacity: 0.5
                 label
                     color: $border_alt2
                     transition: .3s ease-in-out
@@ -6873,7 +6874,7 @@ input::placeholder
             flex: 1 auto
             background-color: #F8F8FB
             padding-left: 50px
-            height: 100vh
+            height: 100%
             transition: .3s ease-in-out
             &.toggled
                 padding-left: 300px
