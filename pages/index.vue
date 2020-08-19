@@ -309,7 +309,7 @@
         </div>
         <foot v-if="$store.state.isAuth" />
         <transition name="fade">
-            <dashboard-attendance v-if="$store.state.dashboardAttendanceStatus" />
+            <dashboard-attendance v-if="$store.state.dashboardAttendanceStatus" :data="targets.totalAttendance" :studio_id="form.studio_id" :month="form.month" />
         </transition>
         <transition name="fade">
             <pending-transactions v-if="$store.state.pendingTransactionsStatus" />

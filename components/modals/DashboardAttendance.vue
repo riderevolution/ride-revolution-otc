@@ -7,7 +7,7 @@
                     <h2>Total Attendance</h2>
                     <div class="view">
                         <label for="month">View</label>
-                        <select class="default_select" name="month">
+                        <select class="default_select" name="month" v-model="form.month" @change="toggleTargets()">
                             <option :value="n" v-for="(n, key) in 12" :key="key" :selected="n == $moment().format('M')">{{ $moment(n, 'M').format('MMMM') }}</option>
                         </select>
                     </div>
@@ -21,18 +21,18 @@
                             </no-ssr>
                             <div class="details">
                                 <div class="left">
-                                    <b class="blue">2,000</b>
+                                    <b class="blue">{{ totalItems(data.bookingsCount) }}</b>
                                     <p>Actual no. of Riders for this Month</p>
                                 </div>
                                 <div class="right">
-                                    <b class="blue">3,000</b>
+                                    <b class="blue">{{ totalItems(data.target) }}</b>
                                     <p>Target no. of Riders for this Month</p>
                                 </div>
                             </div>
                         </div>
                         <div class="bar">
                             <no-ssr>
-                                <apexchart height="300" :options="chartOptions" :series="series"></apexchart>
+                                <apexchart height="300" :key="ctr" :options="chartOptions" :series="series"></apexchart>
                             </no-ssr>
                         </div>
                     </div>
@@ -44,8 +44,24 @@
 
 <script>
     export default {
+        props: {
+            data: {
+                type: Object/Array,
+                default: null
+            },
+            studio_id: {
+                default: 1
+            },
+            month: {
+                default: null
+            }
+        },
         data () {
             return {
+                ctr: 0,
+                form: {
+                    month: ''
+                },
                 series: [
                     {
                         name: 'Attendance',
@@ -90,7 +106,8 @@
                         }
                     }
                 },
-                attendanceSeries: [85],
+                attendanceSeries: [],
+                totalAttendance: [],
                 attendanceOptions: {
                     chart: {
                         height: 150,
@@ -134,6 +151,38 @@
             }
         },
         methods: {
+            toggleTargets () {
+                const me = this
+                me.loader(true)
+                let targetFormData = new FormData()
+                targetFormData.append('month', me.form.month)
+                targetFormData.append('studio_id', me.studio_id)
+                me.$axios.post('api/portal-dashboard/targets', targetFormData).then(res => {
+                    me.totalAttendance = res.data.totalAttendance
+
+                    me.attendanceSeries = []
+
+                    me.attendanceSeries.push(res.data.totalAttendance.percent)
+
+                    me.series[0].data = res.data.totalAttendance.daysOfTheMonth
+
+                    let endDate = me.$moment(me.form.month, 'M').daysInMonth()
+                    let tempLabels = []
+                    for (let i = 1; i <= endDate; i++) {
+                        console.log(me.$moment(`${me.form.month} ${i}`, 'M D'));
+                        tempLabels.push(me.$moment(`${me.form.month} ${i}`, 'M D').format('MMM D'))
+                    }
+                    me.chartOptions.xaxis.categories = tempLabels
+                    me.ctr += 1
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
             toggleClose () {
                 const me = this
                 me.$store.state.dashboardAttendanceStatus = false
@@ -142,10 +191,15 @@
         },
         mounted () {
             const me = this
-            let endDate = me.$moment().daysInMonth()
+            me.totalAttendance = me.data
+            me.form.month = me.month
+            me.attendanceSeries.push(me.totalAttendance.percent)
+            me.series[0].data = me.totalAttendance.daysOfTheMonth
+
+            let endDate = me.$moment(me.form.month, 'M').daysInMonth()
             let tempLabels = []
             for (let i = 1; i <= endDate; i++) {
-                tempLabels.push(me.$moment(i, 'MMM D').format('MMM D'))
+                tempLabels.push(me.$moment(`${me.form.month} ${i}`, 'M D').format('MMM D'))
             }
             me.chartOptions.xaxis.categories = tempLabels
         }
