@@ -6,7 +6,12 @@
                     <div class="action_wrapper">
                         <h1 class="header_title">Scheduler</h1>
                         <div class="actions">
-                            <a href="javascript:void(0)" class="action_btn">Export Schedule</a>
+                            <download-csv
+                                class="action_btn alternate"
+                                :data="attributes"
+                                :name="`schedule-${$moment().format('MM-DD-YY-hh-mm')}.csv`" v-if="schedules.length > 0">
+                                Export Schedule
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper alternate">
@@ -100,7 +105,9 @@
             CalendarDuplicate
         },
         data () {
+            const values = []
             return {
+                values: [],
                 name: 'Scheduler',
                 access: true,
                 lastRoute: '',
@@ -121,6 +128,30 @@
                     studio_id: 0,
                     instructor_id: 0
                 }
+            }
+        },
+        computed: {
+            attributes () {
+                const me = this
+                return [
+                    ...this.values.map(value => ({
+                        'ID': value.id,
+                        'Date': this.$moment(value.date).format('MMMM DD, YYYY'),
+                        'Start Time': value.schedule.start_time,
+                        'End Time': value.schedule.end_time,
+                        'Studio': value.schedule.studio.name,
+                        'Peak Type': value.schedule.peak_type,
+                        'Class Type': value.schedule.class_type.name,
+                        'Custom Class Type Name': value.schedule.custom_name,
+                        'Class Length': value.schedule.class_length_formatted,
+                        'Class Credits': value.schedule.class_credits,
+                        'Instructor': `${value.schedule.instructor_schedules[0].user.first_name} ${value.schedule.instructor_schedules[0].user.last_name}`,
+                        'Substitute Instructor': `${(value.schedule.instructor_schedules[1]) ? `${value.schedule.instructor_schedules[1].user.first_name} ${value.schedule.instructor_schedules[1].user.last_name}` : '- -'}`,
+                        'Zoom Link': value.zoom_link,
+                        'No. of Bookings': value.bookings.length,
+                        'No. of Available Seats': value.availableSeatsCount
+                    }))
+                ]
             }
         },
         methods: {
@@ -172,6 +203,8 @@
                         me.schedules = res.data.schedules
                     })
                 }
+
+                me.values = me.schedules
 
                 /**
                  * Generate Rows **/

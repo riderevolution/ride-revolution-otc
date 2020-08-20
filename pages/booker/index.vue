@@ -198,7 +198,7 @@
                                 }">
                                 <seat-plan ref="plan" :customer="customer" :onlineClass="(studio.online_class) ? true : false" />
                                 </panZoom>
-                                <div class="seat_legends">
+                                <div class="seat_legends" v-if="!studio.online_class">
                                     <div class="legend_title gray"><span></span> Booked</div>
                                     <div class="legend_title margin green"><span></span> Signed In</div>
                                     <div class="legend_title margin white"><span></span> Available</div>

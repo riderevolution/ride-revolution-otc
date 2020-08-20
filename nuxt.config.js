@@ -38,6 +38,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    { src: '~/plugins/vue-json-csv'},
     { src: '~/plugins/vue-scrollto', ssr: false },
     { src: '~/plugins/vue-apexcharts', ssr: false },
     { src: '~/plugins/v-calendar', ssr: false },
