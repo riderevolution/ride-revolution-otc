@@ -66,7 +66,7 @@
                                                         <span>Birthday: {{ $moment(customer.customer_details.co_birthdate).format('M/D/YY') }}</span>
                                                         <span>{{ customer.customer_details.co_contact_number }}</span>
                                                         <span>Store Credit: {{ totalItems((customer.store_credits != null) ? customer.store_credits.amount : 0) }}</span>
-                                                        <span>Shoe Size: <b>US</b> - {{ customer.customer_details.co_shoe_size }}</span>
+                                                        <span>Shoe Size: <b>US - {{ customer.customer_details.co_shoe_size }}</b></span>
                                                     </div>
                                                     <div class="close_wrapper alternate" @click="removeCustomer()">
                                                         <div class="close_icon"></div>
