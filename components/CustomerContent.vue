@@ -312,7 +312,7 @@
                         </div>
                         <div class="wrapper">
                             <label>Shoe Size</label>
-                            <p>{{ value.customer_details.co_shoe_size }}</p>
+                            <p><b>US</b> - {{ value.customer_details.co_shoe_size }}</p>
                         </div>
                         <div class="wrapper">
                             <label>Customer Type</label>

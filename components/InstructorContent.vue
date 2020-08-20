@@ -220,7 +220,7 @@
                             </div>
                             <div class="wrapper">
                                 <label>Shoe Size</label>
-                                <p>{{ value.instructor_details.io_shoe_size }}</p>
+                                <p><b>US</b> - {{ value.instructor_details.io_shoe_size }}</p>
                             </div>
                             <div class="wrapper">
                                 <label>Occupation</label>
