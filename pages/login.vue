@@ -82,11 +82,11 @@
                 const me = this
                 me.userType = value
                 if (me.userType == 0) {
-                    me.form.email = 'superadmin@admin.com'
-                    me.form.password = '@F1r33x1t'
+                    me.form.email = ''
+                    me.form.password = ''
                 } else {
-                    me.form.email = 'bea@riderevolution.ph'
-                    me.form.password = 'password'
+                    me.form.email = ''
+                    me.form.password = ''
                 }
             },
             toggleStep (type) {
