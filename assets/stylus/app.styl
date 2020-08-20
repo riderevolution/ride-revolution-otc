@@ -2022,8 +2022,14 @@ input::placeholder
                             align-items: center
                         .customer_info
                             span
+                                margin: 0 5px
                                 sf_pro_regular(15px)
                                 color: $gray_alternate
+                                &:first-child
+                                    margin: 0 5px 0 0
+                                b
+                                    sf_pro_bold(15px)
+                                    color: $blue
             .form_footer_wrapper
                 .form_flex
                     justify-content: center
@@ -7700,8 +7706,11 @@ input::placeholder
                                                     height: 100%
                                         .customer_info
                                             span
+                                                margin: 0 5px
                                                 sf_pro_regular(15px)
                                                 color: $gray_alternate
+                                                &:first-child
+                                                    margin: 0 5px 0 0
                                                 b
                                                     sf_pro_bold(15px)
                                                     color: $blue

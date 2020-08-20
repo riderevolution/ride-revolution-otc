@@ -74,6 +74,7 @@
                                     <span>Birthday: {{ $moment(customer.customer_details.co_birthdate).format('M/D/YY') }}</span>
                                     <span>{{ customer.email }}</span>
                                     <span>{{ customer.customer_details.co_contact_number }}</span>
+                                    <span>Shoe Size: <b>US - {{ customer.customer_details.co_shoe_size }}</b></span>
                                 </div>
                             </div>
                         </div>
