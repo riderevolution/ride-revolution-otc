@@ -13,7 +13,7 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                                
                                 <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                             </div>
                         </div>

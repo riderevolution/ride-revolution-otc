@@ -23,7 +23,7 @@
                                         </div>
                                     </transition>
                                     <input type="file" id="image" name="image[]" class="action_photo" @change="getFile($event)" v-validate="`${(hasImage) ? '' : 'required|'}image|size:1000|image|ext:jpeg,jpg,png`">
-                                    <input type="hidden" name="image_id[]" v-model="res.customer_details.images[0].id" v-if="res.customer_details.images[0].path != null">
+                                    <input type="hidden" name="image_id[]" v-model="res.instructor_details.images[0].id" v-if="res.instructor_details.images[0].path != null">
                                     <label for="image" :class="`${(previewImage) ? 'active' : ''}`"><span>Upload Photo</span></label>
                                     <img id="preview_image" src="/" v-if="previewImage" />
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('image[]')">{{ errors.first('image[]') | properFormat }}</span></transition>

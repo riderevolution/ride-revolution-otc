@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Expiration details of each class package</h2>
                         </div>
                         <div class="actions">
-                            <a href="javascript:void(0)" class="action_btn alternate">Print</a>
+                            
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
