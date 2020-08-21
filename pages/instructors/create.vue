@@ -90,7 +90,7 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="io_shoe_size">Shoe Size <span>*</span></label>
-                                        <select :class="`default_select alternate ${(form.gender.length > 0) ? '' : 'disabled'}`" v-validate="'required'">
+                                        <select name="io_shoe_size" :class="`default_select alternate ${(form.gender.length > 0) ? '' : 'disabled'}`" v-validate="'required'">
                                             <option value="" selected disabled>Choose Shoe Size</option>
                                             <option :value="size" v-for="(size, index) in sizes">{{ size }}</option>
                                         </select>
