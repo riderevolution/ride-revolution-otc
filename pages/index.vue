@@ -793,7 +793,7 @@
                 setTimeout( () => {
                     me.loaded = true
                     me.res = res.data.user
-                    me.$axios.get(`api/studios/${me.res.data.user.current_studio_id}`).then(res => {
+                    me.$axios.get(`api/studios/${me.res.current_studio_id}`).then(res => {
                         me.studio = res.data.studio
                     })
                     me.initial()
