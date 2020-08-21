@@ -7,7 +7,7 @@
                         <div class="header_title">
                             <h1>Dashboard</h1>
                         </div>
-                        <h2 class="header_subtitle">{{ res.studio.name }} Branch</h2>
+                        <h2 class="header_subtitle">{{ studio.name }} Branch</h2>
                     </div>
                     <div class="actions">
                         <div class="action_buttons">
@@ -337,6 +337,7 @@
                 loaded: false,
                 transaction: [],
                 res: [],
+                studio: [],
                 topRiders: [],
                 pendingPayments: [],
                 alerts: {
@@ -792,7 +793,9 @@
                 setTimeout( () => {
                     me.loaded = true
                     me.res = res.data.user
-                    me.form.studio_id = res.data.user.current_studio_id
+                    me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                        me.studio = res.data.studio
+                    })
                     me.initial()
                 }, 500)
             }).catch(err => {

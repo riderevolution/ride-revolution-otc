@@ -37,7 +37,7 @@
                 let formData = new FormData()
                 formData.append('type', me.type)
                 formData.append('date', date)
-                formData.append('studio_id', me.$store.state.user.current_studio_id)
+                formData.append('studio_id', me.$parent.form.studio_id)
                 me.$axios.post('api/schedules/clear', formData).then(res => {
                     if (res.data) {
                         me.$parent.generateCalendar(me.$parent.currentYear, me.$parent.currentMonth, 0, 0)
