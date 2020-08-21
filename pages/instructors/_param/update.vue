@@ -105,7 +105,7 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="youtube_link">Youtube Link <span>*</span></label>
-                                    <input type="text" name="youtube_link" autocomplete="off" class="default_text" v-model="res.instructor_details.youtube_link" placeholder="Enter youtube link" v-validate="{required: true, url: {require_protocol: true }}">
+                                    <input type="text" name="youtube_link" autocomplete="off" class="default_text" v-model="res.instructor_details.youtube_link" placeholder="Enter youtube link" v-validate="{url: {require_protocol: true }}">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('youtube_link')">{{ properFormat(errors.first('youtube_link')) }}</span></transition>
                                 </div>
                             </div>
