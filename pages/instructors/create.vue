@@ -306,6 +306,10 @@
                         </div>
                         <div class="form_footer_wrapper">
                             <div class="form_check">
+                                <input type="checkbox" id="show_on_web" name="show_on_web" class="action_check" checked>
+                                <label for="show_on_web">Show on Web</label>
+                            </div>
+                            <div class="form_check">
                                 <input type="checkbox" id="i_agree" name="i_agree" class="action_check" v-validate="'required'">
                                 <label for="i_agree">I agree to the <a href="http://riderev.designbluemanila.ph/" target="_blank">Terms &amp; Conditions</a> and <a href="http://riderev.designbluemanila.ph/" target="_blank">Privacy Policy</a> of Ride Revolution.</label>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('i_agree')">{{ properFormat(errors.first('i_agree')) }}</span></transition>
