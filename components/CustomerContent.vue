@@ -37,7 +37,7 @@
                             </div>
                             <div class="date margin">
                                 <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
-                                <label v-if="!data.frozen">Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')" v-if="data.activation_date != 'NA'">Edit</a></label>
+                                <label v-if="!data.frozen">Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')">Edit</a></label>
                             </div>
                         </div>
                         <div class="package_action">
@@ -615,6 +615,7 @@
             },
             checkRefund (item) {
                 const me = this
+                console.log(item);
                 switch (item.type) {
                     case 'class-package':
                         if (item.refunded == 0) {

@@ -87,14 +87,22 @@
                                 <label for="comp_reason">Comp Reason<span>*</span></label>
                                 <select class="default_select alternate" name="comp_reason" key="comp_reason" v-validate="'required'" v-model="form.comp">
                                     <option value="" selected disabled>Select a Reason</option>
-                                    <option value="so-sick">So Sick of love song</option>
-                                    <option value="other">Other</option>
+                                    <option value="Gift">Gift</option>
+                                    <option value="Cross deal">Cross deal</option>
+                                    <option value="Prize">Prize</option>
+                                    <option value="Redemption">Redemption</option>
+                                    <option value="Conversion">Conversion</option>
+                                    <option value="Internal team">Internal team</option>
+                                    <option value="Shareholder">Shareholder</option>
+                                    <option value="Complaint">Complaint</option>
+                                    <option value="Special deal">Special deal</option>
+                                    <option value="Other">Other</option>
                                 </select>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.comp_reason')">{{ errors.first('checkout_form.comp_reason') | properFormat }}</span></transition>
                             </div>
                             <transition name="fade">
-                                <div class="form_group" v-if="form.comp == 'other'">
-                                    <label for="other">Indicate Reason</label>
+                                <div class="form_group" v-if="form.comp == 'Other'">
+                                    <label for="indicate_reason">Indicate Reason</label>
                                     <input type="text" name="indicate_reason" class="default_text" v-validate="'required'" key="indicate_reason">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.indicate_reason')">{{ errors.first('checkout_form.indicate_reason') | properFormat }}</span></transition>
                                 </div>
