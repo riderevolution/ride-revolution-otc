@@ -243,8 +243,8 @@
                                             </td>
                                             <td v-if="data.status == 'paid'">
                                                 <div class="table_actions" v-if="item.type != 'store-credit'">
-                                                    <div class="table_action_cancel link" @click="toggleRefund(data, item)" v-if="checkRefund(item)">Refund</div>
-                                                    <div class="table_action_cancel disabled link" v-else>Refunded</div>
+                                                    <div class="table_action_cancel link" @click="toggleRefund(data, item)" v-if="checkRefund(data, item)">Refund</div>
+                                                    <div class="table_action_cancel disabled link" v-else>{{ (data.payment_method.method != 'comp') ? 'Refunded' : 'Non-refundable' }}</div>
                                                 </div>
                                                 <div class="table_actions" v-else>
                                                     <div class="table_action_cancel disabled link">Non-refundable</div>
@@ -613,31 +613,34 @@
                     }, 500)
                 })
             },
-            checkRefund (item) {
+            checkRefund (data, item) {
                 const me = this
-                console.log(item);
-                switch (item.type) {
-                    case 'class-package':
-                        if (item.refunded == 0) {
-                            if (item.user_package_count) {
-                                if (item.user_package_count.count == item.user_package_count.original_package_count) {
-                                    return true
+                if (data.payment_method.method != 'comp') {
+                    switch (item.type) {
+                        case 'class-package':
+                            if (item.refunded == 0) {
+                                if (item.user_package_count) {
+                                    if (item.user_package_count.count == item.user_package_count.original_package_count) {
+                                        return true
+                                    } else {
+                                        return false
+                                    }
                                 } else {
                                     return false
                                 }
                             } else {
                                 return false
                             }
-                        } else {
-                            return false
-                        }
-                    break
-                    default:
-                        if (item.refunded == 0) {
-                            return true
-                        } else {
-                            return false
-                        }
+                        break
+                        default:
+                            if (item.refunded == 0) {
+                                return true
+                            } else {
+                                return false
+                            }
+                    }
+                } else {
+                    return false
                 }
             },
             toggleRefund (data, item) {

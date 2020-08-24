@@ -167,9 +167,9 @@
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group flex">
-                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer <span>*</span></label>
+                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer</label>
                                         <div class="form_flex_input full">
-                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" v-model="res.purchase_limit_per_customer" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99999'">
+                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" v-model="res.purchase_limit_per_customer" autocomplete="off" v-validate="'numeric|max_value:99999'">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ errors.first('purchase_limit_per_customer') | properFormat }}</span></transition>
                                         </div>
                                     </div>
