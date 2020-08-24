@@ -88,7 +88,7 @@
                 </thead>
                 <tbody v-if="value.upcomingClasses.length > 0">
                     <tr v-for="(data, key) in value.upcomingClasses" :key="key">
-                        <td><div class="table_data_link link" @click="toggleLayout(data.scheduled_date.schedule.studio.id, data.scheduled_date_id)">{{ formatClassDate(data.created_at, true) }}</div></td>
+                        <td><div class="table_data_link link" @click="toggleLayout(data.scheduled_date.schedule.studio.id, data.scheduled_date_id)">{{ formatClassDate(`${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`, true) }}</div></td>
                         <td>{{ data.seat.number }}</td>
                         <td>{{ (data.scheduled_date.schedule.custom_name != null) ? data.scheduled_date.schedule.custom_name : data.scheduled_date.schedule.class_type.name }}</td>
                         <td>{{ data.scheduled_date.schedule.studio.name }}</td>
@@ -154,7 +154,7 @@
                 </thead>
                 <tbody v-if="value.classHistory.length > 0">
                     <tr v-for="(data, key) in res.classHistory" :key="key">
-                        <td>{{ formatClassDate(data.created_at, true) }}</td>
+                        <td>{{ formatClassDate(`${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`, true) }}</td>
                         <td>{{ data.seat.number }}</td>
                         <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
                         <td>{{ data.scheduled_date.schedule.studio.name }}</td>
