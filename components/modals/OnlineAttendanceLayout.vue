@@ -157,6 +157,7 @@
                 me.loader(true)
                 me.$axios.get(`api/online-class-bookings?scheduled_date_id=${me.schedule.id}`).then(res => {
                     if (res.data) {
+                        me.res = []
                         setTimeout( () => {
                             res.data.bookings.forEach((data, index) => {
                                 if (data.status == 'signed-in' || data.status == 'no-show') {
