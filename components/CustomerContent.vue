@@ -5,13 +5,14 @@
                 <div :class="`status ${(packageStatus == 'all') ? 'active' : ''}`" @click="togglePackages('all')">Owned</div>
                 <div :class="`status ${(packageStatus == 'shared') ? 'active' : ''}`" @click="togglePackages('shared')">Shared</div>
                 <div :class="`status ${(packageStatus == 'frozen') ? 'active' : ''}`" @click="togglePackages('frozen')">Frozen</div>
+                <div :class="`status ${(packageStatus == 'expired') ? 'active' : ''}`" @click="togglePackages('expired')">Expired</div>
             </div>
             <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
             <div class="cms_table_package">
                 <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="packageCount > 0 && (data.count > 0 && !data.expired)">
                     <h2 class="package_title">
                         {{ data.class_package.name }}
-                        <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment(), 'days')) <= 15">{{ checkViolator(data, 'warning') }}</span>
+                        <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment(), 'days')) <= 15 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
                         <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
                         <span class="frozen" v-if="data.frozen">Frozen</span>
                     </h2>
@@ -37,10 +38,10 @@
                             </div>
                             <div class="date margin">
                                 <p>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</p>
-                                <label v-if="!data.frozen">Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')">Edit</a></label>
+                                <label v-if="!data.frozen">Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')" v-if="packageStatus != 'expired'">Edit</a></label>
                             </div>
                         </div>
-                        <div class="package_action">
+                        <div class="package_action" v-if="packageStatus != 'expired'">
                             <div :class="`action_success_btn ${(data.frozen) ? 'disabled' : ''}`" @click="getCurrentCustomer()">Book a Class</div>
                             <div class="package_options" v-if="data.class_package.class_count_unlimited != 1">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
@@ -52,6 +53,9 @@
                                     <!-- <div class="option_link">Print Receipt</div> -->
                                 </div>
                             </div>
+                        </div>
+                        <div class="package_action" v-else>
+                            <div class="action_cancel_btn none">Expired</div>
                         </div>
                     </div>
                 </div>
@@ -578,20 +582,32 @@
             populatePackages () {
                 const me = this
                 let result = []
+                me.packageCount = 0
                 if (me.$route.params.slug == 'packages') {
                     let current = me.$moment()
-                    me.res.user_package_counts.forEach((element, index) => {
-                        let expiry = me.$moment(element.class_package.computed_expiration_date)
-                        if (parseInt(expiry.diff(current, 'days')) > 0) {
-                            element.expired = false
-                            if (element.count > 0) {
+                    if (me.packageStatus != 'expired') {
+                        me.res.user_package_counts.forEach((element, index) => {
+                            let expiry = me.$moment(element.class_package.computed_expiration_date)
+                            if (parseInt(expiry.diff(current, 'days')) > 0) {
+                                element.expired = false
+                                if (element.count > 0) {
+                                    me.packageCount++
+                                }
+                            } else {
+                                element.expired = true
+                            }
+                            result.push(element)
+                        })
+                    } else {
+                        me.res.user_package_counts.forEach((element, index) => {
+                            let expiry = me.$moment(element.class_package.computed_expiration_date)
+                            if (parseInt(expiry.diff(current, 'days')) <= 0) {
+                                element.expired = false
                                 me.packageCount++
                             }
-                        } else {
-                            element.expired = true
-                        }
-                        result.push(element)
-                    })
+                            result.push(element)
+                        })
+                    }
                 }
                 return result
             }
@@ -890,7 +906,7 @@
             togglePackages (status) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${status}`).then(res => {
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${(status != 'expired') ? status : 'all'}`).then(res => {
                     if (res.data) {
                         me.packageCount = 0
                         me.$parent.customer = res.data.customer

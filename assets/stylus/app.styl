@@ -102,6 +102,9 @@ table
 .hidden
     display: none
 
+.none
+    pointer-events: none
+
 .error_page
     &.alternate
         height: 50vh
@@ -1360,10 +1363,10 @@ table
             .modal_tab_wrapper
                 display: flex
                 flex-flow: row wrap
-                align-items: flex-start
                 &.alternate
                     padding: 30px
                     justify-content: space-between
+                    align-items: flex-start
                     .header_side
                         flex: 1 0 100%
                         margin-bottom: 20px

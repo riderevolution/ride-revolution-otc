@@ -673,17 +673,19 @@
                                     me.$store.state.errorList.push('Sorry, Something went wrong')
                                     me.$store.state.errorQuickSaleStatus = true
                                 }
-                            }, 200)
+                            }, 500)
                         }).catch(err => {
                             me.$store.state.errorList = err.response.data.errors
                             me.$store.state.errorQuickSaleStatus = true
                         }).then(() => {
                             setTimeout( () => {
-                                me.loader(false)
+                                if (me.$route.params.slug != 'transactions' || me.$route.name != 'customers-param-slug') {
+                                    me.loader(false)
+                                }
                                 if (!me.$store.state.errorQuickSaleStatus) {
                                     me.$store.state.customerProductQuickSaleStatus = false
                                 }
-                            }, 200)
+                            }, 500)
                         })
                     } else {
                         setTimeout( () => {
