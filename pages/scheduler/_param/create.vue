@@ -183,7 +183,7 @@
                         <div class="form_footer_wrapper">
                             <div class="form_flex">
                                 <div class="form_check">
-                                    <input type="checkbox" id="enabled" name="enabled" class="action_check" checked>
+                                    <input type="checkbox" id="enabled" name="enabled" class="action_check">
                                     <label for="enabled">Activate</label>
                                 </div>
                                 <div class="button_group">

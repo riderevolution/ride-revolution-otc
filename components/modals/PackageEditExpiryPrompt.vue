@@ -48,7 +48,6 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
-                        console.log(me.data);
                         formData.append('user_package_count_id', me.data.id)
                         me.$axios.post('api/packages/class-packages/update-expiry', formData).then(res => {
                             if (res.data) {
