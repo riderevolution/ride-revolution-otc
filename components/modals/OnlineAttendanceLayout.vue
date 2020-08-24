@@ -22,6 +22,7 @@
                     <thead>
                         <tr>
                             <th>Customer</th>
+                            <th>Type</th>
                             <th>Email Address</th>
                             <th>Contact No.</th>
                             <th>Class Package</th>
@@ -41,35 +42,32 @@
                                     <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
                                 </div>
                             </td>
+                            <td>{{ data.user.customer_details.customer_type.name }}</td>
                             <td>{{ data.user.email }}</td>
                             <td>{{ data.user.customer_details.co_contact_number }}</td>
                             <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
                             <td>
-                                <div class="form_flex select_all no_m">
-                                    <div class="form_flex_radio no_m">
-                                        <div class="form_radio">
-                                            <input type="radio" :id="`status_si_${key}`" value="signed-in" :checked="data.status == 'signed-in'" @change="toggleStatus(data)" :name="`status[${key}]`" class="action_radio">
-                                            <label :for="`status_si_${key}`">Signed-in</label>
-                                        </div>
-                                        <div class="form_radio">
-                                            <input type="radio" :id="`status_ns_${key}`" value="no-show" :checked="data.status == 'no-show'" @change="toggleStatus(data)" :name="`status[${key}]`" class="action_radio">
-                                            <label :for="`status_ns_${key}`">No Show</label>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="booking_id[]" :value="data.id">
+                                <div class="form_group">
+                                    <select class="default_select alternate" :name="`status[${key}]`" v-model="data.status">
+                                        <option value="reserved" selected>Reserved</option>
+                                        <option value="signed-in">Signed In</option>
+                                        <option value="no-show">No Show</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
                                 </div>
+                                <input type="hidden" name="booking_id[]" :value="data.id">
                             </td>
                         </tr>
                     </tbody>
                     <tbody class="no_results" v-else>
                         <tr>
-                            <td colspan="5">No Result(s) Found.</td>
+                            <td colspan="6">No Result(s) Found.</td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="cta" v-if="res.length > 0">
                     <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
-                    <button type="submit" name="submit" :class="`action_btn alternate ${(ctr == res.length) ? '' : 'disabled'}`">Submit</button>
+                    <button type="submit" name="submit" class="action_btn alternate">Submit</button>
                 </div>
                 <button type="button" class="hidden" id="online" @click="initial()"></button>
             </form>
@@ -90,7 +88,6 @@
         data () {
             return {
                 loaded: false,
-                ctr: 0,
                 rowCount: 0,
                 res: []
             }
@@ -119,38 +116,26 @@
                     }
                 }
             },
-            toggleStatus (data) {
-                const me = this
-                if (!data.checked) {
-                    me.ctr++
-                    data.checked = true
-                }
-            },
             submitAttendance () {
                 const me = this
-                if (me.ctr == me.res.length) {
-                    let formData = new FormData(document.getElementById('action'))
-                    me.loader(true)
-                    me.$axios.post('api/online-class-bookings/bulk-update', formData).then(res => {
-                        setTimeout( () => {
-                            if (res.data) {
-                                me.$store.state.onlineAttendanceLayoutStatus = false
-                                me.$store.state.onlineAttendancePrompt = true
-                                document.body.classList.add('no_scroll')
-                            }
-                        }, 500)
-                    }).catch(err => {
-                        me.$store.state.errorList = err.response.data.errors
-                        me.$store.state.errorStatus = true
-                    }).then(() => {
-                        setTimeout( () => {
-                            me.loader(false)
-                        }, 500)
-                    })
-                } else {
-                    me.$store.state.errorList = ['Please fill the status for each customer']
+                let formData = new FormData(document.getElementById('action'))
+                me.loader(true)
+                me.$axios.post('api/online-class-bookings/bulk-update', formData).then(res => {
+                    setTimeout( () => {
+                        if (res.data) {
+                            me.$store.state.onlineAttendanceLayoutStatus = false
+                            me.$store.state.onlineAttendancePrompt = true
+                            document.body.classList.add('no_scroll')
+                        }
+                    }, 500)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
-                }
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
             },
             initial () {
                 const me = this
@@ -160,12 +145,6 @@
                         me.res = []
                         setTimeout( () => {
                             res.data.bookings.forEach((data, index) => {
-                                if (data.status == 'signed-in' || data.status == 'no-show') {
-                                    me.ctr++
-                                    data.checked = true
-                                } else {
-                                    data.checked = false
-                                }
                                 me.res.push(data)
                             })
                             me.loaded = true

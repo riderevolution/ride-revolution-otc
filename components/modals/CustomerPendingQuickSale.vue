@@ -53,7 +53,7 @@
                                     <option value="psbank">PSBank</option>
                                     <option value="metrobank">MetroBank</option>
                                 </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ errors.first('checkout_form.bank') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ properFormat(errors.first('checkout_form.bank')) }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="terminal">Terminal <span>*</span></label>
@@ -62,24 +62,24 @@
                                     <option value="paymaya">Paymaya</option>
                                     <option value="bdo">BDO</option>
                                 </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.terminal')">{{ errors.first('checkout_form.terminal') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.terminal')">{{ properFormat(errors.first('checkout_form.terminal')) }}</span></transition>
                             </div>
                             <div class="form_group" v-if="cardType == 'others'">
                                 <label for="others">Others <span>*</span></label>
                                 <input type="text" name="others" class="default_text" key="others" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.others')">{{ errors.first('checkout_form.others') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.others')">{{ properFormat(errors.first('checkout_form.others')) }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 1">
                             <div class="form_group">
                                 <label for="bank">Bank<span>*</span></label>
                                 <input type="text" name="bank" class="default_text" key="bank" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ errors.first('checkout_form.bank') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ properFormat(errors.first('checkout_form.bank')) }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="check_number">Check Number<span>*</span></label>
                                 <input type="text" name="check_number" class="default_text" key="check_number" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.check_number')">{{ errors.first('checkout_form.check_number') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.check_number')">{{ properFormat(errors.first('checkout_form.check_number')) }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 3">
@@ -98,26 +98,26 @@
                                     <option value="Special deal">Special deal</option>
                                     <option value="Other">Other</option>
                                 </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.comp_reason')">{{ errors.first('checkout_form.comp_reason') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.comp_reason')">{{ properFormat(errors.first('checkout_form.comp_reason')) }}</span></transition>
                             </div>
                             <transition name="fade">
                                 <div class="form_group" v-if="form.comp == 'Other'">
-                                    <label for="indicate_reason">Indicate Reason</label>
+                                    <label for="indicate_reason">Indicate Reason <span>*</span></label>
                                     <input type="text" name="indicate_reason" class="default_text" v-validate="'required'" key="indicate_reason">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.indicate_reason')">{{ errors.first('checkout_form.indicate_reason') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.indicate_reason')">{{ properFormat(errors.first('checkout_form.indicate_reason')) }}</span></transition>
                                 </div>
                             </transition>
                             <div class="form_group">
-                                <label for="note">Note<span>*</span></label>
-                                <input type="text" name="note" class="default_text" key="note" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ errors.first('checkout_form.note') | properFormat }}</span></transition>
+                                <label for="note">Note</label>
+                                <input type="text" name="note" class="default_text" key="note">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ properFormat(errors.first('checkout_form.note')) }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 4">
                             <div class="form_group">
                                 <label for="cash_tendered">Cash Tendered (PHP)<span>*</span></label>
                                 <input type="text" name="cash_tendered" class="default_text" key="cash_tendered" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', min_value: form.total, max_value: 9999999}" v-model="form.change">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.cash_tendered')">{{ errors.first('checkout_form.cash_tendered') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.cash_tendered')">{{ properFormat(errors.first('checkout_form.cash_tendered')) }}</span></transition>
                             </div>
                             <div class="form_group">
                                 <label for="change">Change (PHP)</label>
@@ -128,7 +128,7 @@
                             <div class="form_group">
                                 <label for="reference_number">Reference Number <span>*</span></label>
                                 <input type="text" name="reference_number" class="default_text" v-validate="'required'" key="reference_number">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.reference_number')">{{ errors.first('checkout_form.reference_number') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.reference_number')">{{ properFormat(errors.first('checkout_form.reference_number')) }}</span></transition>
                             </div>
                         </div>
                     </div>
