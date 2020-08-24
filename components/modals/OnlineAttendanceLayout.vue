@@ -15,7 +15,7 @@
                 </div>
                 <div class="actions">
                     <div class="total">Total: {{ totalItems(res.length) }}</div>
-                    <a href="javascript:void(0)" v-if="res.length > 0" class="action_btn alternate">Print</a>
+                    <a :href="`/print/online-class/${schedule.id}`" target="_blank" v-if="res.length > 0" class="action_btn alternate">Print</a>
                     <download-csv
                         class="action_btn alternate"
                         :data="attributes"
@@ -104,12 +104,11 @@
                 const me = this
                 return [
                     ...this.values.map(value => ({
-                        'Customer ID': value.id,
+                        'Customer ID': value.user.id,
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.user.customer_details.customer_type.name,
                         'Email Address': value.user.email,
                         'Contact Number': value.user.customer_details.co_contact_number,
-                        'Schedule ID': this.schedule.id,
                         'Schedule': (this.schedule.schedule.custom_name != null) ? this.schedule.schedule.custom_name : this.schedule.schedule.class_type.name,
                         'Start Time': this.schedule.schedule.start_time,
                         'Booking ID': value.id,

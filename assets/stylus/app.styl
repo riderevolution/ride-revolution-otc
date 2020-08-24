@@ -105,6 +105,23 @@ table
 .none
     pointer-events: none
 
+@page
+    size: auto
+    margin: 0mm
+
+.print_table
+    margin: 30px auto
+    .text
+        margin: 0 30px 30px
+        h2
+            neutra_text(40px)
+            color: $black
+        h3
+            span
+                sf_pro_medium(20px)
+                color: $border_alt2
+                margin-top: 5px
+
 .error_page
     &.alternate
         height: 50vh
@@ -3688,6 +3705,16 @@ input::placeholder
     width: 100%
     border-radius: 10px
     margin-bottom: 30px
+    &.print
+        border: 2px dashed $black
+        thead
+            tr
+                th
+                    border: 2px dashed $black
+        tbody
+            tr
+                td
+                    border: 2px dashed $black
     &.alt
         thead
             tr
@@ -3727,6 +3754,8 @@ input::placeholder
         border-radius: 3px
         box-shadow: 15px 25px 40px rgba(0, 0, 0, 0.05)
         background-color: $white
+        &.no_shadow
+            box-shadow: none
         &.active
             tr
                 border-bottom: 2px dashed $border
