@@ -20,7 +20,7 @@
                         class="action_btn alternate"
                         :data="attributes"
                         :name="`online-class-attendance-${$moment().format('MM-DD-YY-hh-mm')}.csv`" v-if="res.length > 0">
-                        Export Schedule
+                        Export
                     </download-csv>
                 </div>
                 <table class="cms_table alt">
@@ -52,7 +52,7 @@
                             <td>{{ data.user.customer_details.co_contact_number }}</td>
                             <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
                             <td>
-                                <div class="form_group">
+                                <div class="form_group no_margin">
                                     <select class="default_select alternate" :name="`status[${key}]`" v-model="data.status">
                                         <option value="reserved" selected>Reserved</option>
                                         <option value="signed-in">Signed In</option>
@@ -104,21 +104,17 @@
                 const me = this
                 return [
                     ...this.values.map(value => ({
-                        'ID': value.id,
-                        'Date': this.$moment(value.date).format('MMMM DD, YYYY'),
-                        'Start Time': value.schedule.start_time,
-                        'End Time': value.schedule.end_time,
-                        'Studio': value.schedule.studio.name,
-                        'Peak Type': value.schedule.peak_type,
-                        'Class Type': value.schedule.class_type.name,
-                        'Custom Class Type Name': value.schedule.custom_name,
-                        'Class Length': value.schedule.class_length_formatted,
-                        'Class Credits': value.schedule.class_credits,
-                        'Instructor': `${value.schedule.instructor_schedules[0].user.first_name} ${value.schedule.instructor_schedules[0].user.last_name}`,
-                        'Substitute Instructor': `${(value.schedule.instructor_schedules[1]) ? `${value.schedule.instructor_schedules[1].user.first_name} ${value.schedule.instructor_schedules[1].user.last_name}` : '- -'}`,
-                        'Zoom Link': value.zoom_link,
-                        'No. of Bookings': value.bookings.length,
-                        'No. of Available Seats': value.availableSeatsCount
+                        'Customer ID': value.id,
+                        'Full Name': `${value.user.first_name} ${value.user.last_name}`,
+                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Email Address': value.user.email,
+                        'Contact Number': value.user.customer_details.co_contact_number,
+                        'Schedule ID': this.schedule.id,
+                        'Schedule': (this.schedule.schedule.custom_name != null) ? this.schedule.schedule.custom_name : this.schedule.schedule.class_type.name,
+                        'Start Time': this.schedule.schedule.start_time,
+                        'Booking ID': value.id,
+                        'Booking Status': value.status,
+                        'Class Package': value.user_package_count.class_package.name
                     }))
                 ]
             }
@@ -154,7 +150,6 @@
                 me.$axios.post('api/online-class-bookings/bulk-update', formData).then(res => {
                     setTimeout( () => {
                         if (res.data) {
-                            me.$store.state.onlineAttendanceLayoutStatus = false
                             me.$store.state.onlineAttendancePrompt = true
                             document.body.classList.add('no_scroll')
                         }
