@@ -29,7 +29,7 @@
                                 <div class="summary pending">Pending Payment: Php {{ totalCount(pendingPayment) }}</div>
                             </div>
                             <div class="user_action">
-                                <div class="action_user_btn" @click="toggleQuickSale('credit')">Buy Credits</div>
+                                <div class="action_user_btn" @click="toggleQuickSale('credit')">Buy Classes</div>
                                 <div class="action_user_btn margin" @click="toggleQuickSale('product')">Buy Products</div>
                                 <div class="action_success_btn alternate margin" @click="getCurrentCustomer()">Booker</div>
                             </div>
