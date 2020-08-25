@@ -13,8 +13,13 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                
-                                <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                                <a :href="`/print/reporting/sales/customer?customer_type_id=${form.customer_type_id}&gender=${form.gender}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                                <download-csv
+                                    class="action_btn alternate margin"
+                                    :data="customerAttributes"
+                                    :name="`sales-by-customer-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                    Export
+                                </download-csv>
                             </div>
                         </div>
                     </div>
@@ -22,14 +27,14 @@
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
                                 <label for="customer_type_id">Customer Type</label>
-                                <select class="default_select alternate" name="customer_type_id">
+                                <select class="default_select alternate" name="customer_type_id" v-model="form.customer_type_id">
                                     <option value="" selected>All Customer Type</option>
                                     <option :value="type.id" v-for="(type, index) in types">{{ type.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
                                 <label for="gender">Gender</label>
-                                <select class="default_select alternate" name="gender">
+                                <select class="default_select alternate" name="gender" v-model="form.gender">
                                     <option value="" selected>All Gender</option>
                                     <option value="M">Male</option>
                                     <option value="F">Female</option>
@@ -97,6 +102,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Sales by Customer',
                 access: true,
@@ -104,23 +110,55 @@
                 rowCount: 0,
                 status: 1,
                 res: [],
+                values: [],
                 types: [],
-                total_count: 0,
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    end_date: this.$moment().format('YYYY-MM-DD'),
+                    gender: '',
+                    customer_type_id: ''
                 }
             }
         },
+        computed: {
+            customerAttributes () {
+                const me = this
+                return [
+                    ...me.values.map(value => ({
+                        'Full Name': `${value.first_name} ${value.last_name}`,
+                        'Customer Type': me.getCustomerType(),
+                        'Class Package Total': `Php ${value.total_class_package}`,
+                        'Merchandise Total': `Php ${value.total_merchandise}`,
+                        'Email': value.email,
+                        'Contact Number': value.customer_details.co_contact_number,
+                        'City': (value.customer_details.pa_city) ? value.customer_details.pa_city : 'N/A'
+                    }))
+                ]
+            }
+        },
         methods: {
+            getCustomerType () {
+                const me = this
+                let result = ''
+                if (me.form.customer_type_id != '') {
+                    me.types.forEach((type, index) => {
+                        if (type.id == me.form.customer_type_id) {
+                            result = type.name
+                        }
+                    })
+                } else {
+                    result = 'All Customer Type'
+                }
+                return result
+            },
             submitFilter () {
                 const me = this
+                me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.total_count = res.data.grand_total
                             me.res = res.data.result
                         }, 500)
                     }
@@ -143,14 +181,18 @@
                 me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.loaded = true
-                            me.total_count = res.data.grand_total
                             me.res = res.data.result
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.push(item)
+                            })
+
                             me.$axios.get('api/extras/customer-types').then(res => {
                                 if (res.data) {
                                     me.types = res.data.customerTypes
                                 }
                             })
+                            me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {

@@ -19,7 +19,7 @@
                     <th class="sticky">Total Income</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody v-if="res.length > 0">
                 <tr>
                     <td><b>{{ total.name }}</b></td>
                     <td><b>{{ total.sold }}</b></td>
@@ -45,6 +45,11 @@
                     <td :class="`${(data.total_profit) ? (data.total_profit <= 0 ? 'red' : 'green') : ''}`">Php {{ (data.total_profit) ? totalCount(data.total_profit) : 0 }}</td>
                     <td>Php {{ (data.total_cost) ? totalCount(data.total_cost) : 0 }}</td>
                     <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
+                </tr>
+            </tbody>
+            <tbody class="no_results" v-else>
+                <tr>
+                    <td :colspan="rowCount">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>
