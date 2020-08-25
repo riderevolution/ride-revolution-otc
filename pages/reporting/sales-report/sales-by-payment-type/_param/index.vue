@@ -120,9 +120,6 @@
         methods: {
             fetchData (value) {
                 const me = this
-                if (me.$route.query.studio_id) {
-                    me.form.studio_id = me.$route.query.studio_id
-                }
                 me.form.start_date = me.$route.query.start_date
                 me.form.end_date = me.$route.query.end_date
                 me.form.payment_method = me.$route.params.param

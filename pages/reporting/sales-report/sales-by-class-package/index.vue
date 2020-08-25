@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Income from class package sold.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package?status=${status}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
                                 class="action_btn alternate margin"
                                 :data="classPackageAttributes"
@@ -24,6 +24,13 @@
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
+                                    <option value="" selected>All Studios</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
@@ -104,12 +111,14 @@
                 loaded: false,
                 rowCount: 0,
                 status: 'all',
+                studios: [],
                 res: [],
                 values: [],
                 total: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    end_date: this.$moment().format('YYYY-MM-DD'),
+                    studio_id: ''
                 }
             }
         },
@@ -118,6 +127,7 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
+                        'Studio': this.getStudio(),
                         'Class Package': value.name,
                         'Class Package Status': me.status,
                         'Sold': (value.sold) ? value.sold : 0,
@@ -132,17 +142,33 @@
             }
         },
         methods: {
+            getStudio () {
+                const me = this
+                let result = ''
+                if (me.form.studio_id != '') {
+                    me.studios.forEach((studio, index) => {
+                        if (studio.id == me.form.studio_id) {
+                            result = studio.name
+                        }
+                    })
+                } else {
+                    result = 'All Studios'
+                }
+                return result
+            },
             toggleInnerReport (type, path, id) {
                 const me = this
-                me.$router.push(`${path}?status=${me.status}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${path}?status=${me.status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
+                me.values = []
                 me.status = value
                 me.fetchData(value)
             },
             submitFilter () {
                 const me = this
+                me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('status', me.status)
@@ -151,6 +177,12 @@
                         setTimeout( () => {
                             me.res = res.data.result
                             me.total = res.data.total
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.unshift(item)
+                            })
+                            me.values.push(res.data.total)
+
                         }, 500)
                     }
                 }).catch(err => {
@@ -166,6 +198,7 @@
             fetchData (value) {
                 const me = this
                 me.loader(true)
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
@@ -180,6 +213,16 @@
                                 me.values.unshift(item)
                             })
                             me.values.push(res.data.total)
+
+                            me.$axios.get('api/studios', {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
+                                if (res.data) {
+                                    me.studios = res.data.studios
+                                }
+                            })
 
                             me.loaded = true
                         }, 500)

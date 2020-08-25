@@ -7,13 +7,13 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ package.name }} ({{ status }})</h1>
+                                <h1>{{ package.name }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ status }})</h1>
                                 <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ package.name }}.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?status=${status}&slug=class-package&id=${$route.query.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?status=${status}&slug=class-package&id=${$route.query.id}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
                                 class="action_btn alternate margin"
                                 :data="classPackageParamAttributes"
@@ -88,6 +88,7 @@
                 loaded: false,
                 rowCount: 0,
                 status: 'all',
+                studio: [],
                 res: [],
                 values: [],
                 package: [],
@@ -96,6 +97,7 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     slug: '',
+                    studio_id: '',
                     id: 0
                 }
             }
@@ -105,6 +107,7 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
+                        'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
                         'Date of Purchase': (value.name) ? value.name : me.$moment(value.created_at).format('MMMM DD, YYYY'),
                         'Full Name': (value.payment) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
                         'Qty': (value.qty) ? value.qty : value.quantity,
@@ -131,6 +134,11 @@
                 formData.append('status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
+                if (me.$route.query.studio_id.length > 0) {
+                    me.form.studio_id = me.$route.query.studio_id
+                    formData.append('studio_id', me.form.studio_id)
+                }
+
                 me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -142,6 +150,12 @@
                                 me.values.unshift(item)
                             })
                             me.values.push(res.data.total)
+
+                            if (me.form.studio_id != '') {
+                                me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                                    me.studio = res.data.studio
+                                })
+                            }
 
                             me.loaded = true
                         }, 500)
