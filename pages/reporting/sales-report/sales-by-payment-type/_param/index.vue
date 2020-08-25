@@ -47,7 +47,14 @@
                                 </td>
                                 <td :class="`${(data.status == 'paid') ? 'green' : 'red'}`">{{ (data.status == 'paid') ? 'Paid' : 'Pending' }}</td>
                                 <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
-                                <td>N/A</td>
+                                <td>
+                                    <div v-if="data.employee != null">
+                                        {{ `${data.employee.first_name} ${data.employee.last_name}` }}
+                                    </div>
+                                    <div v-else>
+                                        N/A
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -95,14 +102,15 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Date of Purchase': (value.name) ? value.name : me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'Full Name': (value.payment) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
-                        'Qty': (value.qty) ? value.qty : value.quantity,
-                        'Payment': (value.payment) ? value.payment.payment_method.method : '-',
-                        'Comp Reason': (value.payment) ? (value.payment.payment_method.method == 'comp' ? value.payment.payment_method.comp_reason : 'N/A') : '-',
-                        'Comp Value': (value.total_comp) ? value.total_comp : 0,
-                        'Discount': (value.total_discount) ? value.total_discount : 0,
-                        'Total Income': (value.total_income) ? value.total_income : 0
+                        'Payment Type': me.$route.params.param,
+                        'Payment status': me.status,
+                        'Date': me.$moment(value.updated_at).format('MMMM DD, YYYY'),
+                        'Time': me.$moment(value.updated_at).format('h:mm A'),
+                        'Order ID': value.payment_code,
+                        'Customer': `${value.user.first_name} ${value.user.last_name}`,
+                        'Status': (value.status == 'paid') ? 'Paid' : 'Pending',
+                        'Total': value.total,
+                        'Employee': (value.employee != null) ? `${value.employee.first_name} ${value.employee.last_name}` : 'N/A'
                     }))
                 ]
             }
@@ -134,7 +142,6 @@
                             res.data.result.forEach((item, i) => {
                                 me.values.unshift(item)
                             })
-                            me.values.push(res.data.total)
 
                             me.loaded = true
                         }, 500)

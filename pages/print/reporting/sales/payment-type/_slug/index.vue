@@ -1,7 +1,7 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>{{ replacer($route.params.param) }} ({{ $route.query.status }})</h2>
+            <h2>{{ replacer($route.params.slug) }} ({{ $route.query.status }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <table class="cms_table print">
@@ -22,17 +22,24 @@
                     <td>{{ $moment(data.updated_at).format('h:mm A') }}</td>
                     <td>{{ data.payment_code }}</td>
                     <td>
-                        <div v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</div>
+                        <div class="table_data_link" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</div>
                         <div v-else>N/A</div>
                     </td>
                     <td :class="`${(data.status == 'paid') ? 'green' : 'red'}`">{{ (data.status == 'paid') ? 'Paid' : 'Pending' }}</td>
                     <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
-                    <td>N/A</td>
+                    <td>
+                        <div v-if="data.employee != null">
+                            {{ `${data.employee.first_name} ${data.employee.last_name}` }}
+                        </div>
+                        <div v-else>
+                            N/A
+                        </div>
+                    </td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
                 <tr>
-                    <td :colspan="rowCount">No Result(s) Found.</td>
+                    <td colspan="7">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>

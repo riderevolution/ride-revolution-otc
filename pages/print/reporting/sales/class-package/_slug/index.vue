@@ -31,7 +31,7 @@
                 <tr v-for="(data, key) in res" :key="key" v-if="res.length > 0">
                     <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                     <td>
-                        <div v-if="data.payment.user != null">{{ `${data.payment.user.first_name} ${data.payment.user.last_name}` }}</div>
+                        <div class="table_data_link" v-if="data.payment.user != null">{{ `${data.payment.user.first_name} ${data.payment.user.last_name}` }}</div>
                         <div v-else>N/A</div>
                     </td>
                     <td>{{ data.quantity }}</td>
