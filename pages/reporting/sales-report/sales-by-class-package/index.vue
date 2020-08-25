@@ -12,8 +12,13 @@
                             <h2 class="header_subtitle">Income from class package sold.</h2>
                         </div>
                         <div class="actions">
-                            
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/sales/class-package?status=${status}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                class="action_btn alternate margin"
+                                :data="classPackageAttributes"
+                                :name="`sales-by-class-package-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -21,12 +26,12 @@
                             <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -92,6 +97,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Sales by Class Package',
                 access: true,
@@ -99,11 +105,30 @@
                 rowCount: 0,
                 status: 'all',
                 res: [],
+                values: [],
                 total: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
+            }
+        },
+        computed: {
+            classPackageAttributes () {
+                const me = this
+                return [
+                    ...me.values.map(value => ({
+                        'Class Package': value.name,
+                        'Class Package Status': me.status,
+                        'Sold': (value.sold) ? value.sold : 0,
+                        'Returned': (value.returned) ? value.returned : 0,
+                        'Comp': (value.comp) ? value.comp : 0,
+                        'Comp Value': (value.total_comp) ? value.total_comp : 0,
+                        'Discount': (value.total_discount) ? value.total_discount : 0,
+                        'Taxes': (value.total_tax) ? value.total_tax : 0,
+                        'Total Income': (value.total_income) ? value.total_income : 0
+                    }))
+                ]
             }
         },
         methods: {
@@ -146,12 +171,13 @@
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
                 formData.append('status', value)
-                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.result
                             me.total = res.data.total
+                            me.values = me.res
+                            me.values.push(me.total)
                             me.loaded = true
                         }, 500)
                     }

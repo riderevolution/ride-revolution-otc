@@ -174,9 +174,9 @@
             paymentTypeAttributes () {
                 const me = this
                 return [
-                    ...this.values.map(value => ({
+                    ...me.values.map(value => ({
                         'Payment': value.name,
-                        'Payment Status': this.status,
+                        'Payment Status': me.status,
                         'Transaction Count': value.transaction_count,
                         'Gross Receipts': value.gross_receipts,
                         'Gross Refunds': value.gross_refunds,
@@ -188,9 +188,9 @@
                 ]
             },
             registerSalesSummaryAttributes () {
-                const me = this
+                const me = me
                 return [
-                    ...this.summary_values.map(value => ({
+                    ...me.summary_values.map(value => ({
                         'Branch': value.name,
                         'Subtotal': (value.subtotal) ? value.subtotal : 0,
                         'Tax': (value.total_tax) ? value.total_tax : 0,

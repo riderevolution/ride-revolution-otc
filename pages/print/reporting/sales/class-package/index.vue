@@ -1,34 +1,40 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>Register Sales Summary ({{ $route.query.status }})</h2>
+            <h2>Sales by Class Package ({{ $route.query.status }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th>Branch</th>
-                    <th>Subtotal</th>
-                    <th>Tax</th>
-                    <th>Refund Subtotal</th>
-                    <th>Refund Tax</th>
-                    <th>Total</th>
+                    <th>Class Package</th>
+                    <th>Sold</th>
+                    <th>Returned</th>
+                    <th>Comp</th>
+                    <th>Comp Value</th>
+                    <th>Discount</th>
+                    <th>Taxes</th>
+                    <th>Total Income</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><b>{{ studio_total.name }}</b></td>
-                    <td><b>Php {{ totalCount(studio_total.subtotal) }}</b></td>
-                    <td><b>Php {{ totalCount(studio_total.total_tax) }}</b></td>
-                    <td><b>Php {{ totalCount(studio_total.subtotal_refund) }}</b></td>
-                    <td><b>Php {{ totalCount(studio_total.total_tax) }}</b></td>
-                    <td><b>Php {{ totalCount(studio_total.total_income) }}</b></td>
+                    <td><b>{{ total.name }}</b></td>
+                    <td><b>{{ total.sold }}</b></td>
+                    <td><b>{{ total.returned }}</b></td>
+                    <td><b>{{ total.comp }}</b></td>
+                    <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
+                    <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
+                    <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
+                    <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                 </tr>
-                <tr v-for="(data, key) in studio_res" :key="key">
+                <tr v-for="(data, key) in res" :key="key">
                     <td>{{ data.name }}</td>
-                    <td>Php {{ (data.subtotal) ? totalCount(data.subtotal) : 0 }}</td>
-                    <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
-                    <td>Php {{ (data.subtotal_refund) ? totalCount(data.subtotal_refund) : 0 }}</td>
+                    <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                    <td>{{ (data.returned) ? data.returned : 0 }}</td>
+                    <td>{{ (data.comp) ? data.comp : 0 }}</td>
+                    <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
+                    <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
                     <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
                     <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
                 </tr>
@@ -43,25 +49,23 @@
         data () {
             return {
                 loaded: false,
-                studio_res: [],
-                studio_total: []
+                res: [],
+                total: []
             }
         },
         methods: {
             initial () {
                 const me = this
                 let formData = new FormData()
+
                 formData.append('start_date', me.$route.query.start_date)
                 formData.append('end_date',  me.$route.query.end_date)
                 formData.append('status', me.$route.query.status)
-                if (me.$route.query.studio_id.length > 0) {
-                    formData.append('studio_id', me.$route.query.studio_id)
-                }
-                me.$axios.post('api/reporting/sales/sales-by-payment-type', formData).then(res => {
+                me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.studio_res = res.data.studio_sales_summary
-                            me.studio_total = res.data.studio_grand_total
+                            me.res = res.data.result
+                            me.total = res.data.total
                             me.loaded = true
                         }, 500)
                     }
