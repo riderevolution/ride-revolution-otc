@@ -129,7 +129,8 @@
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 formData.append('payment_method', me.form.payment_method)
-                if (me.form.studio_id != '') {
+                if (me.$route.query.studio_id.length > 0) {
+                    me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.form.studio_id)
                 }
                 me.$axios.post(`api/reporting/sales/sales-by-payment-type/${me.$route.params.param}`, formData).then(res => {
