@@ -188,7 +188,7 @@
                 ]
             },
             registerSalesSummaryAttributes () {
-                const me = me
+                const me = this
                 return [
                     ...me.summary_values.map(value => ({
                         'Branch': value.name,
@@ -254,13 +254,22 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.result
-                            me.values = res.data.result
                             me.payment_total = res.data.payment_grand_total
                             me.values.push(res.data.payment_grand_total)
 
+                            res.data.result.forEach((item, i) => {
+                                me.values.unshift(item)
+                            })
+                            me.values.push(res.data.payment_grand_total)
+
                             me.studio_res = res.data.studio_sales_summary
-                            me.summary_values = res.data.studio_sales_summary
                             me.studio_total = res.data.studio_grand_total
+
+                            console.log(res.data);
+
+                            res.data.studio_sales_summary.forEach((item, i) => {
+                                me.summary_values.unshift(item)
+                            })
                             me.summary_values.push(res.data.studio_grand_total)
 
                             let token = me.$cookies.get('70hokcotc3hhhn5')

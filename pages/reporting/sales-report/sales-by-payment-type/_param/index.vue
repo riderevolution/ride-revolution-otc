@@ -13,7 +13,7 @@
                             <h2 class="header_subtitle">{{ totalItems(total) }} Transaction(s)</h2>
                         </div>
                         <div class="actions">
-                            
+
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
@@ -107,7 +107,6 @@
                             me.res = res.data.result
                             me.total = res.data.total
                             me.loaded = true
-                            console.log(res.data);
                         }, 500)
                     }
                 }).catch(err => {
