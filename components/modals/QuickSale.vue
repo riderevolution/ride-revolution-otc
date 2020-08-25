@@ -540,6 +540,7 @@
                 let customGiftCard = new FormData(document.getElementById('custom_gift_form'))
                 let productForm = new FormData(document.getElementById('product_form'))
                 let checkout = new FormData(document.getElementById('step2'))
+                let token = me.$cookies.get('70hokcotc3hhhn5')
 
                 me.totalPrice.forEach((data, index) => {
                     if (data.discounted_price) {
@@ -562,7 +563,11 @@
                     me.$validator.validateAll('checkout_form').then(valid => {
                         if (valid) {
                             me.loader(true)
-                            me.$axios.post('api/quick-sale', formData).then(res => {
+                            me.$axios.post('api/quick-sale', formData, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 setTimeout( () => {
                                     if (res.data) {
                                         me.$store.state.successfulStatus = true

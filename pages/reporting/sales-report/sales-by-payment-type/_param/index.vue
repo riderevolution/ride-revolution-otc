@@ -13,8 +13,13 @@
                             <h2 class="header_subtitle">{{ totalItems(total) }} Transaction(s)</h2>
                         </div>
                         <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/sales/payment-type/${$route.params.param}?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                class="action_btn alternate margin"
+                                :data="paymentTypeParamAttributes"
+                                :name="`sales-by-payment-type-${$route.params.slug}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                 </section>
@@ -67,6 +72,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Sales by Payment Type',
                 access: true,
@@ -74,6 +80,7 @@
                 rowCount: 0,
                 status: 'all',
                 res: [],
+                values: [],
                 total: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
@@ -81,6 +88,23 @@
                     studio_id: '',
                     payment_method: ''
                 }
+            }
+        },
+        computed: {
+            paymentTypeParamAttributes () {
+                const me = this
+                return [
+                    ...me.values.map(value => ({
+                        'Date of Purchase': (value.name) ? value.name : me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Full Name': (value.payment) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
+                        'Qty': (value.qty) ? value.qty : value.quantity,
+                        'Payment': (value.payment) ? value.payment.payment_method.method : '-',
+                        'Comp Reason': (value.payment) ? (value.payment.payment_method.method == 'comp' ? value.payment.payment_method.comp_reason : 'N/A') : '-',
+                        'Comp Value': (value.total_comp) ? value.total_comp : 0,
+                        'Discount': (value.total_discount) ? value.total_discount : 0,
+                        'Total Income': (value.total_income) ? value.total_income : 0
+                    }))
+                ]
             }
         },
         methods: {
@@ -106,6 +130,12 @@
                         setTimeout( () => {
                             me.res = res.data.result
                             me.total = res.data.total
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.unshift(item)
+                            })
+                            me.values.push(res.data.total)
+
                             me.loaded = true
                         }, 500)
                     }
