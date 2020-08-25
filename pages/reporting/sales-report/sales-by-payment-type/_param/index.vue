@@ -140,7 +140,7 @@
                             me.total = res.data.total
 
                             res.data.result.forEach((item, i) => {
-                                me.values.unshift(item)
+                                me.values.push(item)
                             })
 
                             if (me.form.studio_id != '') {

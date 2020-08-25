@@ -113,9 +113,9 @@
                         'Qty': (value.qty) ? value.qty : value.quantity,
                         'Payment': (value.payment) ? value.payment.payment_method.method : '-',
                         'Comp Reason': (value.payment) ? (value.payment.payment_method.method == 'comp' ? value.payment.payment_method.comp_reason : 'N/A') : '-',
-                        'Comp Value': (value.total_comp) ? value.total_comp : 0,
-                        'Discount': (value.total_discount) ? value.total_discount : 0,
-                        'Total Income': (value.total_income) ? value.total_income : 0
+                        'Comp Value': `Php ${(value.total_comp) ? value.total_comp : 0}`,
+                        'Discount': `Php ${(value.total_discount) ? value.total_discount : 0}`,
+                        'Total Income': `Php ${(value.total_income) ? value.total_income : 0}`
                     }))
                 ]
             }
@@ -147,7 +147,7 @@
                             me.package = res.data.package
 
                             res.data.result.forEach((item, i) => {
-                                me.values.unshift(item)
+                                me.values.push(item)
                             })
                             me.values.push(res.data.total)
 

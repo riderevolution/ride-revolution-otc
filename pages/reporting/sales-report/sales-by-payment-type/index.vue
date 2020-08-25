@@ -79,12 +79,12 @@
                                     <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${data.unique}`" @click.native="toggleInnerReport(`${$route.path}/${data.unique}`)">{{ data.name }}</nuxt-link>
                                 </td>
                                 <td>{{ data.transaction_count }}</td>
-                                <td>Php {{ totalCount(data.gross_receipts) }}</td>
-                                <td>Php {{ totalCount(data.gross_refunds) }}</td>
-                                <td>Php {{ totalCount(data.sales_tax) }}</td>
-                                <td>Php {{ totalCount(data.sales_tax) }}</td>
-                                <td>Php {{ totalCount(data.net_receipts) }}</td>
-                                <td>Php {{ totalCount(data.net_refunds) }}</td>
+                                <td>Php {{ (data.gross_receipts) ? totalCount(data.gross_receipts) : 0 }}</td>
+                                <td>Php {{ (data.gross_refunds) ? totalCount(data.gross_refunds) : 0 }}</td>
+                                <td>Php {{ (data.sales_tax) ? totalCount(data.sales_tax) : 0 }}</td>
+                                <td>Php {{ (data.sales_tax) ? totalCount(data.sales_tax) : 0 }}</td>
+                                <td>Php {{ (data.net_receipts) ? totalCount(data.net_receipts) : 0 }}</td>
+                                <td>Php {{ (data.net_refunds) ? totalCount(data.net_refunds) : 0 }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -180,12 +180,12 @@
                         'Payment': value.name,
                         'Payment Status': me.status,
                         'Transaction Count': value.transaction_count,
-                        'Gross Receipts': value.gross_receipts,
-                        'Gross Refunds': value.gross_refunds,
-                        'Sales Tax': value.sales_tax,
-                        'Refund Tax': value.sales_tax,
-                        'Net of Receipts': value.net_receipts,
-                        'Net of Refunds': value.net_refunds
+                        'Gross Receipts': `Php ${(value.gross_receipts) ? value.gross_receipts : 0}`,
+                        'Gross Refunds': `Php ${(value.gross_refunds) ? value.gross_refunds : 0}`,
+                        'Sales Tax': `Php ${(value.sales_tax) ? value.sales_tax : 0}`,
+                        'Refund Tax': `Php ${(value.sales_tax) ? value.sales_tax : 0}`,
+                        'Net of Receipts': `Php ${(value.net_receipts) ? value.net_receipts : 0}`,
+                        'Net of Refunds': `Php ${(value.net_refunds) ? value.net_refunds : 0}`
                     }))
                 ]
             },
@@ -194,11 +194,11 @@
                 return [
                     ...me.summary_values.map(value => ({
                         'Branch': value.name,
-                        'Subtotal': (value.subtotal) ? value.subtotal : 0,
-                        'Tax': (value.total_tax) ? value.total_tax : 0,
-                        'Refund Subtotal': (value.subtotal_refund) ? value.subtotal_refund : 0,
-                        'Refund Tax': (value.total_tax) ? value.total_tax : 0,
-                        'Total': (value.total_income) ? value.total_income : 0
+                        'Subtotal': `Php ${(value.subtotal) ? value.subtotal : 0}`,
+                        'Tax': `Php ${(value.total_tax) ? value.total_tax : 0}`,
+                        'Refund Subtotal': `Php ${(value.subtotal_refund) ? value.subtotal_refund : 0}`,
+                        'Refund Tax': `Php ${(value.total_tax) ? value.total_tax : 0}`,
+                        'Total': `Php ${(value.total_income) ? value.total_income : 0}`
                     }))
                 ]
             }
@@ -288,7 +288,7 @@
                             me.payment_total = res.data.payment_grand_total
 
                             res.data.result.forEach((item, i) => {
-                                me.values.unshift(item)
+                                me.values.push(item)
                             })
                             me.values.push(res.data.payment_grand_total)
 
@@ -296,7 +296,7 @@
                             me.studio_total = res.data.studio_grand_total
 
                             res.data.studio_sales_summary.forEach((item, i) => {
-                                me.summary_values.unshift(item)
+                                me.summary_values.push(item)
                             })
                             me.summary_values.push(res.data.studio_grand_total)
 

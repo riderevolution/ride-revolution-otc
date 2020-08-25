@@ -133,10 +133,10 @@
                         'Sold': (value.sold) ? value.sold : 0,
                         'Returned': (value.returned) ? value.returned : 0,
                         'Comp': (value.comp) ? value.comp : 0,
-                        'Comp Value': (value.total_comp) ? value.total_comp : 0,
-                        'Discount': (value.total_discount) ? value.total_discount : 0,
-                        'Taxes': (value.total_tax) ? value.total_tax : 0,
-                        'Total Income': (value.total_income) ? value.total_income : 0
+                        'Comp Value': `Php ${(value.total_comp) ? value.total_comp : 0}`,
+                        'Discount': `Php ${(value.total_discount) ? value.total_discount : 0}`,
+                        'Taxes': `Php ${(value.total_tax) ? value.total_tax : 0}`,
+                        'Total Income': `Php ${(value.total_income) ? value.total_income : 0}`
                     }))
                 ]
             }
@@ -210,7 +210,7 @@
                             me.total = res.data.total
 
                             res.data.result.forEach((item, i) => {
-                                me.values.unshift(item)
+                                me.values.push(item)
                             })
                             me.values.push(res.data.total)
 

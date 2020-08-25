@@ -227,7 +227,7 @@
                             me.total = res.data.total
 
                             res.data.result.forEach((item, i) => {
-                                me.values.unshift(item)
+                                me.values.push(item)
                             })
                             me.values.push(res.data.total)
 

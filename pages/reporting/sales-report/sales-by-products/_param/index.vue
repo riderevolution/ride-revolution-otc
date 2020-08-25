@@ -7,14 +7,19 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ category.name }} ({{ status }})</h1>
+                                <h1>{{ category.name }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ status }})</h1>
                                 <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ category.name }}.</h2>
                         </div>
                         <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/sales/products/${$route.params.param}?status=${status}&studio_id=${form.studio_id}&slug=${form.slug}&id=${form.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                class="action_btn alternate margin"
+                                :data="productsParamAttributes"
+                                :name="`sales-by-products-${$route.params.slug}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                 </section>
@@ -88,6 +93,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Sales by Products',
                 access: true,
@@ -95,6 +101,8 @@
                 rowCount: 0,
                 status: 'all',
                 res: [],
+                values: [],
+                studio: [],
                 total: [],
                 category: [],
                 form: {
@@ -106,6 +114,26 @@
                 }
             }
         },
+        computed: {
+            productsParamAttributes () {
+                const me = this
+                return [
+                    ...me.values.map(value => ({
+                        'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
+                        'Payment status': me.status,
+                        'Product Name': (value.name) ? value.name : (me.form.slug == 'product-variant' ? value.variant : value.code),
+                        'Item Price': (me.form.slug == 'product-variant') ? value.sale_price : value.class_package.price,
+                        'Sold': (value.sold) ? value.sold : 0,
+                        'Comp Value': `Php ${(value.total_comp) ? value.total_comp : 0}`,
+                        'Discount': `Php ${(value.total_discount) ? value.total_discount : 0}`,
+                        'Taxes': `Php ${(value.total_tax) ? value.total_tax : 0}`,
+                        'Profit': `Php ${(value.total_profit) ? value.total_profit : 0}`,
+                        'Cost': `Php ${(value.total_cost) ? value.total_cost : 0}`,
+                        'Total Income': `Php ${(value.total_income) ? value.total_income : 0}`,
+                    }))
+                ]
+            }
+        },
         methods: {
             toggleInnerReport (type, path, id) {
                 const me = this
@@ -113,10 +141,6 @@
             },
             fetchData (value) {
                 const me = this
-                if (me.$route.query.studio_id) {
-                    me.form.studio_id = me.$route.query.studio_id
-                }
-
                 me.form.start_date = me.$route.query.start_date
                 me.form.end_date = me.$route.query.end_date
                 me.form.slug = me.$route.query.slug
@@ -128,7 +152,8 @@
                 formData.append('status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                if (me.form.studio_id != '') {
+                if (me.$route.query.studio_id.length > 0) {
+                    me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.form.studio_id)
                 }
                 me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}`, formData).then(res => {
@@ -137,6 +162,19 @@
                             me.res = res.data.result
                             me.total = res.data.total
                             me.category = res.data.category
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.push(item)
+                            })
+
+                            me.values.push(res.data.total)
+
+                            if (me.form.studio_id != '') {
+                                me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                                    me.studio = res.data.studio
+                                })
+                            }
+
                             me.loaded = true
                         }, 500)
                     }
