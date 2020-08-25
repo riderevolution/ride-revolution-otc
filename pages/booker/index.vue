@@ -122,7 +122,7 @@
                                                     {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.reserved}` }}
                                                 </div>
                                             </div>
-                                            <div class="class_text" v-html="(data.schedule.description != null) ? data.schedule.description : data.schedule.class_type.description"></div>
+                                            <div class="class_text">{{ data.schedule.instructor_schedules[0].user.first_name }} {{ data.schedule.instructor_schedules[0].user.last_name }}</div>
                                             <div class="class_text alternate">
                                                 <span>Signed-in: {{ data.signedIn }}</span>
                                                 <span>Available: {{ (data.schedule.studio.online_class) ? 'Unlimited' : data.availableSeatsCount }}</span>
@@ -619,35 +619,40 @@
             },
             getBookings (data, sunique, unique) {
                 const me = this
-                if (me.studioID) {
-                    let element = document.getElementById(`class_${sunique}_${unique}`)
-                    let parents = document.querySelectorAll('.booker_classes .content_wrapper .class_accordion')
-                    parents.forEach((parent, pindex) => {
-                        let children = parent.querySelectorAll('.accordion_content .class_content')
-                        children.forEach((child, cindex) => {
-                            child.classList.remove('active')
-                        })
-                    })
-                    if (element) {
-                        if (element.classList.contains('active')) {
-                            element.classList.remove('active')
-                        } else {
-                            element.classList.add('active')
-                        }
-                    }
-                    setTimeout(() => {
-                        me.$refs.plan.fetchSeats(data.id, me.studioID)
-                        document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
-                    }, 10)
+                if (me.studio.online_class) {
+                    me.$store.state.onlineAttendanceLayoutStatus = true
                 } else {
-                    me.selectStudio = false
-                    me.$store.state.promptStatus = true
-                    me.message = 'Please select a studio first.'
-                    document.body.classList.add('no_scroll')
-                    me.$scrollTo('.validation_errors', {
-                        offset: -250
-                    })
+                    if (me.studioID) {
+                        let element = document.getElementById(`class_${sunique}_${unique}`)
+                        let parents = document.querySelectorAll('.booker_classes .content_wrapper .class_accordion')
+                        parents.forEach((parent, pindex) => {
+                            let children = parent.querySelectorAll('.accordion_content .class_content')
+                            children.forEach((child, cindex) => {
+                                child.classList.remove('active')
+                            })
+                        })
+                        if (element) {
+                            if (element.classList.contains('active')) {
+                                element.classList.remove('active')
+                            } else {
+                                element.classList.add('active')
+                            }
+                        }
+                        setTimeout(() => {
+                            me.$refs.plan.fetchSeats(data.id, me.studioID)
+                            document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
+                        }, 10)
+                    } else {
+                        me.selectStudio = false
+                        me.$store.state.promptStatus = true
+                        me.message = 'Please select a studio first.'
+                        document.body.classList.add('no_scroll')
+                        me.$scrollTo('.validation_errors', {
+                            offset: -250
+                        })
+                    }
                 }
+
                 me.selectCustomer = true
                 me.schedule = data
                 if (me.selectStudio) {
