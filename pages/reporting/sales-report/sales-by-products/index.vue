@@ -13,14 +13,26 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                
-                                <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                                <a :href="`/print/reporting/sales/products?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                                <download-csv
+                                    class="action_btn alternate margin"
+                                    :data="productsAttributes"
+                                    :name="`sales-by-products-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                    Export
+                                </download-csv>
                             </div>
                         </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
+                                    <option value="" selected>All Studios</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
@@ -107,19 +119,21 @@
                 loaded: false,
                 rowCount: 0,
                 status: 'all',
+                studios: [],
                 res: [],
                 total: [],
                 total_count: 0,
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    end_date: this.$moment().format('YYYY-MM-DD'),
+                    studio_id: ''
                 }
             }
         },
         methods: {
             toggleInnerReport (type, path, id) {
                 const me = this
-                me.$router.push(`${path}?status=${me.status}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${path}?status=${me.status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
@@ -131,7 +145,6 @@
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('status', me.status)
-                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -152,18 +165,31 @@
             },
             fetchData (value) {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.loader(true)
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
                 formData.append('status', value)
-                formData.append('studio_id', me.$cookies.get('CSID'))
+                if (me.form.studio_id != '') {
+                    formData.append('studio_id', me.form.studio_id)
+                }
                 me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.total_count = res.data.total_count
                             me.res = res.data.result
                             me.total = res.data.total
+
+                            me.$axios.get('api/studios', {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
+                                if (res.data) {
+                                    me.studios = res.data.studios
+                                }
+                            })
                             me.loaded = true
                         }, 500)
                     }

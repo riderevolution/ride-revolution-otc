@@ -7,7 +7,7 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ replacer($route.params.param) }} ({{ status }})</h1>
+                                <h1>{{ replacer($route.params.param) }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ status }})</h1>
                                 <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">{{ totalItems(total) }} Transaction(s)</h2>
@@ -89,6 +89,7 @@
                 res: [],
                 values: [],
                 total: [],
+                studio: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
@@ -102,6 +103,7 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
+                        'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
                         'Payment Type': me.$route.params.param,
                         'Payment status': me.status,
                         'Date': me.$moment(value.updated_at).format('MMMM DD, YYYY'),
@@ -142,6 +144,12 @@
                             res.data.result.forEach((item, i) => {
                                 me.values.unshift(item)
                             })
+
+                            if (me.form.studio_id != '') {
+                                me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                                    me.studio = res.data.studio
+                                })
+                            }
 
                             me.loaded = true
                         }, 500)

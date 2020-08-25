@@ -150,6 +150,7 @@
         },
         data () {
             const values = []
+            const summary_values = []
             return {
                 name: 'Sales by Payment Type',
                 access: true,
@@ -175,6 +176,7 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
+                        'Studio': this.getStudio(),
                         'Payment': value.name,
                         'Payment Status': me.status,
                         'Transaction Count': value.transaction_count,
@@ -202,6 +204,20 @@
             }
         },
         methods: {
+            getStudio () {
+                const me = this
+                let result = ''
+                if (me.form.studio_id != '') {
+                    me.studios.forEach((studio, index) => {
+                        if (studio.id == me.form.studio_id) {
+                            result = studio.name
+                        }
+                    })
+                } else {
+                    result = 'All Studios'
+                }
+                return result
+            },
             toggleInnerReport (path) {
                 const me = this
                 if (me.form.studio_id != '') {
@@ -212,11 +228,15 @@
             },
             toggleTab (value) {
                 const me = this
+                me.values = []
+                me.summary_values = []
                 me.status = value
                 me.fetchData(value)
             },
             submitFilter () {
                 const me = this
+                me.values = []
+                me.summary_values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('status', me.status)
@@ -227,7 +247,17 @@
                             me.payment_total = res.data.payment_grand_total
                             me.studio_res = res.data.studio_sales_summary
                             me.studio_total = res.data.studio_grand_total
-                            console.log(res.data);
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.unshift(item)
+                            })
+                            me.values.push(res.data.payment_grand_total)
+
+                            res.data.studio_sales_summary.forEach((item, i) => {
+                                me.summary_values.unshift(item)
+                            })
+                            me.summary_values.push(res.data.studio_grand_total)
+
                         }, 500)
                     }
                 }).catch(err => {
@@ -243,6 +273,7 @@
             fetchData (value) {
                 const me = this
                 me.loader(true)
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
@@ -255,7 +286,6 @@
                         setTimeout( () => {
                             me.res = res.data.result
                             me.payment_total = res.data.payment_grand_total
-                            me.values.push(res.data.payment_grand_total)
 
                             res.data.result.forEach((item, i) => {
                                 me.values.unshift(item)
@@ -265,14 +295,10 @@
                             me.studio_res = res.data.studio_sales_summary
                             me.studio_total = res.data.studio_grand_total
 
-                            console.log(res.data);
-
                             res.data.studio_sales_summary.forEach((item, i) => {
                                 me.summary_values.unshift(item)
                             })
                             me.summary_values.push(res.data.studio_grand_total)
-
-                            let token = me.$cookies.get('70hokcotc3hhhn5')
 
                             me.$axios.get('api/studios', {
                                 headers: {
@@ -283,6 +309,7 @@
                                     me.studios = res.data.studios
                                 }
                             })
+
                             me.loaded = true
                         }, 500)
                     }

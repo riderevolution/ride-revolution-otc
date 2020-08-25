@@ -13,7 +13,7 @@
                             <h2 class="header_subtitle">Income from {{ category.name }}.</h2>
                         </div>
                         <div class="actions">
-                            
+
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
@@ -101,6 +101,7 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     slug: '',
+                    studio_id: '',
                     id: 0
                 }
             }
@@ -112,6 +113,10 @@
             },
             fetchData (value) {
                 const me = this
+                if (me.$route.query.studio_id) {
+                    me.form.studio_id = me.$route.query.studio_id
+                }
+
                 me.form.start_date = me.$route.query.start_date
                 me.form.end_date = me.$route.query.end_date
                 me.form.slug = me.$route.query.slug
@@ -123,7 +128,9 @@
                 formData.append('status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                formData.append('studio_id', me.$cookies.get('CSID'))
+                if (me.form.studio_id != '') {
+                    formData.append('studio_id', me.form.studio_id)
+                }
                 me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {

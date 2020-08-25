@@ -1,7 +1,7 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>Register Sales Summary ({{ $route.query.status }})</h2>
+            <h2>Register Sales Summary - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.status }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <table class="cms_table print">
@@ -44,6 +44,7 @@
             return {
                 loaded: false,
                 studio_res: [],
+                studio: [],
                 studio_total: []
             }
         },
@@ -62,6 +63,13 @@
                         setTimeout( () => {
                             me.studio_res = res.data.studio_sales_summary
                             me.studio_total = res.data.studio_grand_total
+
+                            if (me.$route.query.studio_id.length > 0) {
+                                me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
+                                    me.studio = res.data.studio
+                                })
+                            }
+
                             me.loaded = true
                         }, 500)
                     }
