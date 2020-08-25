@@ -116,6 +116,7 @@
                                     <th>ITY</th>
                                     <th>ITD</th>
                                     <th>CA</th>
+                                    <th>GC</th>
                                     <th>CC</th>
                                     <th>DC/EPS</th>
                                     <th>CQ</th>
@@ -131,6 +132,7 @@
                                     <td>Php {{ totalCount(data.ITY) }}</td>
                                     <td>Php {{ totalCount(data.ITD) }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.cash : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.gcash : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.creditCard : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.debitCard : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
@@ -144,6 +146,7 @@
                                     <td class="green">Php {{ totalCount(res.item_total.totalITY) }}</td>
                                     <td class="green">Php {{ totalCount(res.item_total.totalITD) }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.cash }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.gcash }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.creditCard }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.debitCard }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.check }}</td>
