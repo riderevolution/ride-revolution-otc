@@ -175,8 +175,12 @@
                         setTimeout( () => {
                             me.res = res.data.result
                             me.total = res.data.total
-                            me.values = me.res
-                            me.values.push(me.total)
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.unshift(item)
+                            })
+                            me.values.push(res.data.total)
+
                             me.loaded = true
                         }, 500)
                     }

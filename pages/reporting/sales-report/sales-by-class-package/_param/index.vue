@@ -13,7 +13,7 @@
                             <h2 class="header_subtitle">Income from {{ package.name }}.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?status=${status}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?status=${status}&slug=class-package&id=${$route.query.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
                                 class="action_btn alternate margin"
                                 :data="classPackageParamAttributes"
@@ -137,8 +137,13 @@
                             me.res = res.data.result
                             me.total = res.data.total
                             me.package = res.data.package
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.unshift(item)
+                            })
+                            me.values.push(res.data.total)
+
                             me.loaded = true
-                            console.log(res.data);
                         }, 500)
                     }
                 }).catch(err => {
