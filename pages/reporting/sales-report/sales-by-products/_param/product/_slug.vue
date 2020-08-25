@@ -7,14 +7,19 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ variant.variant }} ({{ status }})</h1>
+                                <h1>{{ variant.variant }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ status }})</h1>
                                 <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
-                            <h2 class="header_subtitle">Income from {{ variant.variant }}.</h2>
+                            <h2 class="header_subtitle">Income from {{ variant.variant }} ({{ variant.product.category.name }}).</h2>
                         </div>
                         <div class="actions">
-                            
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/sales/products/${$route.params.param}/product/${$route.params.slug}?status=${status}&slug=${form.slug}&id=${form.id}&variant_id=${form.variant_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                class="action_btn alternate margin"
+                                :data="productsParamProductAttributes"
+                                :name="`sales-by-products-${$route.params.param}-product-${$route.params.slug}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                 </section>
@@ -44,8 +49,15 @@
                                 </td>
                                 <td>{{ data.quantity }}</td>
                                 <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
-                                <td>N/A</td>
-                                <td>Php {{ totalCount(data.total) }}</td>
+                                <td>
+                                    <div v-if="data.employee != null">
+                                        {{ `${data.employee.first_name} ${data.employee.last_name}` }}
+                                    </div>
+                                    <div v-else>
+                                        N/A
+                                    </div>
+                                </td>
+                                <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -70,6 +82,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Sales by Products',
                 access: true,
@@ -77,6 +90,8 @@
                 rowCount: 0,
                 status: 'all',
                 res: [],
+                values: [],
+                studio: [],
                 total: [],
                 variant: [],
                 form: {
@@ -84,8 +99,27 @@
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     slug: '',
                     id: 0,
+                    studio_id: 0,
                     variant_id: 0
                 }
+            }
+        },
+        computed: {
+            productsParamProductAttributes () {
+                const me = this
+                return [
+                    ...me.values.map(value => ({
+                        'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
+                        'Payment Status': me.status,
+                        'Variant': me.variant.variant,
+                        'Date of Purchase': (value.name) ? value.name : me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Full Name': (value.payment) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
+                        'Qty': (value.qty) ? value.qty : value.quantity,
+                        'Payment': (value.payment) ? value.payment.payment_method.method : '-',
+                        'Employee': (value.employee != null) ? `${value.employee.first_name} ${value.employee.last_name}` : 'N/A',
+                        'Total Income': `Php ${(value.total_price) ? value.total_price : value.total}`
+                    }))
+                ]
             }
         },
         methods: {
@@ -95,7 +129,7 @@
                 temp.splice(temp.length - 1, 1)
                 temp.splice(temp.length - 1, 1)
                 temp = temp.join('/')
-                me.$router.push(`${temp}?status=${me.status}&slug=${me.form.slug}&id=${me.form.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${temp}?status=${me.status}&studio_id=${me.form.studio_id}&slug=${me.form.slug}&id=${me.form.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             fetchData (value) {
                 const me = this
@@ -111,14 +145,29 @@
                 formData.append('status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                formData.append('studio_id', me.$cookies.get('CSID'))
+                if (me.$route.query.studio_id.length > 0) {
+                    me.form.studio_id = me.$route.query.studio_id
+                    formData.append('studio_id', me.form.studio_id)
+                }
                 me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}/product/${me.$route.params.slug}`, formData).then(res => {
                     if (res.data) {
-                        console.log(res.data);
                         setTimeout( () => {
                             me.res = res.data.result
                             me.total = res.data.total
                             me.variant = res.data.variant
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.push(item)
+                            })
+
+                            me.values.push(res.data.total)
+
+                            if (me.form.studio_id != '') {
+                                me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                                    me.studio = res.data.studio
+                                })
+                            }
+
                             me.loaded = true
                         }, 500)
                     }

@@ -17,7 +17,7 @@
                             <download-csv
                                 class="action_btn alternate margin"
                                 :data="productsParamAttributes"
-                                :name="`sales-by-products-${$route.params.slug}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`sales-by-products-${$route.params.param}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
                             </download-csv>
                         </div>
@@ -120,7 +120,7 @@
                 return [
                     ...me.values.map(value => ({
                         'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
-                        'Payment status': me.status,
+                        'Payment Status': me.status,
                         'Product Name': (value.name) ? value.name : (me.form.slug == 'product-variant' ? value.variant : value.code),
                         'Item Price': (me.form.slug == 'product-variant') ? value.sale_price : value.class_package.price,
                         'Sold': (value.sold) ? value.sold : 0,
