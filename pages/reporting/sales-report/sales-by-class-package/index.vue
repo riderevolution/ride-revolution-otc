@@ -128,8 +128,8 @@
                 return [
                     ...me.values.map(value => ({
                         'Studio': this.getStudio(),
+                        'Payment Status': me.status,
                         'Class Package': value.name,
-                        'Class Package Status': me.status,
                         'Sold': (value.sold) ? value.sold : 0,
                         'Returned': (value.returned) ? value.returned : 0,
                         'Comp': (value.comp) ? value.comp : 0,

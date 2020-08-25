@@ -113,6 +113,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Sales by Products',
                 access: true,
@@ -120,6 +121,7 @@
                 rowCount: 0,
                 status: 'all',
                 studios: [],
+                values: [],
                 res: [],
                 total: [],
                 total_count: 0,
@@ -130,18 +132,55 @@
                 }
             }
         },
+        computed: {
+            productsAttributes () {
+                const me = this
+                return [
+                    ...me.values.map(value => ({
+                        'Studio': this.getStudio(),
+                        'Payment Status': me.status,
+                        'Item': value.name,
+                        'Sold': (value.sold) ? value.sold : 0,
+                        'Returned': (value.returned) ? value.returned : 0,
+                        'Comp': (value.comp) ? value.comp : 0,
+                        'Discount': `Php ${(value.total_discount) ? value.total_discount : 0}`,
+                        'Taxes': `Php ${(value.total_tax) ? value.total_tax : 0}`,
+                        'Comp Value': `Php ${(value.total_comp) ? value.total_comp : 0}`,
+                        'Profit': `Php ${(value.total_profit) ? value.total_profit : 0}`,
+                        'Cost': `Php ${(value.total_cost) ? value.total_cost : 0}`,
+                        'Total Income': `Php ${(value.total_income) ? value.total_income : 0}`,
+                    }))
+                ]
+            },
+        },
         methods: {
+            getStudio () {
+                const me = this
+                let result = ''
+                if (me.form.studio_id != '') {
+                    me.studios.forEach((studio, index) => {
+                        if (studio.id == me.form.studio_id) {
+                            result = studio.name
+                        }
+                    })
+                } else {
+                    result = 'All Studios'
+                }
+                return result
+            },
             toggleInnerReport (type, path, id) {
                 const me = this
                 me.$router.push(`${path}?status=${me.status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
+                me.values = []
                 me.status = value
                 me.fetchData(value)
             },
             submitFilter () {
                 const me = this
+                me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('status', me.status)
@@ -151,6 +190,12 @@
                             me.total_count = res.data.total_count
                             me.res = res.data.result
                             me.total = res.data.total
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.unshift(item)
+                            })
+                            me.values.push(res.data.total)
+
                         }, 500)
                     }
                 }).catch(err => {
@@ -180,6 +225,11 @@
                             me.total_count = res.data.total_count
                             me.res = res.data.result
                             me.total = res.data.total
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.unshift(item)
+                            })
+                            me.values.push(res.data.total)
 
                             me.$axios.get('api/studios', {
                                 headers: {
