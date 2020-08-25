@@ -12,8 +12,13 @@
                             <h2 class="header_subtitle">Income for each payment type, except store credit.</h2>
                         </div>
                         <div class="actions">
-                            
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/sales/payment-type?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                class="action_btn alternate margin"
+                                :data="paymentTypeAttributes"
+                                :name="`sales-by-payment-type-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -83,6 +88,15 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div class="cms_table_toggler">
+                        <a :href="`/print/reporting/sales/payment-type/register-sales-summary?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                        <download-csv
+                            class="action_btn alternate"
+                            :data="registerSalesSummaryAttributes"
+                            :name="`register-sales-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                            Export
+                        </download-csv>
+                    </div>
                     <table class="cms_table alt">
                         <thead>
                             <tr>
@@ -135,6 +149,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Sales by Payment Type',
                 access: true,
@@ -142,6 +157,8 @@
                 rowCount: 0,
                 status: 'all',
                 studios: [],
+                values: [],
+                summary_values: [],
                 res: [],
                 studio_res: [],
                 payment_total: [],
@@ -151,6 +168,37 @@
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     studio_id: ''
                 }
+            }
+        },
+        computed: {
+            paymentTypeAttributes () {
+                const me = this
+                return [
+                    ...this.values.map(value => ({
+                        'Payment': value.name,
+                        'Payment Status': this.status,
+                        'Transaction Count': value.transaction_count,
+                        'Gross Receipts': value.gross_receipts,
+                        'Gross Refunds': value.gross_refunds,
+                        'Sales Tax': value.sales_tax,
+                        'Refund Tax': value.sales_tax,
+                        'Net of Receipts': value.net_receipts,
+                        'Net of Refunds': value.net_refunds
+                    }))
+                ]
+            },
+            registerSalesSummaryAttributes () {
+                const me = this
+                return [
+                    ...this.summary_values.map(value => ({
+                        'Branch': value.name,
+                        'Subtotal': (value.subtotal) ? value.subtotal : 0,
+                        'Tax': (value.total_tax) ? value.total_tax : 0,
+                        'Refund Subtotal': (value.subtotal_refund) ? value.subtotal_refund : 0,
+                        'Refund Tax': (value.total_tax) ? value.total_tax : 0,
+                        'Total': (value.total_income) ? value.total_income : 0
+                    }))
+                ]
             }
         },
         methods: {
@@ -206,9 +254,15 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.result
+                            me.values = res.data.result
                             me.payment_total = res.data.payment_grand_total
+                            me.values.push(res.data.payment_grand_total)
+
                             me.studio_res = res.data.studio_sales_summary
+                            me.summary_values = res.data.studio_sales_summary
                             me.studio_total = res.data.studio_grand_total
+                            me.summary_values.push(res.data.studio_grand_total)
+
                             let token = me.$cookies.get('70hokcotc3hhhn5')
 
                             me.$axios.get('api/studios', {
