@@ -146,7 +146,6 @@
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('status', me.status)
-                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {

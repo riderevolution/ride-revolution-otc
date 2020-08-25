@@ -119,7 +119,7 @@
                                             <div class="class_title">
                                                 <span>{{ data.schedule.start_time }}, {{ (data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name }} {{ (!data.schedule.studio.online_class) ? '' : '(Online Class)' }}</span>
                                                 <div :class="`class_status ${(data.isFull) ? 'full' : ''}`">
-                                                    {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.reserved}` }}
+                                                    {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.enrolled}` }}
                                                 </div>
                                             </div>
                                             <div class="class_text">{{ data.schedule.instructor_schedules[0].user.first_name }} {{ data.schedule.instructor_schedules[0].user.last_name }}</div>

@@ -13,8 +13,13 @@
                             <h2 class="header_subtitle">Income from {{ package.name }}.</h2>
                         </div>
                         <div class="actions">
-                            
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?status=${status}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                class="action_btn alternate margin"
+                                :data="classPackageParamAttributes"
+                                :name="`sales-by-class-package-${$route.params.param}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                 </section>
@@ -40,7 +45,7 @@
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
-                            <tr v-for="(data, key) in res" :key="key">
+                            <tr v-for="(data, key) in res" :key="key" v-if="res.length > 0">
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                                 <td>
                                     <nuxt-link class="table_data_link" :to="`/customers/${data.payment.user.id}/packages`" v-if="data.payment.user != null">{{ `${data.payment.user.first_name} ${data.payment.user.last_name}` }}</nuxt-link>
@@ -76,6 +81,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Sales by Class Package',
                 access: true,
@@ -83,6 +89,7 @@
                 rowCount: 0,
                 status: 'all',
                 res: [],
+                values: [],
                 package: [],
                 total: [],
                 form: {
@@ -91,6 +98,23 @@
                     slug: '',
                     id: 0
                 }
+            }
+        },
+        computed: {
+            classPackageParamAttributes () {
+                const me = this
+                return [
+                    ...me.values.map(value => ({
+                        'Date of Purchase': (value.name) ? value.name : me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Full Name': (value.payment) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
+                        'Qty': (value.qty) ? value.qty : value.quantity,
+                        'Payment': (value.payment) ? value.payment.payment_method.method : '-',
+                        'Comp Reason': (value.payment) ? (value.payment.payment_method.method == 'comp' ? value.payment.payment_method.comp_reason : 'N/A') : '-',
+                        'Comp Value': (value.total_comp) ? value.total_comp : 0,
+                        'Discount': (value.total_discount) ? value.total_discount : 0,
+                        'Total Income': (value.total_income) ? value.total_income : 0
+                    }))
+                ]
             }
         },
         methods: {
@@ -107,7 +131,6 @@
                 formData.append('status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -115,6 +138,7 @@
                             me.total = res.data.total
                             me.package = res.data.package
                             me.loaded = true
+                            console.log(res.data);
                         }, 500)
                     }
                 }).catch(err => {
