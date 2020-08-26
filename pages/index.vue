@@ -799,7 +799,11 @@
                     me.initial()
                 }, 500)
             }).catch(err => {
-                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                if (token != null && token != undefined) {
+                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                } else {
+                    window.location.assign('/login')
+                }
             }).then(() => {
                 setTimeout( () => {
                     document.querySelector('.target_wrapper .right .table_notepad textarea').style.height = `${document.querySelector('.target_wrapper .left').offsetHeight - 80 - 46}px`
