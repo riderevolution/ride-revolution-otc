@@ -744,6 +744,36 @@ table
             background-color: $white
             transform: rotate(-45deg)
 
+.booker_table
+    .table_layout
+        position: relative
+        z-index: 1
+        margin: 20px 20px 60px
+        border-radius: 5px
+        .info
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            justify-content: space-between
+            margin-bottom: 20px
+            .text,
+            .action_buttons
+                flex: 0 0 auto
+            .action_btn
+                display: flex
+                flex-flow: row wrap
+                align-items: center
+    h2
+        neutra_text(26px)
+        color: $black
+    h3
+        span
+            sf_pro_medium(14px)
+            color: $border_alt2
+            margin-top: 5px
+    .cta
+        text-align: right
+
 /**
  * Default Modal **/
 .upcoming_classes_layout
@@ -2033,6 +2063,7 @@ input::placeholder
                             text-align: center
                             transform: translateY(-50%)
                     .customer_details
+                        flex: 1 0 10%
                         padding-left: 10px
                         .customer_name
                             sf_pro_medium(18px)
@@ -5422,6 +5453,8 @@ input::placeholder
     align-items: flex-start
     justify-content: space-between
     margin-bottom: 60px
+    .booker_button
+        flex: 0 0 auto
     .booker_classes
         flex: 0 0 25%
         background-color: $white
@@ -5567,7 +5600,8 @@ input::placeholder
                                 transition: .3s ease-in-out
 
     .booker_content
-        flex: 0 0 calc(75% - 20px)
+        flex: 1 0 10%
+        padding-left: 20px
         .booker_seats
             display: block
             position: relative
@@ -5712,12 +5746,18 @@ input::placeholder
                         flex: 0 0 auto
                     .controls
                         flex: 0 0 auto
+                        &.nope
+                            pointer-events: none
+                            opacity: 0.3
                 .right_side
                     padding: 15px
                     flex: 0 0 auto
                     text-align: center
                     opacity: 1
                     transition: .3s ease-in-out
+                    &.nope
+                        pointer-events: none
+                        opacity: 0.3
                     &.disable_booker
                         opacity: 0.5
                         pointer-events: none
@@ -6259,6 +6299,9 @@ input::placeholder
             .booker_waitlist
                 flex: 0 0 calc(75% - 20px)
                 background-color: $white
+                &.nope
+                    opacity: 0.3
+                    pointer-events: none
                 .footer_title
                     padding: 10px 15px 10px 20px
                     background-image: url('/icons/waitlist-icon.svg')
@@ -7636,6 +7679,9 @@ input::placeholder
                         .form_group
                             position: relative
                             flex: 0 0 30%
+                            &.nope
+                                opacity: 0.3
+                                pointer-events: none
                             &.customer
                                 flex: 0 0 15%
                             .customer_selection
@@ -7714,6 +7760,9 @@ input::placeholder
                             min-height: 135px
                             z-index: 1
                             transition: .3s ease-in-out
+                            &.nope
+                                opacity: 0.3
+                                pointer-events: none
                             &.selected
                                 border: 2px dashed $green
                                 border-radius: 3px
@@ -7771,6 +7820,7 @@ input::placeholder
                                             text-align: center
                                             transform: translateY(-50%)
                                     .customer_details
+                                        flex: 1 0 10%
                                         padding-left: 10px
                                         .customer_name
                                             padding-bottom: 5px

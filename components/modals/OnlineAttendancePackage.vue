@@ -180,7 +180,7 @@
                             } else {
                                 me.$store.state.onlineAttendancePackage = false
                                 setTimeout( () => {
-                                    me.$parent.$parent.$refs.plan.message = 'Please buy a class package first'
+                                    me.$parent.$parent.plan.message = 'Please buy a class package first'
                                 }, 10)
                                 me.$store.state.promptBookerStatus = true
                             }
@@ -196,7 +196,7 @@
                             if (disabled_ctr == me.res.length) {
                                 me.$store.state.onlineAttendancePackage = false
                                 setTimeout( () => {
-                                    me.$parent.$parent.$refs.plan.message = 'Please buy a class package first'
+                                    me.$parent.$parent.plan.message = 'Please buy a class package first'
                                 }, 10)
                                 me.$store.state.promptBookerStatus = true
                             }
