@@ -5,7 +5,7 @@
                 <div class="info">
                     <div class="text">
                     </div>
-                    <div class="action_buttons">
+                    <div class="action_buttons" v-if="res.length > 0">
                         <div class="action_btn" @click="toggleCustomer()"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg><span>Add Customer</span></div>
                     </div>
                 </div>
@@ -30,7 +30,7 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody v-if="res.length > 0">
+                    <tbody v-if="res.length > 0 && $parent.studio.online_class">
                         <tr v-for="(data, key) in res" :key="key">
                             <td>
                                 <div class="thumb">

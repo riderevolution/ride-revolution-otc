@@ -149,7 +149,7 @@
                                         <div class="class_options">
                                         <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)">
                                             <option value="" disabled selected>Class Options</option>
-                                            <option :value="key" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
+                                            <option :value="classOption" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
                                         </select>
                                         <div class="class_info">
                                             <div class="action_calendar_btn" id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
@@ -191,7 +191,7 @@
                                 <button id="reload">Reload</button>
                             </div>
                             </div>
-                                <panZoom v-if="!studio.online_class" @init="panZoomInit" :key="ctr" :options="{
+                                <panZoom v-if="!studio.online_class" @init="panZoomInit" :options="{
                                     bounds: true,
                                     boundsPadding: 0.2,
                                     minZoom: 0.25,
@@ -215,7 +215,7 @@
                                     <div class="action_cancel_btn" @click="toggleDisabled()" v-if="$store.state.disableBookerUI">Cancel</div>
                                 </div>
                             </div>
-                            <div :class="`booker_footer ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
+                            <div :class="`booker_footer ${(schedule != '') ? '' : 'disable_booker' } ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
                                 <div class="booker_notepad">
                                     <h2 class="footer_title">Notepad</h2>
                                     <div class="notepad_text">
@@ -442,13 +442,16 @@
                 let target = event.target.value
                 switch (target) {
                     case 'Cancel Class':
-                        
-                        break;
+
+                        break
+                    case 'Print Room':
+                        window.open(`${window.location.origin}/print/booker/room?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
+                        break
                 }
+                event.target.value = ''
             },
             hideClass (type) {
                 const me = this
-                me.ctr += 1
                 if (type == 'hide') {
                     me.hide_class = true
                 } else {
@@ -620,7 +623,7 @@
                                 if (res.data) {
                                     setTimeout( () => {
                                         if (res.data.seat.status == 'open') {
-                                            me.actionMessage = 'Seat has been Open.'
+                                            me.actionMessage = 'Seat has been Opened.'
                                         } else {
                                             me.actionMessage = 'Seat has been Blocked.'
                                         }
@@ -658,7 +661,6 @@
             },
             getBookings (data, sunique, unique) {
                 const me = this
-                me.ctr += 1
                 // if (me.studio.online_class) {
                 //     me.$store.state.onlineAttendanceLayoutStatus = true
                 // } else {
@@ -696,6 +698,15 @@
                 // }
 
                 me.schedule = data
+
+                let formData = new FormData()
+                let id = me.$store.state.user.id
+
+                formData.append('scheduled_date_id', data.id)
+                formData.append('user_id', id)
+                me.$axios.post('api/schedule-notes', formData).then(res => {
+                    me.notePad = res.data.notes
+                })
 
                 if (!me.studio.online_class) {
                     me.selectCustomer = true
@@ -844,6 +855,7 @@
                 let formData = new FormData()
                 formData.append('_method', 'PATCH')
                 formData.append('user_id', id)
+                formData.append('scheduled_date_id', me.scheduledDateID)
                 formData.append('note', event.target.value)
                 me.$axios.post('api/extras/update-user-notepad', formData).then(res => {
                     if (res.data) {
@@ -1128,7 +1140,6 @@
                         me.$axios.get('api/studios?enabled=1').then(res => {
                             me.studios = res.data.studios
                         })
-                        me.notePad = me.$store.state.user.notepad
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
