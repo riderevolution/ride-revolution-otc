@@ -447,6 +447,9 @@
                     case 'Print Room':
                         window.open(`${window.location.origin}/print/booker/room?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
                         break
+                    case 'Print Sign-in Sheet w/ Measurements':
+                        window.open(`${window.location.origin}/print/booker/attendance?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
+                        break
                 }
                 event.target.value = ''
             },

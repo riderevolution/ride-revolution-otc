@@ -1,34 +1,72 @@
 <template>
-    <div class="booker_table" v-if="loaded">
-        <div class="class_layout">
-            <div class="layout_header">
-                <h2>{{ studio.name }} - Class Attendance ({{ (scheduleDate.schedule.custom_name != null) ? scheduleDate.schedule.custom_name : scheduleDate.schedule.class_type.name }})</h2>
-                <h3>{{ $moment(scheduleDate.date).format('ddd, MMM DD, YYYY') }} at {{ scheduleDate.schedule.start_time }} - {{ scheduleDate.schedule.instructor_schedules[0].user.first_name }} {{ scheduleDate.schedule.instructor_schedules[0].user.last_name }}</h3>
-            </div>
-            <div :class="`layout_content layout_${$route.query.studio_id}`">
-                <div class="seats">
-                    <div class="seat_header">
-                        <img :src="scheduleDate.schedule.instructor_schedules[0].user.instructor_details.images[0].path" v-if="scheduleDate.schedule.instructor_schedules[0].user.instructor_details.images[0].path != null" />
-                        <div class="header_image" v-else>
-                            <div class="overlay">
-                                {{ scheduleDate.schedule.instructor_schedules[0].user.first_name.charAt(0) }}{{ scheduleDate.schedule.instructor_schedules[0].user.last_name.charAt(0) }}
-                            </div>
-                        </div>
-                        <h3>{{ scheduleDate.schedule.instructor_schedules[0].user.first_name }} {{ scheduleDate.schedule.instructor_schedules[0].user.last_name }}</h3>
-                    </div>
-                    <div :class="`seat_boxes ${parent.position} ${parent.layout}`" v-for="(parent, key) in seats" :key="key">
-                        <div :class="`seat_position ${addSeatClass(seat)}`" v-for="(seat, key) in parent.data" :key="key">
-                            <div class="seat_number">{{ seat.number }}</div>
-                            <h2 v-if="seat.comp.length > 0">{{ (seat.comp[0].user_id != null) ? `${seat.comp[0].user.first_name} ${seat.comp[0].user.last_name}` : seat.comp[0].email }}</h2>
-
-                            <h2 class="info_link" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">{{ seat.bookings[0].user.first_name }} {{ seat.bookings[0].user.last_name }}</h2>
-
-                            <h2 v-if="seat.bookings.length > 0 && seat.bookings[0].user == null">{{ seat.bookings[0].guest_first_name }} {{ seat.bookings[0].guest_last_name }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="print_table" v-if="loaded">
+        <div class="text">
+            <h2>{{ studio.name }} - Class Attendance ({{ (scheduleDate.schedule.custom_name != null) ? scheduleDate.schedule.custom_name : scheduleDate.schedule.class_type.name }})</h2>
+            <h3><span>{{ $moment(scheduleDate.date).format('ddd, MMM DD, YYYY') }} at {{ scheduleDate.schedule.start_time }} - {{ scheduleDate.schedule.instructor_schedules[0].user.first_name }} {{ scheduleDate.schedule.instructor_schedules[0].user.last_name }}</span></h3>
         </div>
+        <table class="cms_table print">
+            <thead>
+                <tr>
+                    <th>Seat Number</th>
+                    <th>Signed In</th>
+                    <th>Full Name</th>
+                    <th>Customer Type</th>
+                    <th>Email Address</th>
+                    <th>Contact Number</th>
+                    <th>Shoe size</th>
+                </tr>
+            </thead>
+            <tbody class="no_shadow">
+                <tr v-for="(data, key) in seats" :key="key">
+                    <td>{{ data.number }}</td>
+                    <td>
+                        <img :src="(data.status == 'signed-in') ? '/icons/check-icon.svg' : '/icons/uncheck-icon.svg'" />
+                    </td>
+                    <td>
+                        <div class="table_data_link" v-if="data.bookings.length > 0 && data.bookings[0].is_guest">
+                            {{ data.bookings[0].guest_first_name }} {{ data.bookings[0].guest_last_name }}
+                        </div>
+                        <div class="table_data_link" v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
+                            {{ data.bookings[0].user.first_name }} {{ data.bookings[0].user.last_name }}
+                        </div>
+                    </td>
+                    <td>
+                        <div v-if="data.bookings.length > 0 && (data.bookings[0].user && data.bookings[0].user.customer_details.customer_type)">
+                            <img :src="data.bookings[0].user.customer_details.customer_type.image.path" />
+                        </div>
+                        <div v-if="data.bookings.length > 0 && !data.bookings[0].user">
+                            <img src="/icons/guest-icon.svg" />
+                        </div>
+                    </td>
+                    <td>
+                        <div v-if="data.bookings.length > 0 && data.bookings[0].is_guest">
+                            {{ data.bookings[0].guest_email }}
+                        </div>
+                        <div v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
+                            {{ data.bookings[0].user.email }}
+                        </div>
+                    </td>
+                    <td>
+                        <div v-if="data.bookings.length > 0 && data.bookings[0].is_guest">
+                            <span v-if="data.bookings[0].user">{{ data.bookings[0].user.customer_details.co_contact_number }}</span>
+                            <span v-else>N/A</span>
+                        </div>
+                        <div v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
+                            {{ data.bookings[0].user.customer_details.co_contact_number }}
+                        </div>
+                    </td>
+                    <td>
+                        <div v-if="data.bookings.length > 0 && data.bookings[0].is_guest">
+                            <span v-if="data.bookings[0].user">{{ data.bookings[0].user.customer_details.co_shoe_size }}</span>
+                            <span v-else>N/A</span>
+                        </div>
+                        <div v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
+                            {{ data.bookings[0].user.customer_details.co_shoe_size }}
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </template>
 
@@ -39,94 +77,22 @@
             return {
                 loaded: false,
                 studio: [],
-                temp: [],
                 scheduleDate: [],
-                seats: {
-                    left: {
-                        position: 'left',
-                        data: []
-                    },
-                    right: {
-                        position: 'right',
-                        data: []
-                    },
-                    bottom: {
-                        position: 'bottom',
-                        data: []
-                    },
-                    bottom_alt: {
-                        position: 'bottom_alt',
-                        data: []
-                    },
-                    bottom_alt_2: {
-                        position: 'bottom_alt_2',
-                        data: []
-                    },
-                }
+                seats: []
             }
         },
         methods: {
-            addSeatClass (seat) {
-                const me = this
-                let result = ''
-                if (seat.bookings.length > 0 && (seat.bookings[0].user.id == me.$route.params.param)) {
-                    result += 'highlight '
-                }
-                switch (seat.status) {
-                    case 'open':
-                        result += 'available'
-                        break
-                    case 'comp':
-                        if (seat.comp.length > 0) {
-                            result += 'comp'
-                        }
-                        break
-                    case 'reserved':
-                    case 'reserved-guest':
-                        if (seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id != me.$route.params.param)) {
-                            result += 'sign_in'
-                        }
-                        break
-                    case 'blocked':
-                        result += 'comp blocked'
-                        break
-                    case 'signed-in':
-                        result += 'sign_out'
-                        break
-                    case 'no-show':
-                        result += 'no_show'
-                        break
-                }
-                return result
-            },
             initial () {
                 const me = this
-                let layout = `layout_${me.$route.query.studio_id}`
-                me.seats = { left: { position: 'left', layout: layout, data: [] }, right: { position: 'right', layout: layout, data: [] }, bottom: { position: 'bottom', layout: layout, data: [] }, bottom_alt: { position: 'bottom_alt', layout: layout, data: [] }, bottom_alt_2: { position: 'bottom_alt_2', layout: layout, data: [] }, }
                 me.$axios.get(`/api/seats?studio_id=${me.$route.query.studio_id}&scheduled_date_id=${me.$route.query.scheduled_date_id}`).then(res => {
                     if (res.data) {
                         me.scheduleDate = res.data.scheduled_date
-                        me.temp = res.data.seats
-                        me.temp.forEach((seat, index) => {
-                            switch (seat.position) {
-                                case 'left':
-                                    me.seats.left.data.push(seat)
-                                    break
-                                case 'right':
-                                    me.seats.right.data.push(seat)
-                                    break
-                                case 'bottom':
-                                    me.seats.bottom.data.push(seat)
-                                    break
-                                case 'bottom_alt':
-                                    me.seats.bottom_alt.data.push(seat)
-                                    break
-                                case 'bottom_alt_2':
-                                    me.seats.bottom_alt_2.data.push(seat)
-                                    break
-                            }
-                            me.ctr++
+
+                        res.data.seats.sort((a, b) => {
+                            return parseInt(a.number) - parseInt(b.number)
                         })
+
+                        me.seats = res.data.seats
 
                         if (me.$route.query.studio_id.length > 0) {
                             me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
