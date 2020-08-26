@@ -393,7 +393,7 @@
                 customerLength: 0,
                 schedules: [],
                 customerTypes: [],
-                classOptions: ['Print Sign-in Sheet w/ Measurements', 'Print Room'],
+                classOptions: ['Cancel Class', 'Print Sign-in Sheet w/ Measurements', 'Print Room'],
                 notePad: '',
                 studioID: 0,
                 current: 0,
