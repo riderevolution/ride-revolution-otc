@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Attendance per time slot by month</h2>
                         </div>
                         <div class="actions">
-                            
+
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
@@ -146,6 +146,15 @@
             },
             async submissionSuccess () {
                 const me = this
+
+                let date = me.form.month.split(' ')
+
+                me.monthName = me.$moment(`${date[1]}-${date[0]}`, 'YYYY-MMMM').format('MMMM')
+                me.yearName = me.$moment(`${date[1]}-${date[0]}`, 'YYYY-MMMM').format('YYYY')
+
+                me.currentMonth = me.$moment(`${date[0]}`, 'MMMM').month() + 1
+                me.currentYear = me.$moment(`${date[1]}`, 'YYYY').year()
+
                 me.generateCalendar(me.currentYear, me.currentMonth, 0, 1)
             },
             generatePrevCalendar () {
@@ -174,8 +183,12 @@
                 me.loader(true)
                 me.clearTableRows()
                 me.currentDate = me.$moment().date()
-                me.monthName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('MMMM')
-                me.yearName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('YYYY')
+
+                if (search != 1) {
+                    me.monthName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('MMMM')
+                    me.yearName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('YYYY')
+                }
+
                 let startDate = 1
                 let nextDate = 1
                 let prevDate = me.$moment(`${year}-${(month - 1 == 0) ? 12 : month - 1}`, 'YYYY-MM').daysInMonth()
