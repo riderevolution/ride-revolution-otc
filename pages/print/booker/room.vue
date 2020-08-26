@@ -2,8 +2,7 @@
     <div class="booker_table" v-if="loaded">
         <div class="class_layout">
             <div class="layout_header">
-                <h2>{{ $moment(scheduleDate.date).format('ddd, MMM DD, YYYY') }} at {{ scheduleDate.schedule.start_time }}: {{ (scheduleDate.schedule.custom_name != null) ? scheduleDate.schedule.custom_name : scheduleDate.schedule.class_type.name }}</h2>
-                <!-- <div class="action_success_btn">Sign In</div> -->
+                <h2>{{ $moment(scheduleDate.date).format('ddd, MMM DD, YYYY') }} at {{ scheduleDate.schedule.start_time }}: {{ (scheduleDate.schedule.custom_name != null) ? scheduleDate.schedule.custom_name : scheduleDate.schedule.class_type.name }} - {{ studio.name }}</h2>
             </div>
             <div :class="`layout_content layout_${$route.query.studio_id}`">
                 <div class="seats">
@@ -38,6 +37,7 @@
         data () {
             return {
                 loaded: false,
+                studio: [],
                 temp: [],
                 scheduleDate: [],
                 seats: {
@@ -126,6 +126,13 @@
                             }
                             me.ctr++
                         })
+
+                        if (me.$route.query.studio_id.length > 0) {
+                            me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
+                                me.studio = res.data.studio
+                            })
+                        }
+
                         me.loaded = true
                     }
                 }).catch(err => {
