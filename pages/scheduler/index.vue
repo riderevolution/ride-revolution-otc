@@ -51,8 +51,8 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="calendar_gear" id="gear_month" width="38.568" height="32.924" viewBox="0 0 38.568 32.924" @click="monthGear()"> <rect width="38.569" height="32.924" rx="3" transform="translate(0 0)"/> <g transform="translate(10.043 7.221)"> <ellipse cx="6.719" cy="6.719" rx="6.719" ry="6.719" transform="translate(2.196 2.197)" class="gear_2"/> <line y2="2.197" transform="translate(8.916)" class="gear_2"/> <line y2="2.197" transform="translate(8.916 15.635)" class="gear_2"/> <line x2="2.197" transform="translate(0 8.916)" class="gear_2"/> <line x2="2.197" transform="translate(15.635 8.916)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(2.611 2.611)" class="gear_2"/> <line x2="1.553" y2="1.553" transform="translate(13.667 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(2.611 13.667)" class="gear_2"/> <line y1="1.553" x2="1.553" transform="translate(13.667 2.611)" class="gear_2"/> </g> </svg>
                                     <div :class="`gear_overlay ${(monthStatus) ? 'active' : ''}`">
                                         <ul class='gear_list_wrapper'>
-                                            <li class='gear_list'><div class='gear_item' @click="duplicateMonth()">Duplicate Month</div></li>
-                                            <li class='gear_list'><div class='red gear_item' @click="clearMonth()">Clear Month</div></li>
+                                            <li class='gear_list'><div class='duplicate gear_item' @click="duplicateMonth()">Duplicate Month</div></li>
+                                            <li class='gear_list'><div class='red gear_item clear' @click="clearMonth()">Clear Month</div></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -231,9 +231,9 @@
                                                 <div class='menu_circles' id=menu_${startDate}>&#x25CF; &#x25CF; &#x25CF;</div>
                                                 <div class='menu_overlay ${(j == 6) ? 'alternate' : ''}'>
                                                     <ul class='menu_list_wrapper'>
-                                                        <li class='menu_list'><a class='menu_item' href='/${me.lastRoute}/${unixTimestamp}/create'>Add a Class</a></li>
-                                                        <li class='menu_list'><a class='menu_item' href='${dayDate}'>Duplicate Day</a></li>
-                                                        <li class='menu_list'><a class='red menu_item' href='${dayDate}'>Clear a Day</a></li>
+                                                        <li class='menu_list'><a class='add menu_item' href='/${me.lastRoute}/${unixTimestamp}/create'>Add a Class</a></li>
+                                                        <li class='menu_list'><a class='duplicate menu_item' href='${dayDate}'>Duplicate Day</a></li>
+                                                        <li class='menu_list'><a class='clear red menu_item' href='${dayDate}'>Clear a Day</a></li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -259,10 +259,10 @@
                                             <div class="gear_overlay">
                                                 <ul class="gear_list_wrapper">
                                                     <li class="gear_list">
-                                                        <div class="gear_item">Duplicate Week</div>
+                                                        <div class="duplicate gear_item">Duplicate Week</div>
                                                     </li>
                                                     <li class="gear_list">
-                                                        <div class="red gear_item">Clear Week</div>
+                                                        <div class="clear red gear_item">Clear Week</div>
                                                     </li>
                                                 </ul>
                                             </div>` : '' }
@@ -314,10 +314,10 @@
                                                 <div class="gear_overlay">
                                                     <ul class="gear_list_wrapper">
                                                         <li class="gear_list">
-                                                            <div class="gear_item">Duplicate Week</div>
+                                                            <div class="duplicate gear_item">Duplicate Week</div>
                                                         </li>
                                                         <li class="gear_list">
-                                                            <div class="red gear_item">Clear Week</div>
+                                                            <div class="clear red gear_item">Clear Week</div>
                                                         </li>
                                                     </ul>
                                                 </div>` : '' }
@@ -348,10 +348,10 @@
                                             <div class="gear_overlay">
                                                 <ul class="gear_list_wrapper">
                                                     <li class="gear_list">
-                                                        <div class="gear_item">Duplicate Week</div>
+                                                        <div class="duplicate gear_item">Duplicate Week</div>
                                                     </li>
                                                     <li class="gear_list">
-                                                        <div class="red gear_item">Clear Week</div>
+                                                        <div class="clear red gear_item">Clear Week</div>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -386,10 +386,10 @@
                         <div class="gear_overlay">
                             <ul class="gear_list_wrapper">
                                 <li class="gear_list">
-                                    <div class="gear_item">Clear Week</div>
+                                    <div class="duplicate gear_item">Clear Week</div>
                                 </li>
                                 <li class="gear_list">
-                                    <div class="gear_item">Duplicate Week</div>
+                                    <div class="gear_item clear">Duplicate Week</div>
                                 </li>
                             </ul>
                         </div>

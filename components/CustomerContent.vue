@@ -435,6 +435,25 @@
             <div id="default_form">
                 <div class="form_wrapper">
                     <div class="form_header_wrapper">
+                        <h2 class="form_title">Emergency Information</h2>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>Full Name</label>
+                            <p>{{ value.customer_details.ec_full_name }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Contact Number</label>
+                            <p>{{ value.customer_details.ec_contact_number }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Relationship</label>
+                            <p>{{ value.customer_details.ec_relationship }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
                         <h2 class="form_title">Medical History</h2>
                     </div>
                     <div class="form_overview">
@@ -450,7 +469,7 @@
                     </div>
                     <div class="form_overview">
                         <div class="wrapper">
-                            <label>{{ value.health_waiver_text_answer.body }}</label>
+                            <label>{{ (value.health_waiver_text_answer) ? value.health_waiver_text_answer.body : 'N/A' }}</label>
                         </div>
                     </div>
                 </div>

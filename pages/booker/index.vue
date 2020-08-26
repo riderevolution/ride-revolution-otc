@@ -147,7 +147,7 @@
                                 <div class="seat_controls">
                                     <div class="left_side">
                                         <div class="class_options">
-                                        <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options">
+                                        <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)">
                                             <option value="" disabled selected>Class Options</option>
                                             <option :value="key" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
                                         </select>
@@ -400,7 +400,7 @@
                 customerLength: 0,
                 schedules: [],
                 customerTypes: [],
-                classOptions: ['Print Sign-in Sheet w/ Measurements', 'Print Room'],
+                classOptions: ['Cancel Class', 'Print Sign-in Sheet w/ Measurements', 'Print Room'],
                 notePad: '',
                 studioID: 0,
                 current: 0,
@@ -437,6 +437,15 @@
             }
         },
         methods: {
+            getClassOptions (event) {
+                const me = this
+                let target = event.target.value
+                switch (target) {
+                    case 'Cancel Class':
+                        
+                        break;
+                }
+            },
             hideClass (type) {
                 const me = this
                 me.ctr += 1

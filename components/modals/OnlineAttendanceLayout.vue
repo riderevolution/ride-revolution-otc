@@ -165,6 +165,7 @@
                         me.res = []
                         setTimeout( () => {
                             res.data.bookings.forEach((data, index) => {
+                                data.searched = false
                                 me.res.push(data)
                             })
                             me.values = me.res
