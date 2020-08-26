@@ -751,7 +751,7 @@
                                                 me.$axios.get(`api/schedules/${values[0]}`).then(res => {
                                                     me.$parent.schedule.id = values[0]
                                                     me.$parent.schedule.schedule = res.data.schedule
-                                                    me.$store.state.onlineAttendanceLayoutStatus = true
+                                                    me.$store.state.onlineAttendanceInsLayoutStatus = true
                                                 })
                                             } else {
                                                 me.$parent.layout.schedule = values[0]
