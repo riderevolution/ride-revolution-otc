@@ -1,5 +1,5 @@
 <template>
-    <div class="navbar_container" @mouseover="resetHoverToggle()" @mouseleave="resetLeaveToggle()">
+    <div class="navbar_container" @focus="resetHoverToggle()" @mouseover="resetHoverToggle()" @mouseleave="resetLeaveToggle()">
         <div class="navbar">
             <nuxt-link to="/" class="logo">
                 <img src="/logo.png" />
