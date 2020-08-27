@@ -390,7 +390,7 @@
                 let change = 0
                 if (value != 0) {
                     me.totalPrice.forEach((data, index) => {
-                        if (data.discounted_price) {
+                        if (me.promo_applied) {
                             total += data.discounted_price
                         } else {
                             total += data.price
@@ -406,7 +406,7 @@
                 const me = this
                 let total = 0
                 me.totalPrice.forEach((data, index) => {
-                    if (data.discounted_price) {
+                    if (me.promo_applied) {
                         total += data.discounted_price
                     } else {
                         total += data.price
