@@ -1,42 +1,37 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>Sales by Class Package - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.status }})</h2>
+            <h2>Gift Cards Redeemed - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }}</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
+        <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th>Class Package</th>
-                    <th>Sold</th>
-                    <th>Returned</th>
-                    <th>Comp</th>
-                    <th>Comp Value</th>
-                    <th>Discount</th>
-                    <th>Taxes</th>
-                    <th>Total Income</th>
+                    <th class="sticky">Card Code</th>
+                    <th class="sticky">Class Package Value</th>
+                    <th class="sticky">Date Purchased</th>
+                    <th class="sticky">Purchased By</th>
+                    <th class="sticky">Redemption Date</th>
+                    <th class="sticky">Redeemed By</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td><b>{{ total.name }}</b></td>
-                    <td><b>{{ total.sold }}</b></td>
-                    <td><b>{{ total.returned }}</b></td>
-                    <td><b>{{ total.comp }}</b></td>
-                    <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
-                    <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
-                    <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
-                    <td><b>Php {{ totalCount(total.total_income) }}</b></td>
-                </tr>
+            <tbody v-if="res.length > 0">
                 <tr v-for="(data, key) in res" :key="key">
-                    <td>{{ data.name }}</td>
-                    <td>{{ (data.sold) ? data.sold : 0 }}</td>
-                    <td>{{ (data.returned) ? data.returned : 0 }}</td>
-                    <td>{{ (data.comp) ? data.comp : 0 }}</td>
-                    <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
-                    <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
-                    <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
-                    <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
+                    <td>{{ data.card_code }}</td>
+                    <td>
+                        <p>{{ data.class_package.name }}</p>
+                        <p>Php {{ totalCount(data.class_package.package_price) }}</p>
+                    </td>
+                    <td>{{ $moment(data.payment_item.payment.created_at).format('MMMM DD, YYYY') }}</td>
+                    <td>{{ `${data.user.first_name} ${data.user.last_name}` }}</td>
+                    <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY') }}</td>
+                    <td>{{ `${data.redeemer.first_name} ${data.redeemer.last_name}` }}</td>
+                </tr>
+            </tbody>
+            <tbody class="no_results" v-else>
+                <tr>
+                    <td colspan="6">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>
@@ -49,9 +44,9 @@
         data () {
             return {
                 loaded: false,
+                total_count: 0,
                 res: [],
-                studio: [],
-                total: []
+                studio: []
             }
         },
         methods: {
@@ -61,16 +56,15 @@
 
                 formData.append('start_date', me.$route.query.start_date)
                 formData.append('end_date',  me.$route.query.end_date)
-                formData.append('status', me.$route.query.status)
                 if (me.$route.query.studio_id.length > 0) {
                     formData.append('studio_id', me.$route.query.studio_id)
                 }
 
-                me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
+                me.$axios.post('api/reporting/sales/gift-cards-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
+                            me.total_count = res.data.grand_total
                             me.res = res.data.result
-                            me.total = res.data.total
 
                             if (me.$route.query.studio_id.length > 0) {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {

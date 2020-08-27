@@ -37,7 +37,7 @@
             <class-schedule-layout :layout="layout" v-if="$store.state.classScheduleLayoutStatus" />
         </transition>
         <transition name="fade">
-            <online-attendance-layout v-if="$store.state.onlineAttendanceLayoutStatus" :schedule="schedule" :instructorDashboard="true" />
+            <online-attendance-ins-layout v-if="$store.state.onlineAttendanceInsLayoutStatus" :schedule="schedule" :instructorDashboard="true" />
         </transition>
         <transition name="fade">
             <online-attendance-prompt v-if="$store.state.onlineAttendancePrompt" />
@@ -48,14 +48,14 @@
 <script>
     import InstructorContent from '../../../components/InstructorContent'
     import ClassScheduleLayout from '../../../components/modals/ClassScheduleLayout'
-    import OnlineAttendanceLayout from '../../../components/modals/OnlineAttendanceLayout'
+    import OnlineAttendanceInsLayout from '../../../components/modals/OnlineAttendanceInsLayout'
     import OnlineAttendancePrompt from '../../../components/modals/OnlineAttendancePrompt'
     export default {
         layout: 'ins',
         components: {
             InstructorContent,
             ClassScheduleLayout,
-            OnlineAttendanceLayout,
+            OnlineAttendanceInsLayout,
             OnlineAttendancePrompt
         },
         data () {

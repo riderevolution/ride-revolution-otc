@@ -76,6 +76,7 @@
             </div>
         </div>
         <div v-if="type == 'upcoming-classes' && loaded">
+            <button type="button" class="hidden" id="upcoming_classes" @click="populateUpcomingClasses()"></button>
             <table class="cms_table">
                 <thead>
                     <tr>
@@ -92,8 +93,13 @@
                 </thead>
                 <tbody v-if="value.upcomingClasses.length > 0">
                     <tr v-for="(data, key) in value.upcomingClasses" :key="key">
-                        <td><div class="table_data_link link" @click="toggleLayout(data.scheduled_date.schedule.studio.id, data.scheduled_date_id)">{{ formatClassDate(`${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`, true) }}</div></td>
-                        <td>{{ data.seat.number }}</td>
+                        <td>
+                            <div class="table_data_link link" @click="toggleLayout(data.scheduled_date.schedule.studio.id, data.scheduled_date_id)" v-if="!data.scheduled_date.schedule.studio.online_class">{{ formatClassDate(`${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`, true) }}
+                            </div>
+                            <div v-else>{{ formatClassDate(`${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`, true) }}
+                            </div>
+                        </td>
+                        <td>{{ (data.scheduled_date.schedule.studio.online_class) ? '-' : data.seat.number }}</td>
                         <td>{{ (data.scheduled_date.schedule.custom_name != null) ? data.scheduled_date.schedule.custom_name : data.scheduled_date.schedule.class_type.name }}</td>
                         <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                         <td>
@@ -120,7 +126,7 @@
                         </td>
                         <td>
                             <div class="full table_actions" v-if="data.status == 'reserved'">
-                                <div class="table_action_success link" @click="getCurrentCustomer()">Sign In</div>
+                                <div class="table_action_success link" @click="updateCustomerClass(data, data.id)">Sign In</div>
                             </div>
                         </td>
                     </tr>
@@ -159,7 +165,7 @@
                 <tbody v-if="value.classHistory.length > 0">
                     <tr v-for="(data, key) in res.classHistory" :key="key">
                         <td>{{ formatClassDate(`${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`, true) }}</td>
-                        <td>{{ data.seat.number }}</td>
+                        <td>{{ (data.scheduled_date.schedule.studio.online_class) ? '-' : data.seat.number }}</td>
                         <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
                         <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                         <td>
@@ -742,7 +748,7 @@
                         result = 'No Show'
                         break;
                 }
-                 return result
+                return result
             },
             toggleLayout (studioId, scheduledDateID) {
                 const me = this
@@ -808,6 +814,23 @@
                     }, 500)
                 })
             },
+            populateUpcomingClasses () {
+                const me = this
+                me.loader(true)
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}`).then(res => {
+                    if (res.data) {
+                        me.$parent.customer = res.data.customer
+                        me.res = res.data.customer
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
             toggleForm (id) {
                 const me = this
                 me.$axios.get(`api/show-payment/${id}`).then(res => {
@@ -835,6 +858,23 @@
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
                 } else {
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
+                }
+            },
+            updateCustomerClass (data, id) {
+                const me = this
+                let formData = new FormData()
+                if ((data.status == 'reserved-guest' || data.status == 'reserved') && id != null) {
+                    me.$axios.post(`api/bookings/sign-in/${id}`, formData).then(res => {
+                        if (res.data) {
+                            setTimeout( () => {
+                                document.getElementById('upcoming_classes').click()
+                            }, 500)
+                        }
+                    })
+                } else if (data.status == 'signed-in' && id != null) {
+                    me.$store.state.bookingID = id
+                    me.$store.state.promptSignOutStatus = true
+                    document.body.classList.add('no_scroll')
                 }
             },
             getCurrentCustomer () {

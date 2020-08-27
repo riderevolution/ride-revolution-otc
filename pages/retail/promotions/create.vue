@@ -17,8 +17,8 @@
                             <div class="form_main_group">
                                 <div class="form_group">
                                     <label for="name">Promo Name <span>*</span></label>
-                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
+                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|min: 1|max:200'">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ properFormat(errors.first('name')) }}</span></transition>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_flex_radio">
@@ -36,53 +36,53 @@
                                         <label for="discount_percent">Percent Discount <span>*</span></label>
                                         <div class="violator">%</div>
                                         <input type="text" name="discount_percent" key="discount_percent" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:100'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('discount_percent')">{{ errors.first('discount_percent') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('discount_percent')">{{ properFormat(errors.first('discount_percent')) }}</span></transition>
                                     </div>
                                     <div class="form_group" v-else>
                                         <label for="discount_flat_rate">Flat Rate Discount <span>*</span></label>
                                         <input type="text" name="discount_flat_rate" key="discount_flat_rate" autocomplete="off" class="default_text" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('discount_flat_rate')">{{ errors.first('discount_flat_rate') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('discount_flat_rate')">{{ properFormat(errors.first('discount_flat_rate')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_group">
                                     <label for="promo_code">Promo Code <span>*</span></label>
                                     <input type="text" name="promo_code" autocomplete="off" class="default_text" v-validate="'required|min:6|max:16'">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_code')">{{ errors.first('promo_code') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_code')">{{ properFormat(errors.first('promo_code')) }}</span></transition>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="start_date">Start Date <span>*</span></label>
                                         <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :min-date="$moment().format('YYYY-MM-DD')" :label="'Select start date'" v-validate="'required'"></v-ctk>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="start_time">Start Time <span>*</span></label>
                                         <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'start_time'" :name="'start_time'" :label="'Select start time'" v-validate="'required'"></v-ctk>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(start_time)">{{ errors.first(start_time) | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(start_time)">{{ properFormat(errors.first(start_time)) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="end_date">End Date <span>*</span></label>
                                         <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" :label="'Select end date'" v-validate="'required'"></v-ctk>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="end_time">End Time <span>*</span></label>
                                         <v-ctk v-model="form.end_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'end_time'" :name="'end_time'" :label="'Select end time'" v-validate="'required'"></v-ctk>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(end_time)">{{ errors.first(end_time) | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(end_time)">{{ properFormat(errors.first(end_time)) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="redemption_limit">Redemption Limit <span>*</span></label>
                                         <input type="text" name="redemption_limit" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:100'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('redemption_limit')">{{ errors.first('redemption_limit') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('redemption_limit')">{{ properFormat(errors.first('redemption_limit')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="per_customer_limit">Per Customer Limit <span>*</span></label>
                                         <input type="text" name="per_customer_limit" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:100'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('per_customer_limit')">{{ errors.first('per_customer_limit') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('per_customer_limit')">{{ properFormat(errors.first('per_customer_limit')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_check">
@@ -104,7 +104,7 @@
                                         <input type="radio" id="products" value="products" name="affected_type" class="action_radio" v-validate="'required'" @change="getFilter('products')">
                                         <label for="products">Products</label>
                                     </div>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('affected_type')">{{ errors.first('affected_type') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('affected_type')">{{ properFormat(errors.first('affected_type')) }}</span></transition>
                                 </div>
                             </div>
                             <transition name="fade">
@@ -193,68 +193,6 @@
                     end_time: '',
                     query: '',
                     categoryID: ''
-                }
-            }
-        },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
                 }
             }
         },

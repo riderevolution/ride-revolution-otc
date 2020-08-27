@@ -322,6 +322,19 @@
                                         })
                                         me.$store.state.promptBookerStatus = true
                                     }
+                                } else {
+                                    if (me.res.length <= 0) {
+                                        me.$store.state.customerPackageStatus = false
+                                        setTimeout( () => {
+                                            me.$parent.$refs.plan.message = 'Please buy a class package first'
+                                        }, 10)
+                                        me.$parent.buyCredits = true
+                                        document.getElementById('credits').classList.add('active')
+                                        me.$scrollTo('#credits', {
+                                            offset: -250
+                                        })
+                                        me.$store.state.promptBookerStatus = true
+                                    }
                                 }
                             } else {
                                 me.$store.state.customerPackageStatus = false

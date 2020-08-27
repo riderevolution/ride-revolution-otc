@@ -1,45 +1,41 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>{{ replacer($route.params.slug) }} - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.status }})</h2>
+            <h2>Promotions Redeemed - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ ($route.query.promo_id != 0) ? promo.name : 'All Promotions' }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
+        <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th class="sticky">Date</th>
-                    <th class="sticky">Time</th>
-                    <th class="sticky">Order ID</th>
-                    <th class="sticky">Customer</th>
+                    <th class="sticky">Date Redeemed</th>
+                    <th class="sticky">Full Name</th>
+                    <th class="sticky">Promo</th>
+                    <th class="sticky">Promo Code</th>
+                    <th class="sticky">Discount</th>
+                    <th class="sticky">Total Discount</th>
+                    <th class="sticky">Remaining</th>
                     <th class="sticky">Status</th>
-                    <th class="sticky">Total</th>
-                    <th class="sticky">Employee</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
                 <tr v-for="(data, key) in res" :key="key">
-                    <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY') }}</td>
-                    <td>{{ $moment(data.updated_at).format('h:mm A') }}</td>
-                    <td>{{ data.payment_code }}</td>
+                    <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                     <td>
                         <div class="table_data_link" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</div>
                         <div v-else>N/A</div>
                     </td>
-                    <td :class="`${(data.status == 'paid') ? 'green' : 'red'}`">{{ (data.status == 'paid') ? 'Paid' : 'Pending' }}</td>
-                    <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
-                    <td>
-                        <div v-if="data.employee != null">
-                            {{ `${data.employee.first_name} ${data.employee.last_name}` }}
-                        </div>
-                        <div v-else>
-                            N/A
-                        </div>
-                    </td>
+                    <td>{{ data.promo.name }}</td>
+                    <td>{{ data.promo.promo_code }}</td>
+                    <td>{{ (data.promo.discount_type == 'percent') ? `${data.promo.discount_percent}%` : `Php ${data.promo.discount_flat_rate} off` }}</td>
+                    <td>Php {{ totalCount(data.total_discount) }}</td>
+                    <td>{{ data.remaining }}</td>
+                    <td>{{ (parseInt($moment(data.promo.end_Date).diff($moment(), 'days')) < 0) ? 'Inactive' : 'Active' }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
                 <tr>
-                    <td colspan="7">No Result(s) Found.</td>
+                    <td colspan="8">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>
@@ -52,9 +48,10 @@
         data () {
             return {
                 loaded: false,
+                total_count: 0,
                 res: [],
-                studio: [],
-                total: []
+                promo: [],
+                studio: []
             }
         },
         methods: {
@@ -62,22 +59,30 @@
                 const me = this
                 let formData = new FormData()
 
-                if (me.$route.query.studio_id) {
-                    formData.append('studio_id', me.$route.query.studio_id)
-                }
-                formData.append('payment_method', me.$route.params.slug)
                 formData.append('start_date', me.$route.query.start_date)
                 formData.append('end_date',  me.$route.query.end_date)
-                formData.append('status', me.$route.query.status)
-                me.$axios.post(`api/reporting/sales/sales-by-payment-type/${me.$route.params.slug}`, formData).then(res => {
+                if (me.$route.query.studio_id.length > 0) {
+                    formData.append('studio_id', me.$route.query.studio_id)
+                }
+                if (me.$route.query.promo_id.length > 0) {
+                    formData.append('promo_id', me.$route.query.promo_id)
+                }
+
+                me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
+                            me.total_count = res.data.grand_total
                             me.res = res.data.result
-                            me.total = res.data.total
 
                             if (me.$route.query.studio_id.length > 0) {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
+                                })
+                            }
+
+                            if (me.$route.query.promo_id != 0) {
+                                me.$axios.get(`api/inventory/promos/${me.$route.query.promo_id}`).then(res => {
+                                    me.promo = res.data.promo
                                 })
                             }
 

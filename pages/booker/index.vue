@@ -19,7 +19,7 @@
                                     <label for="studio_id">Studio</label>
                                     <div class="selected_studio">{{ user.studio.name }}</div>
                                 </div>
-                                <div class="form_group selection margin" v-click-outside="closeMe">
+                                <div :class="`form_group selection margin ${(studio.online_class) ? 'nope' : '' }`" v-click-outside="closeMe">
                                     <label for="q">Find a Customer</label>
                                     <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @click="toggleCustomers = true" @input="searchCustomer($event)">
                                     <transition name="slide"><span class="validation_errors alt" v-if="!findCustomer && customer == ''">Select Customer</span></transition>
@@ -42,7 +42,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div :class="`customer_selected ${(customer != '') ? 'selected' : ''}`">
+                                <div :class="`customer_selected ${(studio.online_class) ? 'nope' : '' } ${(customer != '') ? 'selected' : ''}`">
                                     <transition name="fade">
                                         <div class="customer_picked" v-if="customer != ''">
                                             <div class="customer_header">
@@ -98,7 +98,7 @@
                 </section>
                 <section id="content">
                     <div class="booker_wrapper">
-                        <div :class="`booker_classes ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
+                        <div :class="`booker_classes ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" v-if="!hide_class">
                             <div class="header_wrapper">
                                 <div class="booker_header">
                                     <div class="booker_prev" @click="generatePrevClasses()">
@@ -109,7 +109,10 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
                                     </div>
                                 </div>
-                                <div class="action_calendar_btn" @click="populateClasses()">Today</div>
+                                <div>
+                                    <div class="action_calendar_btn" @click="populateClasses()">Today</div>
+                                    <div class="action_btn alternate" @click="hideClass('hide')">Hide Classes</div>
+                                </div>
                             </div>
                             <div class="content_wrapper">
                                 <div class="class_accordion" v-for="(result, key) in results" :key="key">
@@ -136,16 +139,23 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="booker_button" v-if="hide_class">
+                            <div class="action_btn alternate" @click="hideClass('show')">Show Classes</div>
+                        </div>
                         <div class="booker_content">
                             <div class="booker_seats">
                                 <div class="seat_controls">
                                     <div class="left_side">
                                         <div class="class_options">
-                                        <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options">
+                                        <select :class="`default_select alternate ${(schedule != '') ? '' : 'disable_booker'} ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)" v-if="!studio.online_class">
                                             <option value="" disabled selected>Class Options</option>
-                                            <option :value="key" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
+                                            <option :value="classOption" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
                                         </select>
-                                        <div class="class_info">
+                                        <select :class="`default_select alternate ${(schedule != '') ? '' : 'disable_booker'} ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)" v-else>
+                                            <option value="" disabled selected>Class Options</option>
+                                            <option :value="classOption" v-for="(classOption, key) in classOnlineOptions" :key="key">{{ classOption }}</option>
+                                        </select>
+                                        <div class="class_info" v-show="!studio.online_class">
                                             <div class="action_calendar_btn" id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
                                             <div class="overlay">
                                                 <label>Customer Legend</label>
@@ -175,17 +185,17 @@
                                     </div>
                                 </div>
                                 <label class="booker_label">{{ (schedule != '') ? `${schedule.schedule.instructor_schedules[0].user.first_name} (${schedule.schedule.class_length_formatted})` : 'Please Select a Class' }}</label>
-                                <div class="controls">
+                                <div :class="`controls ${(studio.online_class) ? 'nope' : '' }`">
                                     <button id="zoom_in">Zoom in</button>
                                     <button id="zoom_out" class="margin">Zoom out</button>
                                     <button id="reset" class="margin">Reset</button>
                                 </div>
                             </div>
-                            <div :class="`right_side ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
+                            <div :class="`right_side ${(studio.online_class) ? 'nope' : '' } ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
                                 <button id="reload">Reload</button>
                             </div>
                             </div>
-                                <panZoom @init="panZoomInit" :options="{
+                                <panZoom v-if="!studio.online_class" @init="panZoomInit" :options="{
                                     bounds: true,
                                     boundsPadding: 0.2,
                                     minZoom: 0.25,
@@ -196,8 +206,11 @@
                                     smoothScroll: false,
                                     onTouch: panZoomTouch
                                 }">
-                                <seat-plan ref="plan" :customer="customer" :onlineClass="(studio.online_class) ? true : false" />
+                                    <seat-plan ref="plan" :customer="customer" :onlineClass="(studio.online_class) ? true : false" />
                                 </panZoom>
+
+                                <online-attendance-layout ref="online" v-else-if="studio.online_class" :schedule="schedule" />
+
                                 <div class="seat_legends" v-if="!studio.online_class">
                                     <div class="legend_title gray"><span></span> Booked</div>
                                     <div class="legend_title margin green"><span></span> Signed In</div>
@@ -206,14 +219,14 @@
                                     <div class="action_cancel_btn" @click="toggleDisabled()" v-if="$store.state.disableBookerUI">Cancel</div>
                                 </div>
                             </div>
-                            <div :class="`booker_footer ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
+                            <div :class="`booker_footer ${(schedule != '') ? '' : 'disable_booker' } ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
                                 <div class="booker_notepad">
                                     <h2 class="footer_title">Notepad</h2>
                                     <div class="notepad_text">
                                         <textarea name="notepad" rows="10" v-model="notePad" @focusout="updateNotes($event)"></textarea>
                                     </div>
                                 </div>
-                                <div class="booker_waitlist">
+                                <div :class="`booker_waitlist ${(studio.online_class) ? 'nope' : '' }`">
                                     <div class="footer_header">
                                         <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
                                         <a href="javascript:void(0)" :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
@@ -255,7 +268,7 @@
                 <prompt-broken-bike v-if="$store.state.promptBrokenBikeStatus" :message="brokenMessage" />
             </transition>
             <transition name="fade">
-                <prompt-booker v-if="$store.state.promptBookerStatus" :message="$refs.plan.message" />
+                <prompt-booker v-if="$store.state.promptBookerStatus" :message="($refs.plan) ? $refs.plan.message : plan.message" />
             </transition>
             <transition name="fade">
                 <prompt-booker-action v-if="$store.state.promptBookerActionStatus" :message="actionMessage" />
@@ -295,9 +308,6 @@
             </transition>
             <transition name="fade">
                 <package-layout v-if="$store.state.packageLayoutStatus" :customer="customer" />
-            </transition>
-            <transition name="fade">
-                <online-attendance-layout v-if="$store.state.onlineAttendanceLayoutStatus" :schedule="schedule" />
             </transition>
             <transition name="fade">
                 <online-attendance-customer v-if="$store.state.onlineAttendanceCustomer" :schedule="schedule" />
@@ -371,6 +381,7 @@
                 name: 'Booker',
                 access: true,
                 loaded: false,
+                hide_class: false,
                 assignType: 0,
                 brokenMessage: '',
                 inWaitlist: false,
@@ -394,6 +405,7 @@
                 schedules: [],
                 customerTypes: [],
                 classOptions: ['Cancel Class', 'Print Sign-in Sheet w/ Measurements', 'Print Room'],
+                classOnlineOptions: ['Cancel Class', 'Print Sign-in Sheet w/ Measurements'],
                 notePad: '',
                 studioID: 0,
                 current: 0,
@@ -414,7 +426,11 @@
                 schedule: '',
                 waitlists: [],
                 waitlistCount: 0,
-                user: []
+                ctr: 0,
+                user: [],
+                plan: {
+                    message: ''
+                }
             }
         },
         computed: {
@@ -426,6 +442,34 @@
             }
         },
         methods: {
+            getClassOptions (event) {
+                const me = this
+                let target = event.target.value
+                switch (target) {
+                    case 'Cancel Class':
+
+                        break
+                    case 'Print Room':
+                        window.open(`${window.location.origin}/print/booker/room?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
+                        break
+                    case 'Print Sign-in Sheet w/ Measurements':
+                        if (me.studio.online_class) {
+                            window.open(`${window.location.origin}/print/booker/online-attendance?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
+                        } else {
+                            window.open(`${window.location.origin}/print/booker/attendance?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
+                        }
+                        break
+                }
+                event.target.value = ''
+            },
+            hideClass (type) {
+                const me = this
+                if (type == 'hide') {
+                    me.hide_class = true
+                } else {
+                    me.hide_class = false
+                }
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
@@ -479,7 +523,9 @@
                             document.body.classList.add('no_scroll')
                         } else {
                             setTimeout( () => {
-                                me.$refs.plan.message = 'The customer has already been scheduled.'
+                                if (me.$refs.plan) {
+                                    me.$refs.plan.message = 'The customer has already been scheduled.'
+                                }
                             }, 10)
                             me.$store.state.promptBookerStatus = true
                             document.body.classList.add('no_scroll')
@@ -491,7 +537,9 @@
                 } else {
                     me.findCustomer = false
                     setTimeout( () => {
-                        me.$refs.plan.message = 'Please select a customer first.'
+                        if (me.$refs.plan) {
+                            me.$refs.plan.message = 'Please select a customer first.'
+                        }
                     }, 10)
                     me.$store.state.promptBookerStatus = true
                     document.body.classList.add('no_scroll')
@@ -518,7 +566,9 @@
                     }).then(() => {
                         setTimeout( () => {
                             me.getSeats()
-                            me.$refs.plan.hasCancel = false
+                            if (me.$refs.plan) {
+                                me.$refs.plan.hasCancel = false
+                            }
                             me.$store.state.seatID = 0
                             me.$store.state.disableBookerUI = false
                         }, 500)
@@ -537,7 +587,9 @@
                         setTimeout( () => {
                             document.body.classList.add('no_scroll')
                             me.$store.state.promptBookerStatus = true
-                            me.$refs.plan.message = 'No Show Confirmed.'
+                            if (me.$refs.plan) {
+                                me.$refs.plan.message = 'No Show Confirmed.'
+                            }
                         }, 500)
                     }
                 }).catch(err => {
@@ -583,7 +635,7 @@
                                 if (res.data) {
                                     setTimeout( () => {
                                         if (res.data.seat.status == 'open') {
-                                            me.actionMessage = 'Seat has been Open.'
+                                            me.actionMessage = 'Seat has been Opened.'
                                         } else {
                                             me.actionMessage = 'Seat has been Blocked.'
                                         }
@@ -614,14 +666,16 @@
                 me.$store.state.customerID = 0
                 me.findCustomer = true
                 setTimeout( () => {
-                    me.$refs.plan.hasCustomer = false
+                    if (me.$refs.plan) {
+                        me.$refs.plan.hasCustomer = false
+                    }
                 }, 10)
             },
             getBookings (data, sunique, unique) {
                 const me = this
-                if (me.studio.online_class) {
-                    me.$store.state.onlineAttendanceLayoutStatus = true
-                } else {
+                // if (me.studio.online_class) {
+                //     me.$store.state.onlineAttendanceLayoutStatus = true
+                // } else {
                     if (me.studioID) {
                         let element = document.getElementById(`class_${sunique}_${unique}`)
                         let parents = document.querySelectorAll('.booker_classes .content_wrapper .class_accordion')
@@ -639,8 +693,10 @@
                             }
                         }
                         setTimeout(() => {
-                            me.$refs.plan.fetchSeats(data.id, me.studioID)
-                            document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
+                            if (me.$refs.plan) {
+                                me.$refs.plan.fetchSeats(data.id, me.studioID)
+                                document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
+                            }
                         }, 10)
                     } else {
                         me.selectStudio = false
@@ -651,21 +707,38 @@
                             offset: -250
                         })
                     }
-                }
+                // }
 
-                me.selectCustomer = true
                 me.schedule = data
-                if (me.selectStudio) {
-                    let scheduleTime = me.$moment(`${me.schedule.date} ${me.schedule.schedule.start_time}`)
-                    let currentTime = me.$moment()
-                    if (scheduleTime.diff(currentTime) < 0) {
-                        me.findCustomer = false
-                        // me.past = true
-                        me.removeCustomer()
-                    } else {
-                        me.findCustomer = false
-                        // me.past = false
+
+                let formData = new FormData()
+                let id = me.$store.state.user.id
+
+                formData.append('scheduled_date_id', data.id)
+                formData.append('user_id', id)
+                me.$axios.post('api/schedule-notes', formData).then(res => {
+                    me.notePad = res.data.notes
+                })
+
+                if (!me.studio.online_class) {
+                    me.selectCustomer = true
+                    if (me.selectStudio) {
+                        let scheduleTime = me.$moment(`${me.schedule.date} ${me.schedule.schedule.start_time}`)
+                        let currentTime = me.$moment()
+                        if (scheduleTime.diff(currentTime) < 0) {
+                            me.findCustomer = false
+                            // me.past = true
+                            me.removeCustomer()
+                        } else {
+                            me.findCustomer = false
+                            // me.past = false
+                        }
                     }
+                } else {
+                    setTimeout( () => {
+                        me.removeCustomer()
+                        me.$refs.online.initial()
+                    }, 10)
                 }
                 me.scheduledDateID = data.id
                 me.$store.state.scheduleID = data.id
@@ -693,8 +766,10 @@
                 let target = e.target
                 let element = document.getElementById(`legend_toggler`)
                 if (element !== target) {
-                    if (element.nextElementSibling.classList.contains('active')) {
-                        element.nextElementSibling.classList.remove('active')
+                    if (element.nextElementSibling) {
+                        if (element.nextElementSibling.classList.contains('active')) {
+                            element.nextElementSibling.classList.remove('active')
+                        }
                     }
                 }
             },
@@ -792,6 +867,7 @@
                 let formData = new FormData()
                 formData.append('_method', 'PATCH')
                 formData.append('user_id', id)
+                formData.append('scheduled_date_id', me.scheduledDateID)
                 formData.append('note', event.target.value)
                 me.$axios.post('api/extras/update-user-notepad', formData).then(res => {
                     if (res.data) {
@@ -1076,7 +1152,6 @@
                         me.$axios.get('api/studios?enabled=1').then(res => {
                             me.studios = res.data.studios
                         })
-                        me.notePad = me.$store.state.user.notepad
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors

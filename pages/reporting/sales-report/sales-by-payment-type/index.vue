@@ -14,6 +14,7 @@
                         <div class="actions">
                             <a :href="`/print/reporting/sales/payment-type?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
+                                v-if="res.length > 0"
                                 class="action_btn alternate margin"
                                 :data="paymentTypeAttributes"
                                 :name="`sales-by-payment-type-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -91,6 +92,7 @@
                     <div class="cms_table_toggler">
                         <a :href="`/print/reporting/sales/payment-type/register-sales-summary?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                         <download-csv
+                            v-if="studio_res.length > 0"
                             class="action_btn alternate"
                             :data="registerSalesSummaryAttributes"
                             :name="`register-sales-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">

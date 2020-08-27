@@ -15,6 +15,7 @@
                             <div class="action_buttons">
                                 <a :href="`/print/reporting/sales/customer?customer_type_id=${form.customer_type_id}&gender=${form.gender}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                                 <download-csv
+                                    v-if="res.length > 0"
                                     class="action_btn alternate margin"
                                     :data="customerAttributes"
                                     :name="`sales-by-customer-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -70,7 +71,7 @@
                         <tbody v-if="res.length > 0">
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ `${data.first_name} ${data.last_name}` }}</nuxt-link>
+                                    <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ `${data.first_name} ${data.last_name}` }}</div>
                                 </td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
                                 <td>Php {{ totalCount(data.total_class_package) }}</td>
@@ -137,6 +138,10 @@
             }
         },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             getCustomerType () {
                 const me = this
                 let result = ''

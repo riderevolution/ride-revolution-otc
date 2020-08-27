@@ -13,16 +13,29 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                
-                                <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                                <a :href="`/print/reporting/sales/promotion?studio_id=${form.studio_id}&promo_id=${form.promo_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                                <download-csv
+                                    v-if="res.length > 0"
+                                    class="action_btn alternate margin"
+                                    :data="promotionsAttributes"
+                                    :name="`promotions-redeemed-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                    Export
+                                </download-csv>
                             </div>
                         </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
+                                <label for="studio_id">Studio</label>
+                                <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
+                                    <option value="" selected>All Studios</option>
+                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
                                 <label for="promo_id">Promo</label>
-                                <select class="default_select alternate" name="promo_id">
+                                <select class="default_select alternate" name="promo_id" v-model="form.promo_id">
                                     <option value="0" selected>All Promos</option>
                                     <option :value="promo.id" v-for="(promo, key) in promos" :key="key">{{ promo.name }}</option>
                                 </select>
@@ -62,7 +75,7 @@
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                                 <td>
-                                    <nuxt-link class="table_data_link" :to="`/customers/${data.user.id}/packages`" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</nuxt-link>
+                                    <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</div>
                                     <div v-else>N/A</div>
                                 </td>
                                 <td>{{ data.promo.name }}</td>
@@ -95,26 +108,53 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Promotions Redeemed',
                 access: true,
                 loaded: false,
                 rowCount: 0,
                 res: [],
+                values: [],
+                studios: [],
                 total_count: 0,
                 promos: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    end_date: this.$moment().format('YYYY-MM-DD'),
+                    studio_id: '',
+                    promo_id: '0'
                 }
             }
         },
+        computed: {
+            promotionsAttributes () {
+                const me = this
+                return [
+                    ...me.values.map(value => ({
+                        'Studio': me.getStudio(),
+                        'Date Redeemed': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Full Name': (value.user != null) ? `${value.user.first_name} ${value.user.last_name}` : 'N/A',
+                        'Promo': value.promo.name,
+                        'Promo Code': value.promo.promo_code,
+                        'Discount': (value.promo.discount_type == 'percent') ? `${value.promo.discount_percent}%` : `Php ${value.promo.discount_flat_rate} off`,
+                        'Total Discount': me.totalCount(value.total_discount),
+                        'Remaining': value.remaining,
+                        'Status': (parseInt(me.$moment(value.promo.end_Date).diff(me.$moment(), 'days')) < 0) ? 'Inactive' : 'Active'
+                    }))
+                ]
+            }
+        },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             submitFilter () {
                 const me = this
+                me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -136,21 +176,37 @@
             fetchData () {
                 const me = this
                 me.loader(true)
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 formData.append('start_date', me.$moment().format('YYYY-MM-DD'))
                 formData.append('end_date', me.$moment().format('YYYY-MM-DD'))
-                formData.append('studio_id', me.$cookies.get('CSID'))
                 me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.loaded = true
                             me.total_count = res.data.grand_total
                             me.res = res.data.result
+
+                            res.data.result.forEach((item, i) => {
+                                me.values.push(item)
+                            })
+
                             me.$axios.get('api/inventory/promos?enabled=1').then(res => {
                                 if (res.data) {
                                     me.promos = res.data.promos.data
                                 }
                             })
+
+                            me.$axios.get('api/studios', {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
+                                if (res.data) {
+                                    me.studios = res.data.studios
+                                }
+                            })
+
+                            me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {

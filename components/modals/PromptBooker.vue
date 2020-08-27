@@ -31,7 +31,11 @@
                     offset: -250
                 })
                 setTimeout( () => {
-                    me.$parent.$refs.plan.message = ''
+                    if (me.$parent.$refs.plan) {
+                        me.$parent.$refs.plan.message = ''
+                    } else {
+                        me.$parent.plan.message = ''
+                    }
                 }, 10)
             }
         }

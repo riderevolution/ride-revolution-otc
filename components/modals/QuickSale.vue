@@ -261,9 +261,12 @@
                                             </div
                                         </td>
                                         <td class="item_price" width="25%">PHP {{ totalCount(data.item.origPrice) }}</td>
-                                        <td class="item_price" width="25%">
-                                            <p :class="`${(data.discounted_price) ? 'prev_price' : ''}`" >PHP {{ totalCount(data.price) }}</p>
-                                            <p v-if="data.discounted_price">PHP {{ totalCount(data.discounted_price) }}</p>
+                                        <td class="item_price" width="25%" v-if="!promo_applied">
+                                            <p>PHP {{ totalCount(data.price) }}</p>
+                                        </td>
+                                        <td class="item_price" width="25%" v-else>
+                                            <p class="prev_price" >PHP {{ totalCount(data.price) }}</p>
+                                            <p>PHP {{ totalCount(data.discounted_price) }}</p>
                                         </td>
                                         <td>
                                             <div class="close_wrapper alternate" @click="removeOrder(key, data.item.id)">
@@ -348,6 +351,7 @@
                     total: 0
                 },
                 showErrors: false,
+                promo_applied: false,
                 message: '',
                 customGiftCard: {
                     classPackages: '',
@@ -386,7 +390,7 @@
                 let change = 0
                 if (value != 0) {
                     me.totalPrice.forEach((data, index) => {
-                        if (data.discounted_price) {
+                        if (me.promo_applied) {
                             total += data.discounted_price
                         } else {
                             total += data.price
@@ -402,7 +406,7 @@
                 const me = this
                 let total = 0
                 me.totalPrice.forEach((data, index) => {
-                    if (data.discounted_price) {
+                    if (me.promo_applied) {
                         total += data.discounted_price
                     } else {
                         total += data.price
@@ -468,6 +472,7 @@
                         me.$axios.post('api/quick-sale/apply-promo', formData).then(res => {
                             if (res.data != 0) {
                                 me.totalPrice = res.data.items
+                                me.promo_applied = true
                             } else {
                                 me.promoApplied = false
                                 me.$store.state.promptQuickSaleStatus = true

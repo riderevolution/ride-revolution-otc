@@ -389,7 +389,11 @@
                                     <div class="duplicate gear_item">Clear Week</div>
                                 </li>
                                 <li class="gear_list">
+<<<<<<< HEAD
                                     <div class="clear gear_item">Duplicate Week</div>
+=======
+                                    <div class="gear_item clear">Duplicate Week</div>
+>>>>>>> staging
                                 </li>
                             </ul>
                         </div>

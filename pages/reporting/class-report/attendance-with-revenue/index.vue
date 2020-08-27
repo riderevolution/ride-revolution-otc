@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Revenue for each class schedule</h2>
                         </div>
                         <div class="actions">
-                            
+
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
@@ -84,7 +84,7 @@
                         <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="res.length > 0">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment(data.date).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ $moment(data.schedule.start_time).format('h:mm A') }}</td>
+                                <td>{{ data.schedule.start_time }}</td>
                                 <td>{{ (data.schedule.set_custom_name) ? data.schedule.custom_name : data.schedule.class_type.name }}</td>
                                 <td>{{ data.schedule.instructor_schedules[0].user.first_name }} {{ data.schedule.instructor_schedules[0].user.last_name }}</td>
                                 <td>{{ data.bookings.length }}</td>
@@ -112,7 +112,7 @@
                                                     <td>{{ booking.seat.number }}</td>
                                                     <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
                                                     <td>{{ replacer(booking.status).charAt(0).toUpperCase()}}{{ replacer(booking.status).slice(1) }}</td>
-                                                    <td>{{ booking.user_package_count.class_package.name }}</td>
+                                                    <td>{{ booking.class_package.name }}</td>
                                                     <td>Php {{ totalCount(booking.revenue) }}</td>
                                                     <td>Php 0</td>
                                                     <td>Php {{ totalCount(booking.net_revenue) }}</td>
@@ -201,8 +201,10 @@
             fetchData () {
                 const me = this
                 me.loader(true)
-                let studio_id = me.$cookies.get('CSID')
-                me.form.studio_id = studio_id
+                if (me.form.studio_id == 0) {
+                    let studio_id = me.$cookies.get('CSID')
+                    me.form.studio_id = studio_id
+                }
 
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)

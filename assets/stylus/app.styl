@@ -106,22 +106,31 @@ table
     pointer-events: none
 
 @page
-    size: auto
+    size: landscape
     margin: 0mm
+
+@media print
+    body
+        -webkit-print-color-adjust: exact
 
 .print_table
     margin: 30px auto
     .text
         margin: 0 30px 30px
         h2
-            neutra_text(40px)
+            neutra_text(26px)
             color: $black
             text-transform: capitalize
         h3
             span
-                sf_pro_medium(20px)
+                sf_pro_medium(18px)
                 color: $border_alt2
                 margin-top: 5px
+    .total
+        sf_pro_medium(18px)
+        color: $black
+        text-align: right
+        margin-bottom: 15px
 
 .error_page
     &.alternate
@@ -744,6 +753,229 @@ table
             background-color: $white
             transform: rotate(-45deg)
 
+.booker_table
+    .action_wrapper
+        display: flex
+        flex-flow: row wrap
+        align-items: center
+        justify-content: space-between
+        margin-bottom: 40px
+        .form_group
+            flex: 1 0 10%
+            .default_select,
+            .default_text
+                width: 300px
+        .actions
+            margin-bottom: 0
+    .table_layout
+        position: relative
+        z-index: 1
+        margin: 20px 20px 60px
+        border-radius: 5px
+        .info
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            justify-content: space-between
+            margin-bottom: 20px
+            .text,
+            .action_buttons
+                flex: 0 0 auto
+            .action_btn
+                display: flex
+                flex-flow: row wrap
+                align-items: center
+    h2
+        neutra_text(26px)
+        color: $black
+    h3
+        span
+            sf_pro_medium(14px)
+            color: $border_alt2
+            margin-top: 5px
+    .cta
+        text-align: right
+    .class_layout
+        position: relative
+        z-index: 1
+        margin: 0 0 20px
+        .layout_header
+            display: flex
+            flex-flow: row wrap
+            align-items: center
+            justify-content: center
+            padding: 15px 30px
+            border-bottom: 1px solid $border
+            h2
+                sf_pro_semibold(22px)
+                color: $black
+            h3
+                span
+                    sf_pro_medium(14px)
+                    color: $border_alt2
+                    margin-top: 5px
+        .layout_content
+            position: relative
+            width: 100%
+            &.layout_1
+                height: 575px
+                max-height: 575px
+            &.layout_2
+                height: 485px
+                max-height: 485px
+            &.layout_3
+                height: 550px
+                max-height: 550px
+            .seats
+                position: absolute
+                top: 0
+                left: 0
+                right: 0
+                bottom: 0
+                padding: 15px 30px 15px 40px
+                .seat_header
+                    position: absolute
+                    top: calc(0% + 75px)
+                    left: 50%
+                    text-align: center
+                    transform: translateX(-50%)
+                    img
+                        width: 100px
+                        height: 100px
+                        border-radius: 50%
+                        object-fit: cover
+                        object-position: center
+                    .header_image
+                        position: relative
+                        sf_pro_bold(20px)
+                        text-transform: uppercase
+                        background-color: $green
+                        border-radius: 50%
+                        color: #fff
+                        margin: 0 auto
+                        width: 100px
+                        height: 100px
+                        .overlay
+                            position: absolute
+                            top: 50%
+                            left: 0
+                            right: 0
+                            margin: 0 auto
+                            text-align: center
+                            transform: translateY(-50%)
+                    h3
+                        sf_pro_regular(18px)
+                        color: $black
+                        margin-top: 20px
+                .seat_boxes
+                    position: absolute
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    .seat_position
+                        position: relative
+                        border-radius: 4px
+                        text-align: center
+                        cursor: pointer
+                        margin: 7px
+                        padding: 31px 21px
+                        background-color: $white
+                        border: 1px solid $black
+                        transition: .3s ease-in-out
+                        &.comp,
+                        &.blocked
+                            background-color: rgba(240, 241, 242, 0.3)
+                            background-image: url('/icons/blocked-seat.svg')
+                            background-repeat: no-repeat
+                            background-position: center
+                            background-size: cover
+                            border: 1px solid $gray_alternate
+                        &.sign_in
+                            background-color: $light_green
+                            border: 1px solid $green
+                            h2
+                                color: $black
+                        &.no_show
+                            background-color: $light_red
+                            border: 1px solid $red
+                            h2
+                                color: $black
+                        h2
+                            position: absolute
+                            bottom: calc(0% + 0px)
+                            padding: 0 5px
+                            left: 0
+                            right: 0
+                            sf_pro_medium(14px)
+                            color: $green
+                            z-index: 9
+                            text-align: left
+                        .seat_number
+                            position: absolute
+                            top: 0
+                            left: 0
+                            text-align: center
+                            sf_pro_bold(18px)
+                            color: $green
+                            padding: 0 2px
+                            transition: .3s ease-in-out
+                    &.layout_1
+                        &.bottom
+                            bottom: calc(0% + 220px)
+                        &.bottom_alt
+                            bottom: calc(0% + 130px)
+                            left: calc(0% - 50px)
+                        &.bottom_alt_2
+                            bottom: calc(0% + 40px)
+                    &.layout_2
+                        &.bottom
+                            bottom: calc(0% + 130px)
+                        &.bottom_alt
+                            bottom: calc(0% + 40px)
+                            left: calc(0% - 50px)
+                    &.layout_3
+                        &.bottom
+                            bottom: calc(0% + 220px)
+                        &.bottom_alt
+                            bottom: calc(0% + 130px)
+                            left: calc(0% - 50px)
+                        &.bottom_alt_2
+                            bottom: calc(0% + 40px)
+                            justify-content: center
+                    &.left
+                        align-items: flex-start
+                        top: calc(0% + 40px)
+                        left: calc(50% - 335px)
+                        transform: translateX(-50%)
+                        .seat_position
+                            flex: 0 0 calc(50% - 52.5px)
+                            &:nth-child(2)
+                                top: calc(0px + 60px)
+                            &:last-child
+                                top: calc(0px + 60px)
+                    &.right
+                        align-items: flex-start
+                        justify-content: flex-end
+                        top: calc(0% + 40px)
+                        right: calc(50% - 525px)
+                        transform: translateX(-50%)
+                        .seat_position
+                            flex: 0 0 calc(50% - 52.5px)
+                            &:first-child
+                                top: calc(0px + 60px)
+                            &:nth-child(3)
+                                top: calc(0px + 60px)
+                    &.bottom,
+                    &.bottom_alt,
+                    &.bottom_alt_2
+                        left: 0
+                        right: 0
+                        justify-content: center
+                        width: 100%
+                        .seat_position
+                            flex: 0 0 calc(63.5px)
+                            margin: 10px
+
 /**
  * Default Modal **/
 .upcoming_classes_layout
@@ -1261,6 +1493,8 @@ table
     z-index: 999
     width: 100%
     height: 100%
+    &.prio
+        z-index: 9999
     &.alternate
         z-index: 5
     .background
@@ -2033,6 +2267,7 @@ input::placeholder
                             text-align: center
                             transform: translateY(-50%)
                     .customer_details
+                        flex: 1 0 10%
                         padding-left: 10px
                         .customer_name
                             sf_pro_medium(18px)
@@ -5422,6 +5657,8 @@ input::placeholder
     align-items: flex-start
     justify-content: space-between
     margin-bottom: 60px
+    .booker_button
+        flex: 0 0 auto
     .booker_classes
         flex: 0 0 25%
         background-color: $white
@@ -5528,10 +5765,12 @@ input::placeholder
                             align-items: center
                             justify-content: space-between
                             span
+                                flex: 1 0 10%
                                 sf_pro_medium(14px)
                                 color: $black
                                 transition: .3s ease-in-out
                             .class_status
+                                flex: 0 0 auto
                                 sf_pro_regular(12px)
                                 color: $black
                                 padding: 5px 15px
@@ -5567,7 +5806,8 @@ input::placeholder
                                 transition: .3s ease-in-out
 
     .booker_content
-        flex: 0 0 calc(75% - 20px)
+        flex: 1 0 10%
+        padding-left: 20px
         .booker_seats
             display: block
             position: relative
@@ -5712,12 +5952,18 @@ input::placeholder
                         flex: 0 0 auto
                     .controls
                         flex: 0 0 auto
+                        &.nope
+                            pointer-events: none
+                            opacity: 0.3
                 .right_side
                     padding: 15px
                     flex: 0 0 auto
                     text-align: center
                     opacity: 1
                     transition: .3s ease-in-out
+                    &.nope
+                        pointer-events: none
+                        opacity: 0.3
                     &.disable_booker
                         opacity: 0.5
                         pointer-events: none
@@ -6259,6 +6505,9 @@ input::placeholder
             .booker_waitlist
                 flex: 0 0 calc(75% - 20px)
                 background-color: $white
+                &.nope
+                    opacity: 0.3
+                    pointer-events: none
                 .footer_title
                     padding: 10px 15px 10px 20px
                     background-image: url('/icons/waitlist-icon.svg')
@@ -7636,6 +7885,9 @@ input::placeholder
                         .form_group
                             position: relative
                             flex: 0 0 30%
+                            &.nope
+                                opacity: 0.3
+                                pointer-events: none
                             &.customer
                                 flex: 0 0 15%
                             .customer_selection
@@ -7714,6 +7966,9 @@ input::placeholder
                             min-height: 135px
                             z-index: 1
                             transition: .3s ease-in-out
+                            &.nope
+                                opacity: 0.3
+                                pointer-events: none
                             &.selected
                                 border: 2px dashed $green
                                 border-radius: 3px
@@ -7771,6 +8026,7 @@ input::placeholder
                                             text-align: center
                                             transform: translateY(-50%)
                                     .customer_details
+                                        flex: 1 0 10%
                                         padding-left: 10px
                                         .customer_name
                                             padding-bottom: 5px

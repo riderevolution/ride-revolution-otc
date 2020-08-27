@@ -192,9 +192,13 @@
                                             </div>
                                         </td>
                                         <td class="item_price" width="25%">PHP {{ totalCount(data.item.origPrice) }}</td>
-                                        <td class="item_price" width="25%">
-                                            <p :class="`${(data.discounted_price) ? 'prev_price' : ''}`" >PHP {{ totalCount(data.price) }}</p>
-                                            <p v-if="data.discounted_price">PHP {{ totalCount(data.discounted_price) }}</p>
+                                        <td class="item_price" width="25%" v-if="!promo_applied">
+                                            <p :class="`${(data.item.product.discounted_price) ? 'prev_price' : ''}`" >PHP {{ totalCount(data.price) }}</p>
+                                            <p v-if="data.item.product.discounted_price">PHP {{ totalCount(data.item.product.discounted_price) }}</p>
+                                        </td>
+                                        <td class="item_price" width="25%" v-else>
+                                            <p class="prev_price" >PHP {{ totalCount(data.price) }}</p>
+                                            <p>PHP {{ totalCount(data.discounted_price) }}</p>
                                         </td>
                                         <td>
                                             <div class="close_wrapper alternate" @click="removeOrder(key, data.item.id)">
@@ -284,6 +288,7 @@
                 showErrors: false,
                 message: '',
                 isProduct: true,
+                promo_applied: false,
                 toCompare: {
                     package: 0
                 },
@@ -294,32 +299,13 @@
                 promoApplied: false
             }
         },
-        filters: {
-            properFormat: function (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        let lastValue = ''
-                        for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
-            }
-        },
         computed: {
             showBreakDown () {
                 const me = this
-                let result = me.totalPrice
+                let result = []
+                me.totalPrice.forEach((item, index) => {
+                    result.push(item)
+                })
                 return result
             },
             computeChange () {
@@ -329,10 +315,14 @@
                 let change = 0
                 if (value != 0) {
                     me.totalPrice.forEach((data, index) => {
-                        if (data.discounted_price) {
-                            total += data.discounted_price
+                        if (me.promo_applied) {
+                            total += parseFloat(data.discounted_price)
                         } else {
-                            total += data.price
+                            if (data.item.product.discounted_price) {
+                                total += parseFloat(data.item.product.discounted_price)
+                            } else {
+                                total += parseFloat(data.price)
+                            }
                         }
                     })
                 } else {
@@ -345,10 +335,14 @@
                 const me = this
                 let total = 0
                 me.totalPrice.forEach((data, index) => {
-                    if (data.discounted_price) {
-                        total += data.discounted_price
+                    if (me.promo_applied) {
+                        total += parseFloat(data.discounted_price)
                     } else {
-                        total += data.price
+                        if (data.item.product.discounted_price) {
+                            total += parseFloat(data.item.product.discounted_price)
+                        } else {
+                            total += parseFloat(data.price)
+                        }
                     }
                 })
                 me.form.total = total
@@ -414,6 +408,7 @@
                         me.$axios.post('api/quick-sale/apply-promo', formData).then(res => {
                             if (res.data != 0) {
                                 me.totalPrice = res.data.items
+                                me.promo_applied = true
                             } else {
                                 me.promoApplied = false
                                 me.$store.state.promptQuickSaleStatus = true
