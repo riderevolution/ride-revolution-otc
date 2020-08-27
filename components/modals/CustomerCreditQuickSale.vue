@@ -193,8 +193,8 @@
                                         </td>
                                         <td class="item_price" width="25%">PHP {{ totalCount(data.item.origPrice) }}</td>
                                         <td class="item_price" width="25%">
-                                            <p :class="`${(data.discounted_price) ? 'prev_price' : ''}`" >PHP {{ totalCount(data.price) }}</p>
-                                            <p v-if="data.discounted_price">PHP {{ totalCount(data.discounted_price) }}</p>
+                                            <p :class="`${(data.item.product.discounted_price) ? 'prev_price' : ''}`" >PHP {{ totalCount(data.price) }}</p>
+                                            <p v-if="data.item.product.discounted_price">PHP {{ totalCount(data.item.product.discounted_price) }}</p>
                                         </td>
                                         <td>
                                             <div class="close_wrapper alternate" @click="removeOrder(key, data.item.id)">

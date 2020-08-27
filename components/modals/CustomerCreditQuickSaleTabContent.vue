@@ -5,7 +5,7 @@
                 <input type="checkbox" :id="`product_${value.id}_${unique}`" name="product[]" class="action_check" @change="toggleChecked(value, value.id, unique, value.package_price)" :checked="(value.isChecked == false) ? false : true ">
                 <label :for="`product_${value.id}_${unique}`">{{ value.name }}</label>
             </div>
-            <div class="total_price">PHP {{ totalCount(value.package_price) }}</div>
+            <div class="total_price">PHP {{ totalCount((value.is_promo) ? value.discounted_price : value.package_price) }}</div>
             <div class="form_group" v-if="value.id == 0">
                 <label>Qty.</label>
                 <div class="form_flex_input">
@@ -111,7 +111,7 @@
                                 id: data.id,
                                 sku: data.sku_id,
                                 name: data.name,
-                                origPrice: data.package_price,
+                                origPrice: (data.is_promo) ? data.discounted_price : data.package_price,
                                 product: data
                             },
                             type: (me.value.isPromoPackageShow) ? 'promo-package' : 'class-package',
