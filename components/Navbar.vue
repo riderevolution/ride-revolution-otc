@@ -307,7 +307,7 @@
                         const height = element.querySelector('.sub_nav_list').scrollHeight
                         const currentHeight = height * length
                         element.style.height = `${currentHeight}px`
-                    }, 300)
+                    }, 500)
                 })
                 me.isHovered = true
             },
@@ -332,6 +332,7 @@
             },
             toggleSubChild (data) {
                 const me = this
+                document.querySelector('.navbar_container').classList.add('toggled')
                 if (data.hasChild) {
                     me.thirdNavItems = data.subChildren
                     me.hasToggleThirdLevel = true
