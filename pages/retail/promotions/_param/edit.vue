@@ -189,6 +189,9 @@
                 filterData: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_time: '',
+                    end_start: '',
+                    end_time: '',
                     query: '',
                     categoryID: ''
                 }

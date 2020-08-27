@@ -147,11 +147,15 @@
                                 <div class="seat_controls">
                                     <div class="left_side">
                                         <div class="class_options">
-                                        <select :class="`default_select alternate ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)">
+                                        <select :class="`default_select alternate ${(schedule != '') ? '' : 'disable_booker'} ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)" v-if="!studio.online_class">
                                             <option value="" disabled selected>Class Options</option>
                                             <option :value="classOption" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
                                         </select>
-                                        <div class="class_info">
+                                        <select :class="`default_select alternate ${(schedule != '') ? '' : 'disable_booker'} ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)" v-else>
+                                            <option value="" disabled selected>Class Options</option>
+                                            <option :value="classOption" v-for="(classOption, key) in classOnlineOptions" :key="key">{{ classOption }}</option>
+                                        </select>
+                                        <div class="class_info" v-show="!studio.online_class">
                                             <div class="action_calendar_btn" id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
                                             <div class="overlay">
                                                 <label>Customer Legend</label>
@@ -401,6 +405,7 @@
                 schedules: [],
                 customerTypes: [],
                 classOptions: ['Cancel Class', 'Print Sign-in Sheet w/ Measurements', 'Print Room'],
+                classOnlineOptions: ['Cancel Class', 'Print Sign-in Sheet w/ Measurements'],
                 notePad: '',
                 studioID: 0,
                 current: 0,
@@ -448,7 +453,11 @@
                         window.open(`${window.location.origin}/print/booker/room?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
                         break
                     case 'Print Sign-in Sheet w/ Measurements':
-                        window.open(`${window.location.origin}/print/booker/attendance?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
+                        if (me.studio.online_class) {
+                            window.open(`${window.location.origin}/print/booker/online-attendance?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
+                        } else {
+                            window.open(`${window.location.origin}/print/booker/attendance?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
+                        }
                         break
                 }
                 event.target.value = ''

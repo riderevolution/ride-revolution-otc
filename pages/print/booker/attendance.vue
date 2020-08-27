@@ -84,6 +84,13 @@
         methods: {
             initial () {
                 const me = this
+
+                if (me.$route.query.studio_id.length > 0) {
+                    me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
+                        me.studio = res.data.studio
+                    })
+                }
+
                 me.$axios.get(`/api/seats?studio_id=${me.$route.query.studio_id}&scheduled_date_id=${me.$route.query.scheduled_date_id}`).then(res => {
                     if (res.data) {
                         me.scheduleDate = res.data.scheduled_date
@@ -93,12 +100,6 @@
                         })
 
                         me.seats = res.data.seats
-
-                        if (me.$route.query.studio_id.length > 0) {
-                            me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
-                                me.studio = res.data.studio
-                            })
-                        }
 
                         me.loaded = true
                     }

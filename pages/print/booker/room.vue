@@ -100,6 +100,13 @@
             },
             initial () {
                 const me = this
+
+                if (me.$route.query.studio_id.length > 0) {
+                    me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
+                        me.studio = res.data.studio
+                    })
+                }
+
                 let layout = `layout_${me.$route.query.studio_id}`
                 me.seats = { left: { position: 'left', layout: layout, data: [] }, right: { position: 'right', layout: layout, data: [] }, bottom: { position: 'bottom', layout: layout, data: [] }, bottom_alt: { position: 'bottom_alt', layout: layout, data: [] }, bottom_alt_2: { position: 'bottom_alt_2', layout: layout, data: [] }, }
                 me.$axios.get(`/api/seats?studio_id=${me.$route.query.studio_id}&scheduled_date_id=${me.$route.query.scheduled_date_id}`).then(res => {
@@ -126,12 +133,6 @@
                             }
                             me.ctr++
                         })
-
-                        if (me.$route.query.studio_id.length > 0) {
-                            me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
-                                me.studio = res.data.studio
-                            })
-                        }
 
                         me.loaded = true
                     }
