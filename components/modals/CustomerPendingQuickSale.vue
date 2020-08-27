@@ -152,9 +152,12 @@
                                             </div>
                                         </td>
                                         <td class="item_price" width="25%">PHP {{ totalCount(data.item.origPrice) }}</td>
-                                        <td class="item_price" width="25%">
-                                            <p :class="`${(data.discounted_price) ? 'prev_price' : ''}`" >PHP {{ totalCount(data.price) }}</p>
-                                            <p v-if="data.discounted_price">PHP {{ totalCount(data.discounted_price) }}</p>
+                                        <td class="item_price" width="25%" v-if="!promo_applied">
+                                            <p>PHP {{ totalCount(data.price) }}</p>
+                                        </td>
+                                        <td class="item_price" width="25%" v-else>
+                                            <p class="prev_price" >PHP {{ totalCount(data.price) }}</p>
+                                            <p>PHP {{ totalCount(data.discounted_price) }}</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -232,6 +235,7 @@
                     comp: '',
                     total: 0
                 },
+                promo_applied: false,
                 showErrors: false,
                 message: '',
                 isProduct: true,
@@ -240,28 +244,6 @@
                 toCheckout: [],
                 cardType: '',
                 promoApplied: false
-            }
-        },
-        filters: {
-            properFormat: function (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        let lastValue = ''
-                        for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
             }
         },
         computed: {
@@ -335,6 +317,7 @@
                         me.$axios.post('api/quick-sale/apply-promo', formData).then(res => {
                             if (res.data != 0) {
                                 me.totalPrice = res.data.items
+                                me.promo_applied = true
                             } else {
                                 me.promoApplied = false
                                 me.$store.state.promptStatus = true

@@ -1,5 +1,5 @@
 <template>
-    <div class="default_modal alternate">
+    <div class="default_modal prio">
         <div class="background" @click="toggleClose()"></div>
         <div class="confirmation_wrapper">
             <div class="confirmation_text">
