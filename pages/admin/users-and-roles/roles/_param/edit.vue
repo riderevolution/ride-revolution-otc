@@ -124,6 +124,11 @@
                         checked: false
                     },
                     {
+                        name: 'Physical Count',
+                        class: 'child',
+                        checked: false
+                    },
+                    {
                         name: 'Purchase Order',
                         class: 'child',
                         checked: false
