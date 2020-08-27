@@ -20,7 +20,7 @@
                                 </span>
                             </h1>
                             <div class="user_contact">
-                                <a :href="`tel:${customer.customer_details.co_contact_number}`" class="number">{{ customer.customer_details.co_contact_number }}</a>
+                                <a :href="`tel:${customer.customer_details.co_contact_number}`" class="number" v-if="customer.customer_details.co_contact_number">{{ customer.customer_details.co_contact_number }}</a>
                                 <a :href="`mailto:${customer.email}`" class="email">{{ customer.email }}</a>
                             </div>
                             <div class="user_summary">
