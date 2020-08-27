@@ -15,6 +15,7 @@
                             <div class="action_buttons">
                                 <a :href="`/print/reporting/sales/products?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                                 <download-csv
+                                    v-if="res.length > 0"
                                     class="action_btn alternate margin"
                                     :data="productsAttributes"
                                     :name="`sales-by-products-${$moment().format('MM-DD-YY-hh-mm')}.csv`">

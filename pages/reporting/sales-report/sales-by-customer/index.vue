@@ -15,6 +15,7 @@
                             <div class="action_buttons">
                                 <a :href="`/print/reporting/sales/customer?customer_type_id=${form.customer_type_id}&gender=${form.gender}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                                 <download-csv
+                                    v-if="res.length > 0"
                                     class="action_btn alternate margin"
                                     :data="customerAttributes"
                                     :name="`sales-by-customer-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
