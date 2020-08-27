@@ -2,7 +2,7 @@
     <div class="print_table" v-if="loaded">
         <div class="text">
             <h2>Gift Cards Redeemed - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }}</h2>
-            <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }}</span></h3>
+            <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
         <table class="cms_table print">
