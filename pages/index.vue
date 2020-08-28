@@ -201,6 +201,7 @@
                                         </div>
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
+                                            <div class="violator blue"><img src="/icons/star-blue.svg" /><span>First Class</span></div>
                                             <div class="violator label">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
