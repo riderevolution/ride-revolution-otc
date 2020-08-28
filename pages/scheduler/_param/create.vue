@@ -24,7 +24,7 @@
                                     <div class="form_group">
                                         <label for="start_time">Start Time <span>*</span></label>
                                         <v-ctk v-model="form.start_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'start_time'" :name="'start_time'" :label="'Select start time'" @input="getTime($event, 'dynamic')" v-validate="'required'"></v-ctk>
-                                        <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ errors.first('start_time') | properFormat }}</span></transition>
+                                        <transition name="slideY"><span class="validation_errors" v-if="errors.has('start_time')">{{ properFormat(errors.first('start_time')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="peak_type">Peak Type <span>*</span></label>
@@ -33,7 +33,7 @@
                                             <option value="peak">Peak</option>
                                             <option value="non-peak">Non-Peak</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('peak_type')">{{ errors.first('peak_type') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('peak_type')">{{ properFormat(errors.first('peak_type')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
@@ -43,7 +43,7 @@
                                             <option value="" selected disabled>Select a Class Type</option>
                                             <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key">{{ classType.name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('class_type_id')">{{ errors.first('class_type_id') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('class_type_id')">{{ properFormat(errors.first('class_type_id')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <div class="form_check mb_10">
@@ -56,7 +56,7 @@
                                     <div class="form_group" v-if="form.setCustomName">
                                         <label for="custom_name">Custom Class Type Name <span>*</span></label>
                                         <input type="text" name="custom_name" autocomplete="off" class="default_text" placeholder="Enter customer class type name" key="custom_name" v-validate="'required'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_name')">{{ errors.first('custom_name') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('custom_name')">{{ properFormat(errors.first('custom_name')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="temp_class_length">Class Length</label>
@@ -66,7 +66,7 @@
                                 <div class="form_group" v-if="studio.online_class">
                                     <label for="zoom_link">Zoom Link <span>*</span></label>
                                     <input type="text" name="zoom_link" autocomplete="off" class="default_text" placeholder="Enter zoom link" v-validate="{required: true, url: {require_protocol: true }}">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('zoom_link')">{{ errors.first('zoom_link') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('zoom_link')">{{ properFormat(errors.first('zoom_link')) }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="description">Description</label>
@@ -76,14 +76,14 @@
                                     <div class="form_group" v-if="isPrivate">
                                         <label for="occassion">Occassion <span>*</span></label>
                                         <input type="text" name="occassion" autocomplete="off" class="default_text" v-validate="'required|max:70'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('occassion')">{{ errors.first('occassion') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('occassion')">{{ properFormat(errors.first('occassion')) }}</span></transition>
                                     </div>
                                 </transition>
                                 <div class="form_flex">
                                     <div class="form_group" v-if="isPrivate">
                                         <label for="no_of_riders">No. of Riders <span>*</span></label>
                                         <input type="text" name="no_of_riders" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:99'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('no_of_riders')">{{ errors.first('no_of_riders') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('no_of_riders')">{{ properFormat(errors.first('no_of_riders')) }}</span></transition>
                                     </div>
                                     <div class="form_group flex">
                                         <label for="class_credits">Credits to Deduct <span>*</span></label>
@@ -91,7 +91,7 @@
                                             <input type="text" name="class_credits" autocomplete="off" v-model="form.credits" class="default_text" v-validate="'required|numeric|min_value:1|max_value:9'">
                                             <div class="up" @click="addCount()"></div>
                                             <div class="down" @click="subtractCount()"></div>
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ errors.first('class_credits') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('class_credits')">{{ properFormat(errors.first('class_credits')) }}</span></transition>
                                         </div>
                                     </div>
                                 </div>
@@ -117,12 +117,12 @@
                                                 <option value="every-week">Every Week</option>
                                                 <option value="every-month">Every Month</option>
                                             </select>
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('repetition')">{{ errors.first('repetition') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('repetition')">{{ properFormat(errors.first('repetition')) }}</span></transition>
                                         </div>
                                         <div class="form_group">
                                             <label for="end_date">End Date <span>*</span></label>
                                             <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :min-date="$moment(parseInt($route.params.param)).add(1, 'd').format('YYYY-MM-DD')" :label="'Select end date'" v-validate="'required'"></v-ctk>
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                                         </div>
                                     </div>
                                 </transition>
@@ -140,7 +140,7 @@
                                             <option value="" selected disabled>Select an Instructor</option>
                                             <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('instructor_id')">{{ errors.first('instructor_id') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('instructor_id')">{{ properFormat(errors.first('instructor_id')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="substitute_instructor_id">Substitute Instructor</label>
@@ -148,7 +148,7 @@
                                             <option value="" selected disabled>Select an Instructor</option>
                                             <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('substitute_instructor_id')">{{ errors.first('substitute_instructor_id') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('substitute_instructor_id')">{{ properFormat(errors.first('substitute_instructor_id')) }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -237,68 +237,6 @@
                     credits: 0,
                     studio_id: 0,
                     end_date: this.$moment(parseInt(this.$route.params.param)).add(1, 'd').format('YYYY-MM-DD')
-                }
-            }
-        },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
                 }
             }
         },
