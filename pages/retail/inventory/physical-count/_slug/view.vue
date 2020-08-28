@@ -43,15 +43,8 @@
                                 <td>{{ data.variant }}</td>
                                 <td>{{ data.product.name }}</td>
                                 <td>{{ data.product_quantities[0].quantity }}</td>
-                                <td width="20%">
-                                    <div class="form_group no_margin">
-                                        <input type="text" name="new_quantity[]" autocomplete="off" v-model="data.new_qty" @change="computeQty(data)" class="default_text" :data-vv-name="`variant_form_${key}.new_quantity[]`" v-validate="{numeric: true, min_value: 0, max_value: data.product_quantities[0].quantity}" value="0">
-
-                                        <input type="hidden" name="sku_id" :value="data.sku_id">
-                                        <input type="hidden" name="computed_quantity[]" :value="data.computed_qty">
-
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${key}.new_quantity[]`)">{{ properFormat(errors.first(`variant_form_${key}.new_quantity[]`)) }}</span></transition>
-                                    </div>
+                                <td>
+                                    {{ data.new_qty }}
                                 </td>
                                 <td>{{ data.computed_qty }}</td>
                             </tr>

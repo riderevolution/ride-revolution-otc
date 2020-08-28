@@ -30,7 +30,9 @@
                 document.body.classList.remove('no_scroll')
                 setTimeout( () => {
                     me.$parent.actionMessage = ''
-                    me.$parent.$refs.plan.message = ''
+                    if (me.$refs.plan) {
+                        me.$parent.$refs.plan.message = ''
+                    }
                 }, 10)
             }
         }

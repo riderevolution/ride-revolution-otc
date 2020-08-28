@@ -304,6 +304,9 @@
                 <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
             </transition>
             <transition name="fade">
+                <booker-cancel-class v-if="cancel" :scheduled_date_id="scheduleID" />
+            </transition>
+            <transition name="fade">
                 <attendance-layout v-if="$store.state.attendanceLayoutStatus" :customer="customer" />
             </transition>
             <transition name="fade">
@@ -350,6 +353,7 @@
     import RedeemGiftCard from '../../components/modals/RedeemGiftCard'
     import RedeemGiftCardSuccess from '../../components/modals/RedeemGiftCardSuccess'
     import BookerMenuPrompt from '../../components/modals/BookerMenuPrompt'
+    import BookerCancelClass from '../../components/modals/BookerCancelClass'
     export default {
         components: {
             Foot,
@@ -374,7 +378,8 @@
             OnlineAttendancePrompt,
             RedeemGiftCard,
             RedeemGiftCardSuccess,
-            BookerMenuPrompt
+            BookerMenuPrompt,
+            BookerCancelClass
         },
         data () {
             return {
@@ -423,6 +428,7 @@
                 selectStudio: false,
                 buyCredits: false,
                 findCustomer: true,
+                cancel: false,
                 schedule: '',
                 waitlists: [],
                 waitlistCount: 0,
@@ -447,7 +453,7 @@
                 let target = event.target.value
                 switch (target) {
                     case 'Cancel Class':
-
+                        me.cancel = true
                         break
                     case 'Print Room':
                         window.open(`${window.location.origin}/print/booker/room?scheduled_date_id=${me.scheduledDateID}&studio_id=${me.studio.id}`, '_blank')
