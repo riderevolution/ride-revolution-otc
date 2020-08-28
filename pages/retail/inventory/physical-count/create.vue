@@ -33,7 +33,7 @@
                                 <th class="sticky">Variant Name</th>
                                 <th class="sticky">Product Name</th>
                                 <th class="sticky">Current Qty.</th>
-                                <th class="sticky">New Qty.</th>
+                                <th class="sticky">Deduct Qty.</th>
                                 <th class="sticky">Computed Qty.</th>
                             </tr>
                         </thead>
@@ -45,7 +45,7 @@
                                 <td>{{ data.product_quantities[0].quantity }}</td>
                                 <td width="20%">
                                     <div class="form_group no_margin">
-                                        <input type="text" name="new_quantity[]" autocomplete="off" v-model="data.new_qty" @change="computeQty(data)" class="default_text" :data-vv-name="`variant_form_${key}.new_quantity[]`" v-validate="{numeric: true, min_value: 0, max_value: data.product_quantities[0].quantity}" value="0">
+                                        <input type="text" name="new_quantity[]" autocomplete="off" v-model="data.deduct_qty" @change="computeQty(data)" class="default_text" :data-vv-name="`variant_form_${key}.new_quantity[]`" v-validate="{numeric: true, min_value: 0, max_value: data.product_quantities[0].quantity}" value="0">
 
                                         <input type="hidden" name="sku_id[]" :value="data.sku_id">
                                         <input type="hidden" name="computed_quantity[]" :value="data.computed_qty">
@@ -58,7 +58,7 @@
                         </tbody>
                         <tbody class="no_results" v-else>
                             <tr>
-                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                <td colspan="6">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -126,7 +126,7 @@
             resetVariantQuantities () {
                 const me = this
                 me.res.forEach((data, index) => {
-                    data.new_qty = 0
+                    data.deduct_qty = 0
                     data.computed_qty = 0
                 })
             },
@@ -155,7 +155,7 @@
             },
             computeQty (data) {
                 const me = this
-                data.computed_qty = parseInt(data.product_quantities[0].quantity) - parseInt(data.new_qty)
+                data.computed_qty = parseInt(data.product_quantities[0].quantity) - parseInt(data.deduct_qty)
                 if (data.computed_qty < 0) {
                     data.computed_qty = 0
                 }
@@ -168,7 +168,7 @@
                         setTimeout( () => {
                             res.data.productVariants.forEach((data, index) => {
                                 data.searched = true
-                                data.new_qty = 0
+                                data.deduct_qty = 0
                                 data.computed_qty = 0
                                 me.res.push(data)
                             })
