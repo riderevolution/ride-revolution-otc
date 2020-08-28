@@ -309,7 +309,7 @@
         </div>
         <foot v-if="$store.state.isAuth" />
         <transition name="fade">
-            <dashboard-attendance v-if="$store.state.dashboardAttendanceStatus" :data="targets.totalAttendance" :studio_id="form.studio_id" :month="form.month" />
+            <dashboard-attendance v-if="$store.state.dashboardAttendanceStatus" :data="targets.totalAttendance" :studio_id="res.current_studio_id" :month="form.month" />
         </transition>
         <transition name="fade">
             <pending-transactions v-if="$store.state.pendingTransactionsStatus" />
@@ -537,7 +537,7 @@
                 me.loader(true)
                 let targetFormData = new FormData()
                 targetFormData.append('month', me.form.month)
-                targetFormData.append('studio_id', me.form.studio_id)
+                targetFormData.append('studio_id', me.res.current_studio_id)
                 me.$axios.post('api/portal-dashboard/targets', targetFormData).then(res => {
                     me.targets.totalAttendance = res.data.totalAttendance
                     me.targets.packageSales = res.data.packageSales
@@ -628,7 +628,7 @@
                 let formData = new FormData()
                 formData.append('body', me.form.notes)
                 formData.append('date', me.form.note_date)
-                formData.append('studio_id', me.form.studio_id)
+                formData.append('studio_id', me.res.current_studio_id)
                 me.$axios.post('api/daily-notepads', formData, {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -652,7 +652,7 @@
                 const me = this
                 me.loader(true)
                 let token = me.$cookies.get('70hokcotc3hhhn5')
-                me.$axios.get(`api/daily-notepads?date=${date}&studio_id=${me.form.studio_id}`, {
+                me.$axios.get(`api/daily-notepads?date=${date}&studio_id=${me.res.current_studio_id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -677,7 +677,7 @@
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                formData.append('studio_id', me.form.studio_id)
+                formData.append('studio_id', me.res.current_studio_id)
                 me.$axios.post('api/portal-dashboard/top-riders', formData).then(res => {
                     me.topRiders = res.data.topRiders
                 }).catch(err => {
@@ -692,7 +692,7 @@
             getAlerts () {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}&studio_id=${me.form.studio_id}`).then(res => {
+                me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}&studio_id=${me.res.current_studio_id}`).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             let tempMilestone = []
@@ -728,12 +728,12 @@
                         let formData = new FormData()
                         formData.append('start_date', me.form.start_date)
                         formData.append('end_date', me.form.end_date)
-                        formData.append('studio_id', me.form.studio_id)
+                        formData.append('studio_id', me.res.current_studio_id)
                         me.$axios.post('api/portal-dashboard/top-riders', formData).then(res => {
                             me.topRiders = res.data.topRiders
                         })
 
-                        me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}&studio_id=${me.form.studio_id}`).then(res => {
+                        me.$axios.get(`api/portal-dashboard/alerts?period=${me.form.period}&studio_id=${me.res.current_studio_id}`).then(res => {
                             if (res.data) {
                                 let tempMilestone = []
 
@@ -756,7 +756,7 @@
 
                         let targetFormData = new FormData()
                         targetFormData.append('month', me.form.month)
-                        targetFormData.append('studio_id', me.form.studio_id)
+                        targetFormData.append('studio_id', me.res.current_studio_id)
                         me.$axios.post('api/portal-dashboard/targets', targetFormData).then(res => {
                             me.targets.totalAttendance = res.data.totalAttendance
                             me.targets.packageSales = res.data.packageSales

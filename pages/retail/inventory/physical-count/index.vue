@@ -6,7 +6,7 @@
                     <div class="action_wrapper">
                         <h1 class="header_title">Physical Count</h1>
                         <div class="actions">
-                            <div class="total">Total: {{ totalItems(res.purchaseOrders.total) }}</div>
+                            <div class="total">Total: 0</div>
                         </div>
                     </div>
                     <div class="action_buttons">
@@ -29,36 +29,34 @@
                     <table class="cms_table alt">
                         <thead>
                             <tr>
-                                <th class="stick">P.O. Number</th>
-                                <th class="stick">Supplier</th>
-                                <th class="stick">Studio</th>
-                                <th class="stick">Shipping Cost</th>
-                                <!-- <th class="stick">Additional Cost</th> -->
-                                <th class="stick">Total</th>
-                                <th class="stick">Requisition Date</th>
                                 <th class="stick">Status</th>
+                                <th class="stick">Date Started</th>
+                                <th class="stick">Date Closed</th>
+                                <th class="stick">Action</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.purchaseOrders.data.length > 0">
-                            <tr v-for="(data, key) in res.purchaseOrders.data" :key="key">
-                                <td><nuxt-link class="table_data_link alternate" :to="`${$route.path}/${data.id}/show`">{{ data.purchase_order_number }}</nuxt-link></td>
-                                <td>{{ data.supplier.name }}</td>
-                                <td>{{ data.studio.name }}</td>
-                                <td>PHP {{ totalCount(data.total_shipping_cost) }}</td>
-                                <!-- <td>PHP {{ totalCount(data.total_additional_cost) }}</td> -->
-                                <td>PHP {{ totalCount(data.total_cost) }}</td>
-                                <td>{{ formatDate(data.created_at) }}</td>
-                                <td :class="`${(data.paid == 1) ? 'green' : 'red'}`" v-if="status != 2">{{ (data.paid == 1) ? 'Paid' : 'Unpaid' }}</td>
-                                <td class="green" v-else>Received</td>
+                        <tbody>
+                            <tr>
+                                <td class="green">Open</td>
+                                <td>{{ $moment().format('MMMM DD, YYYY hh:mm A') }}</td>
+                                <td>{{ $moment().format('MMMM DD, YYYY hh:mm A') }}</td>
+                                <td>
+                                    <div class="table_actions">
+                                        <div class="table_action_edit link">Edit</div>
+                                        <div class="table_action_edit link">View</div>
+                                        <div class="table_action_success link">Export</div>
+                                        <div class="table_action_cancel link">Delete</div>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
-                        <tbody class="no_results" v-else>
+                        <!-- <tbody class="no_results" v-else>
                             <tr>
                                 <td :colspan="rowCount">No Result(s) Found.</td>
                             </tr>
-                        </tbody>
+                        </tbody> -->
                     </table>
-                    <pagination :apiRoute="res.purchaseOrders.path" :current="res.purchaseOrders.current_page" :last="res.purchaseOrders.last_page" />
+                    <!-- <pagination :apiRoute="res.purchaseOrders.path" :current="res.purchaseOrders.current_page" :last="res.purchaseOrders.last_page" /> -->
                 </section>
             </div>
             <foot v-if="$store.state.isAuth" />
@@ -76,7 +74,7 @@
         },
         data () {
             return {
-                name: 'Purchase Order',
+                name: 'Physical Count',
                 filter: false,
                 access: true,
                 loaded: false,
@@ -112,11 +110,6 @@
                 if (value) {
                     return this.$moment(value).format('MMM DD, YYYY')
                 }
-            },
-            toggleOnOff (value) {
-                const me = this
-                me.status = value
-                me.fetchData(value)
             },
             fetchData (value) {
                 const me = this
