@@ -13,7 +13,8 @@
                         </div>
                         <div class="action_buttons">
                             <div class="action_cancel_btn" @click="resetVariantQuantities()">Reset Quantities</div>
-                            <div class="action_btn alternate" @click="submit()">Save &amp; Update Inventory</div>
+                            <div class="action_btn alternate" @click="submit('open')">Save</div>
+                            <div class="action_success_btn margin alternate" @click="submit('closed')">Save &amp; Update Inventory</div>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -103,15 +104,21 @@
             }
         },
         methods: {
-            submit () {
+            submit (type) {
                 const me = this
                 let formData = new FormData(document.getElementById('content'))
+                if (type == 'open') {
+                    formData.append('status', 1)
+                } else {
+                    formData.append('status', 0)
+                }
                 formData.append('studio_id', me.studio.id)
                 me.loader(true)
-                me.$axios.post('api/inventory/product-variants', formData).then(res => {
+                me.$axios.post('api/inventory/physical-count', formData).then(res => {
                     setTimeout( () => {
                         if (res.data) {
-                            me.$router.push(`/${me.prevRoute}/${me.lastRoute}`)
+                            console.log(res.data);
+                            // me.$router.push(`/${me.prevRoute}/${me.lastRoute}`)
                         }
                     }, 500)
                 }).catch(err => {
