@@ -7,6 +7,10 @@
                         <h1 class="header_title">Physical Count</h1>
                         <div class="actions">
                             <div class="total">Total: 0</div>
+                            <div class="toggler">
+                                <div :class="`status ${(status == 'open') ? 'active' : ''}`" @click="toggleOnOff(status)">Open</div>
+                                <div :class="`status ${(status == 'closed') ? 'active' : ''}`" @click="toggleOnOff(status)">Closed</div>
+                            </div>
                         </div>
                     </div>
                     <div class="action_buttons">
@@ -40,7 +44,7 @@
                                 <td class="green">Open</td>
                                 <td>{{ $moment().format('MMMM DD, YYYY hh:mm A') }}</td>
                                 <td>{{ $moment().format('MMMM DD, YYYY hh:mm A') }}</td>
-                                <td>
+                                <td width="25%">
                                     <div class="table_actions">
                                         <div class="table_action_edit link">Edit</div>
                                         <div class="table_action_edit link">View</div>
@@ -80,7 +84,7 @@
                 loaded: false,
                 prevRoute: '',
                 rowCount: 0,
-                status: 0,
+                status: 'open',
                 res: [],
                 studios: [],
                 form:{
@@ -89,6 +93,11 @@
             }
         },
         methods: {
+            toggleOnOff (value) {
+                const me = this
+                me.status = value
+                me.fetchData(value)
+            },
             submissionSuccess () {
                 const me = this
                 me.filter = true
