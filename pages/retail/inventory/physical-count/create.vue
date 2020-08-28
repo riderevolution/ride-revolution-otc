@@ -178,12 +178,17 @@
                 me.$axios.get(`api/inventory/product-variants?studio_id=${me.form.studio_id}&for_reporting=1`).then(res => {
                     if (res.data) {
                         setTimeout( () => {
+                            res.data.productVariants.sort((a, b) => {
+                                return parseInt(b.product_quantities[0].quantity) - parseInt(a.product_quantities[0].quantity)
+                            })
+
                             res.data.productVariants.forEach((data, index) => {
                                 data.searched = true
                                 data.deduct_qty = 0
                                 data.computed_qty = 0
                                 me.res.push(data)
                             })
+
                             me.loaded = true
                         }, 500)
                     }
