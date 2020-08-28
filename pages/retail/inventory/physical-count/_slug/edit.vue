@@ -49,7 +49,6 @@
                                         <input type="text" name="deduct_quantity[]" autocomplete="off" v-model="data.deduct_qty" @change="computeQty(data)" class="default_text" :data-vv-name="`variant_form_${key}.deduct_quantity[]`" v-validate="{numeric: true, min_value: 0, max_value: data.product_quantities[0].quantity}" value="0">
 
                                         <input type="hidden" name="sku_id[]" :value="data.sku_id">
-                                        <input type="hidden" name="product_quantity_id[]" :value="data.product_quantities[0].id">
                                         <input type="hidden" name="computed_quantity[]" :value="data.computed_qty">
 
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has(`variant_form_${key}.deduct_quantity[]`)">{{ properFormat(errors.first(`variant_form_${key}.deduct_quantity[]`)) }}</span></transition>
