@@ -29,6 +29,7 @@
                     me.$axios.delete(`api/schedules/${me.scheduled_date_id}`).then(res => {
                         if (res.data) {
                             setTimeout( () => {
+                                me.$parent.cancel = false
                                 me.$parent.actionMessage = 'Schedule has been successfully cancelled'
                                 me.$store.state.promptBookerActionStatus = true
                             }, 500)
@@ -39,7 +40,21 @@
                         me.$store.state.errorStatus = true
                     }).then(() => {
                         setTimeout( () => {
-                            document.getElementById('online').click()
+                            document.querySelectorAll('.content_wrapper .class_accordion').forEach((value, index) => {
+                                value.classList.remove('toggled')
+                                value.querySelector('.accordion_content').style.height = 0
+                            })
+                            if (me.$parent.studio.online_class) {
+                                document.getElementById('online').click()
+                            } else {
+                                setTimeout(() => {
+                                    if (me.$parent.$refs.plan) {
+                                        me.$parent.$refs.plan.fetchSeats(null, me.$parent.studioID)
+                                        document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.$parent.customWidth}, ${me.$parent.customHeight})`
+                                    }
+                                }, 10)
+                            }
+                            me.loader(false)
                         }, 500)
                     })
 

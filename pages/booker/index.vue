@@ -304,7 +304,7 @@
                 <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
             </transition>
             <transition name="fade">
-                <booker-cancel-class v-if="cancel" :scheduled_date_id="scheduleID" />
+                <booker-cancel-class v-if="cancel" :scheduled_date_id="scheduledDateID" />
             </transition>
             <transition name="fade">
                 <attendance-layout v-if="$store.state.attendanceLayoutStatus" :customer="customer" />
@@ -858,8 +858,10 @@
                     value.querySelector('.accordion_content').style.height = 0
                 })
                 setTimeout(() => {
-                    me.$refs.plan.fetchSeats(null, me.studioID)
-                    document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
+                    if (me.$refs.plan) {
+                        me.$refs.plan.fetchSeats(null, me.studioID)
+                        document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
+                    }
                 }, 10)
                 me.$axios.get(`api/studios/${me.studioID}`).then(res => {
                     me.studio = res.data.studio
@@ -1145,7 +1147,9 @@
                             if (res.data != 0) {
                                 setTimeout( () => {
                                     setTimeout( () => {
-                                        me.$refs.plan.hasCustomer = true
+                                        if (me.$refs.plan) {
+                                            me.$refs.plan.hasCustomer = true
+                                        }
                                     }, 10)
                                     me.user = res.data.user
                                     me.studio = res.data.user.studio

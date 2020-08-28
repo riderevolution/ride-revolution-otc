@@ -2,7 +2,7 @@
     <div class="plan_wrapper">
         <seat-plan-box v-for="(seat, key) in seats" :data="seat.data" :customer="customer" :position="seat.position" :layout="seat.layout" :total="ctr" :key="key" v-if="hasFetchSeat && !onlineClass" />
         <div class="no_results" v-if="!hasFetchSeat">
-            Please select a studio before viewing classes.
+            Please select a class first.
         </div>
         <div class="no_results" v-if="hasFetchSeat && onlineClass">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit
