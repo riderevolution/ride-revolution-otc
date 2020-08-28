@@ -163,8 +163,12 @@
             },
             computeQty (data) {
                 const me = this
-                data.computed_qty = parseInt(data.product_quantities[0].quantity) - parseInt(data.deduct_qty)
-                if (data.computed_qty < 0) {
+                if (data.computed_qty != '') {
+                    data.computed_qty = parseInt(data.product_quantities[0].quantity) - parseInt(data.deduct_qty)
+                    if (data.computed_qty < 0) {
+                        data.computed_qty = 0
+                    }
+                } else {
                     data.computed_qty = 0
                 }
             },
