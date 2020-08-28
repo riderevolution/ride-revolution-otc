@@ -57,7 +57,7 @@
                                     </div>
                                     <div class="form_group">
                                         <label for="phone">Phone</label>
-                                        <input type="text" name="phone" placeholder="Enter phone number" autocomplete="off" class="default_text" v-validate="'numeric|min:7|max:15'">
+                                        <input type="text" name="phone" placeholder="Enter phone number" autocomplete="off" class="default_text" v-validate="{regex: '^[0-9\-_ ]*$', min: 7, max: 11}">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('phone')">{{ errors.first('phone') | properFormat }}</span></transition>
                                     </div>
                                 </div>
