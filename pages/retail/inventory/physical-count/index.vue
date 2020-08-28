@@ -16,8 +16,8 @@
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
-                                <select class="default_select alternate" name="studio_id">
-                                    <option value="" selected>All Studios</option>
+                                <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
+                                    <option value="" selected disabled>Select a Studio</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
@@ -84,7 +84,10 @@
                 rowCount: 0,
                 status: 0,
                 res: [],
-                studios: []
+                studios: [],
+                form:{
+                    studio_id: ''
+                }
             }
         },
         methods: {
@@ -131,10 +134,20 @@
                     }, 650)
                 })
             },
-            async fetchStudiosSuppliers () {
+            async fetchStudios () {
                 const me = this
-                me.$axios.get('api/studios').then(res => {
-                    me.studios = res.data.studios
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                let studio_id = me.$cookies.get('CSID')
+
+                me.$axios.get('api/studios', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data) {
+                        me.studios = res.data.studios
+                        me.form.studio_id = studio_id
+                    }
                 })
             }
         },
@@ -143,7 +156,7 @@
             await me.checkPagePermission(me)
             if (me.access) {
                 me.fetchData(0)
-                me.fetchStudiosSuppliers()
+                me.fetchStudios()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

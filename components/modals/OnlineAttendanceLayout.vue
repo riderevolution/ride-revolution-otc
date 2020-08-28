@@ -16,7 +16,6 @@
                     </div>
                     <div class="actions">
                         <div class="total">Total: {{ totalItems(res.length) }}</div>
-                        <a :href="`/print/online-class/${schedule.id}`" target="_blank" v-if="res.length > 0" class="action_btn alternate">Print</a>
                         <download-csv
                             class="action_btn alternate"
                             :data="attributes"
