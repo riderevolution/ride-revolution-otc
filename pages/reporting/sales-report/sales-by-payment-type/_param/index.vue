@@ -35,6 +35,7 @@
                                 <th class="sticky">Status</th>
                                 <th class="sticky">Total</th>
                                 <th class="sticky">Employee</th>
+                                <th class="sticky">Remarks</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.length > 0">
@@ -56,6 +57,7 @@
                                         N/A
                                     </div>
                                 </td>
+                                <td>{{ data.payment_method.remarks }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -106,14 +108,15 @@
                     ...me.values.map(value => ({
                         'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
                         'Payment Type': me.$route.params.param,
-                        'Payment status': me.status,
+                        'Payment Status': me.status,
                         'Date': me.$moment(value.updated_at).format('MMMM DD, YYYY'),
                         'Time': me.$moment(value.updated_at).format('h:mm A'),
                         'Order ID': value.payment_code,
-                        'Customer': `${value.user.first_name} ${value.user.last_name}`,
+                        'Customer': (value.user == null) ? 'N/A' : `${value.user.first_name} ${value.user.last_name}`,
                         'Status': (value.status == 'paid') ? 'Paid' : 'Pending',
                         'Total': value.total,
-                        'Employee': (value.employee != null) ? `${value.employee.first_name} ${value.employee.last_name}` : 'N/A'
+                        'Employee': (value.employee != null) ? `${value.employee.first_name} ${value.employee.last_name}` : 'N/A',
+                        'Remarks': value.payment_method.remarks
                     }))
                 ]
             }
@@ -134,7 +137,7 @@
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 formData.append('payment_method', me.form.payment_method)
-                if (me.$route.query.studio_id.length > 0) {
+                if (me.$route.query.studio_id) {
                     me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.form.studio_id)
                 }

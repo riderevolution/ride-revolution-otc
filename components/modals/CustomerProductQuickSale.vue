@@ -242,6 +242,12 @@
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.reference_number')">{{ properFormat(errors.first('checkout_form.reference_number')) }}</span></transition>
                             </div>
                         </div>
+                        <div class="form_main_group">
+                            <div class="form_group">
+                                <label for="remarks">Remarks</label>
+                                <textarea name="remarks" rows="8" id="remarks" class="default_text" placeholder="Enter remarks"></textarea>
+                            </div>
+                        </div>
                     </div>
                     <div class="right_side">
                         <div class="breakdown_wrapper">
