@@ -7,13 +7,9 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>Physical Count for {{ studio.name }}</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <h1>Physical Count for {{ physical_count.studio.name }}</h1>
+                                <span>{{ $moment(physical_count.updated_at).format('MMMM DD, YYYY hh:mm A') }}</span>
                             </div>
-                        </div>
-                        <div class="action_buttons">
-                            <div class="action_cancel_btn" @click="resetVariantQuantities()">Reset Quantities</div>
-                            <div class="action_btn alternate" @click="submit()">Save &amp; Update Inventory</div>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -33,25 +29,25 @@
                                 <th class="sticky">Variant Name</th>
                                 <th class="sticky">Product Name</th>
                                 <th class="sticky">Current Qty.</th>
-                                <th class="sticky">New Qty.</th>
+                                <th class="sticky">Deduct Qty.</th>
                                 <th class="sticky">Computed Qty.</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.length > 0 && !no_search_found">
-                            <tr v-for="(data, key) in populateVariants" :key="key" v-show="data.searched" :data-vv-scope="`variant_form_${key}`">
-                                <td>{{ data.sku_id }}</td>
-                                <td>{{ data.variant }}</td>
-                                <td>{{ data.product.name }}</td>
-                                <td>{{ data.product_quantities[0].quantity }}</td>
+                            <tr v-for="(data, key) in populateVariants" :key="key" v-show="data.product_quantity.product_variant.searched" :data-vv-scope="`variant_form_${key}`">
+                                <td>{{ data.product_quantity.product_variant.sku_id }}</td>
+                                <td>{{ data.product_quantity.product_variant.variant }}</td>
+                                <td>{{ data.product_quantity.product_variant.product.name }}</td>
+                                <td>{{ data.product_quantity.quantity }}</td>
                                 <td>
-                                    {{ data.new_qty }}
+                                    {{ data.product_quantity.product_variant.deduct_qty }}
                                 </td>
-                                <td>{{ data.computed_qty }}</td>
+                                <td>{{ data.product_quantity.product_variant.computed_qty }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
                             <tr>
-                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                <td colspan="6">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -76,6 +72,7 @@
                 access: true,
                 loaded: false,
                 no_search_found: false,
+                physical_count: [],
                 res: [],
                 studio: [],
                 form: {
@@ -96,47 +93,20 @@
             }
         },
         methods: {
-            submit () {
-                const me = this
-                let formData = new FormData(document.getElementById('content'))
-                formData.append('studio_id', me.studio.id)
-                me.loader(true)
-                me.$axios.post('api/inventory/product-variants', formData).then(res => {
-                    setTimeout( () => {
-                        if (res.data) {
-                            me.$router.push(`/${me.prevRoute}/${me.lastRoute}`)
-                        }
-                    }, 500)
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                    }, 500)
-                })
-            },
-            resetVariantQuantities () {
-                const me = this
-                me.res.forEach((data, index) => {
-                    data.new_qty = 0
-                    data.computed_qty = 0
-                })
-            },
             submitFilter () {
                 const me = this
                 let ctr = 0
                 me.res.forEach((data, index) => {
-                    let name = data.variant.toLowerCase()
+                    let name = data.product_quantity.product_variant.variant.toLowerCase()
                     if (me.form.search != '') {
                         if (name.includes(me.form.search.toLowerCase())) {
-                            data.searched = true
+                            data.product_quantity.product_variant.searched = true
                         } else {
                             ctr++
-                            data.searched = false
+                            data.product_quantity.product_variant.searched = false
                         }
                     } else {
-                        data.searched = true
+                        data.product_quantity.product_variant.searched = true
                     }
                 })
                 if (ctr == me.res.length) {
@@ -148,23 +118,25 @@
             },
             computeQty (data) {
                 const me = this
-                data.computed_qty = parseInt(data.product_quantities[0].quantity) - parseInt(data.new_qty)
-                if (data.computed_qty < 0) {
-                    data.computed_qty = 0
+                data.product_quantity.product_variant.computed_qty = parseInt(data.product_quantity.quantity) - parseInt(data.product_quantity.product_variant.deduct_qty)
+                if (data.product_quantity.product_variant.computed_qty < 0) {
+                    data.product_quantity.product_variant.computed_qty = 0
                 }
             },
-            fetchData (value) {
+            fetchData () {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/inventory/product-variants?studio_id=${me.form.studio_id}&for_reporting=1`).then(res => {
+                me.$axios.get(`api/inventory/physical-count/${me.$route.params.slug}`).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            res.data.productVariants.forEach((data, index) => {
-                                data.searched = true
-                                data.new_qty = 0
-                                data.computed_qty = 0
+                            res.data.physicalCount.physical_count_variant_deductions.forEach((data, index) => {
+                                data.product_quantity.product_variant.searched = true
+                                data.product_quantity.product_variant.deduct_qty = parseInt(data.deduction)
+                                data.product_quantity.product_variant.computed_qty = parseInt(data.product_quantity.quantity) - parseInt(data.deduction)
                                 me.res.push(data)
                             })
+                            me.physical_count = res.data.physicalCount
+                            me.form.studio_id = me.physical_count.studio_id
                             me.loaded = true
                         }, 500)
                     }
@@ -172,8 +144,8 @@
                     me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
                 }).then(() => {
+                    me.rowCount = document.getElementsByTagName('th').length
                     setTimeout( () => {
-                        me.rowCount = document.getElementsByTagName('th').length
                         me.loader(false)
                     }, 500)
                 })
@@ -183,24 +155,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                let token = me.$cookies.get('70hokcotc3hhhn5')
-                me.$axios.get('api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }).then(res => {
-                    if (res.data != 0) {
-                        me.$axios.get(`api/studios/${res.data.user.current_studio_id}`).then(res => {
-                            me.studio = res.data.studio
-                            me.form.studio_id = me.studio.id
-                        })
-                        setTimeout( () => {
-                            me.fetchData()
-                        }, 500)
-                    }
-                }).catch(err => {
-                    console.log(err);
-                })
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

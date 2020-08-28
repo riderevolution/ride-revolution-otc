@@ -118,8 +118,8 @@
                 me.$axios.post('api/inventory/physical-count', formData).then(res => {
                     setTimeout( () => {
                         if (res.data) {
-                            console.log(res.data);
-                            // me.$router.push(`/${me.prevRoute}/${me.lastRoute}`)
+                            me.notify('Physical Count has been Added')
+                            me.$router.push('/retail/inventory/physical-count')
                         }
                     }, 500)
                 }).catch(err => {
@@ -163,7 +163,7 @@
             },
             computeQty (data) {
                 const me = this
-                if (data.computed_qty != '') {
+                if (data.deduct_qty.length > 0) {
                     data.computed_qty = parseInt(data.product_quantities[0].quantity) - parseInt(data.deduct_qty)
                     if (data.computed_qty < 0) {
                         data.computed_qty = 0
@@ -208,23 +208,33 @@
             await me.checkPagePermission(me)
             if (me.access) {
                 let token = me.$cookies.get('70hokcotc3hhhn5')
-                me.$axios.get('api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }).then(res => {
-                    if (res.data != 0) {
-                        me.$axios.get(`api/studios/${res.data.user.current_studio_id}`).then(res => {
+                if (me.$route.query.studio_id) {
+                    me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
+                        setTimeout( () => {
                             me.studio = res.data.studio
                             me.form.studio_id = me.studio.id
-                        })
-                        setTimeout( () => {
                             me.fetchData()
                         }, 500)
-                    }
-                }).catch(err => {
-                    console.log(err);
-                })
+                    })
+                } else {
+                    me.$axios.get('api/user', {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
+                        if (res.data != 0) {
+                            me.$axios.get(`api/studios/${res.data.user.current_studio_id}`).then(res => {
+                                me.studio = res.data.studio
+                                me.form.studio_id = me.studio.id
+                            })
+                            setTimeout( () => {
+                                me.fetchData()
+                            }, 500)
+                        }
+                    }).catch(err => {
+                        me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                    })
+                }
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

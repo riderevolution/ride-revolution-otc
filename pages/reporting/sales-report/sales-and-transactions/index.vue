@@ -11,6 +11,7 @@
                             </div>
                         </div>
                         <div class="actions">
+                            <a :href="`/print/reporting/sales/payment-type/register-sales-summary?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
@@ -71,6 +72,16 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <div class="cms_table_toggler">
+                            <a :href="`/print/reporting/sales/payment-type/register-sales-summary?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                v-if="res.income_breakdown.length > 0"
+                                class="action_btn alternate"
+                                :data="registerSalesSummaryAttributes"
+                                :name="`register-sales-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
+                        </div>
                         <table class="cms_table alt">
                             <thead>
                                 <tr>
