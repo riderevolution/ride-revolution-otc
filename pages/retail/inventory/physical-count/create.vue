@@ -46,7 +46,7 @@
                                 <td>{{ data.product_quantities[0].quantity }}</td>
                                 <td width="20%">
                                     <div class="form_group no_margin">
-                                        <input type="text" name="deduct_quantity[]" autocomplete="off" v-model="data.deduct_qty" @change="computeQty(data)" class="default_text" :data-vv-name="`variant_form_${key}.deduct_quantity[]`" v-validate="{numeric: true, min_value: 0, max_value: data.product_quantities[0].quantity}" value="0">
+                                        <input type="text" name="deduct_quantity[]" autocomplete="off" v-model="data.deduct_qty" @input="computeQty(data)" class="default_text" :data-vv-name="`variant_form_${key}.deduct_quantity[]`" v-validate="{numeric: true, min_value: 0, max_value: data.product_quantities[0].quantity}" value="0">
 
                                         <input type="hidden" name="sku_id[]" :value="data.sku_id">
                                         <input type="hidden" name="product_quantity_id[]" :value="data.product_quantities[0].id">
