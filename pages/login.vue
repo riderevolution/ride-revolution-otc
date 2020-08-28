@@ -115,6 +115,7 @@
                         me.$axios.post('api/login', me.form).then(res => {
                             if (res.data) {
                                 me.$cookies.set('70hokcotc3hhhn5', res.data.token)
+                                me.$cookies.set('version', res.data.version)
                                 me.$store.state.token = res.data.token
                                 me.validateToken()
                                 if (me.userType == 0) {

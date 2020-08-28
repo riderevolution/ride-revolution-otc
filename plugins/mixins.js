@@ -207,6 +207,7 @@ Vue.mixin({
                     Authorization: `Bearer ${token}`
                 }
             }).then(res => {
+                this.$cookies.remove('version')
                 this.$cookies.remove('70hokcotc3hhhn5')
                 this.$cookies.remove('CSID')
                 if (this.$store.state.isAuth) {
@@ -235,6 +236,16 @@ Vue.mixin({
                         }
                     }).then(res => {
                         if (res.data != 0) {
+                            let version = this.$cookies.get('version')
+                            if (version == null || version == undefined) {
+                                this.$store.state.patchNotesStatus = true
+                            } else {
+                                if (version != res.data.version) {
+                                    this.$store.state.patchNotesStatus = true
+                                } else {
+                                    this.$cookies.set('version', res.data.version)
+                                }
+                            }
                             this.$store.state.isAuth = true
                             this.$store.state.token = token
                             this.$store.state.user = res.data.user

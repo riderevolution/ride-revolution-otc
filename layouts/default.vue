@@ -50,6 +50,9 @@
         <transition name="fade">
             <refund-success v-if="$store.state.refundSuccessStatus" />
         </transition>
+        <transition name="fade">
+            <patch-notes v-if="$store.state.patchNotesStatus" />
+        </transition>
     </div>
 </template>
 
@@ -68,6 +71,7 @@
     import SuccessfulLater from '../components/modals/SuccessfulLater'
     import StudioChanger from '../components/modals/StudioChanger'
     import RefundSuccess from '../components/modals/RefundSuccess'
+    import PatchNotes from '../components/modals/PatchNotes'
     export default {
         components: {
             Navbar,
@@ -83,7 +87,8 @@
             Successful,
             SuccessfulLater,
             StudioChanger,
-            RefundSuccess
+            RefundSuccess,
+            PatchNotes
         },
         watch:{
             $route (to, from){
