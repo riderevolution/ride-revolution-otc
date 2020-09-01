@@ -314,6 +314,7 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         if (!me.prompt) {
+                            let token = me.$cookies.get('70hokcotc3hhhn5')
                             let formData = new FormData(document.getElementById('default_form'))
                             formData.append('_method', 'PATCH')
                             formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
@@ -321,7 +322,11 @@
                             formData.append('class_length', me.form.classLength)
                             formData.append('scheduled_date_id', me.$route.query.i)
                             me.loader(true)
-                            me.$axios.post(`api/schedules/${me.$route.params.id}`, formData).then(res => {
+                            me.$axios.post(`api/schedules/${me.$route.params.id}`, formData, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 setTimeout( () => {
                                     if (res.data) {
                                         me.notify('Content has been Updated')

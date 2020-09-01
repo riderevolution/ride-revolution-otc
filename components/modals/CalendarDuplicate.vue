@@ -10,7 +10,7 @@
                         <div class="form_flex check">
                             <div class="form_group check">
                                 <v-ctk v-model="form.target_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'target_date'" :name="'target_date'" :label="'Select target date'" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('target_date')">{{ errors.first('target_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('target_date')">{{ properFormat(errors.first('target_date')) }}</span></transition>
                             </div>
                             <div class="form_group flex check">
                                 <div class="form_check">
@@ -90,48 +90,6 @@
             return {
                 form: {
                     target_date: this.$moment(this.datePicked).format('YYYY-MM-DD')
-                }
-            }
-        },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    let nextValue = newValue[0].split('_')
-                    if (nextValue.length > 1) {
-                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                    } else {
-                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = ''
-                        let lastValue = ''
-                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                        for (let i = 1; i < newValue.length; i++) {
-                            if (newValue[i] != 'id') {
-                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                            }
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-					if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
                 }
             }
         },
@@ -218,11 +176,16 @@
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         me.loader(true)
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('type', me.type)
                         formData.append('origin_date', me.datePicked)
                         formData.append('studio_id', me.$store.state.user.current_studio_id)
-                        me.$axios.post('api/schedules/duplicate', formData).then(res => {
+                        me.$axios.post('api/schedules/duplicate', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             if (res.data) {
                                 me.$parent.generateCalendar(me.$parent.currentYear, me.$parent.currentMonth, 0, 0)
                             }

@@ -308,13 +308,18 @@
                 let ctr = 0
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('date', me.$moment(parseInt(me.$route.params.param)).format('YYYY-M-D'))
                         formData.append('package_type_restrictions', JSON.stringify(me.packageTypes))
                         formData.append('studio_id', me.form.studio_id)
                         formData.append('class_length', me.form.classLength)
                         me.loader(true)
-                        me.$axios.post('api/schedules', formData).then(res => {
+                        me.$axios.post('api/schedules', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Added')

@@ -33,12 +33,17 @@
             },
             proceedStatus () {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let date = me.value
                 let formData = new FormData()
                 formData.append('type', me.type)
                 formData.append('date', date)
                 formData.append('studio_id', me.$parent.form.studio_id)
-                me.$axios.post('api/schedules/clear', formData).then(res => {
+                me.$axios.post('api/schedules/clear', formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     if (res.data) {
                         me.$parent.generateCalendar(me.$parent.currentYear, me.$parent.currentMonth, 0, 0)
                     }
