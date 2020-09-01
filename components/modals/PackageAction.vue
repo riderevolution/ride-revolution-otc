@@ -132,6 +132,7 @@
                                         }, 500)
                                     }
                                 }).catch(err => {
+                                    me.$store.state.errorOverlayStatus = true
                                     me.$store.state.errorList = err.response.data.errors
                                     me.$store.state.errorStatus = true
                                 }).then(() => {
@@ -157,6 +158,7 @@
                                         }, 500)
                                     }
                                 }).catch(err => {
+                                    me.$store.state.errorOverlayStatus = true
                                     me.$store.state.errorList = err.response.data.errors
                                     me.$store.state.errorStatus = true
                                 }).then(() => {

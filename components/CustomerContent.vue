@@ -43,12 +43,12 @@
                         </div>
                         <div class="package_action" v-if="packageStatus != 'expired'">
                             <div :class="`action_success_btn ${(data.frozen) ? 'disabled' : ''}`" @click="getCurrentCustomer()">Book a Class</div>
-                            <div class="package_options" v-if="data.class_package.class_count_unlimited != 1">
+                            <div class="package_options">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
-                                    <div v-if="data.class_package.class_count_unlimited != 1 && !data.frozen" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
-                                    <div v-if="data.class_package.class_count_unlimited != 1 && data.class_package.por_allow_sharing_of_package" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
-                                    <div v-if="data.class_package.class_count_unlimited != 1" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
+                                    <div v-if="!data.frozen && data.class_package.por_allow_transferring_of_package" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+                                    <div v-if="data.class_package.por_allow_sharing_of_package" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
+                                    <div v-if="data.class_package.por_allow_freezing_of_package" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
                                     <div v-if="data.class_package.refundable == 1 && (data.payment_item != null && data.payment_item.refunded == 0) && (data.count == data.original_package_count)" class="option_link red" @click="togglePackageAction(data, 'refund')">Refund Package</div>
                                     <!-- <div class="option_link">Print Receipt</div> -->
                                 </div>
