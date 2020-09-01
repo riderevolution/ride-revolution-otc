@@ -19,7 +19,7 @@
                                     <label for="studio_id">Studio</label>
                                     <div class="selected_studio">{{ user.studio.name }}</div>
                                 </div>
-                                <div :class="`form_group selection margin ${(studio.online_class) ? 'nope' : '' }`" v-click-outside="closeMe">
+                                <div class="form_group selection margin" v-click-outside="closeMe">
                                     <label for="q">Find a Customer</label>
                                     <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @click="toggleCustomers = true" @input="searchCustomer($event)">
                                     <transition name="slide"><span class="validation_errors alt" v-if="!findCustomer && customer == ''">Select Customer</span></transition>
@@ -42,7 +42,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div :class="`customer_selected ${(studio.online_class) ? 'nope' : '' } ${(customer != '') ? 'selected' : ''}`">
+                                <div :class="`customer_selected ${(customer != '') ? 'selected' : ''}`">
                                     <transition name="fade">
                                         <div class="customer_picked" v-if="customer != ''">
                                             <div class="customer_header">

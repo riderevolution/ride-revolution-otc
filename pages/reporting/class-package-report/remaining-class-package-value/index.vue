@@ -19,7 +19,7 @@
                             </h2>
                         </div>
                         <div class="actions">
-                            
+
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
@@ -104,7 +104,8 @@
             },
             fetchData () {
                 const me = this
-                let formData = new FormData
+                me.loader(true)
+                let formData = new FormData()
                 formData.append('studio_id', me.form.studio_id)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
