@@ -682,7 +682,7 @@
                                     if (me.$route.params.slug == 'transactions') {
                                         document.getElementById('transactions').click()
                                     }
-                                    if (me.$route.name == 'customers-param-slug') {
+                                    if (me.$route.params.slug == 'packages') {
                                         document.getElementById('packages').click()
                                     }
                                 } else {

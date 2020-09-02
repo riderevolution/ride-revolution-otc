@@ -27,12 +27,12 @@
                             <div class="form_group margin">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -136,7 +136,21 @@
                                     <th>SC</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody v-if="!filtered">
+                                <tr>
+                                    <td class="green">Total</td>
+                                    <td class="green">{{ res.item_total.totalQty }}</td>
+                                    <td class="green">Php {{ totalCount(res.item_total.totalITY) }}</td>
+                                    <td class="green">Php {{ totalCount(res.item_total.totalITD) }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.cash }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.gcash }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.creditCard }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.debitCard }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.check }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.paymaya }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
+                                </tr>
                                 <tr v-for="(data, key) in res.items" :key="key">
                                     <td>{{ (data.card_code) ? data.card_code : (data.variant ? data.variant : data.name) }}</td>
                                     <td>{{ (data.qty) ? data.qty : 0 }}</td>
@@ -151,6 +165,8 @@
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paymaya : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
                                 </tr>
+                            </tbody>
+                            <tbody v-else-if="filtered">
                                 <tr>
                                     <td class="green">Total</td>
                                     <td class="green">{{ res.item_total.totalQty }}</td>
@@ -164,6 +180,20 @@
                                     <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paymaya }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
+                                </tr>
+                                <tr v-for="(data, key) in res.items" :key="key" v-if="data.qty > 0">
+                                    <td>{{ (data.card_code) ? data.card_code : (data.variant ? data.variant : data.name) }}</td>
+                                    <td>{{ (data.qty) ? data.qty : 0 }}</td>
+                                    <td>Php {{ totalCount(data.ITY) }}</td>
+                                    <td>Php {{ totalCount(data.ITD) }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.cash : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.gcash : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.creditCard : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.debitCard : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.paypal : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.paymaya : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -186,6 +216,7 @@
         data () {
             return {
                 name: 'Sales & Transactions',
+                filtered: false,
                 access: true,
                 loaded: false,
                 rowCount: 0,
@@ -259,6 +290,7 @@
                                 me.res.item_total = res.data.total
                                 me.res.item_payment_mode_total = res.data.paymentModesTotal
                             }
+                            me.filtered = true
                         }, 500)
                     }
                 }).catch(err => {

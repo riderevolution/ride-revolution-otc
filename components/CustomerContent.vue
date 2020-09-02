@@ -210,6 +210,7 @@
                         <th>Total Qty.</th>
                         <th>Payment Method</th>
                         <th>Total Price</th>
+                        <th>Employee</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -221,6 +222,7 @@
                         <td>{{ countVariantQty(data.payment_items) }}</td>
                         <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
                         <td :class="`${(data.status == 'pending') ? 'red' : ''}`">Php {{ totalCount(data.total) }}</td>
+                        <td>{{ (data.employee) ? data.employee.fullname : 'Online' }}</td>
                         <td>
                             <div class="table_actions">
                                 <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
