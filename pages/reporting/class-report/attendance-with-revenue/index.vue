@@ -128,7 +128,7 @@
                                 </td>
                             </tr>
                         </tbody>
-                        <tbody class="no_results" v-else>
+                        <tbody class="no_results" v-if="res.length == 0">
                             <tr>
                                 <td colspan="8">No Result(s) Found.</td>
                             </tr>
@@ -224,7 +224,6 @@
                 me.loader(true)
                 if (me.form.studio_id == 0) {
                     let studio_id = me.$cookies.get('CSID')
-                    console.log(studio_id);
                     me.form.studio_id = studio_id
                 }
 

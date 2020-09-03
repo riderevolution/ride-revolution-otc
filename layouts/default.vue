@@ -109,12 +109,16 @@
                 if (!me.routes.includes(me.$route.path)) {
                     me.validateToken()
                 }
-                if ($('#description').length > 0) {
-                    $('#description').summernote('destroy')
-                }
-                if ($('#summary').length > 0) {
-                    $('#summary').summernote('destroy')
-                }
+                let to_destroy = [
+                    '#description',
+                    '#summary',
+                    '#gift_card_description'
+                ]
+                to_destroy.forEach((item, index) => {
+                    if ($(`${item}`).length > 0) {
+                        $(`${item}`).summernote('destroy')
+                    }
+                })
                 // if (me.$store.state.user.type != 0) {
                 //     me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
                 // }
