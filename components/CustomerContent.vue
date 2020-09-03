@@ -105,8 +105,8 @@
                         <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                         <td>
                             <div class="thumb">
-                                <img :src="data.instructor.user.instructor_details.images[0].path_resized" />
-                                <nuxt-link class="table_data_link" to="/">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
+                                <img :src="getInstructorsImageInSchedule(data.scheduled_date)" />
+                                <div class="table_data_link" @click="openWindow(`/instructors/${getInstructorsInSchedule(data.scheduled_date, 'id')}/class-schedules`)">{{ getInstructorsInSchedule(data.scheduled_date, 'name') }}</div>
                             </div>
                         </td>
                         <td>
@@ -171,8 +171,8 @@
                         <td>{{ data.scheduled_date.schedule.studio.name }}</td>
                         <td>
                             <div class="thumb">
-                                <img :src="data.instructor.user.instructor_details.images[0].path_resized" />
-                                <nuxt-link class="table_data_link" :to="`/instructors/${data.instructor.id}/class-schedules`">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
+                                <img :src="getInstructorsImageInSchedule(data.scheduled_date)" />
+                                <div class="table_data_link" @click="openWindow(`/instructors/${getInstructorsInSchedule(data.scheduled_date, 'id')}/class-schedules`)">{{ getInstructorsInSchedule(data.scheduled_date, 'name') }}</div>
                             </div>
                         </td>
                         <td>
@@ -641,6 +641,51 @@
             }
         },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
+            getInstructorsImageInSchedule (data) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+                    result = instructor.user.instructor_details.images[0].path
+                }
+
+                return result
+            },
+            getInstructorsInSchedule (data, type) {
+                const me = this
+                let result = ''
+                if (type == 'name') {
+                    if (data != '') {
+                        let instructor = []
+                        data.schedule.instructor_schedules.forEach((ins, index) => {
+                            if (ins.primary == 1) {
+                                instructor = ins
+                            }
+                        })
+                        result = `${instructor.user.fullname}`
+                    }
+                } else {
+                    if (data != '') {
+                        let instructor = []
+                        data.schedule.instructor_schedules.forEach((ins, index) => {
+                            if (ins.primary == 1) {
+                                instructor = ins
+                            }
+                        })
+                        result = `${instructor.user.id}`
+                    }
+                }
+                return result
+            },
             saveNotes (data) {
                 const me = this
                 let formData = new FormData()
@@ -749,7 +794,10 @@
                         break
                     case 'no-show':
                         result = 'No Show'
-                        break;
+                        break
+                    case 'reserved':
+                        result = 'Reserved'
+                        break
                 }
                 return result
             },
@@ -958,8 +1006,12 @@
                     for (let i = 0; i <= me.res.classHistory.length; i++) {
                         let element = document.getElementById(`table_select_${i}`)
                         if (element !== target) {
-                            if (element.nextElementSibling.classList.contains('active')) {
-                                element.nextElementSibling.classList.remove('active')
+                            if (element) {
+                                if (element.nextElementSibling) {
+                                    if (element.nextElementSibling.classList.contains('active')) {
+                                        element.nextElementSibling.classList.remove('active')
+                                    }
+                                }
                             }
                         }
                     }
