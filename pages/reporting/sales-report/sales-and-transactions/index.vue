@@ -343,6 +343,9 @@
                                 me.res.items = res.data.items
                                 me.res.item_total = res.data.total
                                 me.res.item_payment_mode_total = res.data.paymentModesTotal
+
+
+
                             }
                         }, 500)
                     }

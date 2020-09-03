@@ -109,7 +109,7 @@
                                             </thead>
                                             <tbody v-if="data.bookings.length > 0">
                                                 <tr v-for="(booking, key) in data.bookings" :key="key">
-                                                    <td>{{ (booking.seat != null) ? booking.seat.number : '-' }}</td>
+                                                    <td>{{ (booking.seat.position != 'Online') ? booking.seat.number : '-' }}</td>
                                                     <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
                                                     <td>{{ replacer(booking.status).charAt(0).toUpperCase()}}{{ replacer(booking.status).slice(1) }}</td>
                                                     <td>{{ booking.class_package.name }}</td>
@@ -238,14 +238,6 @@
                 formData.append('customer_type_id', me.form.customer_type_id)
                 me.$axios.post(`api/reporting/classes/attendance-with-revenue`, formData).then(res => {
                     setTimeout( () => {
-                        let temp_bookings = []
-                        res.data.scheduled_dates.forEach((schedule_date, pindex) => {
-                            schedule_date.bookings.forEach((booking, cindex) => {
-                                if (booking.user_package_count !== null) {
-                                    res.data.scheduled_dates[pindex].bookings.splice(0, cindex)
-                                }
-                            })
-                        })
                         me.res = res.data.scheduled_dates
                         me.fetchExtraAPI()
                         me.loaded = true
