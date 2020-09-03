@@ -109,6 +109,12 @@
                 if (!me.routes.includes(me.$route.path)) {
                     me.validateToken()
                 }
+                if ($('#description').length > 0) {
+                    $('#description').summernote('destroy')
+                }
+                if ($('#summary').length > 0) {
+                    $('#summary').summernote('destroy')
+                }
                 // if (me.$store.state.user.type != 0) {
                 //     me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
                 // }

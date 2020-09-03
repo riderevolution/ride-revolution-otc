@@ -143,27 +143,22 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('instructor_id')">{{ properFormat(errors.first('instructor_id')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
-                                        <label for="substitute_instructor_id">Substitute Instructor</label>
-                                        <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="substitute_instructor_id">
-                                            <option value="" selected disabled>Select an Instructor</option>
+                                        <label for="additional_instructor_id">Additional Instructor</label>
+                                        <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="additional_instructor_id" v-model="form.additional_instructor_id">
+                                            <option value="" selected>Select an Additional Instructor</option>
                                             <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id && form.additional_instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                         </select>
                                     </div>
-                                    <!-- <div class="form_group">
-                                        <label for="additional_instructor_id">Additional Instructor</label>
-                                        <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="additional_instructor_id" v-model="form.additional_instructor_id">
-                                            <option value="" selected disabled>Select an Instructor</option>
-                                            <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
-                                        </select>
-                                    </div> -->
                                 </div>
-                                <!-- <div class="form_group">
-                                    <label for="substitute_instructor_id">Substitute Instructor</label>
-                                    <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="substitute_instructor_id">
-                                        <option value="" selected disabled>Select an Instructor</option>
-                                        <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id && form.additional_instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
-                                    </select>
-                                </div> -->
+                                <div class="form_flex">
+                                    <div class="form_group">
+                                        <label for="substitute_instructor_id">Substitute Instructor</label>
+                                        <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="substitute_instructor_id" v-model="form.substitute_instructor_id">
+                                            <option value="" selected>Select a Substitute Instructor</option>
+                                            <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id && form.additional_instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <transition name="fade">
@@ -234,6 +229,7 @@
                 message: '',
                 isRepeat: false,
                 isPrivate: false,
+                primary: false,
                 lastRoute: '',
                 studio: [],
                 classTypes: [],
@@ -247,6 +243,7 @@
                     start_time: '',
                     instructor_id: '',
                     additional_instructor_id: '',
+                    substitute_instructor_id: '',
                     class_type_id: '',
                     credits: 0,
                     studio_id: 0,

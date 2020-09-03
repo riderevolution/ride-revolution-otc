@@ -86,7 +86,7 @@
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment(data.date).format('MMMM DD, YYYY') }}</td>
                                 <td>{{ data.schedule.start_time }}</td>
                                 <td>{{ (data.schedule.set_custom_name) ? data.schedule.custom_name : data.schedule.class_type.name }}</td>
-                                <td>{{ data.schedule.instructor_schedules[0].user.first_name }} {{ data.schedule.instructor_schedules[0].user.last_name }}</td>
+                                <td>{{ getInstructorsInSchedule(data) }}</td>
                                 <td>{{ data.bookings.length }}</td>
                                 <td>Php {{ totalCount(data.total_revenue) }}</td>
                                 <td>0</td>
@@ -109,7 +109,7 @@
                                             </thead>
                                             <tbody v-if="data.bookings.length > 0">
                                                 <tr v-for="(booking, key) in data.bookings" :key="key">
-                                                    <td>{{ booking.seat.number }}</td>
+                                                    <td>{{ (booking.seat != null) ? booking.seat.number : '-' }}</td>
                                                     <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
                                                     <td>{{ replacer(booking.status).charAt(0).toUpperCase()}}{{ replacer(booking.status).slice(1) }}</td>
                                                     <td>{{ booking.class_package.name }}</td>
@@ -120,7 +120,7 @@
                                             </tbody>
                                             <tbody class="no_results" v-else>
                                                 <tr>
-                                                    <td :colspan="rowCount">No Result(s) Found.</td>
+                                                    <td colspan="7">No Result(s) Found.</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -130,7 +130,7 @@
                         </tbody>
                         <tbody class="no_results" v-else>
                             <tr>
-                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                <td colspan="8">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -178,6 +178,27 @@
             }
         },
         methods: {
+            getInstructorsInSchedule (data) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let ins_ctr = 0
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        result = `${data.schedule.instructor_schedules[0].user.first_name} ${data.schedule.instructor_schedules[0].user.last_name} + ${data.schedule.instructor_schedules[1].user.first_name} ${data.schedule.instructor_schedules[1].user.last_name}`
+                    } else {
+                        result = `${data.schedule.instructor_schedules[0].user.first_name} ${data.schedule.instructor_schedules[0].user.last_name}`
+                    }
+
+                }
+
+                return result
+            },
             submissionSuccess () {
                 const me = this
                 me.fetchData()
@@ -203,6 +224,7 @@
                 me.loader(true)
                 if (me.form.studio_id == 0) {
                     let studio_id = me.$cookies.get('CSID')
+                    console.log(studio_id);
                     me.form.studio_id = studio_id
                 }
 

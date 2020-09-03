@@ -2782,6 +2782,14 @@ input::placeholder
     position: relative
     display: flex
     align-items: center
+    &.disabled
+        pointer-events: none
+        .action_check
+            opacity: 0.65
+            transition: .3s ease-in-out
+        label
+            color: $border_alt2
+            transition: .3s ease-in-out
     &.toggler
         flex: 0 0 auto
         justify-content: flex-end
@@ -2837,6 +2845,7 @@ input::placeholder
         font-weight: normal
         color: $black
         cursor: pointer
+        transition: .3s ease-in-out
         &.parent
             sf_pro_bold(14px)
             margin-left: 0
@@ -2852,6 +2861,7 @@ input::placeholder
     .action_check
         -webkit-appearance: none
         outline: none
+        opacity: 1
         width: 20px
         height: 20px
         padding-left: 20px
@@ -5946,10 +5956,13 @@ input::placeholder
                                     visibility: visible
                                     transition: .3s ease-in-out
                     .booker_label
-                        sf_pro_regular(14px)
+                        sf_pro_bold(14px)
                         color: $gray_alternate
                         text-align: center
                         flex: 0 0 auto
+                        b
+                            &.g
+                                color: $green
                     .controls
                         flex: 0 0 auto
                         &.nope

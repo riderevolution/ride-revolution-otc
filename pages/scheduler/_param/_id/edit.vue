@@ -143,27 +143,35 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('instructor_id')">{{ properFormat(errors.first('instructor_id')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
-                                        <label for="substitute_instructor_id">Substitute Instructor</label>
-                                        <select class="default_select alternate" name="substitute_instructor_id">
-                                            <option value="" selected disabled>Select an Instructor</option>
-                                            <option :value="instructor.id" v-for="(instructor, key) in instructors" :selected="(res.instructor_schedules[1]) ? res.instructor_schedules[1].user_id == instructor.id : ''" :key="key" v-if="form.instructor_id != instructor.id && form.additional_instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
-                                        </select>
-                                    </div>
-                                    <!-- <div class="form_group">
                                         <label for="additional_instructor_id">Additional Instructor</label>
                                         <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="additional_instructor_id" v-model="form.additional_instructor_id">
-                                            <option value="" selected disabled>Select an Instructor</option>
-                                            <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                                            <option value="" selected>Select an Additional Instructor</option>
+                                            <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id && form.substitute_instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                         </select>
-                                    </div> -->
+                                    </div>
                                 </div>
-                                <!-- <div class="form_group">
-                                    <label for="substitute_instructor_id">Substitute Instructor</label>
-                                    <select class="default_select alternate" name="substitute_instructor_id">
-                                        <option value="" selected disabled>Select an Instructor</option>
-                                        <option :value="instructor.id" v-for="(instructor, key) in instructors" :selected="(res.instructor_schedules[1]) ? res.instructor_schedules[1].user_id == instructor.id : ''" :key="key" v-if="form.instructor_id != instructor.id && form.additional_instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
-                                    </select>
-                                </div> -->
+                                <div class="form_flex">
+                                    <div class="form_group flex">
+                                        <label for="substitute_instructor_id">Substitute Instructor</label>
+                                        <div class="form_flex_input">
+                                            <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="substitute_instructor_id" v-model="form.substitute_instructor_id">
+                                                <option value="" selected :disabled="primary == 1">Select a Substitute Instructor</option>
+                                                <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id && form.additional_instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="form_flex_input">
+                                            <div :class="`form_check${(form.substitute_instructor_id != '') ? '' : ' disabled'}`">
+                                                <input type="checkbox" id="set_as_primary" name="set_as_primary" :checked="primary == 1" class="action_check" @change="primary ^= true">
+                                                <label for="set_as_primary">Set as Primary Instructor</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form_group flex" v-if="primary">
+                                        <label for="remarks">Remarks <span>*</span></label>
+                                        <input type="text" name="remarks" autocomplete="off" class="default_text" v-model="res.instructor_schedules[res.instructor_schedules.length - 1].remarks" v-validate="'required'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('remarks')">{{ properFormat(errors.first('remarks')) }}</span></transition>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <transition name="fade">
@@ -240,6 +248,7 @@
                 packageTypes: [],
                 instructors: [],
                 prompt: false,
+                primary: false,
                 form: {
                     hasTime: false,
                     classLengthTemp: '',
@@ -248,6 +257,7 @@
                     start_time: '',
                     instructor_id: '',
                     additional_instructor_id: '',
+                    substitute_instructor_id: '',
                     class_type_id: '',
                     studio_id: 0,
                     credits: 0,
@@ -426,7 +436,27 @@
                         // me.isRepeat = (me.res.repeat == 1) ? true : false
                         // me.prompt = (me.res.repeat == 1) ? true : false
                         me.isPrivate = (me.res.private_class == 1) ? true : false
-                        me.form.instructor_id = me.res.instructor_schedules[0].user_id
+
+                        let ins_ctr = 0
+
+                        me.res.instructor_schedules.forEach((ins, index) => {
+                            if (ins.substitute == 0) {
+                                ins_ctr += 1
+                            } else {
+                                if (ins.primary) {
+                                    me.primary = true
+                                }
+                                me.form.substitute_instructor_id = ins.user_id
+                            }
+                        })
+
+                        if (ins_ctr == 2) {
+                            me.form.instructor_id = me.res.instructor_schedules[0].user_id
+                            me.form.additional_instructor_id = me.res.instructor_schedules[1].user_id
+                        } else {
+                            me.form.instructor_id = me.res.instructor_schedules[0].user_id
+                        }
+
                         me.form.class_type_id = me.res.class_type_id
                         me.form.start_time = me.res.start_time
 

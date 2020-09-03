@@ -184,7 +184,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <label class="booker_label">{{ (schedule != '') ? `${schedule.schedule.instructor_schedules[0].user.first_name} (${schedule.schedule.class_length_formatted})` : 'Please Select a Class' }}</label>
+                                <label class="booker_label" v-html="getInstructorsInSchedule(schedule)"></label>
                                 <div :class="`controls ${(studio.online_class) ? 'nope' : '' }`">
                                     <button id="zoom_in">Zoom in</button>
                                     <button id="zoom_out" class="margin">Zoom out</button>
@@ -448,6 +448,29 @@
             }
         },
         methods: {
+            getInstructorsInSchedule (data) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let ins_ctr = 0
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        result = `<b>${data.schedule.instructor_schedules[0].user.first_name} + ${data.schedule.instructor_schedules[1].user.first_name}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                    } else {
+                        result = `<b>${data.schedule.instructor_schedules[0].user.first_name} ${data.schedule.instructor_schedules[0].user.last_name}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                    }
+
+                } else {
+                    result = 'Please Select a Class'
+                }
+
+                return result
+            },
             getClassOptions (event) {
                 const me = this
                 let target = event.target.value

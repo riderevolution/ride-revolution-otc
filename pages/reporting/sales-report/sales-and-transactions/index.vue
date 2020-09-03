@@ -11,15 +11,28 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/payment-type/register-sales-summary?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/sales/payment-type/register-sales-summary?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                v-if="tabStatus == 'summary'"
+                                class="action_btn alternate"
+                                :data="salesBreakdownAttributes"
+                                :name="`sales-breakdown-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
+                            <download-csv
+                                v-else
+                                class="action_btn alternate"
+                                :data="salesSummaryAttributes"
+                                :name="`${tabStatus}-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
-                                <select class="default_select alternate" name="studio_id">
+                                <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
                                     <option value="" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
@@ -73,12 +86,12 @@
                             </tbody>
                         </table>
                         <div class="cms_table_toggler">
-                            <a :href="`/print/reporting/sales/payment-type/register-sales-summary?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/sales-and-transactions/sales-summary/income-breakdown?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
                                 v-if="res.income_breakdown.length > 0"
                                 class="action_btn alternate"
-                                :data="registerSalesSummaryAttributes"
-                                :name="`register-sales-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :data="incomeBreakdownAttributes"
+                                :name="`income-breakdown-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
                             </download-csv>
                         </div>
@@ -214,6 +227,9 @@
             Foot
         },
         data () {
+            const income_values = []
+            const sales_values = []
+            const sales_summary_values = []
             return {
                 name: 'Sales & Transactions',
                 filtered: false,
@@ -232,17 +248,73 @@
                 },
                 slug: 'sales-summary',
                 apiRoute: 'api/reporting/sales/sales-and-transactions/sales-summary',
+                income_values: [],
+                sales_values: [],
+                sales_summary_values: [],
                 studios: [],
                 categories: [],
                 form: {
+                    studio_id: '',
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
             }
         },
+        computed: {
+            incomeBreakdownAttributes () {
+                const me = this
+                return [
+                    ...me.income_values.map(value => ({
+                        'Studio': me.getStudio(),
+                        'Payment Type': (value.name) ? value.name : 'Total',
+                        'ITY': (value.ITY) ? me.totalCount(value.ITY) : me.totalCount(value.incomeBreakdownITYTotal),
+                        'ITD': (value.ITD) ? me.totalCount(value.ITD) : me.totalCount(value.incomeBreakdownITDTotal)
+                    }))
+                ]
+            },
+            salesBreakdownAttributes () {
+                const me = this
+                return [
+                    ...me.sales_values.map(value => ({
+                        'Studio': me.getStudio(),
+                        'Payment Type': (value.name) ? value.name : 'Total',
+                        'ITY': (value.ITY) ? me.totalCount(value.ITY) : me.totalCount(value.salesBreakdownITYTotal),
+                        'ITD': (value.ITD) ? me.totalCount(value.ITD) : me.totalCount(value.salesBreakdownITDTotal)
+                    }))
+                ]
+            },
+            salesSummaryAttributes () {
+                const me = this
+                return [
+                    ...me.sales_summary_values.map(value => ({
+                        'Studio': me.getStudio(),
+                        'Payment Type': (value.name) ? value.name : 'Total',
+                        'ITY': (value.ITY) ? me.totalCount(value.ITY) : me.totalCount(value.incomeBreakdownITYTotal),
+                        'ITD': (value.ITD) ? me.totalCount(value.ITD) : me.totalCount(value.incomeBreakdownITDTotal)
+                    }))
+                ]
+            }
+        },
         methods: {
+            getStudio () {
+                const me = this
+                let result = ''
+                if (me.form.studio_id != '') {
+                    me.studios.forEach((studio, index) => {
+                        if (studio.id == me.form.studio_id) {
+                            result = studio.name
+                        }
+                    })
+                } else {
+                    result = 'All Studios'
+                }
+                return result
+            },
             toggleTab (status, slug, apiRoute) {
                 const me = this
+                me.income_values = []
+                me.sales_values = []
+                me.sales_summary_values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post(`${apiRoute}`, formData).then(res => {
@@ -256,6 +328,17 @@
                                 me.res.sales_breakdown_total = res.data.salesBreakdownTotal
                                 me.res.income_breakdown = res.data.incomeBreakdown
                                 me.res.income_breakdown_total = res.data.incomeBreakdownTotal
+
+                                res.data.incomeBreakdown.forEach((item, i) => {
+                                    me.income_values.push(item)
+                                })
+                                me.income_values.push(res.data.incomeBreakdownTotal)
+
+                                res.data.salesBreakdown.forEach((item, i) => {
+                                    me.sales_values.push(item)
+                                })
+                                me.sales_values.push(res.data.salesBreakdownTotal)
+
                             } else {
                                 me.res.items = res.data.items
                                 me.res.item_total = res.data.total
@@ -275,6 +358,9 @@
             },
             submitFilter () {
                 const me = this
+                me.income_values = []
+                me.sales_values = []
+                me.sales_summary_values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post(`${me.apiRoute}`, formData).then(res => {
@@ -285,6 +371,17 @@
                                 me.res.sales_breakdown_total = res.data.salesBreakdownTotal
                                 me.res.income_breakdown = res.data.incomeBreakdown
                                 me.res.income_breakdown_total = res.data.incomeBreakdownTotal
+
+                                res.data.incomeBreakdown.forEach((item, i) => {
+                                    me.income_values.push(item)
+                                })
+                                me.income_values.push(res.data.incomeBreakdownTotal)
+
+                                res.data.salesBreakdown.forEach((item, i) => {
+                                    me.sales_values.push(item)
+                                })
+                                me.sales_values.push(res.data.salesBreakdownTotal)
+
                             } else {
                                 me.res.items = res.data.items
                                 me.res.item_total = res.data.total
@@ -306,6 +403,8 @@
             fetchData () {
                 const me = this
                 me.loader(true)
+                let studio_id = me.$cookies.get('CSID')
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
@@ -317,7 +416,15 @@
                             me.res.income_breakdown = res.data.incomeBreakdown
                             me.res.income_breakdown_total = res.data.incomeBreakdownTotal
 
-                            let token = me.$cookies.get('70hokcotc3hhhn5')
+                            res.data.incomeBreakdown.forEach((item, i) => {
+                                me.income_values.push(item)
+                            })
+                            me.income_values.push(res.data.incomeBreakdownTotal)
+
+                            res.data.salesBreakdown.forEach((item, i) => {
+                                me.sales_values.push(item)
+                            })
+                            me.sales_values.push(res.data.salesBreakdownTotal)
 
                             me.$axios.get('api/studios', {
                                 headers: {
@@ -326,6 +433,7 @@
                             }).then(res => {
                                 if (res.data) {
                                     me.studios = res.data.studios
+                                    me.form.studio_id = studio_id
                                 }
                             })
 
