@@ -143,7 +143,8 @@
                                         </div>
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
-                                            <div class="violator label">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <div class="violator label">{{
+                                            getInstructorsInSchedule(data.bookings[0].scheduled_date) }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div><div class="no_results" v-else>
@@ -178,7 +179,8 @@
                                                 </svg>
                                                 <span>{{ checkIdentifierText(data.identifier) }}</span>
                                             </div>
-                                            <div class="violator label" v-if="data.type == 1">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <div class="violator label" v-if="data.type == 1">{{
+                                            getInstructorsInSchedule(data.bookings[0].scheduled_date) }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                             <!-- <div class="violator label" v-else>{{ data.first_name }} {{ data.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div> -->
                                         </div>
                                     </div>
@@ -202,7 +204,8 @@
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                             <div class="violator blue"><img src="/icons/star-blue.svg" /><span>First Class</span></div>
-                                            <div class="violator label">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <div class="violator label">{{
+                                            getInstructorsInSchedule(data.bookings[0].scheduled_date) }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -225,7 +228,8 @@
                                         <div class="info">
                                             <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
                                             <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
-                                            <div class="violator label">{{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.first_name }} {{ data.bookings[0].scheduled_date.schedule.instructor_schedules[0].user.last_name }} ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            <div class="violator label">{{
+                                            getInstructorsInSchedule(data.bookings[0].scheduled_date) }} ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
@@ -533,6 +537,46 @@
             }
         },
         methods: {
+            getInstructorsImageInSchedule (data) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+                    result = instructor.user.instructor_details.images[0].path
+                }
+
+                return result
+            },
+            getInstructorsInSchedule (data) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let ins_ctr = 0
+                    let instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
+                        }
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                    } else {
+                        result = `${instructor.user.fullname}`
+                    }
+
+                }
+
+                return result
+            },
             toggleTargets () {
                 const me = this
                 me.loader(true)
