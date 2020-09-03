@@ -70,6 +70,7 @@
         methods: {
             getFile (event, key) {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let element = event.target
                 let formData = new FormData()
                 formData.append('temporary_id', me.$parent.tempID)
@@ -80,7 +81,11 @@
                         formData.append('type', 'product-variant')
                     }
                     me.loader(true)
-                    me.$axios.post('api/extras/images', formData).then(res => {
+                    me.$axios.post('api/extras/images', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             me.fetchImages(me.$parent.tempID)
                         }

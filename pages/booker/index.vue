@@ -513,13 +513,18 @@
             },
             prioritizeWaitlist (data) {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 formData.append('_method', 'PATCH')
                 me.$store.state.customerID = data.user_id
                 me.$store.state.waitlistID = data.id
                 me.customer = data.user
                 me.loader(true)
-                me.$axios.post(`api/waitlists/${data.id}/prioritize`, formData).then(res => {
+                me.$axios.post(`api/waitlists/${data.id}/prioritize`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.actionMessage = `Successfully prioritized ${me.customer.first_name} ${me.customer.last_name}`
@@ -546,10 +551,15 @@
             addToWaitlist () {
                 const me = this
                 if (me.$store.state.customerID != 0) {
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData()
                     formData.append('scheduled_date_id', me.$store.state.scheduleID)
                     formData.append('user_id', me.$store.state.customerID)
-                    me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
+                    me.$axios.post('api/extras/check-if-user-is-booked-already', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data.result == 0) {
                             me.$store.state.customerPackageStatus = true
                             me.packageMethod = 'waitlist'
@@ -582,10 +592,15 @@
                 const me = this
                 if (me.$store.state.seat != '') {
                     let formData = new FormData()
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     formData.append('seat_id', me.$store.state.seat.id)
                     formData.append('booking_id', me.$store.state.bookingID)
                     me.loader(true)
-                    me.$axios.post('api/bookings/switch-seat', formData).then(res => {
+                    me.$axios.post('api/bookings/switch-seat', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             setTimeout( () => {
                                 me.actionMessage = 'Successfully changed seat.'
@@ -611,11 +626,16 @@
             noShow () {
                 const me = this
                 let formData = new FormData()
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 formData.append('_method', 'PATCH')
                 formData.append('type', (me.$store.state.seat.status == 'comp') ? 'comp' : 'booking')
                 formData.append('data_id', (me.$store.state.seat.comp.length > 0) ? me.$store.state.seat.comp[0].id : me.$store.state.seat.bookings[0].id)
                 me.loader(true)
-                me.$axios.post('api/bookings/no-show', formData).then(res => {
+                me.$axios.post('api/bookings/no-show', formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             document.body.classList.add('no_scroll')
@@ -636,9 +656,14 @@
             },
             removeAssign () {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 if (me.$store.state.compID != 0) {
                     me.loader(true)
-                    me.$axios.delete(`api/comp/${me.$store.state.compID}`).then(res => {
+                    me.$axios.delete(`api/comp/${me.$store.state.compID}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             me.actionMessage = 'Successfully removed a comp.'
                             me.$store.state.promptBookerActionStatus = true
@@ -653,18 +678,27 @@
             blockBike () {
                 const me = this
                 if (me.$store.state.seat != '') {
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData()
                     formData.append('scheduled_date_id', me.scheduledDateID)
                     formData.append('_method', 'PATCH')
                     me.loader(true)
-                    me.$axios.get(`api/seats/${me.$store.state.seat.id}?scheduled_date_id=${me.scheduledDateID}`).then(res => {
+                    me.$axios.get(`api/seats/${me.$store.state.seat.id}?scheduled_date_id=${me.scheduledDateID}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             if (res.data.seat.status == 'open') {
                                 formData.append('status', 'blocked')
                             } else {
                                 formData.append('status', 'open')
                             }
-                            me.$axios.post(`api/seats/update-status/${me.$store.state.seat.id}`, formData).then(res => {
+                            me.$axios.post(`api/seats/update-status/${me.$store.state.seat.id}`, formData, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 if (res.data) {
                                     setTimeout( () => {
                                         if (res.data.seat.status == 'open') {
@@ -745,11 +779,16 @@
                 me.schedule = data
 
                 let formData = new FormData()
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let id = me.$store.state.user.id
 
                 formData.append('scheduled_date_id', data.id)
                 formData.append('user_id', id)
-                me.$axios.post('api/schedule-notes', formData).then(res => {
+                me.$axios.post('api/schedule-notes', formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     me.notePad = res.data.notes
                 })
 
@@ -898,13 +937,18 @@
             },
             updateNotes (event) {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let id = me.$store.state.user.id
                 let formData = new FormData()
                 formData.append('_method', 'PATCH')
                 formData.append('user_id', id)
                 formData.append('scheduled_date_id', me.scheduledDateID)
                 formData.append('note', event.target.value)
-                me.$axios.post('api/extras/update-user-notepad', formData).then(res => {
+                me.$axios.post('api/extras/update-user-notepad', formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     if (res.data) {
                         console.log(res.data.message)
                     }

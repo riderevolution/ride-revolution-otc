@@ -111,6 +111,7 @@
             submissionSuccess () {
                 const me = this
                 let formData = new FormData()
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         me.loader(true)
@@ -119,7 +120,11 @@
                                 formData.append('receiver_id', me.customer.id)
                                 formData.append('user_package_count_id', me.userPackageCountId)
                                 formData.append('sender_id', me.$parent.res.id)
-                                me.$axios.post('api/packages/class-packages/transfer', formData).then(res => {
+                                me.$axios.post('api/packages/class-packages/transfer', formData, {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`
+                                    }
+                                }).then(res => {
                                     if (res.data) {
                                         me.$store.state.packageActionStatus = false
                                         if (me.$route.params.slug == 'packages') {
@@ -145,7 +150,11 @@
                                 formData.append('receiver_id', me.customer.id)
                                 formData.append('user_package_count_id', me.userPackageCountId)
                                 formData.append('sender_id', me.$parent.res.id)
-                                me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData).then(res => {
+                                me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData, {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`
+                                    }
+                                }).then(res => {
                                     if (res.data) {
                                         me.$store.state.packageActionStatus = false
                                         if (me.$route.params.slug == 'packages') {

@@ -20,8 +20,13 @@
             toggleClose (status) {
                 const me = this
                 if (status) {
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData()
-                    me.$axios.post(`api/bookings/sign-out/${me.$store.state.bookingID}`, formData).then(res => {
+                    me.$axios.post(`api/bookings/sign-out/${me.$store.state.bookingID}`, formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             me.$parent.getSeats()
                             console.log("<(o )___\n ( ._> /\n  `---'")

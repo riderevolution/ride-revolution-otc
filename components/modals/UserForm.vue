@@ -12,7 +12,7 @@
                             <option value="" selected disabled>Choose a Role</option>
                             <option :value="role.id" v-for="(role, index) in roles">{{ role.display_name }}</option>
                         </select>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role_id')">{{ errors.first('role_id') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role_id')">{{ properFormat(errors.first('role_id')) }}</span></transition>
                     </div>
                     <div class="form_flex select_all">
                         <label class="flex_label alternate">Restrict user to studios: <span>*</span></label>
@@ -29,29 +29,29 @@
                         <div class="form_group">
                             <label for="first_name">First Name <span>*</span></label>
                             <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ properFormat(errors.first('first_name')) }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="last_name">Last Name <span>*</span></label>
                             <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required|max:100'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ properFormat(errors.first('last_name')) }}</span></transition>
                         </div>
                     </div>
                     <div class="form_group">
                         <label for="email">Email Address <span>*</span></label>
                         <input type="text" name="email" autocomplete="off" class="default_text" v-validate="'required|email|max:70'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ properFormat(errors.first('email')) }}</span></transition>
                     </div>
                     <div class="form_flex">
                         <div class="form_group">
                             <label for="password">Password <span>*</span></label>
                             <input type="password" name="password" autocomplete="off" class="default_text" ref="password" v-validate="'required|min:8'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ properFormat(errors.first('password')) }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="password_confirmation">Password Confirmation <span>*</span></label>
                             <input type="password" name="password_confirmation" autocomplete="off" class="default_text" v-validate="'required|confirmed:password'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ errors.first('password_confirmation') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ properFormat(errors.first('password_confirmation')) }}</span></transition>
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
@@ -80,7 +80,7 @@
                             <option value="" disabled>Choose a Role</option>
                             <option :value="role.id" v-for="(role, index) in roles" :selected="form.role == role.id">{{ role.display_name }}</option>
                         </select>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ errors.first('role') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('role')">{{ properFormat(errors.first('role')) }}</span></transition>
                     </div>
                     <div class="form_flex select_all">
                         <label class="flex_label alternate">Restrict user to studios: <span>*</span></label>
@@ -97,29 +97,29 @@
                         <div class="form_group">
                             <label for="first_name">First Name <span>*</span></label>
                             <input type="text" name="first_name" autocomplete="off" class="default_text" v-validate="'required|max:100'" v-model="res.first_name">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ properFormat(errors.first('first_name')) }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="last_name">Last Name <span>*</span></label>
                             <input type="text" name="last_name" autocomplete="off" class="default_text" v-validate="'required|max:100'" v-model="res.last_name">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ properFormat(errors.first('last_name')) }}</span></transition>
                         </div>
                     </div>
                     <div class="form_group">
                         <label for="email">Email Address <span>*</span></label>
                         <input type="text" name="email" autocomplete="off" class="default_text" v-validate="'required|email|max:70'" v-model="res.email">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ properFormat(errors.first('email')) }}</span></transition>
                     </div>
                     <div class="form_flex">
                         <div class="form_group">
                             <label for="password">Password</label>
                             <input type="password" name="password" autocomplete="off" class="default_text" ref="password" v-validate="'min:8'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ properFormat(errors.first('password')) }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="password_confirmation">Password Confirmation</label>
                             <input type="password" name="password_confirmation" autocomplete="off" class="default_text" v-validate="'confirmed:password'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ errors.first('password_confirmation') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ properFormat(errors.first('password_confirmation')) }}</span></transition>
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
@@ -176,28 +176,6 @@
                 roles: [],
                 studios: [],
                 studioLength: 0
-            }
-        },
-        filters: {
-            properFormat: function (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        let lastValue = ''
-                        for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
             }
         },
         computed: {
@@ -274,10 +252,15 @@
                     })
                     me.hasStudio = (ctr > 0) ? false : true
                     if (valid && !me.hasStudio) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('studios', JSON.stringify(me.studios))
                         me.loader(true)
-                        me.$axios.post('api/staff', formData).then(res => {
+                        me.$axios.post('api/staff', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Added')
@@ -318,6 +301,7 @@
                     })
                     me.hasStudio = (ctr > 0) ? false : true
                     if (valid && !me.hasStudio) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         if (formData.get('password').length <= 0) {
                             formData.delete('password')
@@ -325,7 +309,11 @@
                         formData.append('_method', 'PATCH')
                         formData.append('studios', JSON.stringify(me.studios))
                         me.loader(true)
-                        me.$axios.post(`api/staff/${me.id}`, formData).then(res => {
+                        me.$axios.post(`api/staff/${me.id}`, formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Updated')

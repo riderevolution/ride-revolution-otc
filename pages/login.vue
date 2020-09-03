@@ -32,19 +32,19 @@
                                     <option value="" selected disabled>Choose a Studio</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('studio_id')">{{ errors.first('studio_id') }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('studio_id')">{{ properFormat(errors.first('studio_id')) }}</span></transition>
                             </div>
                             <transition name="fade">
                                 <div v-if="hasStudio || userType == 2">
                                     <div class="form_group">
                                         <label for="email">Email Address</label>
                                         <input type="text" name="email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ properFormat(errors.first('email')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="password">Password</label>
                                         <input type="password" name="password" autocomplete="off" class="default_text" v-model="form.password" v-validate="'required'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ properFormat(errors.first('password')) }}</span></transition>
                                         <nuxt-link to="/forgot-password" class="action_forgot_text">Forgot your password?</nuxt-link>
                                     </div>
                                 </div>

@@ -51,7 +51,7 @@
                         <div class="form_flex trio">
                             <div class="form_group" v-for="(data, key) in populateWeeks" :key="key">
                                 <div class="form_check">
-                                    <input type="checkbox" :id="`month_${data.month}`" name="target_months[]" :value="`${data.year}-${data.month}-1`" class="action_check" checked>
+                                    <input type="checkbox" :id="`month_${data.month}`" name="target_months[]" :value="`${data.year}-${data.month}-1`" class="action_check">
                                     <label :for="`month_${data.month}`">{{ convertMonthtoAbbrev(data.month) }} {{ data.year }}</label>
                                 </div>
                             </div>

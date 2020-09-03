@@ -401,10 +401,15 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
                         me.loader(true)
-                        me.$axios.post(`api/instructors/${me.$route.params.param}`, formData).then(res => {
+                        me.$axios.post(`api/instructors/${me.$route.params.param}`, formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Instructor has been Updated')

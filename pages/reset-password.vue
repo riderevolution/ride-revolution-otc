@@ -13,12 +13,12 @@
                 <div class="form_group">
                     <label for="password">Password <span>*</span></label>
                     <input type="password" name="password" autocomplete="off" class="default_text" ref="password" v-validate="'required|min:8'">
-                    <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') }}</span></transition>
+                    <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ properFormat(errors.first('password')) }}</span></transition>
                 </div>
                 <div class="form_group">
                     <label for="password_confirmation">Password Confirmation <span>*</span></label>
                     <input type="password" name="password_confirmation" autocomplete="off" class="default_text" v-validate="'required|confirmed:password'">
-                    <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ errors.first('password_confirmation') }}</span></transition>
+                    <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ properFormat(errors.first('password_confirmation')) }}</span></transition>
                 </div>
                 <div class="button_group alternate">
                     <nuxt-link to="/login" class="action_cancel_btn"><span>Cancel</span></nuxt-link>

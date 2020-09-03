@@ -50,9 +50,14 @@
                 me.$parent.isUser = 0
             },
             proceedStatus () {
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 const me = this
                 me.loader(true)
-                me.$axios.patch(`api/extras/toggle-status`, me.confirm).then(res => {
+                me.$axios.patch(`api/extras/toggle-status`, me.confirm, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     setTimeout( () => {
                         me.$store.state.confirmStatus = false
                         me.notify(`${me.confirm.type.charAt(0).toUpperCase() + me.confirm.type.slice(1)} has been ${me.confirm.status}`)

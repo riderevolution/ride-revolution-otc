@@ -17,24 +17,24 @@
                             <div class="form_main_group">
                                 <div class="form_group">
                                     <label for="name">Supplier Name <span>*</span></label>
-                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'" v-model="res.name">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
+                                    <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|min:10|max:200'" v-model="res.name">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ properFormat(errors.first('name')) }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="address">Office Address <span>*</span></label>
                                     <input type="text" name="address" autocomplete="off" class="default_text" v-validate="'required'" v-model="res.address">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('address')">{{ errors.first('address') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('address')">{{ properFormat(errors.first('address')) }}</span></transition>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="email">Email Address <span>*</span></label>
                                         <input type="email" name="email" autocomplete="off" class="default_text" v-validate="'required|email|max:70'" v-model="res.email">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ properFormat(errors.first('email')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="contact_number">Contact Number <span>*</span></label>
                                         <input type="text" name="contact_number" autocomplete="off" class="default_text" v-validate="'required|numeric|min:7|max:15'" v-model="res.contact_number">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('contact_number')">{{ errors.first('contact_number') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('contact_number')">{{ properFormat(errors.first('contact_number')) }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -113,68 +113,6 @@
                 variants: []
             }
         },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
-            }
-        },
         methods: {
             toggleDelete (id) {
                 const me = this
@@ -188,10 +126,15 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
                         me.loader(true)
-                        me.$axios.post(`api/suppliers/${me.$route.params.param}`, formData).then(res => {
+                        me.$axios.post(`api/suppliers/${me.$route.params.param}`, formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Added')

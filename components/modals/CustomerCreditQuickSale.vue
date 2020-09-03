@@ -389,6 +389,7 @@
             applyPromo () {
                 const me = this
                 if (document.getElementsByName("promo_code")[0].value != "") {
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData()
                     let total = 0
                     let productForm = new FormData(document.getElementById('product_form'))
@@ -411,7 +412,11 @@
                     formData.append('studio_id', me.$store.state.user.current_studio_id)
                     formData.append('user_id', me.$store.state.customerID)
                     if (me.promoApplied) {
-                        me.$axios.post('api/quick-sale/apply-promo', formData).then(res => {
+                        me.$axios.post('api/quick-sale/apply-promo', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             if (res.data != 0) {
                                 me.totalPrice = res.data.items
                                 me.promo_applied = true

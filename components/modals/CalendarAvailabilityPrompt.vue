@@ -36,12 +36,17 @@
                 const me = this
                 if (status) {
                     me.loader(true)
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData(document.getElementById('default_form'))
                     formData.append('studio_id', me.$parent.form.studio_id)
                     formData.append('instructor_id', me.instructor.id)
                     formData.append('target_date', me.targetDate)
                     formData.append('availability_status', me.availabilityStatus)
-                    me.$axios.post('api/instructor-availabilities', formData).then(res => {
+                    me.$axios.post('api/instructor-availabilities', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             setTimeout( () => {
                                 me.$parent.title = 'Success!'

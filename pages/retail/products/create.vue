@@ -15,13 +15,13 @@
                                 <div class="form_main_group">
                                     <div class="form_group">
                                         <label for="name">Product Name <span>*</span></label>
-                                        <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'" v-model="form.title">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
+                                        <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|min:10|max:200'" v-model="form.title">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ properFormat(errors.first('name')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="description">Description <span>*</span></label>
                                         <textarea name="description" rows="10" class="default_text" @input="getCount($event)" v-validate="'required|max:500'"></textarea>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ properFormat(errors.first('description')) }}</span></transition>
                                         <div class="limit">
                                             <span class="field_limit">1000</span> <span class="field_label">Characters</span>
                                         </div>
@@ -36,12 +36,12 @@
                                             <option value="" selected disabled>Choose a Category</option>
                                             <option :value="category.id" v-for="(category, key) in categories">{{ category.name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_id')">{{ errors.first('product_category_id') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_id')">{{ properFormat(errors.first('product_category_id')) }}</span></transition>
                                     </div>
                                     <div class="form_group" v-if="$route.query.c">
                                         <label for="product_category_name">Category <span>*</span></label>
                                         <input type="text" name="product_category_name" autocomplete="off" class="default_text disabled" v-validate="'required|max:50'" v-model="form.category.name">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_name')">{{ errors.first('product_category_name') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('product_category_name')">{{ properFormat(errors.first('product_category_name')) }}</span></transition>
                                         <input type="hidden" name="product_category_id" v-model="form.category.id">
                                     </div>
                                     <div class="form_group" v-if="!$route.query.s">
@@ -50,12 +50,12 @@
                                             <option value="" selected>Choose a Supplier</option>
                                             <option :value="supplier.id" v-for="(supplier, key) in suppliers">{{ supplier.name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_id')">{{ errors.first('supplier_id') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_id')">{{ properFormat(errors.first('supplier_id')) }}</span></transition>
                                     </div>
                                     <div class="form_group" v-if="$route.query.s">
                                         <label for="supplier_name">Supplier <span>*</span></label>
                                         <input type="text" name="supplier_name" autocomplete="off" class="default_text disabled" v-validate="'required|max:50'" v-model="form.supplier.name">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_name')">{{ errors.first('supplier_name') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('supplier_name')">{{ properFormat(errors.first('supplier_name')) }}</span></transition>
                                         <input type="hidden" name="supplier_id" v-model="form.supplier.id">
                                     </div>
                                     <div class="form_group">
@@ -191,68 +191,6 @@
                 variants: [0]
             }
         },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
-            }
-        },
         computed: {
             checkStudio () {
                 const me = this
@@ -349,10 +287,15 @@
                     })
                     me.hasStudio = (ctr > 0) ? false : true
                     if (valid && !me.hasStudio) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('studios', JSON.stringify(me.studios))
                         me.loader(true)
-                        me.$axios.post('api/inventory/products', formData).then(res => {
+                        me.$axios.post('api/inventory/products', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Added')

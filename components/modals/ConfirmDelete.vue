@@ -34,7 +34,12 @@
                 if (me.$parent.isDelete) {
                     me.$parent.isDelete = false
                 }
-                me.$axios.delete(`${me.url}/${me.contentID}`).then(res => {
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                me.$axios.delete(`${me.url}/${me.contentID}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     if (res.data) {
                         if (me.$parent.purchase_order) {
                             me.notify('Content has been Deleted')

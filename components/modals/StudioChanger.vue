@@ -74,11 +74,12 @@
             },
             submissionSuccess () {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 if (me.studio != '') {
                     me.loader(true)
                     me.$axios.get(`api/studios/${me.studio}`, {
                         headers: {
-                            Authorization: `Bearer ${me.$store.state.token}`
+                            Authorization: `Bearer ${token}`
                         }
                     }).then(res => {
                         if (res.data) {
@@ -87,7 +88,7 @@
                             formData.append('current_studio_id', me.selectedStudio.id)
                             me.$axios.post('api/extras/change-current-user-studio', formData, {
                                 headers: {
-                                    Authorization: `Bearer ${me.$store.state.token}`
+                                    Authorization: `Bearer ${token}`
                                 }
                             }).then(res => {
                                 if (res.data) {
@@ -118,10 +119,11 @@
         },
         mounted () {
             const me = this
+            let token = me.$cookies.get('70hokcotc3hhhn5')
             let studio_id = me.$cookies.get('CSID')
             me.$axios.get(`api/studios/${studio_id}`, {
                 headers: {
-                    Authorization: `Bearer ${me.$store.state.token}`
+                    Authorization: `Bearer ${token}`
                 }
             }).then(res => {
                 if (res.data) {
@@ -130,7 +132,7 @@
             })
             me.$axios.get('api/studios', {
                 headers: {
-                    Authorization: `Bearer ${me.$store.state.token}`
+                    Authorization: `Bearer ${token}`
                 }
             }).then(res => {
                 if (res.data) {

@@ -34,7 +34,7 @@
                                 <div class="form_group margin">
                                     <label for="po_number">P.O. Number</label>
                                     <input type="text" name="po_number" placeholder="Enter P.O. Number" autocomplete="off" :class="`uppercase default_text ${(!isStudio) ? 'disabled' : '' }`" v-validate="'required|max:25'">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('po_number')">{{ errors.first('po_number') || properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('po_number')">{{ properFormat(errors.first('po_number')) }}</span></transition>
                                 </div>
                                 <div class="form_group margin alternate" v-click-outside="closeMe">
                                     <label>Search a Product</label>
@@ -68,7 +68,7 @@
                                         <label for="name">Shipping Cost:</label>
                                         <div class="footer_input">
                                             <input type="text" name="shipping" class="default_text" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 99999}" v-model="form.total_shipping">
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has(`shipping`)">{{ errors.first('shipping') || properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has(`shipping`)">{{ properFormat(errors.first('shipping')) }}</span></transition>
                                         </div>
                                     </div>
                                     <!-- <div class="footer_cost">Total Additional Cost: PHP {{ computeAdditional }}</div> -->
@@ -136,68 +136,6 @@
                     total_additional: 0,
                     total_shipping: 0,
                     total_cost: 0
-                }
-            }
-        },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
                 }
             }
         },
@@ -344,13 +282,18 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('po_id', me.randomID)
                         // formData.append('total_additional_cost', me.form.total_additional)
                         formData.append('total_shipping_cost',  me.form.total_shipping)
                         formData.append('total_cost', me.form.total_cost)
                         me.loader(true)
-                        me.$axios.post('api/inventory/purchase-orders', formData).then(res => {
+                        me.$axios.post('api/inventory/purchase-orders', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Added')

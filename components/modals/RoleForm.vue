@@ -9,7 +9,7 @@
                     <div class="form_group">
                         <label for="display_name">Role Name <span>*</span></label>
                         <input type="text" name="display_name" autocomplete="off" autofocus class="default_text" v-validate="'required|max:100'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ properFormat(errors.first('display_name')) }}</span></transition>
                     </div>
                     <div class="form_flex select_all">
                         <label class="flex_label alternate">Select permissions under this role <span>*</span></label>
@@ -22,7 +22,7 @@
                                 <input type="radio" id="front_desk" value="0" name="permission_admin" v-validate="'required'" class="action_radio">
                                 <label for="front_desk">Dashboard (Front Desk)</label>
                             </div>
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ errors.first('permission_admin') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ properFormat(errors.first('permission_admin')) }}</span></transition>
                         </div>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkPermissions) ? 'checked' : ''}`" @click.prevent="toggleSelectAllPermissions($event)">Select All</div>
@@ -56,7 +56,7 @@
                     <div class="form_group">
                         <label for="display_name">Role Name <span>*</span></label>
                         <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required|max:100'" v-model="res.display_name">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ properFormat(errors.first('display_name')) }}</span></transition>
                     </div>
                     <div class="form_flex select_all">
                         <label class="flex_label alternate">Select permissions under this role <span>*</span></label>
@@ -69,7 +69,7 @@
                                 <input type="radio" id="front_desk" value="0" name="permission_admin" :checked="res.permission_admin == '0'" v-validate="'required'" class="action_radio">
                                 <label for="front_desk">Dashboard (Front Desk)</label>
                             </div>
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ errors.first('permission_admin') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ properFormat(errors.first('permission_admin')) }}</span></transition>
                         </div>
                         <div class="form_check select_all">
                             <div :class="`custom_action_check ${(checkPermissions) ? 'checked' : ''}`" @click.prevent="toggleSelectAllPermissions($event)">Select All</div>
@@ -201,28 +201,6 @@
                 ]
             }
         },
-        filters: {
-            properFormat: function (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        let lastValue = ''
-                        for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
-            }
-        },
         computed: {
             checkPermissions () {
                 const me = this
@@ -277,10 +255,15 @@
                     })
                     me.hasPermissions = (ctr > 0) ? false : true
                     if (valid && !me.hasPermissions) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('permissions', JSON.stringify(me.permissions))
                         me.loader(true)
-                        me.$axios.post('api/roles', formData).then(res => {
+                        me.$axios.post('api/roles', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Added')
@@ -321,11 +304,16 @@
                     })
                     me.hasPermissions = (ctr > 0) ? false : true
                     if (valid && !me.hasPermissions) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('permissions', JSON.stringify(me.permissions))
                         formData.append('_method', 'PATCH')
                         me.loader(true)
-                        me.$axios.post(`api/roles/${me.id}`, formData).then(res => {
+                        me.$axios.post(`api/roles/${me.id}`, formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Updated')

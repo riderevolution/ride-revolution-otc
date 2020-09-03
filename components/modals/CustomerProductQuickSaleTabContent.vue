@@ -12,7 +12,7 @@
                     <input type="text" name="quantity[]" :id="`quantity_${unique}`" class="default_text number" maxlength="2" autocomplete="off" v-model="quantity" v-validate="`numeric|min_value:1|${(value.product_quantities) ? `max_value:${value.product_quantities[0].quantity}` : '' }`" @input="recomputeTotal(value.id, unique, (value.isProductShow) ? value.sale_price : (value.isGiftShow ? value.class_package.package_price : value.amount ))">
                     <div class="up" @click="addCount(value.id, unique, (value.isProductShow) ? value.sale_price : (value.isGiftShow ? value.class_package.package_price : value.amount ))"></div>
                     <div class="down" @click="subtractCount(value.id, unique, (value.isProductShow) ? value.sale_price : (value.isGiftShow ? value.class_package.package_price : value.amount ))"></div>
-                    <transition name="slide"><span class="validation_errors" v-if="errors.has('product_form.quantity[]')">{{ errors.first('product_form.quantity[]') | properFormat }}</span></transition>
+                    <transition name="slide"><span class="validation_errors" v-if="errors.has('product_form.quantity[]')">{{ properFormat(errors.first('product_form.quantity[]')) }}</span></transition>
                 </div>
             </div>
         </div>
@@ -39,18 +39,6 @@
             }
         },
         inject: ['$validator'],
-        filters: {
-            properFormat: function (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                } else {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
-            }
-        },
         methods: {
             recomputeTotal (id, key, price) {
                 const me = this

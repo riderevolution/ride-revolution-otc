@@ -179,9 +179,14 @@
             },
             submitAttendance () {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData(document.getElementById('action'))
                 me.loader(true)
-                me.$axios.post('api/online-class-bookings/bulk-update', formData).then(res => {
+                me.$axios.post('api/online-class-bookings/bulk-update', formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     setTimeout( () => {
                         if (res.data) {
                             me.$store.state.onlineAttendancePrompt = true

@@ -59,7 +59,12 @@
                         <tbody v-if="res.classPackages.data.length > 0">
                             <tr v-for="(data, key) in res.classPackages.data" :key="key">
                                 <td>{{ data.name }}</td>
-                                <td>{{ data.sku_id }}</td>
+                                <td>
+                                    <div class="table_actions">
+                                        <input class="textbox" :id="`sku_id_${key}`" v-model="data.sku_id" />
+                                        <div class="table_action_success link" @click="codeClipboard(data, key)">Copy</div>
+                                    </div>
+                                </td>
                                 <td>{{ (data.class_count_unlimited) ? 'Unlimited' : data.class_count }}</td>
                                 <td>PHP {{ totalCount(data.package_price) }}</td>
                                 <td width="20%">
@@ -144,6 +149,17 @@
             }
         },
         methods: {
+            codeClipboard (data, key) {
+                const me = this
+                let element = document.getElementById(`sku_id_${key}`)
+                element.select()
+                element.setSelectionRange(0, 99999)
+                document.execCommand("copy")
+                element.nextElementSibling.innerHTML = 'Copied!'
+                setTimeout( () => {
+                    element.nextElementSibling.innerHTML = 'Copy'
+                }, 500)
+            },
             formatDate (value) {
                 if (value) {
                     return this.$moment(value).format('MMM DD, YYYY')

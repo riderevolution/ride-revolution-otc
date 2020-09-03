@@ -25,8 +25,13 @@
             toggleClose (status) {
                 const me = this
                 if (status) {
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     me.loader(true)
-                    me.$axios.delete(`api/schedules/${me.scheduled_date_id}`).then(res => {
+                    me.$axios.delete(`api/schedules/${me.scheduled_date_id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             setTimeout( () => {
                                 me.$parent.cancel = false

@@ -108,6 +108,7 @@
         methods: {
             submit (type) {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData(document.getElementById('content'))
                 if (type == 'open') {
                     formData.append('status', 1)
@@ -117,7 +118,11 @@
                 formData.append('studio_id', me.physical_count.studio_id)
                 formData.append('_method', 'PATCH')
                 me.loader(true)
-                me.$axios.post(`api/inventory/physical-count/${me.$route.params.slug}`, formData).then(res => {
+                me.$axios.post(`api/inventory/physical-count/${me.$route.params.slug}`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     setTimeout( () => {
                         if (res.data) {
                             if (type == 'open') {

@@ -414,9 +414,14 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         me.loader(true)
-                        me.$axios.post('api/packages/class-packages', formData).then(res => {
+                        me.$axios.post('api/packages/class-packages', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Added')

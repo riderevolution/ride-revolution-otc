@@ -23,14 +23,14 @@
                                             <div class="placeholder">hours</div>
                                             <!-- <div class="up" @click="addCount('booking', 'hour')"></div>
                                             <div class="down" @click="subtractCount('booking', 'hour')"></div> -->
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_hours')">{{ errors.first('booking_hours') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_hours')">{{ properFormat(errors.first('booking_hours')) }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <input type="text" name="booking_minutes" class="default_text number" autocomplete="off" v-model="form.booking.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
                                             <div class="placeholder">mins.</div>
                                             <!-- <div class="up" @click="addCount('booking', 'mins')"></div>
                                             <div class="down" @click="subtractCount('booking', 'mins')"></div> -->
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_minutes')">{{ errors.first('booking_minutes') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_minutes')">{{ properFormat(errors.first('booking_minutes')) }}</span></transition>
                                         </div>
                                     </div>
                                     <div class="form_group flex">
@@ -40,14 +40,14 @@
                                             <div class="placeholder">hours</div>
                                             <!-- <div class="up" @click="addCount('cancel', 'hour')"></div>
                                             <div class="down" @click="subtractCount('cancel', 'hour')"></div> -->
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_hours')">{{ errors.first('cancel_hours') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_hours')">{{ properFormat(errors.first('cancel_hours')) }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <input type="text" name="cancel_minutes" class="default_text number" autocomplete="off" v-model="form.cancel.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
                                             <div class="placeholder">mins.</div>
                                             <!-- <div class="up" @click="addCount('cancel', 'mins')"></div>
                                             <div class="down" @click="subtractCount('cancel', 'mins')"></div> -->
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_minutes')">{{ errors.first('cancel_minutes') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_minutes')">{{ properFormat(errors.first('cancel_minutes')) }}</span></transition>
                                         </div>
                                     </div>
                                 </div>
@@ -93,79 +93,22 @@
                 }
             }
         },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
-            }
-        },
         methods: {
             submissionSuccess () {
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('allowed_time_booking', `${(me.form.booking.hour * 3600) + (me.form.booking.mins * 60) + (0 * 1)}+${me.form.booking.hour}:${me.form.booking.mins}`)
                         formData.append('allowed_time_cancel', `${(me.form.cancel.hour * 3600) + (me.form.cancel.mins * 60) + (0 * 1)}+${me.form.cancel.hour}:${me.form.cancel.mins}`)
                         me.loader(true)
                         formData.append('_method', 'PATCH')
-                        me.$axios.post('api/booking-restrictions/2', formData).then(res => {
+                        me.$axios.post('api/booking-restrictions/2', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Restriction has been Updated')

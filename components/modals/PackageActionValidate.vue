@@ -24,12 +24,17 @@
             toggleClose (status) {
                 const me = this
                 if (status) {
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData()
                     me.loader(true)
                     if (me.$parent.methodType != 'unshare') {
                         formData.append('user_id', me.$parent.res.id)
                         formData.append('user_package_count_id', me.userPackageCountId)
-                        me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData).then(res => {
+                        me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             if (res.data) {
                                 me.$store.state.packageActionValidateStatus = false
                                 setTimeout( () => {
@@ -58,7 +63,11 @@
                         formData.append('receiver_id', me.$parent.tempData.sharedto_user_id)
                         formData.append('user_package_count_id', me.userPackageCountId)
                         formData.append('sender_id', me.$parent.tempData.user_id)
-                        me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData).then(res => {
+                        me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             if (res.data) {
                                 me.$store.state.packageActionValidateStatus = false
                                 setTimeout( () => {

@@ -18,12 +18,12 @@
                                 <div class="form_group">
                                     <label for="name">Class Name <span>*</span></label>
                                     <input type="text" name="name" autocomplete="off" class="default_text" placeholder="Enter name" v-validate="'required|min:5|max:150'">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ properFormat(errors.first('name')) }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="description">Description <span>*</span></label>
                                     <textarea name="description" rows="8" id="description" class="default_text" placeholder="Enter description" v-validate="'required'"></textarea>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ errors.first('description') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ properFormat(errors.first('description')) }}</span></transition>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group flex">
@@ -33,14 +33,14 @@
                                             <div class="placeholder">hours</div>
                                             <!-- <div class="up" @click="addCount('classLength', 'hour')"></div> -->
                                             <!-- <div class="down" @click="subtractCount('classLength', 'hour')"></div> -->
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_hours')">{{ errors.first('class_length_hours') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_hours')">{{ properFormat(errors.first('class_length_hours')) }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <input type="text" name="class_length_minutes" class="default_text number" autocomplete="off" v-model="form.classLength.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
                                             <div class="placeholder">mins.</div>
                                             <!-- <div class="up" @click="addCount('classLength', 'mins')"></div> -->
                                             <!-- <div class="down" @click="subtractCount('classLength', 'mins')"></div> -->
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_minutes')">{{ errors.first('class_length_minutes') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('class_length_minutes')">{{ properFormat(errors.first('class_length_minutes')) }}</span></transition>
                                         </div>
                                     </div>
                                     <div class="form_group">
@@ -112,68 +112,6 @@
                         mins: '-'
                     }
                 },
-            }
-        },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
             }
         },
         computed: {
@@ -309,11 +247,16 @@
                     })
                     me.hasStudio = (ctr > 0) ? false : true
                     if (valid && !me.hasStudio) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('class_length', `${(me.form.classLength.hour * 3600) + (me.form.classLength.mins * 60) + (0 * 1)}+${me.form.classLength.hour}:${me.form.classLength.mins}`)
                         formData.append('studios', JSON.stringify(me.studios))
                         me.loader(true)
-                        me.$axios.post('api/packages/class-types', formData).then(res => {
+                        me.$axios.post('api/packages/class-types', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Added')

@@ -23,12 +23,12 @@
                                 <option value="every-week">Every Week</option>
                                 <option value="every-month">Every Month</option>
                             </select>
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('repetition')">{{ errors.first('repetition') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('repetition')">{{ properFormat(errors.first('repetition')) }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="end_date">End Date</label>
                             <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :class="`${(form.hasRepeat) ? '' : 'disabled'}`" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :min-date="$moment(targetDate, 'YYYY-MM-D').format('YYYY-MM-DD')" :label="'Select end date'" v-validate="`${(form.repetition != '') ? 'required' : '' }`"></v-ctk>
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                         </div>
                     </div>
                     <div class="form_footer_wrapper">
@@ -69,48 +69,6 @@
                     end_date: '',
                     repetition: '',
                     hasRepeat: false
-                }
-            }
-        },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    let nextValue = newValue[0].split('_')
-                    if (nextValue.length > 1) {
-                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                    } else {
-                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = ''
-                        let lastValue = ''
-                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                        for (let i = 1; i < newValue.length; i++) {
-                            if (newValue[i] != 'id') {
-                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                            }
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
                 }
             }
         },

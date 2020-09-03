@@ -25,7 +25,7 @@
                             <option value="so-sick">So Sick of love song</option>
                             <option value="other">Other</option>
                         </select>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('comp_reason')">{{ errors.first('comp_reason') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('comp_reason')">{{ properFormat(errors.first('comp_reason')) }}</span></transition>
                     </div>
                     <transition name="fade">
                         <div class="form_group" v-if="form.comp == 'other'">
@@ -108,7 +108,7 @@
                             <option value="so-sick">So Sick of love song</option>
                             <option value="other">Other</option>
                         </select>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('comp_reason')">{{ errors.first('comp_reason') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('comp_reason')">{{ properFormat(errors.first('comp_reason')) }}</span></transition>
                     </div>
                     <transition name="fade">
                         <div class="form_group" v-if="form.comp == 'other'">
@@ -120,23 +120,23 @@
                         <div class="form_group">
                             <label for="guest_first_name">First Name <span>*</span></label>
                             <input type="text" name="guest_first_name" autocomplete="off" class="default_text" v-validate="'required'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_first_name')">{{ errors.first('guest_first_name') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_first_name')">{{ properFormat(errors.first('guest_first_name')) }}</span></transition>
                         </div>
                         <div class="form_group">
                             <label for="guest_last_name">Last Name <span>*</span></label>
                             <input type="text" name="guest_last_name" autocomplete="off" class="default_text" v-validate="'required'">
-                            <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_last_name')">{{ errors.first('guest_last_name') | properFormat }}</span></transition>
+                            <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_last_name')">{{ properFormat(errors.first('guest_last_name')) }}</span></transition>
                         </div>
                     </div>
                     <div class="form_group" v-if="type == 0">
                         <label for="email">Email Address <span>*</span></label>
                         <input type="email" name="email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ properFormat(errors.first('email')) }}</span></transition>
                     </div>
                     <div class="form_group" v-else>
                         <label for="guest_email">Email Address <span>*</span></label>
                         <input type="email" name="guest_email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_email')">{{ errors.first('guest_email') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('guest_email')">{{ properFormat(errors.first('guest_email')) }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="form_flex">
@@ -162,48 +162,6 @@
             type: {
                 type: Number,
                 default: 0
-            }
-        },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    let nextValue = newValue[0].split('_')
-                    if (nextValue.length > 1) {
-                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                    } else {
-                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = ''
-                        let lastValue = ''
-                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                        for (let i = 1; i < newValue.length; i++) {
-                            if (newValue[i] != 'id') {
-                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                            }
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-					if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
             }
         },
         data () {
@@ -245,6 +203,7 @@
             },
             submissionSuccess () {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
                         let formData = new FormData(document.getElementById('default_form'))
@@ -256,7 +215,11 @@
                             }
                             formData.append('staff_id', me.$store.state.user.id)
                             formData.append('seat_id', me.$store.state.seat.id)
-                            me.$axios.post('api/comp', formData).then(res => {
+                            me.$axios.post('api/comp', formData, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 if (res.data) {
                                     setTimeout( () => {
                                         me.$parent.actionMessage = 'Seat has been updated to a Comp.'
@@ -278,7 +241,11 @@
                             formData2.append('scheduled_date_id', me.$store.state.scheduleID)
                             formData2.append('user_id', me.customer.id)
                             formData2.append('email', me.form.email)
-                            me.$axios.post('api/extras/check-user-booking', formData2).then(res => {
+                            me.$axios.post('api/extras/check-user-booking', formData2, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 if (res.data) {
                                     if (me.customer != '' && me.form.assign == 'member') {
                                         formData.append('guest_email', me.customer.email)
@@ -287,7 +254,11 @@
                                     formData.append('seat_id', me.$store.state.seat.id)
                                     formData.append('user_id', me.$store.state.customerID)
                                     formData.append('user_package_count_id', me.$store.state.userPackageCountId)
-                                    me.$axios.post('api/bookings', formData).then(res => {
+                                    me.$axios.post('api/bookings', formData, {
+                                        headers: {
+                                            Authorization: `Bearer ${token}`
+                                        }
+                                    }).then(res => {
                                         if (res.data) {
                                             setTimeout( () => {
                                                 me.$parent.actionMessage = 'Seat has been reserved to a Guest.'

@@ -13,7 +13,7 @@
                 <div class="form_group">
                     <label for="email">Email Address <span>*</span></label>
                     <input type="text" name="email" autocomplete="off" class="default_text" v-model="form.email" v-validate="'required|email'">
-                    <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') }}</span></transition>
+                    <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ properFormat(errors.first('email')) }}</span></transition>
                 </div>
                 <div class="button_group alternate">
                     <nuxt-link to="/login" class="action_cancel_btn"><span>Go Back</span></nuxt-link>

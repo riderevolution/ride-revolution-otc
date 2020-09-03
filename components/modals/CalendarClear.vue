@@ -32,6 +32,7 @@
                 document.body.classList.remove('no_scroll')
             },
             proceedStatus () {
+                me.loader(true)
                 const me = this
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let date = me.value

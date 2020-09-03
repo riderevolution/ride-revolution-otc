@@ -17,8 +17,8 @@
                             <div class="form_main_group">
                                 <div class="form_group">
                                     <label for="display_name">Role Name <span>*</span></label>
-                                    <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required|max:100'" v-model="res.display_name">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ errors.first('display_name') | properFormat }}</span></transition>
+                                    <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required|min:10|max:100'" v-model="res.display_name">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ properFormat(errors.first('display_name')) }}</span></transition>
                                 </div>
                                 <div class="form_flex select_all">
                                     <label class="flex_label alternate">Select permissions under this role <span>*</span></label>
@@ -31,7 +31,7 @@
                                             <input type="radio" id="front_desk" value="0" name="permission_admin" :checked="res.permission_admin == '0'" v-validate="'required'" class="action_radio">
                                             <label for="front_desk">Dashboard (Front Desk)</label>
                                         </div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ errors.first('permission_admin') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('permission_admin')">{{ properFormat(errors.first('permission_admin')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex start">
@@ -331,68 +331,6 @@
                 prevRoute: '',
             }
         },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
-            }
-        },
         computed: {
             checkPermissions () {
                 const me = this
@@ -456,6 +394,7 @@
                     })
                     me.hasPermissions = (ctr > 0) ? false : true
                     if (valid && !me.hasPermissions) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         let permissions = []
                         me.permissionsPages.forEach((data, index) => {
@@ -468,7 +407,11 @@
                         formData.append('permissions_reporting', JSON.stringify(me.permissionsReporting))
                         formData.append('_method', 'PATCH')
                         me.loader(true)
-                        me.$axios.post(`api/roles/${me.$route.params.param}`, formData).then(res => {
+                        me.$axios.post(`api/roles/${me.$route.params.param}`, formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been updated')

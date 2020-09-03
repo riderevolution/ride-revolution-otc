@@ -12,7 +12,7 @@
                         <div class="notification_wrapper" v-for="(notification, key) in notifications" v-if="(key + 1) <= 20">
                             <span>&#9679;</span>
                             <div class="notification_desc">
-                                <div class="notification_title">{{ notification.message }}</div>
+                                <div class="notification_title">{{ notification.body }}</div>
                                 <div class="notification_time">{{ getFromNow(notification.created_at) }}</div>
                             </div>
                         </div>

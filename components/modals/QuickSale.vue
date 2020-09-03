@@ -452,11 +452,13 @@
             applyPromo () {
                 const me = this
                 if (document.getElementsByName("promo_code")[0].value != "") {
+
                     let formData = new FormData()
                     let total = 0
                     let customGiftCard = new FormData(document.getElementById('custom_gift_form'))
                     let productForm = new FormData(document.getElementById('product_form'))
                     let checkout = new FormData(document.getElementById('step2'))
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
 
                     me.totalPrice.forEach((data, index) => {
                         if (data.discounted_price) {
@@ -475,7 +477,11 @@
                     formData.append('checkout', JSON.stringify(Object.fromEntries(checkout)))
                     formData.append('studio_id', me.$store.state.user.current_studio_id)
                     if (me.promoApplied) {
-                        me.$axios.post('api/quick-sale/apply-promo', formData).then(res => {
+                        me.$axios.post('api/quick-sale/apply-promo', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             if (res.data != 0) {
                                 me.totalPrice = res.data.items
                                 me.promo_applied = true

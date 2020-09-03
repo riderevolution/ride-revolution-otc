@@ -295,6 +295,7 @@
             applyPromo () {
                 const me = this
                 if (document.getElementsByName("promo_code")[0].value != "") {
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData()
                     let total = 0
                     let customGiftCard = new FormData(document.getElementById('custom_gift_form'))
@@ -320,7 +321,11 @@
                     formData.append('user_id', me.$store.state.customerID)
                     formData.append('payment_id', me.value.id)
                     if (me.promoApplied) {
-                        me.$axios.post('api/quick-sale/apply-promo', formData).then(res => {
+                        me.$axios.post('api/quick-sale/apply-promo', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             if (res.data != 0) {
                                 me.totalPrice = res.data.items
                                 me.promo_applied = true

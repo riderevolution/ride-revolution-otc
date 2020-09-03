@@ -8,8 +8,8 @@
                 <div class="modal_main_group">
                     <div class="form_group">
                         <label for="name">Category Name <span>*</span></label>
-                        <input type="text" name="name" autocomplete="off" autofocus class="default_text" v-validate="'required|max:100'">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
+                        <input type="text" name="name" autocomplete="off" autofocus class="default_text" v-validate="'required|min:10|max:200'">
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ properFormat(errors.first('name')) }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="button_group">
@@ -27,8 +27,8 @@
                 <div class="modal_main_group">
                     <div class="form_group">
                         <label for="name">Category Name <span>*</span></label>
-                        <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|max:100'" v-model="res.name">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ errors.first('name') | properFormat }}</span></transition>
+                        <input type="text" name="name" autocomplete="off" class="default_text" autofocus v-validate="'required|min:10|max:200'" v-model="res.name">
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('name')">{{ properFormat(errors.first('name')) }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="button_group">
@@ -58,28 +58,6 @@
                 res: []
             }
         },
-        filters: {
-            properFormat: function (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                }else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        let lastValue = ''
-                        for (let i = 1; i < newValue.length; i++) {
-                            lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')[1]
-                return `The ${newValue} field${message}`
-            }
-        },
         methods: {
             toggleClose () {
                 const me = this
@@ -90,9 +68,14 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         me.loader(true)
-                        me.$axios.post('api/inventory/product-categories', formData).then(res => {
+                        me.$axios.post('api/inventory/product-categories', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Added')
@@ -128,10 +111,15 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
                         me.loader(true)
-                        me.$axios.post(`api/inventory/product-categories/${me.id}`, formData).then(res => {
+                        me.$axios.post(`api/inventory/product-categories/${me.id}`, formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Updated')

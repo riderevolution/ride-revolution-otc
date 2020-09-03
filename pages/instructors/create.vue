@@ -475,11 +475,16 @@
                 }
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         if (formData.get('acknowledge') != null && formData.get('i_agree') != null) {
                             formData.append('medical_history', JSON.stringify(me.form.medical_history))
                             me.loader(true)
-                            me.$axios.post('api/instructors', formData).then(res => {
+                            me.$axios.post('api/instructors', formData, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 setTimeout( () => {
                                     if (res.data) {
                                         me.notify('Content has been Added')

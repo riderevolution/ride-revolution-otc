@@ -120,6 +120,7 @@
             },
             submissionSuccess () {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
@@ -131,7 +132,11 @@
                                 formData.append('scheduled_date_id', me.$store.state.scheduleID)
                                 formData.append('studio_id', me.$parent.studioID)
                                 me.loader(true)
-                                me.$axios.post('api/waitlists', formData).then(res => {
+                                me.$axios.post('api/waitlists', formData, {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`
+                                    }
+                                }).then(res => {
                                     if (res.data) {
                                         setTimeout( () => {
                                             me.$parent.actionMessage = 'Successfully added to waitlist.'
@@ -161,7 +166,11 @@
                                 formData.append('new_user_package_count_id', me.new_package_count_id)
                                 formData.append('old_user_package_count_id', me.old_package_count_id)
                                 me.loader(true)
-                                me.$axios.post('api/bookings/change-package', formData).then(res => {
+                                me.$axios.post('api/bookings/change-package', formData, {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`
+                                    }
+                                }).then(res => {
                                     if (res.data) {
                                         setTimeout( () => {
                                             me.$parent.actionMessage = 'Successfully changed package.'
@@ -192,7 +201,11 @@
                                     formData.append('scheduled_date_id', me.$store.state.scheduleID)
                                     formData.append('user_id', me.$store.state.customerID)
                                     formData.append('user_package_count_id', me.user_package_count_id)
-                                    me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
+                                    me.$axios.post('api/extras/check-if-user-is-booked-already', formData, {
+                                        headers: {
+                                            Authorization: `Bearer ${token}`
+                                        }
+                                    }).then(res => {
                                         if (res.data.result > 0) {
                                             me.$store.state.customerPackageStatus = false
                                             me.$store.state.assignStatus = true
@@ -218,7 +231,11 @@
                                     formData.append('user_id', me.$store.state.customerID)
                                     formData.append('user_package_count_id', me.user_package_count_id)
                                     me.loader(true)
-                                    me.$axios.post('api/bookings', formData).then(res => {
+                                    me.$axios.post('api/bookings', formData, {
+                                        headers: {
+                                            Authorization: `Bearer ${token}`
+                                        }
+                                    }).then(res => {
                                         if (res.data) {
                                             setTimeout( () => {
                                                 me.$parent.actionMessage = 'Seat has been successfully reserved.'

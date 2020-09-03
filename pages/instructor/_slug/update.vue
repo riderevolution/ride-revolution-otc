@@ -26,7 +26,7 @@
                                     <input type="hidden" name="image_id[]" v-model="res.instructor_details.images[0].id" v-if="res.instructor_details.images[0].path != null">
                                     <label for="image" :class="`${(previewImage) ? 'active' : ''}`"><span>Upload Photo</span></label>
                                     <img id="preview_image" src="/" v-if="previewImage" />
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('image[]')">{{ errors.first('image[]') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('image[]')">{{ properFormat(errors.first('image[]')) }}</span></transition>
                                 </div>
                             </div>
                             <div class="form_main_group">
@@ -34,36 +34,36 @@
                                     <div class="form_group">
                                         <label for="first_name">First Name <span>*</span></label>
                                         <input type="text" name="first_name" autocomplete="off" class="default_text" v-model="res.first_name" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ errors.first('first_name') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ properFormat(errors.first('first_name')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="last_name">Last Name <span>*</span></label>
                                         <input type="text" name="last_name" autocomplete="off" class="default_text" v-model="res.last_name" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ errors.first('last_name') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ properFormat(errors.first('last_name')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="email">Email Address <span>*</span></label>
                                         <input type="email" name="email" autocomplete="off" class="default_text" v-model="res.email" v-validate="{required: true, email: true, regex: '^[a-zA-Z0-9-@-_-.]*$', max: 70}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ errors.first('email') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('email')">{{ properFormat(errors.first('email')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="io_contact_number">Contact Number <span>*</span></label>
                                         <input type="text" name="io_contact_number" autocomplete="off" v-model="res.instructor_details.io_contact_number" class="default_text" v-validate="'required|numeric|min:7|max:11'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_contact_number')">{{ errors.first('io_contact_number') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_contact_number')">{{ properFormat(errors.first('io_contact_number')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="io_birthdate">Birth Date <span>*</span></label>
                                         <v-ctk v-model="form.birth_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'io_birthdate'" :name="'io_birthdate'" :max-date="$moment().format('YYYY-MM-DD')" :label="'Select birth date'" v-validate="'required'"></v-ctk>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_birthdate')">{{ errors.first('io_birthdate') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_birthdate')">{{ properFormat(errors.first('io_birthdate')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="io_weight">Weight (in kilograms)</label>
                                         <input type="text" name="io_weight" autocomplete="off" v-model="res.instructor_details.io_weight" class="default_text" v-validate="'numeric|min_value:1|max_value:200'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_weight')">{{ errors.first('io_weight') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_weight')">{{ properFormat(errors.first('io_weight')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
@@ -77,7 +77,7 @@
                                             <input type="radio" id="male" value="M" name="io_sex" v-validate="'required'" class="action_radio" :checked="res.instructor_details.io_sex == 'male'">
                                             <label for="male">Male</label>
                                         </div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_sex')">{{ errors.first('io_sex') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_sex')">{{ properFormat(errors.first('io_sex')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="profession">Occupation <span>*</span></label>
@@ -85,7 +85,7 @@
                                             <option value="" selected disabled>Choose a Occupation</option>
                                             <option :value="data" v-for="(data, index) in professions">{{ data }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('profession')">{{ errors.first('profession') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('profession')">{{ properFormat(errors.first('profession')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
@@ -95,18 +95,18 @@
                                             <option value="" selected disabled>Choose Shoe Size</option>
                                             <option :value="size" v-for="(size, index) in sizes">{{ size }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_shoe_size')">{{ errors.first('io_shoe_size') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_shoe_size')">{{ properFormat(errors.first('io_shoe_size')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="io_nickname">Nickname <span>*</span></label>
                                         <input type="text" name="io_nickname" autocomplete="off" v-model="res.instructor_details.nickname" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 30}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_nickname')">{{ errors.first('io_nickname') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('io_nickname')">{{ properFormat(errors.first('io_nickname')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_group">
                                     <label for="youtube_link">Youtube Link <span>*</span></label>
                                     <input type="text" name="youtube_link" autocomplete="off" class="default_text" v-model="res.instructor_details.youtube_link" placeholder="Enter youtube link" v-validate="{required: true, url: {require_protocol: true }}">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('youtube_link')">{{ errors.first('youtube_link') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('youtube_link')">{{ properFormat(errors.first('youtube_link')) }}</span></transition>
                                 </div>
                             </div>
                         </div>
@@ -119,12 +119,12 @@
                                     <div class="form_group">
                                         <label for="password">Password</label>
                                         <input type="password" name="password" autocomplete="off" class="default_text" ref="password" v-validate="{regex: '^[a-zA-Z0-9-|/!|/@]*$', min: 8}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ errors.first('password') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('password')">{{ properFormat(errors.first('password')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="password_confirmation">Password Confirmation</label>
                                         <input type="password" name="password_confirmation" autocomplete="off" class="default_text" v-validate="{regex: '^[a-zA-Z0-9-|/!|/@]*$', confirmed: 'password'}">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ errors.first('password_confirmation') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('password_confirmation')">{{ properFormat(errors.first('password_confirmation')) }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -137,7 +137,7 @@
                                 <div class="form_group">
                                     <label for="pa_address">Address Line 1 <span>*</span></label>
                                     <input name="pa_address" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.pa_address"/>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address')">{{ errors.first('pa_address') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_address')">{{ properFormat(errors.first('pa_address')) }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="pa_address_2">Address Line 2 <b>(Optional)</b></label>
@@ -150,7 +150,7 @@
                                             <option value="" selected disabled>Choose Country</option>
                                             <option :value="country.id" v-for="(country, key) in pa_countries" :key="key">{{ country.name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_country_id')">{{ errors.first('pa_country_id') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_country_id')">{{ properFormat(errors.first('pa_country_id')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="pa_state_id">State <span>*</span></label>
@@ -158,19 +158,19 @@
                                             <option value="" selected disabled>Choose State</option>
                                             <option :value="state.id" v-for="(state, key) in pa_states" :key="key">{{ state.name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_state_id')">{{ errors.first('pa_state_id') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_state_id')">{{ properFormat(errors.first('pa_state_id')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="pa_city">City <span>*</span></label>
                                         <input type="text" name="pa_city" autocomplete="off" :class="`default_text ${(form.pa_state != '') ? '' : 'disabled'}`" v-validate="{required: true}" v-model="form.pa_city">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_city')">{{ errors.first('pa_city') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_city')">{{ properFormat(errors.first('pa_city')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="pa_zip_code">Zip Code <span>*</span></label>
                                         <input type="text" name="pa_zip_code" autocomplete="off" :class="`default_text ${(form.pa_city != '') ? '' : 'disabled'}`" v-validate="{required: true, numeric: true}" v-model="form.pa_zip_code">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_zip_code')">{{ errors.first('pa_zip_code') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pa_zip_code')">{{ properFormat(errors.first('pa_zip_code')) }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -187,7 +187,7 @@
                                 <div class="form_group">
                                     <label for="ba_address">Address Line 1 <span>*</span></label>
                                     <input name="ba_address" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9!@#$&()\\|\'-`.+,/_ |\u00f1]*$', max: 300}" v-model="form.ba_address"/>
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address')">{{ errors.first('ba_address') | properFormat }}</span></transition>
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_address')">{{ properFormat(errors.first('ba_address')) }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="ba_address_2">Address Line 2 <b>(Optional)</b></label>
@@ -200,7 +200,7 @@
                                             <option value="" selected disabled>Choose Country</option>
                                             <option :value="country.id" v-for="(country, key) in ba_countries" :key="key">{{ country.name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_country_id')">{{ errors.first('ba_country_id') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_country_id')">{{ properFormat(errors.first('ba_country_id')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="ba_state_id">State <span>*</span></label>
@@ -208,19 +208,19 @@
                                             <option value="" selected disabled>Choose State</option>
                                             <option :value="state.id" v-for="(state, key) in ba_states" :key="key">{{ state.name }}</option>
                                         </select>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_state_id')">{{ errors.first('ba_state_id') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_state_id')">{{ properFormat(errors.first('ba_state_id')) }}</span></transition>
                                     </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="ba_city">City <span>*</span></label>
                                         <input type="text" name="ba_city" autocomplete="off" :class="`default_text ${(form.ba_state != '') ? '' : 'disabled'}`" v-validate="{required: true}" v-model="form.ba_city">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_city')">{{ errors.first('ba_city') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_city')">{{ properFormat(errors.first('ba_city')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="ba_zip_code">Zip Code <span>*</span></label>
                                         <input type="text" name="ba_zip_code" autocomplete="off" :class="`default_text ${(form.ba_city != '') ? '' : 'disabled'}`" v-validate="{required: true, numeric: true}" v-model="form.ba_zip_code">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_zip_code')">{{ errors.first('ba_zip_code') | properFormat }}</span></transition>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('ba_zip_code')">{{ properFormat(errors.first('ba_zip_code')) }}</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -235,19 +235,19 @@
                                         <div class="form_group">
                                             <label for="ec_full_name">Full Name <span>*</span></label>
                                             <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-model="res.instructor_details.ec_full_name" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_full_name')">{{ errors.first('ec_full_name') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_full_name')">{{ properFormat(errors.first('ec_full_name')) }}</span></transition>
                                         </div>
                                         <div class="form_group">
                                             <label for="ec_contact_number">Contact Number <span>*</span></label>
                                             <input type="text" name="ec_contact_number" autocomplete="off" v-model="res.instructor_details.ec_contact_number" class="default_text" v-validate="'required|numeric|min:7|max:11'">
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_contact_number')">{{ errors.first('ec_contact_number') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_contact_number')">{{ properFormat(errors.first('ec_contact_number')) }}</span></transition>
                                         </div>
                                     </div>
                                     <div class="form_flex">
                                         <div class="form_group">
                                             <label for="ec_relationship">Relationship <span>*</span></label>
                                             <input type="text" name="ec_relationship" autocomplete="off" v-model="res.instructor_details.ec_relationship" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 50}">
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_relationship')">{{ errors.first('ec_relationship') | properFormat }}</span></transition>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_relationship')">{{ properFormat(errors.first('ec_relationship')) }}</span></transition>
                                         </div>
                                     </div>
                                 </div>
@@ -320,68 +320,6 @@
                 return sizes
             }
         },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
-            }
-        },
         methods: {
             toggleWorld (event, type, category) {
                 const me = this
@@ -447,10 +385,15 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('_method', 'PATCH')
                         me.loader(true)
-                        me.$axios.post(`api/instructors/${me.res.id}`, formData).then(res => {
+                        me.$axios.post(`api/instructors/${me.res.id}`, formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Instructor has been Updated')

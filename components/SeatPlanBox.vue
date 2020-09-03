@@ -188,6 +188,7 @@
             },
             toggleMenu (seat, status) {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.$store.state.compID = (seat.comp.length > 0) ? seat.comp[0].id : 0
                 me.$store.state.bookingID = (seat.bookings.length > 0) ? seat.bookings[0].id : 0
                 me.$store.state.userPackageCountId = (seat.bookings.length > 0) ? seat.bookings[0].user_package_count_id : 0
@@ -198,7 +199,11 @@
                             let formData = new FormData()
                             formData.append('scheduled_date_id', me.$store.state.scheduleID)
                             formData.append('user_id', me.$store.state.customerID)
-                            me.$axios.post('api/extras/check-if-user-is-booked-already', formData).then(res => {
+                            me.$axios.post('api/extras/check-if-user-is-booked-already', formData, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 if (res.data.guestHere) {
                                     me.$parent.message = 'This customer is already booked as a guest here.'
                                     me.$store.state.promptBookerStatus = true
@@ -269,9 +274,14 @@
             },
             toggleAction (status, id) {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 if ((status == 'reserved-guest' || status == 'reserved') && id != null) {
-                    me.$axios.post(`api/bookings/sign-in/${id}`, formData).then(res => {
+                    me.$axios.post(`api/bookings/sign-in/${id}`, formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             setTimeout( () => {
                                 me.$parent.$parent.$parent.getSeats()

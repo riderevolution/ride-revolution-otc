@@ -9,12 +9,12 @@
                     <div class="form_group">
                         <label for="gift_card_no">Gift Card No. <span>*</span></label>
                         <input type="text" name="gift_card_no" autocomplete="off" class="default_text" v-validate="{required: true}">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('gift_card_no')">{{ errors.first('gift_card_no') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('gift_card_no')">{{ properFormat(errors.first('gift_card_no')) }}</span></transition>
                     </div>
                     <div class="form_group">
                         <label for="pin">Pin <span>*</span></label>
                         <input type="text" name="pin" autocomplete="off" class="default_text" v-validate="{required: true}">
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pin')">{{ errors.first('pin') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('pin')">{{ properFormat(errors.first('pin')) }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="form_flex">
@@ -37,48 +37,6 @@
                 default: null
             }
         },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                if (newValue.length > 1) {
-                    let nextValue = newValue[0].split('_')
-                    if (nextValue.length > 1) {
-                        newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                    } else {
-                        newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('_')
-                    if (newValue.length > 1) {
-                        let firstValue = ''
-                        let lastValue = ''
-                        if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                            firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                        for (let i = 1; i < newValue.length; i++) {
-                            if (newValue[i] != 'id') {
-                                lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                            }
-                        }
-                        newValue = firstValue + ' ' + lastValue
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
-            }
-        },
         methods: {
             toggleClose () {
                 const me = this
@@ -89,10 +47,15 @@
                 const me = this
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         me.loader(true)
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('customer_id', me.customer.id)
-                        me.$axios.post('api/inventory/gift-cards/redeem', formData).then(res => {
+                        me.$axios.post('api/inventory/gift-cards/redeem', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             if (res.data) {
                                 me.$store.state.redeemGiftCardStatus = false
                                 setTimeout( () => {

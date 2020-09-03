@@ -93,6 +93,7 @@
             },
             submissionSuccess () {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
@@ -104,7 +105,11 @@
                             formData.append('seat_id', 123)
                             formData.append('user_id', me.customer.id)
                             me.loader(true)
-                            me.$axios.post('api/bookings', formData).then(res => {
+                            me.$axios.post('api/bookings', formData, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 if (res.data) {
                                     me.$store.state.onlineAttendanceCustomer = false
                                     me.$store.state.onlineAttendancePackage = false

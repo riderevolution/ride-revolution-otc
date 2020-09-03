@@ -14,7 +14,7 @@
             <div class="input_content">{{ value.product_quantities[0].quantity }}</div>
             <div class="input_content">
                 <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" :data-vv-name="`purchase_order_form_${unique}.quantity[]`" v-model="quantity" @change="isQuantity = true">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ errors.first(`purchase_order_form_${unique}.quantity[]`) | properFormat }}</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ properFormat(errors.first(`purchase_order_form_${unique}.quantity[]`)) }}</span></transition>
             </div>
             <div class="input_content">PHP {{ value.unit_price }}</div>
             <!-- <div class="input_content">
@@ -58,7 +58,7 @@
             <div class="input_content">{{ value.product_variant.product_quantities.quantity }}</div>
             <div class="input_content">
                 <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ errors.first(`purchase_order_form_${unique}.quantity[]`) | properFormat }}</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ properFormat(errors.first(`purchase_order_form_${unique}.quantity[]`)) }}</span></transition>
             </div>
             <div class="input_content">PHP {{ totalCount(value.product_variant.unit_price) }}</div>
             <!-- <div class="input_content">
@@ -88,7 +88,7 @@
             <div class="input_content">{{ value.product_variant.product_quantities.quantity }}</div>
             <div class="input_content">
                 <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ errors.first(`purchase_order_form_${unique}.quantity[]`) | properFormat }}</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ properFormat(errors.first(`purchase_order_form_${unique}.quantity[]`)) }}</span></transition>
             </div>
             <div class="input_content">PHP {{ totalCount(value.product_variant.unit_price) }}</div>
             <!-- <div class="input_content">
@@ -117,7 +117,7 @@
             <div class="input_content">{{ (value.product_variant.product.sellable == 1) ? 'Sellable' : 'Non-sellable' }}</div>
             <div class="input_content">
                 <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="`required|numeric|min_value:1|max_value:${value.quantity}`" v-model="quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
-                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ errors.first(`purchase_order_form_${unique}.quantity[]`) | properFormat }}</span></transition>
+                <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ properFormat(errors.first(`purchase_order_form_${unique}.quantity[]`)) }}</span></transition>
             </div>
             <!-- <div class="input_content">
                 <input type="text" name="shipping_cost[]" :class="`default_text ${(!isQuantity) ? 'disabled' : '' }`" autocomplete="off" v-validate="`{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$'}`" v-model="shipping = value.shipping_cost" @input="updateTotal($event, 'shipping', unique)" :data-vv-name="`purchase_order_form_${unique}.shipping_cost[]`">
@@ -167,61 +167,6 @@
                 shipping: 0,
                 additional: 0,
                 total: 0
-            }
-        },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
             }
         },
         computed: {

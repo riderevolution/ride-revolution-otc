@@ -39,7 +39,12 @@
             submissionSuccess () {
                 const me = this
                 if (me.transaction_id != 0) {
-                    me.$axios.get(`api/show-payment/${me.transaction_id}`).then(res => {
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
+                    me.$axios.get(`api/show-payment/${me.transaction_id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             me.$parent.transaction = res.data.payment
                             me.$store.state.pendingTransactionsStatus = false

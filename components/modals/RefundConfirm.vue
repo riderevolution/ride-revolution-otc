@@ -27,11 +27,16 @@
             toggleClose (status) {
                 const me = this
                 if (status) {
+                    let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData
                     formData.append('payment_item_id', me.paymentItemId)
                     formData.append('refund_type', me.value)
                     me.loader(true)
-                    me.$axios.post('api/extras/payments/refund', formData).then(res => {
+                    me.$axios.post('api/extras/payments/refund', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
                         if (res.data) {
                             setTimeout( () => {
                                 me.$store.state.refundStatus = false

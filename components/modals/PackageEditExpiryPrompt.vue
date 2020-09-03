@@ -8,7 +8,7 @@
                 <div class="modal_main_group">
                     <div class="form_group">
                         <v-ctk v-model="form.date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'date'" :name="'date'" :label="'Select extension date'" v-validate="'required'"></v-ctk>
-                        <transition name="slide"><span class="validation_errors" v-if="errors.has('date')">{{ errors.first('date') | properFormat }}</span></transition>
+                        <transition name="slide"><span class="validation_errors" v-if="errors.has('date')">{{ properFormat(errors.first('date')) }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">
                         <div class="button_group">
@@ -47,9 +47,14 @@
                 me.loader(true)
                 me.$validator.validateAll().then(valid => {
                     if (valid) {
+                        let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('user_package_count_id', me.data.id)
-                        me.$axios.post('api/packages/class-packages/update-expiry', formData).then(res => {
+                        me.$axios.post('api/packages/class-packages/update-expiry', formData, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }).then(res => {
                             if (res.data) {
                                 setTimeout( () => {
                                     me.$store.state.editPackageExpiryStatus = false
