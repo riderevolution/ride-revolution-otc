@@ -24,53 +24,56 @@
                         </download-csv>
                     </div>
                 </div>
-                <table class="cms_table alt">
-                    <thead>
-                        <tr>
-                            <th>Customer</th>
-                            <th>Type</th>
-                            <th>Email Address</th>
-                            <th>Contact No.</th>
-                            <th>Class Package</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="res.length > 0 && !noSearchFound">
-                        <tr v-for="(data, key) in populateUsers" :key="key" v-show="data.searched">
-                            <td>
-                                <div class="thumb">
-                                    <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
-                                    <div class="table_image_default" v-else>
-                                        <div class="overlay">
-                                            {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                <div class="scroll">
+                    <table class="cms_table alt">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Type</th>
+                                <th>Email Address</th>
+                                <th>Contact No.</th>
+                                <th>Class Package</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="res.length > 0 && !noSearchFound">
+                            <tr v-for="(data, key) in populateUsers" :key="key" v-show="data.searched">
+                                <td>
+                                    <div class="thumb">
+                                        <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                            </div>
                                         </div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
                                     </div>
-                                    <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
-                                </div>
-                            </td>
-                            <td>{{ data.user.customer_details.customer_type.name }}</td>
-                            <td>{{ data.user.email }}</td>
-                            <td>{{ data.user.customer_details.co_contact_number }}</td>
-                            <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
-                            <td>
-                                <div class="form_group no_margin">
-                                    <select class="default_select alternate" :name="`status[${key}]`" v-model="data.status">
-                                        <option value="reserved" selected>Reserved</option>
-                                        <option value="signed-in">Signed In</option>
-                                        <option value="no-show">No Show</option>
-                                        <option value="cancelled">Cancelled</option>
-                                    </select>
-                                </div>
-                                <input type="hidden" name="booking_id[]" :value="data.id">
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td colspan="6">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </td>
+                                <td>{{ data.user.customer_details.customer_type.name }}</td>
+                                <td>{{ data.user.email }}</td>
+                                <td>{{ data.user.customer_details.co_contact_number }}</td>
+                                <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
+                                <td>
+                                    <div class="form_group no_margin">
+                                        <select class="default_select alternate" :name="`status[${key}]`" v-model="data.status">
+                                            <option value="reserved" selected>Reserved</option>
+                                            <option value="signed-in">Signed In</option>
+                                            <option value="no-show">No Show</option>
+                                            <option value="cancelled">Cancelled</option>
+                                        </select>
+                                    </div>
+                                    <input type="hidden" name="booking_id[]" :value="data.id">
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td colspan="6">No Result(s) Found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <div class="cta" v-if="res.length > 0">
                     <button type="submit" name="submit" class="action_btn alternate">Submit</button>
                 </div>
