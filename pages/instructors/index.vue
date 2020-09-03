@@ -18,7 +18,7 @@
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
-                            <div class="form_group">
+                            <div class="form_group alternate">
                                 <label for="q">Find a Instructor</label>
                                 <input type="text" name="q" autocomplete="off" placeholder="Search for a instructor" class="default_text search_alternate">
                             </div>

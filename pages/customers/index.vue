@@ -18,7 +18,7 @@
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
-                            <div class="form_group">
+                            <div class="form_group alternate">
                                 <label for="q">Find a Customer</label>
                                 <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" class="default_text search_alternate">
                             </div>
