@@ -73,15 +73,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(data, key) in res.sales_breakdown" :key="key">
-                                    <td>{{ data.name }}</td>
-                                    <td>Php {{ totalCount(data.ITY) }}</td>
-                                    <td>Php {{ totalCount(data.ITD) }}</td>
-                                </tr>
                                 <tr>
                                     <td class="green">Total</td>
                                     <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITYTotal) }}</td>
                                     <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITDTotal) }}</td>
+                                </tr>
+                                <tr v-for="(data, key) in res.sales_breakdown" :key="key">
+                                    <td>{{ data.name }}</td>
+                                    <td>Php {{ totalCount(data.ITY) }}</td>
+                                    <td>Php {{ totalCount(data.ITD) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -107,15 +107,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(data, key) in res.income_breakdown" :key="key">
-                                    <td>{{ data.name }}</td>
-                                    <td>Php {{ totalCount(data.ITY) }}</td>
-                                    <td>Php {{ totalCount(data.ITD) }}</td>
-                                </tr>
                                 <tr>
                                     <td class="green">Total</td>
                                     <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITYTotal) }}</td>
                                     <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITDTotal) }}</td>
+                                </tr>
+                                <tr v-for="(data, key) in res.income_breakdown" :key="key">
+                                    <td>{{ data.name }}</td>
+                                    <td>Php {{ totalCount(data.ITY) }}</td>
+                                    <td>Php {{ totalCount(data.ITD) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -286,11 +286,8 @@
             salesSummaryAttributes () {
                 const me = this
                 return [
-                    ...me.sales_summary_values.map(value => ({
-                        'Studio': me.getStudio(),
-                        'Payment Type': (value.name) ? value.name : 'Total',
-                        'ITY': (value.ITY) ? me.totalCount(value.ITY) : me.totalCount(value.incomeBreakdownITYTotal),
-                        'ITD': (value.ITD) ? me.totalCount(value.ITD) : me.totalCount(value.incomeBreakdownITDTotal)
+                    ...me.sales_summary_values.map((value, key) => ({
+                        'test': key
                     }))
                 ]
             }
@@ -344,7 +341,11 @@
                                 me.res.item_total = res.data.total
                                 me.res.item_payment_mode_total = res.data.paymentModesTotal
 
-
+                                res.data.items.forEach((item, i) => {
+                                    me.sales_summary_values.push(item)
+                                })
+                                me.sales_summary_values.push(res.data.total)
+                                me.sales_summary_values.push(res.data.paymentModesTotal)
 
                             }
                         }, 500)
@@ -389,6 +390,13 @@
                                 me.res.items = res.data.items
                                 me.res.item_total = res.data.total
                                 me.res.item_payment_mode_total = res.data.paymentModesTotal
+
+                                res.data.items.forEach((item, i) => {
+                                    me.sales_summary_values.push(item)
+                                })
+                                me.sales_summary_values.push(res.data.total)
+                                me.sales_summary_values.push(res.data.paymentModesTotal)
+
                             }
                             me.filtered = true
                         }, 500)

@@ -50,8 +50,8 @@
                 me.$parent.isUser = 0
             },
             proceedStatus () {
-                let token = me.$cookies.get('70hokcotc3hhhn5')
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.loader(true)
                 me.$axios.patch(`api/extras/toggle-status`, me.confirm, {
                     headers: {
