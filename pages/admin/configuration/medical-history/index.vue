@@ -26,7 +26,7 @@
                         </thead>
                         <tbody v-if="res.length > 0">
                             <tr v-for="(data, key) in res" :key="key">
-                                <td>{{ data.title }}</td>
+                                <td width="50%">{{ data.title }}</td>
                                 <td>{{ formatDate(data.created_at) }}</td>
                                 <td>{{ formatDate(data.updated_at) }}</td>
                                 <td>
