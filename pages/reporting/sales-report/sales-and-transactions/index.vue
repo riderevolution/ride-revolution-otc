@@ -11,7 +11,8 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/payment-type/register-sales-summary?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/sales-and-transactions/sales-summary/sales-breakdown?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate" v-if="tabStatus == 'summary'">Print</a>
+                            <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-else>Print</a>
                             <download-csv
                                 v-if="tabStatus == 'summary'"
                                 class="action_btn alternate"
@@ -53,12 +54,12 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div :class="`status ${(tabStatus == 'summary') ? 'active' : ''}`" @click="toggleTab('summary', 'sales-summary', 'api/reporting/sales/sales-and-transactions/sales-summary')">Sales Summary</div>
-                        <div :class="`status ${(tabStatus == 'packages') ? 'active' : ''}`" @click="toggleTab('packages', 'sales-summary-product', 'api/reporting/sales/sales-and-transactions/sales-summary/class-packages')">Class Packages</div>
-                        <div :class="`status ${(tabStatus == convertToSlug(category.name)) ? 'active' : ''}`" v-for="(category, key) in categories" :key="key" @click="toggleTab(convertToSlug(category.name), 'sales-summary-product', `api/reporting/sales/sales-and-transactions/sales-summary/product-categories/${category.id}`)">{{ category.name }}</div>
-                        <div :class="`status ${(tabStatus == 'gift-cards') ? 'active' : ''}`" @click="toggleTab('gift-cards', 'sales-summary-product', 'api/reporting/sales/sales-and-transactions/sales-summary/gift-cards')">Gift Cards</div>
-                        <div :class="`status ${(tabStatus == 'promos') ? 'active' : ''}`" @click="toggleTab('promos', 'sales-summary-product', 'api/reporting/sales/sales-and-transactions/sales-summary/promos')">Promotions</div>
-                        <div :class="`status ${(tabStatus == 'store-credits') ? 'active' : ''}`" @click="toggleTab('store-credits', 'sales-summary-product', 'api/reporting/sales/sales-and-transactions/sales-summary/store-credits')">Store Credits</div>
+                        <div :class="`status ${(tabStatus == 'summary') ? 'active' : ''}`" @click="toggleTab('summary', 'sales-summary', 'reporting/sales/sales-and-transactions/sales-summary')">Sales Summary</div>
+                        <div :class="`status ${(tabStatus == 'packages') ? 'active' : ''}`" @click="toggleTab('packages', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/class-packages')">Class Packages</div>
+                        <div :class="`status ${(tabStatus == convertToSlug(category.name)) ? 'active' : ''}`" v-for="(category, key) in categories" :key="key" @click="toggleTab(convertToSlug(category.name), 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/product-categories/${category.id}`)">{{ category.name }}</div>
+                        <div :class="`status ${(tabStatus == 'gift-cards') ? 'active' : ''}`" @click="toggleTab('gift-cards', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/gift-cards')">Gift Cards</div>
+                        <div :class="`status ${(tabStatus == 'promos') ? 'active' : ''}`" @click="toggleTab('promos', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/promos')">Promotions</div>
+                        <div :class="`status ${(tabStatus == 'store-credits') ? 'active' : ''}`" @click="toggleTab('store-credits', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/store-credits')">Store Credits</div>
                     </div>
                     <div v-if="slug == 'sales-summary'">
                         <table class="cms_table alt">
@@ -247,7 +248,7 @@
                     item_payment_mode_total: []
                 },
                 slug: 'sales-summary',
-                apiRoute: 'api/reporting/sales/sales-and-transactions/sales-summary',
+                apiRoute: 'reporting/sales/sales-and-transactions/sales-summary',
                 income_values: [],
                 sales_values: [],
                 sales_summary_values: [],
@@ -285,9 +286,22 @@
             },
             salesSummaryAttributes () {
                 const me = this
+                let current_length = me.sales_summary_values.length - 1
                 return [
                     ...me.sales_summary_values.map((value, key) => ({
-                        'test': key
+                        'Studio': me.getStudio(),
+                        'Items': (key == current_length) ? 'Total' : (value.card_code) ? value.card_code : (value.variant ? value.variant : value.name),
+                        'Qty': (key == current_length) ? value.totalQty : (value.qty ? value.qty : 0),
+                        'ITY': `Php ${(key == current_length) ? me.totalCount(value.totalITY) : me.totalCount(value.ITY)}`,
+                        'ITD': `Php ${(key == current_length) ? me.totalCount(value.totalITD) : me.totalCount(value.ITD)}`,
+                        'CA': (key == current_length) ? me.res.item_payment_mode_total.cash : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'GC': (key == current_length) ? me.res.item_payment_mode_total.gcash : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'CC': (key == current_length) ? me.res.item_payment_mode_total.creditCard : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'DC/EPS': (key == current_length) ? me.res.item_payment_mode_total.debitCard : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'CQ': (key == current_length) ? me.res.item_payment_mode_total.check : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'PP': (key == current_length) ? me.res.item_payment_mode_total.paypal : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'PM': (key == current_length) ? me.res.item_payment_mode_total.paymaya : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'SC': (key == current_length) ? me.res.item_payment_mode_total.storeCredit : (value.paymentModes) ? value.paymentModes.cash : 0
                     }))
                 ]
             }
@@ -314,7 +328,7 @@
                 me.sales_summary_values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                me.$axios.post(`${apiRoute}`, formData).then(res => {
+                me.$axios.post(`api/${apiRoute}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.slug = slug
@@ -345,7 +359,6 @@
                                     me.sales_summary_values.push(item)
                                 })
                                 me.sales_summary_values.push(res.data.total)
-                                me.sales_summary_values.push(res.data.paymentModesTotal)
 
                             }
                         }, 500)
@@ -367,7 +380,7 @@
                 me.sales_summary_values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                me.$axios.post(`${me.apiRoute}`, formData).then(res => {
+                me.$axios.post(`api/${me.apiRoute}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             if (me.slug == 'sales-summary') {
@@ -395,7 +408,6 @@
                                     me.sales_summary_values.push(item)
                                 })
                                 me.sales_summary_values.push(res.data.total)
-                                me.sales_summary_values.push(res.data.paymentModesTotal)
 
                             }
                             me.filtered = true
@@ -419,7 +431,8 @@
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
-                me.$axios.post(`${me.apiRoute}`, formData).then(res => {
+                formData.append('studio_id',  studio_id)
+                me.$axios.post(`api/${me.apiRoute}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res.sales_breakdown = res.data.salesBreakdown
