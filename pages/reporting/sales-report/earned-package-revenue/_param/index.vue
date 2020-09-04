@@ -7,12 +7,12 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ res.name }}</h1>
-                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
+                                <h1>{{ class_package.name }}</h1>
                             </div>
+                            <h2 class="header_subtitle">{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</h2>
                         </div>
                         <div class="actions">
-                            
+
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
@@ -33,10 +33,10 @@
                                 <th class="sticky">Price</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.user_package_counts.length > 0">
-                            <tr v-for="(data, key) in res.user_package_counts" :key="key">
+                        <tbody v-if="res.length > 0">
+                            <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <nuxt-link class="table_data_link" :to="`/customers/${data.user.id}/packages`" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</nuxt-link>
+                                    <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</div>
                                     <div v-else>N/A</div>
                                 </td>
                                 <td>{{ $moment((data.activation_date != 'NA') ? data.activation_date : data.created_at).format('MMM DD, YYYY') }}</td>
@@ -74,6 +74,7 @@
                 access: true,
                 loaded: false,
                 res: [],
+                class_package: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
@@ -82,10 +83,14 @@
             }
         },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             computeTotal () {
                 const me = this
                 let total = 0
-                me.res.user_package_counts.forEach((value, index) => {
+                me.res.forEach((value, index) => {
                     total += parseFloat(value.revenue)
                 })
 
@@ -99,12 +104,14 @@
                 me.form.id = me.$route.query.id
                 let formData = new FormData()
                 formData.append('id', me.form.id)
+                formData.append('type', me.$route.query.type)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 me.$axios.post(`api/reporting/sales/earned-class-package-revenue/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.class_package
+                            me.res = res.data.user_packages
+                            me.class_package = res.data.class_package
                             me.loaded = true
                         }, 500)
                     }

@@ -13,7 +13,7 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                
+
                                 <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                                                 <tr v-for="(value, key) in data.values" :key="key">
                                                     <td v-if="!data.packages">{{ value.name }}</td>
                                                     <td v-else>
-                                                        <div class="table_data_link" @click="toggleInnerReport(`${$route.path}/${convertToSlug(value.name)}`, value.id)">{{ value.name }}</div>
+                                                        <div class="table_data_link" @click="toggleInnerReport(`${$route.path}/${convertToSlug(value.name)}`, data, value)">{{ value.name }}</div>
                                                     </td>
                                                     <td>Php {{ totalCount((data.expired) ? value.expiredRevenue : value.revenue) }}</td>
                                                 </tr>
@@ -114,9 +114,9 @@
             }
         },
         methods: {
-            toggleInnerReport (path, id) {
+            toggleInnerReport (path, parent, child) {
                 const me = this
-                me.$router.push(`${path}?id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${path}?id=${child.id}&type=${parent.type}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             computeSubTotal (value, unique) {
                 const me = this

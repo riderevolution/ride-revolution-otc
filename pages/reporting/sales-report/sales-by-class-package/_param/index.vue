@@ -8,7 +8,7 @@
                         <div>
                             <div class="header_title">
                                 <h1>{{ package.name }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ status }})</h1>
-                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ package.name }}.</h2>
                         </div>
