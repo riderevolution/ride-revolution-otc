@@ -13,8 +13,14 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                
-                                <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                                <a :href="`/print/reporting/sales/revenue-summary?start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                                <download-csv
+                                    v-if="res.length > 0"
+                                    class="action_btn alternate margin"
+                                    :data="revenueSummaryAttributes"
+                                    :name="`revenue-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                    Export
+                                </download-csv>
                             </div>
                         </div>
                     </div>
@@ -23,12 +29,12 @@
                             <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -62,7 +68,12 @@
                                             </thead>
                                             <tbody v-if="data.groups.length > 0">
                                                 <tr v-for="(value, key) in data.groups" :key="key">
-                                                    <td>{{ value.name }}</td>
+                                                    <td class="sign">
+                                                        {{ value.name }}
+                                                        <div class="circle add" v-if="value.negative != undefined && !value.negative"></div>
+                                                        <div class="circle sub" v-else-if="value.negative != undefined && value.negative"></div>
+                                                        <div class="circle sub" v-else-if="value.time != undefined && value.time"></div>
+                                                    </td>
                                                     <td>Php {{ totalCount(value.total) }}</td>
                                                 </tr>
                                             </tbody>
@@ -98,6 +109,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
@@ -105,71 +117,23 @@
                     total: 0
                 },
                 res: [],
+                values: [],
                 name: 'Revenue Summary',
                 access: true,
                 loaded: false,
             }
         },
-        filters: {
-            properFormat (value) {
-                let newValue = value.split('The ')[1].split(' field')[0].split('.')
-                if (newValue.length > 1) {
-                    newValue = newValue[1].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    }
-                } else {
-                    newValue = value.split('The ')[1].split(' field')[0].split('[]')
-                    if (newValue.length > 1) {
-                        let nextValue = newValue[0].split('_')
-                        if (nextValue.length > 1) {
-                            newValue = nextValue[0].charAt(0).toUpperCase() + nextValue[0].slice(1) + ' ' + nextValue[1].charAt(0).toUpperCase() + nextValue[1].slice(1)
-                        } else {
-                            newValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                        }
-                    } else {
-                        newValue = value.split('The ')[1].split(' field')[0].split('_')
-                        if (newValue.length > 1) {
-                            let firstValue = ''
-                            let lastValue = ''
-                            if (newValue[0] != 'co' && newValue[0] != 'pa' && newValue[0] != 'ec' && newValue[0] != 'ba') {
-                                firstValue = newValue[0].charAt(0).toUpperCase() + newValue[0].slice(1)
-                            }
-                            for (let i = 1; i < newValue.length; i++) {
-                                if (newValue[i] != 'id') {
-                                    lastValue += ' ' + newValue[i].charAt(0).toUpperCase() + newValue[i].slice(1)
-                                }
-                            }
-                            newValue = firstValue + ' ' + lastValue
-                        } else {
-                            newValue = value.split('The ')[1].split(' field')[0].charAt(0).toUpperCase() + value.split('The ')[1].split(' field')[0].slice(1)
-                        }
-                    }
-                }
-                let message = value.split('The ')[1].split(' field')
-                if (message.length > 1) {
-                    message = message[1]
-                    return `The ${newValue} field${message}`
-                } else {
-                    if (message[0].split('file').length > 1) {
-                        message = message[0].split('file')[1]
-                        return `The ${newValue} field${message}`
-                    } else {
-                        return `The ${newValue}`
-                    }
-                }
+        computed: {
+            revenueSummaryAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Revenue': value.name,
+                        'Subtotal Revenue': `Php ${me.totalCount(value.total)}`,
+                        'Type': (value.parent) ? '-' : value.name,
+                        'Total': (value.parent) ? '-' : `Php ${me.totalCount(value.total)}`
+                    }))
+                ]
             }
         },
         methods: {
@@ -208,6 +172,16 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.summary_revenues
+
+                            res.data.summary_revenues.forEach((item, index) => {
+                                item.parent = true
+                                me.values.push(item)
+                                item.groups.forEach((child, index) => {
+                                    child.parent = false
+                                    me.values.push(child)
+                                })
+                            })
+
                             me.form.total = me.totalCount(res.data.grand_total)
                             me.loaded = true
                         }, 500)
