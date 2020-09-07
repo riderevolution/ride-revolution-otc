@@ -71,7 +71,7 @@
                         <tbody v-if="res.length > 0">
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ `${data.first_name} ${data.last_name}` }}</div>
+                                    <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                 </td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
                                 <td>Php {{ totalCount(data.total_class_package) }}</td>

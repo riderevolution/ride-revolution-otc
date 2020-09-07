@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">List of riders with the most ride count</h2>
                         </div>
                         <div class="actions">
-                            
+
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.last_name }} {{ data.last_name }}</nuxt-link>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
                                 <td>{{ data.numberOfRides }}</td>
@@ -138,6 +138,10 @@
             }
         },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             submitFilter () {
                 const me = this
                 me.loader(true)
