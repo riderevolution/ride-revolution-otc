@@ -115,7 +115,7 @@
             }
         },
         computed: {
-            giftCardsAttributess () {
+            giftCardsAttributes () {
                 const me = this
                 return [
                     ...me.values.map(value => ({

@@ -12,8 +12,16 @@
                             <h2 class="header_subtitle">{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</h2>
                         </div>
                         <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <div class="action_buttons">
+                                <a :href="`/print/reporting/sales/earned-package-revenue/${class_package.slug}?id=${form.id}&type=${form.type}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                                <download-csv
+                                    v-if="res.length > 0"
+                                    class="action_btn alternate margin"
+                                    :data="earnedPackageRevenueSlugAttributes"
+                                    :name="`earned-package-revenue-${class_package.name}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                    Export
+                                </download-csv>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -36,7 +44,7 @@
                         <tbody v-if="res.length > 0">
                             <tr v-for="(data, key) in res" :key="key">
                                 <td>
-                                    <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</div>
+                                    <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)" v-if="data.user != null">{{ data.user.fullname }}</div>
                                     <div v-else>N/A</div>
                                 </td>
                                 <td>{{ $moment((data.activation_date != 'NA') ? data.activation_date : data.created_at).format('MMM DD, YYYY') }}</td>
@@ -69,17 +77,37 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Earned Package Revenue',
                 access: true,
                 loaded: false,
                 res: [],
+                values: [],
                 class_package: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
-                    id: 0
+                    id: 0,
+                    type: ''
                 }
+            }
+        },
+        computed: {
+            earnedPackageRevenueSlugAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Class Package': me.class_package.name,
+                        'Full Name': value.user.fullname,
+                        'Activation Date': me.$moment((value.activation_date != 'NA') ? value.activation_date : value.created_at).format('MMM DD, YYYY'),
+                        'Expiration Date': me.$moment((value.computed_expiration_date != null) ? value.computed_expiration_date : value.updated_at).format('MMM DD, YYYY'),
+                        'Count': value.original_package_count,
+                        'Remaining': value.count,
+                        'Revenue': `Php ${me.totalCount(value.revenue)}`,
+                        'Price': `Php ${me.totalCount(value.payment_item.price_per_item)}`
+                    }))
+                ]
             }
         },
         methods: {
@@ -101,16 +129,23 @@
                 me.loader(true)
                 me.form.start_date = me.$route.query.start_date
                 me.form.end_date = me.$route.query.end_date
+                me.form.type = me.$route.query.type
                 me.form.id = me.$route.query.id
+
                 let formData = new FormData()
                 formData.append('id', me.form.id)
-                formData.append('type', me.$route.query.type)
+                formData.append('type', me.form.type)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 me.$axios.post(`api/reporting/sales/earned-class-package-revenue/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.user_packages
+
+                            res.data.user_packages.forEach((item, key) => {
+                                me.values.push(item)
+                            })
+
                             me.class_package = res.data.class_package
                             me.loaded = true
                         }, 500)
