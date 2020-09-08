@@ -1,0 +1,91 @@
+<template>
+    <div class="print_table" v-if="loaded">
+        <div class="text">
+            <h2>Customer Retention</h2>
+            <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
+        </div>
+        <table class="cms_table print">
+            <thead>
+                <tr>
+                    <th class="stick">Customer</th>
+                    <th class="stick">Sign Up</th>
+                    <th class="stick">First Class</th>
+                    <th class="stick">Last Class</th>
+                    <th class="stick">City</th>
+                </tr>
+            </thead>
+            <tbody v-if="res.data.length > 0">
+                <tr v-for="(data, key) in res.data" :key="key">
+                    <td>
+                        <div class="table_data_link" >{{ data.fullname }}</div>
+                    </td>
+                    <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
+                    <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
+                    <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
+                    <td>{{ data.customer_details.pa_city }}</td>
+                </tr>
+            </tbody>
+            <tbody class="no_results" v-else>
+                <tr>
+                    <td :colspan="rowCount">No Result(s) Found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</template>
+
+<script>
+    export default {
+        layout: 'print',
+        data () {
+            return {
+                loaded: false,
+                res: [],
+                form: {
+                    studio_id: '',
+                    class_type_id: '',
+                    timeslot: '',
+                    instructor_id: '',
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
+                }
+            }
+        },
+        methods: {
+            initial () {
+                const me = this
+                let formData = new FormData()
+
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                if (me.$route.query.status.length > 0) {
+                    formData.append('type', me.$route.query.status)
+                } else {
+                    formData.append('type', 'first')
+                }
+                me.$axios.post(`api/reporting/customers/customer-retention`, formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.res = res.data.customers
+                            me.loaded = true
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        window.print()
+                    }, 1000)
+                })
+            }
+        },
+        mounted () {
+			const me = this
+            me.initial()
+            window.onafterprint = function(){
+                window.close()
+            }
+		}
+    }
+</script>

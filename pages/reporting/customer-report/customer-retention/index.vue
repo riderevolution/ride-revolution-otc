@@ -7,13 +7,19 @@
                         <div>
                             <div class="header_title">
                                 <h1>Customer Retention</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Returning Customers</h2>
                         </div>
                         <div class="actions">
-                            
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/customer/customer-retention?start_date=${form.start_date}&end_date=${form.end_date}&status=${status}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                v-if="res.data.length > 0"
+                                class="action_btn alternate margin"
+                                :data="customerRetentionAttributes"
+                                :name="`customer-retention-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -21,12 +27,12 @@
                             <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -62,12 +68,12 @@
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.last_name }} {{ data.last_name }}</nuxt-link>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'N/A' }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'N/A' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
                                 <td>{{ data.customer_details.pa_city }}</td>
                             </tr>
                         </tbody>
@@ -96,11 +102,8 @@
             Pagination
         },
         data () {
+            const values = []
             return {
-                form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
-                },
                 name: 'Customer Retention',
                 access: true,
                 filter: false,
@@ -108,13 +111,37 @@
                 rowCount: 0,
                 status: 'first',
                 res: [],
+                values: [],
+                form: {
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
+                },
                 totalRiders: 0,
                 totalRetained: 0
             }
         },
+        computed: {
+            customerRetentionAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Customer': value.fullname,
+                        'Sign Up': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'First Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-',
+                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[value.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-',
+                        'City': value.customer_details.pa_city
+                    }))
+                ]
+            }
+        },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             submissionSuccess () {
                 const me = this
+                me.values = []
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('type', me.status)
                 me.loader(true)
@@ -122,6 +149,11 @@
                 me.$axios.post(`api/reporting/customers/customer-retention`, formData).then(res => {
                     setTimeout( () => {
                         me.res = res.data.customers
+
+                        res.data.customers.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+
                         me.totalRiders = res.data.totalRiders
                         me.totalRetained = res.data.totalRetained
                     }, 500)
@@ -149,6 +181,11 @@
                 me.$axios.post(`api/reporting/customers/customer-retention`, formData).then(res => {
                     setTimeout( () => {
                         me.res = res.data.customers
+
+                        res.data.customers.data.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+
                         me.totalRiders = res.data.totalRiders
                         me.totalRetained = res.data.totalRetained
                         me.loaded = true
