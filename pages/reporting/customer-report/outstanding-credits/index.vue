@@ -11,8 +11,14 @@
                             <h2 class="header_subtitle">Store credits owned by Ride Revolution members</h2>
                         </div>
                         <div class="actions">
-                            
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/customer/outstanding-credits`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                v-if="res.length > 0"
+                                class="action_btn alternate margin"
+                                :data="outstadingCreditsAttributes"
+                                :name="`outstanding-credits-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="action_buttons alt">
@@ -45,16 +51,16 @@
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.last_name }} {{ data.last_name }}</nuxt-link>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
                                 <td>Black</td>
                                 <td>Php {{ totalCount(data.totalBroughtStoreCredits) }}</td>
                                 <td>Php {{ totalCount(data.store_credits.amount) }}</td>
                                 <td>Php {{ totalCount(data.totalBroughtStoreCredits - data.store_credits.amount) }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
+                                <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : 'N/A' }}</td>
+                                <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : '-' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -79,6 +85,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Outstanding Credits',
                 access: true,
@@ -86,10 +93,32 @@
                 rowCount: 0,
                 status: 'all',
                 total: 0,
-                res: []
+                res: [],
+                values: []
+            }
+        },
+        computed: {
+            outstadingCreditsAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Customer': value.fullname,
+                        'Rewards': '-',
+                        'Store Credits Bought': me.totalCount(value.totalBroughtStoreCredits),
+                        'Store Credits Remaining': me.totalCount(value.store_credits.amount),
+                        'Spent': me.totalCount(value.totalBroughtStoreCredits - value.store_credits.amount),
+                        'Contact Number': (value.customer_details != null) ? value.customer_details.co_contact_number : '-',
+                        'Email Address': value.email,
+                        'City': (value.customer_details != null) ? value.customer_details.pa_city : '-'
+                    }))
+                ]
             }
         },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             fetchData (value) {
                 const me = this
                 me.loader(true)
@@ -99,6 +128,11 @@
                         setTimeout( () => {
                             me.total = res.data.totalStoreCredits
                             me.res = res.data.result
+
+                            res.data.result.forEach((item, key) => {
+                                me.values.push(item)
+                            })
+
                             me.loaded = true
                         }, 500)
                     }

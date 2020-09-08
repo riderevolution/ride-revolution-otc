@@ -7,11 +7,11 @@
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th class="stick">Customer</th>
-                    <th class="stick">Sign Up</th>
-                    <th class="stick">First Class</th>
-                    <th class="stick">Last Class</th>
-                    <th class="stick">City</th>
+                    <th>Customer</th>
+                    <th>Sign Up</th>
+                    <th>First Class</th>
+                    <th>Last Class</th>
+                    <th>City</th>
                 </tr>
             </thead>
             <tbody v-if="res.data.length > 0">
@@ -27,7 +27,7 @@
             </tbody>
             <tbody class="no_results" v-else>
                 <tr>
-                    <td :colspan="rowCount">No Result(s) Found.</td>
+                    <td colspan="5">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>

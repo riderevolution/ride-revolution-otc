@@ -7,15 +7,15 @@
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th class="stick">Rank</th>
-                    <th class="stick">Customer</th>
-                    <th class="stick">No. of Rides</th>
-                    <th class="stick">Customer Type</th>
-                    <th class="stick">Rewards</th>
-                    <th class="stick">Age</th>
-                    <th class="stick">Profession</th>
-                    <th class="stick">Gender</th>
-                    <th class="stick">City</th>
+                    <th>Rank</th>
+                    <th>Customer</th>
+                    <th>No. of Rides</th>
+                    <th>Customer Type</th>
+                    <th>Rewards</th>
+                    <th>Age</th>
+                    <th>Profession</th>
+                    <th>Gender</th>
+                    <th>City</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
@@ -35,7 +35,7 @@
             </tbody>
             <tbody class="no_results" v-else>
                 <tr>
-                    <td :colspan="rowCount">No Result(s) Found.</td>
+                    <td colspan="8">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>
