@@ -56,8 +56,8 @@
                 const me = this
                 let formData = new FormData()
 
-                formData.append('start_date', me.form.start_date)
-                formData.append('end_date', me.form.end_date)
+                formData.append('start_date', me.$route.query.start_date)
+                formData.append('end_date', me.$route.query.end_date)
                 if (me.$route.query.status.length > 0) {
                     formData.append('type', me.$route.query.status)
                 } else {
