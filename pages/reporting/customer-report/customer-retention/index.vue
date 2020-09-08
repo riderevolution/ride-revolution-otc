@@ -14,7 +14,7 @@
                         <div class="actions">
                             <a :href="`/print/reporting/customer/customer-retention?start_date=${form.start_date}&end_date=${form.end_date}&status=${status}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
-                                v-if="res.data.length > 0"
+                                v-if="res.length > 0"
                                 class="action_btn alternate margin"
                                 :data="customerRetentionAttributes"
                                 :name="`customer-retention-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -58,8 +58,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.data.length > 0">
-                            <tr v-for="(data, key) in res.data" :key="key">
+                        <tbody v-if="res.length > 0">
+                            <tr v-for="(data, key) in res" :key="key">
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -83,7 +83,6 @@
                             </tr>
                         </tbody>
                     </table>
-                    <pagination :apiRoute="res.path" :current="res.current_page" :last="res.last_page" />
                 </section>
             </div>
             <transition name="fade">

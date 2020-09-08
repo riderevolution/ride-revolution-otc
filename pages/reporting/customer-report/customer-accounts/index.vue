@@ -12,8 +12,16 @@
                             <h2 class="header_subtitle">Accounts of Ride Revolution members</h2>
                         </div>
                         <div class="actions">
-                            
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <div class="action_btn alternate" @click="getCustomers()">
+                                Export
+                            </div>
+                            <download-csv
+                                v-if="res.data.length > 0"
+                                class="hidden me"
+                                :data="customerAccountsAttributes"
+                                :name="`customer-accounts-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="action_buttons alt">
@@ -41,8 +49,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.data.length > 0">
+                            <tr v-for="(data, key) in res.data" :key="key">
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -51,14 +59,14 @@
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.last_name }} {{ data.last_name }}</nuxt-link>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
-                                <td>Black</td>
+                                <td>-</td>
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ data.email }}</td>
                                 <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
-                                <td>Sample</td>
+                                <td>{{ data.email }}</td>
+                                <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : '-' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -67,6 +75,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.path" :current="res.current_page" :last="res.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -77,9 +86,11 @@
 </template>
 
 <script>
+    import Pagination from '../../../../components/Pagination'
     import Foot from '../../../../components/Foot'
     export default {
         components: {
+            Pagination,
             Foot
         },
         data () {
@@ -90,10 +101,51 @@
                 rowCount: 0,
                 status: 'all',
                 res: [],
+                users: [],
                 total: 0
             }
         },
+        computed: {
+            customerAccountsAttributes () {
+                const me = this
+                return [
+                    ...me.users.map((value, key) => ({
+                        'Customer': value.fullname,
+                        'Rewards': '-',
+                        'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Contact Number': (value.customer_details != null) ? value.customer_details.co_contact_number : '-',
+                        'Email Address': value.email,
+                        'City': (value.customer_details != null) ? value.customer_details.pa_city : '-'
+                    }))
+                ]
+            }
+        },
         methods: {
+            getCustomers () {
+                const me = this
+                let formData = new FormData()
+
+                me.loader(true)
+
+                formData.append('status', me.status)
+                me.$axios.post('api/reporting/customers/customer-accounts?all=1', formData).then(res => {
+                    if (res.data) {
+
+                        res.data.customers.forEach((item, key) => {
+                            me.users.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             toggleTab (value) {
                 const me = this
                 me.status = value
@@ -108,7 +160,7 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.customers
-                            me.total = me.res.length
+                            me.total = res.data.count
                             me.loaded = true
                         }, 500)
                     }
@@ -127,7 +179,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData('all')
+                await me.fetchData('all')
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
