@@ -12,36 +12,42 @@
                             <h2 class="header_subtitle">List of riders with the most ride count</h2>
                         </div>
                         <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <a :href="`/print/reporting/customer/top-riders?studio_id=${form.studio_id}&class_type_id=${form.class_type_id}&timeslot=${form.timeslot}&instructor_id=${form.instructor_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <download-csv
+                                v-if="res.length > 0"
+                                class="action_btn alternate margin"
+                                :data="topRidersAttributes"
+                                :name="`top-riders-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter"@submit.prevent="submitFilter()">
+                        <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
-                                <select class="default_select alternate" name="studio_id">
+                                <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
                                     <option value="" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
                                 <label for="class_type_id">Class Type</label>
-                                <select class="default_select alternate" name="class_type_id">
+                                <select class="default_select alternate" name="class_type_id" v-model="form.class_type_id">
                                     <option value="" selected>All Class Types</option>
                                     <option :value="class_type.id" v-for="(class_type, key) in class_types" :key="key">{{ class_type.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
                                 <label for="timeslot">By Time Slot</label>
-                                <select class="default_select alternate" name="timeslot">
+                                <select class="default_select alternate" name="timeslot" v-model="form.timeslot">
                                     <option value="" selected>All Timeslots</option>
                                     <option :value="timeslot" v-for="(timeslot, key) in timeslots" :key="key">{{ timeslot }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
                                 <label for="instructor_id">By Instructor</label>
-                                <select class="default_select alternate" name="instructor_id">
+                                <select class="default_select alternate" name="instructor_id" v-model="form.instructor_id">
                                     <option value="" selected>All Instructors</option>
                                     <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                 </select>
@@ -49,12 +55,12 @@
                             <div class="form_group margin">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -91,7 +97,7 @@
                                 </td>
                                 <td>{{ data.numberOfRides }}</td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
-                                <td>Black</td>
+                                <td>-</td>
                                 <td>{{ -($moment(data.customer_details.co_birthdate).diff($moment(), 'years')) }}</td>
                                 <td>{{ data.customer_details.profession }}</td>
                                 <td>{{ (data.customer_details.co_sex == 'male' || data.customer_details.co_sex == 'M') ? 'Male' : 'Female' }}</td>
@@ -120,21 +126,45 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Top Riders',
                 access: true,
                 loaded: false,
                 rowCount: 0,
                 res: [],
+                values: [],
                 instructors: [],
                 timeslots: [],
                 types: [],
                 class_types: [],
                 studios: [],
                 form: {
+                    studio_id: '',
+                    class_type_id: '',
+                    timeslot: '',
+                    instructor_id: '',
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
+            }
+        },
+        computed: {
+            topRidersAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Rank': key + 1,
+                        'Customer': value.fullname,
+                        'No. of Rides': value.numberOfRides,
+                        'Customer Type': value.customer_details.customer_type.name,
+                        'Rewards': '-',
+                        'Age': -(me.$moment(value.customer_details.co_birthdate).diff(me.$moment(), 'years')),
+                        'Profession': value.customer_details.profession,
+                        'Gender': (value.customer_details.co_sex == 'male' || value.customer_details.co_sex == 'M') ? 'Male' : 'Female',
+                        'City': value.customer_details.pa_city
+                    }))
+                ]
             }
         },
         methods: {
@@ -144,12 +174,17 @@
             },
             submitFilter () {
                 const me = this
+                me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post('api/reporting/customers/top-riders', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.topRiders
+
+                            res.data.topRiders.forEach((item, key) => {
+                                me.values.push(item)
+                            })
                         }, 500)
                     }
                 }).catch(err => {
@@ -165,6 +200,7 @@
             fetchData () {
                 const me = this
                 me.loader(true)
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
@@ -172,12 +208,21 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.topRiders
+
+                            res.data.topRiders.forEach((item, key) => {
+                                me.values.push(item)
+                            })
+
                             me.$axios.get('api/packages/class-types?enabled=1').then(res => {
                                 if (res.data) {
                                     me.class_types = res.data.classTypes.data
                                 }
                             })
-                            me.$axios.get('api/studios?enabled=1').then(res => {
+                            me.$axios.get('api/studios', {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            }).then(res => {
                                 if (res.data) {
                                     me.studios = res.data.studios
                                 }
