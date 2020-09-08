@@ -173,10 +173,24 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('por_allow_transferring_if_used')">{{ properFormat(errors.first('por_allow_transferring_if_used')) }}</span></transition>
                                     </div>
                                 </div>
-                                <div class="form_group">
-                                    <label for="max_per_class">Max Number of Bookings Per Class <span>*</span></label>
-                                    <input type="text" name="max_per_class" placeholder="Enter max number of bookings per class" class="default_text number" value="1" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('max_per_class')">{{ properFormat(errors.first('max_per_class')) }}</span></transition>
+                                <div class="form_flex">
+                                    <div class="form_flex_radio">
+                                        <label class="radio_label">Customer Remains New on Purchase <span>*</span></label>
+                                        <div class="form_radio">
+                                            <input type="radio" id="remains_new_yes" value="Yes" v-validate="'required'" name="stay_as_first_timer" class="action_radio">
+                                            <label for="remains_new_yes">Yes</label>
+                                        </div>
+                                        <div class="form_radio">
+                                            <input type="radio" id="remains_new_no" value="No" checked v-validate="'required'" name="stay_as_first_timer" class="action_radio">
+                                            <label for="remains_new_no">No</label>
+                                        </div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('stay_as_first_timer')">{{ properFormat(errors.first('stay_as_first_timer')) }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="max_per_class">Max Number of Bookings Per Class <span>*</span></label>
+                                        <input type="text" name="max_per_class" placeholder="Enter max number of bookings per class" class="default_text number" value="1" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'">
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('max_per_class')">{{ properFormat(errors.first('max_per_class')) }}</span></transition>
+                                    </div>
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group flex">

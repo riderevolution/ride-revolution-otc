@@ -20,7 +20,7 @@
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess(package_status)">
-                            <div class="form_group" v-if="package_status == 1">
+                            <div class="form_group alternate" v-if="package_status == 1">
                                 <label for="q">Find a package</label>
                                 <input type="text" name="q" placeholder="Search for a class packages" autocomplete="off" class="default_text search_alternate">
                             </div>
