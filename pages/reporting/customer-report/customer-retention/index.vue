@@ -13,9 +13,12 @@
                         </div>
                         <div class="actions">
                             <a :href="`/print/reporting/customer/customer-retention?start_date=${form.start_date}&end_date=${form.end_date}&status=${status}`" target="_blank" class="action_btn alternate">Print</a>
+                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.data.length > 0">
+                                Export
+                            </div>
                             <download-csv
-                                v-if="res.length > 0"
-                                class="action_btn alternate margin"
+                                v-if="res.data.length > 0"
+                                class="hidden me"
                                 :data="customerRetentionAttributes"
                                 :name="`customer-retention-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
@@ -41,8 +44,6 @@
                 <section id="content">
                     <div class="cms_table_toggler">
                         <div class="total">Total: {{ totalItems(res.total) }}</div>
-                        <div class="total">Total Riders: {{ totalItems(totalRiders) }}</div>
-                        <div class="total">Retained: {{ totalItems(totalRetained) }}</div>
                         <div :class="`status ${(status == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First time</div>
                         <div :class="`status ${(status == 'second') ? 'active' : ''}`" @click="toggleStatus('second')">Second Time</div>
                         <div :class="`status ${(status == 'third') ? 'active' : ''}`" @click="toggleStatus('third')">Third Time</div>
@@ -58,8 +59,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.data.length > 0">
+                            <tr v-for="(data, key) in res.data" :key="key">
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -83,6 +84,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.path" :current="res.current_page" :last="res.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -134,6 +136,27 @@
             }
         },
         methods: {
+            getCustomers () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+
+                formData.append('type', me.status)
+                me.loader(true)
+                me.filter = true
+                me.$axios.post(`api/reporting/customers/customer-retention?all=1`, formData).then(res => {
+                    if (res.data) {
+
+                        res.data.customers.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
@@ -148,13 +171,6 @@
                 me.$axios.post(`api/reporting/customers/customer-retention`, formData).then(res => {
                     setTimeout( () => {
                         me.res = res.data.customers
-
-                        res.data.customers.forEach((item, key) => {
-                            me.values.push(item)
-                        })
-
-                        me.totalRiders = res.data.totalRiders
-                        me.totalRetained = res.data.totalRetained
                     }, 500)
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
@@ -181,12 +197,6 @@
                     setTimeout( () => {
                         me.res = res.data.customers
 
-                        res.data.customers.data.forEach((item, key) => {
-                            me.values.push(item)
-                        })
-
-                        me.totalRiders = res.data.totalRiders
-                        me.totalRetained = res.data.totalRetained
                         me.loaded = true
                     }, 500)
                 }).catch(err => {
