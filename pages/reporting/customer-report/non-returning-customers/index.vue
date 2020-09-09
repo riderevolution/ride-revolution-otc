@@ -13,9 +13,12 @@
                         </div>
                         <div class="actions">
                             <a :href="`/print/reporting/customer/non-returning-customers?class_package_id=${form.class_package_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.data.length > 0">
+                                Export
+                            </div>
                             <download-csv
-                                v-if="res.length > 0"
-                                class="action_btn alternate margin"
+                                v-if="res.data.length > 0"
+                                class="hidden me"
                                 :data="nonReturningCustomersAttributes"
                                 :name="`non-returning-customers-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
@@ -58,8 +61,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.data.length > 0">
+                            <tr v-for="(data, key) in res.data" :key="key">
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -72,11 +75,11 @@
                                     </div>
                                 </td>
                                 <td>{{ data.userPackageCounts[0].class_package.name }}</td>
-                                <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment().format('MMMM DD, YYYY') : 'N/A' }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMMM DD, YYYY') : 'N/A' }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
+                                <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment().format('MMM DD, YYYY') : '-' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMM DD, YYYY') : '-' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : '-' }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : 'N/A' }}</td>
+                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : '-' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -85,6 +88,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.path" :current="res.current_page" :last="res.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -96,15 +100,18 @@
 
 <script>
     import Foot from '../../../../components/Foot'
+    import Pagination from '../../../../components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const value = []
             return {
                 name: 'Non Returning Customers',
                 access: true,
+                filter: false,
                 loaded: false,
                 rowCount: 0,
                 res: [],
@@ -124,34 +131,48 @@
                     ...me.values.map((value, key) => ({
                         'Customer': value.fullname,
                         'Last Package Used': value.userPackageCounts[0].class_package.name,
-                        'Date Purchased': me.$moment(value.userPackageCounts[0].last_avail_date).format('MMMM DD, YYYY'),
-                        'Date Activated': (value.userPackageCounts[0].activation_date != 'NA') ? me.$moment(value.userPackageCounts[0].activation_date).format('MMMM DD, YYYY') : 'N/A',
-                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].updated_at).format('MMMM DD, YYYY') : 'N/A',
-                        'Contact Number': (value.customer_details != null) ? value.customer_details.co_contact_number : '-',
+                        'Date Purchased': me.$moment(value.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY'),
+                        'Date Activated': (value.userPackageCounts[0].activation_date != 'NA') ? me.$moment(value.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : 'N/A',
+                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].updated_at).format('MMM DD, YYYY') : '-',
+                        'Contact Number': (value.customer_details.co_contact_number != null) ? value.customer_details.co_contact_number : '-',
                         'Email Address': value.email,
-                        'City': (value.customer_details != null) ? value.customer_details.pa_city : '-'
+                        'City': (value.customer_details.pa_city != null) ? value.customer_details.pa_city : '-'
                     }))
                 ]
             }
         },
         methods: {
+            getCustomers () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/customers/non-returning-customers?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.customers.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
             },
             submitFilter () {
                 const me = this
-                me.values = []
+                me.filter = true
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.customers
-
-                            res.data.customers.forEach((item, key) => {
-                                me.values.push(item)
-                            })
                         }, 500)
                     }
                 }).catch(err => {
@@ -174,10 +195,6 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.customers
-
-                            res.data.customers.forEach((item, key) => {
-                                me.values.push(item)
-                            })
 
                             me.$axios.get('api/packages/class-packages?enabled=1').then(res => {
                                 if (res.data) {

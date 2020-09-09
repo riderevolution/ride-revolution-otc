@@ -142,7 +142,6 @@
 
                 formData.append('type', me.status)
                 me.loader(true)
-                me.filter = true
                 me.$axios.post(`api/reporting/customers/customer-retention?all=1`, formData).then(res => {
                     if (res.data) {
 
@@ -163,7 +162,6 @@
             },
             submissionSuccess () {
                 const me = this
-                me.values = []
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('type', me.status)
                 me.loader(true)

@@ -63,7 +63,7 @@
                 } else {
                     formData.append('type', 'first')
                 }
-                me.$axios.post(`api/reporting/customers/customer-retention`, formData).then(res => {
+                me.$axios.post(`api/reporting/customers/customer-retention?all=1`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.customers

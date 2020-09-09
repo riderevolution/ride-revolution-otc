@@ -13,9 +13,13 @@
                         </div>
                         <div class="actions">
                             <a :href="`/print/reporting/customer/top-riders?studio_id=${form.studio_id}&class_type_id=${form.class_type_id}&timeslot=${form.timeslot}&instructor_id=${form.instructor_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
+                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.data.length > 0">
+                                Export
+                            </div>
                             <download-csv
-                                v-if="res.length > 0"
-                                class="action_btn alternate margin"
+                                v-if="res.data.length > 0"
+                                class="hidden me"
                                 :data="topRidersAttributes"
                                 :name="`top-riders-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
@@ -81,8 +85,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.data.length > 0">
+                            <tr v-for="(data, key) in res.data" :key="key">
                                 <td>{{ key + 1 }}</td>
                                 <td>
                                     <div class="thumb">
@@ -130,6 +134,7 @@
             return {
                 name: 'Top Riders',
                 access: true,
+                filter: false,
                 loaded: false,
                 rowCount: 0,
                 res: [],
@@ -168,23 +173,37 @@
             }
         },
         methods: {
+            getCustomers () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/customers/top-riders?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.topRiders.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
             },
             submitFilter () {
                 const me = this
-                me.values = []
+                me.filter = true
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post('api/reporting/customers/top-riders', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.topRiders
-
-                            res.data.topRiders.forEach((item, key) => {
-                                me.values.push(item)
-                            })
                         }, 500)
                     }
                 }).catch(err => {
@@ -208,10 +227,6 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.topRiders
-
-                            res.data.topRiders.forEach((item, key) => {
-                                me.values.push(item)
-                            })
 
                             me.$axios.get('api/packages/class-types?enabled=1').then(res => {
                                 if (res.data) {

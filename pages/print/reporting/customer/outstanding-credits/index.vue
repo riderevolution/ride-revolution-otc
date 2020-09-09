@@ -62,7 +62,7 @@
             initial () {
                 const me = this
                 let formData = new FormData()
-                me.$axios.post('api/reporting/customers/outstanding-store-credits', formData).then(res => {
+                me.$axios.post('api/reporting/customers/outstanding-store-credits?all=1', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.total = res.data.totalStoreCredits

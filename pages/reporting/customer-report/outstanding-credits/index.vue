@@ -12,9 +12,12 @@
                         </div>
                         <div class="actions">
                             <a :href="`/print/reporting/customer/outstanding-credits`" target="_blank" class="action_btn alternate">Print</a>
+                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.data.length > 0">
+                                Export
+                            </div>
                             <download-csv
-                                v-if="res.length > 0"
-                                class="action_btn alternate margin"
+                                v-if="res.data.length > 0"
+                                class="hidden me"
                                 :data="outstadingCreditsAttributes"
                                 :name="`outstanding-credits-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
@@ -41,8 +44,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.data.length > 0">
+                            <tr v-for="(data, key) in res.data" :key="key">
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -54,13 +57,13 @@
                                         <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
-                                <td>Black</td>
+                                <td>-</td>
                                 <td>Php {{ totalCount(data.totalBroughtStoreCredits) }}</td>
                                 <td>Php {{ totalCount(data.store_credits.amount) }}</td>
                                 <td>Php {{ totalCount(data.totalBroughtStoreCredits - data.store_credits.amount) }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : '-' }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : '-' }}</td>
+                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : '-' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -69,6 +72,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.path" :current="res.current_page" :last="res.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -115,6 +119,24 @@
             }
         },
         methods: {
+            getCustomers () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/customers/outstanding-store-credits?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.customers.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
@@ -128,10 +150,6 @@
                         setTimeout( () => {
                             me.total = res.data.totalStoreCredits
                             me.res = res.data.result
-
-                            res.data.result.forEach((item, key) => {
-                                me.values.push(item)
-                            })
 
                             me.loaded = true
                         }, 500)

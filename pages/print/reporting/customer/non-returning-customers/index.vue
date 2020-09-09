@@ -56,9 +56,9 @@
                 if (me.$route.query.class_package_id.length > 0) {
                     formData.append('class_package_id', me.$route.query.class_package_id)
                 }
-                me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
+                me.$axios.post('api/reporting/customers/non-returning-customers?all=1', formData).then(res => {
                     if (res.data) {
-                        setTimeout( () => { 
+                        setTimeout( () => {
                             me.res = res.data.customers
 
                             me.loaded = true
