@@ -17,7 +17,7 @@
                             <div class="form_main_group">
                                 <div class="form_group">
                                     <label for="display_name">Role Name <span>*</span></label>
-                                    <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required|min:10|max:100'" v-model="res.display_name">
+                                    <input type="text" name="display_name" autocomplete="off" class="default_text" v-validate="'required|min:2|max:100'" v-model="res.display_name">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('display_name')">{{ properFormat(errors.first('display_name')) }}</span></transition>
                                 </div>
                                 <div class="form_flex select_all">
