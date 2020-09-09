@@ -33,6 +33,11 @@
                                     </div>
                                 </div>
                                 <div class="form_group">
+                                    <label for="capacity">Capacity <span>*</span></label>
+                                    <input type="text" name="capacity" autocomplete="off" class="default_text" v-validate="'required'">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('capacity')">{{ properFormat(errors.first('capacity')) }}</span></transition>
+                                </div>
+                                <div class="form_group">
                                     <label for="address">Address <span>*</span></label>
                                     <input type="text" name="address" placeholder="Enter address" autocomplete="off" class="default_text" v-validate="'required'">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('address')">{{ properFormat(errors.first('address')) }}</span></transition>
