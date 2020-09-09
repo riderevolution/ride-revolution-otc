@@ -27,11 +27,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(n, key) in 10" :key="key">
-                                <td>Package</td>
-                                <td>{{ n }}</td>
-                                <td>Php 23,000</td>
-                                <td>23 Days</td>
+                            <tr v-for="(data, key) in res" :key="key">
+                                <td>{{ data.name }}</td>
+                                <td>{{ (data.class_count_unlimited == 1) ? 'Unlimited' : data.class_count }}</td>
+                                <td>Php {{ totalCount(data.totalSalesAmount) }}</td>
+                                <td>{{ data.utilizationRate }} Days</td>
                             </tr>
                         </tbody>
                         <!-- <tbody class="no_results" v-else>
@@ -73,7 +73,19 @@
             },
             fetchData () {
                 const me = this
-                me.loaded = true
+                me.loader(true)
+                me.$axios.post(`api/reporting/packages/average-time-to-utilize-packages`).then(res => {
+                    me.res = res.data
+                    me.loaded = true
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                    me.rowCount = document.getElementsByTagName('th').length
+                })
             }
         },
         async mounted () {
