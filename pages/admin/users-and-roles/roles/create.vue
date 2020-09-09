@@ -265,7 +265,7 @@
                         checked: false
                     },
                     {
-                        name: 'Average Time to Utilize Package',
+                        name: 'Average Time to Utilize Packages',
                         class: 'child',
                         checked: false
                     },
