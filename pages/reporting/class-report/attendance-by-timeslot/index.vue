@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Average attendance per time slot.</h2>
                         </div>
                         <div class="actions">
-                            
+
                             <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
                         </div>
                     </div>
@@ -20,15 +20,16 @@
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
-                                <select class="default_select alternate" name="studio_id">
-                                    <option value="" selected>All Studios</option>
+                                <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
+                                    <option value="" selected>Choose a Studio</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
                                 <label for="class_type_id">Class Type</label>
-                                <select class="default_select alternate" name="class_type_id">
+                                <select class="default_select alternate" name="class_type_id" v-model="form.class_type_id">
                                     <option value="" selected>All Class Type</option>
+                                    <option :value="classType.id" v-for="(classType, key) in classTypes" :key="key">{{ classType.name }}</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
@@ -51,10 +52,10 @@
                         <div :class="`status ${(tabStatus == 'weekends') ? 'active' : ''}`" @click="toggleTab('weekends')">Weekends</div>
                     </div>
                     <div class="cms_five_row">
-                        <div class="column" v-for="(n, key) in 5" :key="key">
+                        <div class="column" v-for="(data, key) in res" :key="key">
                             <div class="column_header">
-                                <div class="day">{{ $moment().add(n, 'days').format('dddd') }}</div>
-                                <div class="avg">Avg. 9</div>
+                                <div class="day">{{ key }}</div>
+                                <div class="avg">Avg. {{ computeTotalAvg(data) }}</div>
                             </div>
                             <div class="column_content">
                                 <table class="cms_table_alt">
@@ -64,12 +65,17 @@
                                             <th>Avg. Total Riders</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr v-for="(n, key) in 10" :key="key">
-                                            <td class="name">{{ $moment().format('h:mm A') }}</td>
+                                    <tbody v-if="data.length > 0">
+                                        <tr v-for="(timeslot, key) in data" :key="key">
+                                            <td class="name none">{{ timeslot.time }}</td>
                                             <td>
-                                                {{ n }}
+                                                {{ timeslot.average }}
                                             </td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody class="no_results" v-else>
+                                        <tr>
+                                            <td colspan="2">No Result(s) Found.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -98,37 +104,94 @@
                 loaded: false,
                 rowCount: 0,
                 tabStatus: 'weekdays',
+                res: [],
                 studios: [],
-                categories: [],
+                studio: [],
+                classTypes: [],
                 form: {
+                    studio_id: '',
+                    class_type_id: '',
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
             }
         },
         methods: {
+            computeTotalAvg (data) {
+                const me = this
+                let avg = 0
+
+                if (data.length > 0) {
+                    data.forEach((timeslot, key) => {
+                        avg += timeslot.average
+                    })
+                    avg = avg / data.length
+                }
+
+                return me.totalItems(avg)
+            },
             toggleTab (status) {
                 const me = this
                 me.tabStatus = status
+                me.fetchData(status)
             },
             submitFilter () {
                 const me = this
+                me.fetchData(me.tabStatus)
             },
-            fetchData () {
+            fetchData (type) {
                 const me = this
-                me.$axios.get('api/studios?enabled=1').then(res => {
+                me.loader(true)
+                let formData = new FormData()
+                formData.append('studio_id', me.form.studio_id)
+                formData.append('class_type_id', me.form.class_type_id)
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                formData.append('type', type)
+
+                me.$axios.post(`api/reporting/classes/attendance-by-timeslot`, formData).then(res => {
+                    setTimeout( () => {
+                        me.res = res.data
+                        me.loaded = true
+                    }, 500)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                    me.rowCount = document.getElementsByTagName('th').length
+                })
+            },
+            fetchExtraAPI () {
+                const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                let studio_id = me.$cookies.get('CSID')
+                me.$axios.get('api/studios', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     if (res.data) {
                         me.studios = res.data.studios
+                        me.form.studio_id = studio_id
+                        me.$axios.get(`api/studios/${studio_id}`).then(res => {
+                            me.studio = res.data.studio
+                        })
                     }
                 })
-                me.loaded = true
+                me.$axios.get(`api/packages/class-types?enabled=1&get=1`).then(res => {
+                    me.classTypes = res.data.classTypes
+                })
             }
         },
         async mounted () {
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData()
+                me.fetchData('weekdays')
+                me.fetchExtraAPI()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
