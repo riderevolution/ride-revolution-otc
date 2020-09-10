@@ -12,9 +12,9 @@
                             <h2 class="header_subtitle">Income from class package sold.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package?status=${type}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
-                                v-if="res.length > 0"
+                                v-if="res.result.data.length > 0"
                                 class="action_btn alternate margin"
                                 :data="classPackageAttributes"
                                 :name="`sales-by-class-package-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -47,9 +47,9 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
-                        <div :class="`status ${(status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
-                        <div :class="`status ${(status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
+                        <div :class="`status ${(type == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
+                        <div :class="`status ${(type == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
+                        <div :class="`status ${(type == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
                     </div>
                     <table class="cms_table alt">
                         <thead>
@@ -75,7 +75,7 @@
                                 <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
-                            <tr v-for="(data, key) in res" :key="key">
+                            <tr v-for="(data, key) in res.result.data" :key="key">
                                 <td>
                                     <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
                                 </td>
@@ -100,18 +100,21 @@
 
 <script>
     import Foot from '../../../../components/Foot'
+    import Pagination from '../../../../components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const values = []
             return {
                 name: 'Sales by Class Package',
                 access: true,
+                filter: true,
                 loaded: false,
                 rowCount: 0,
-                status: 'all',
+                type: 'all',
                 studios: [],
                 res: [],
                 values: [],
@@ -159,12 +162,12 @@
             },
             toggleInnerReport (type, path, id) {
                 const me = this
-                me.$router.push(`${path}?status=${me.status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${path}?status=${me.type}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
                 me.values = []
-                me.status = value
+                me.type = value
                 me.fetchData(value)
             },
             submitFilter () {
@@ -172,17 +175,17 @@
                 me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('status', me.status)
+                formData.append('status', me.type)
                 me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.result
+                            me.res = res.data
                             me.total = res.data.total
 
-                            res.data.result.forEach((item, i) => {
-                                me.values.push(item)
-                            })
-                            me.values.push(res.data.total)
+                            // res.data.result.forEach((item, i) => {
+                            //     me.values.push(item)
+                            // })
+                            // me.values.push(res.data.total)
 
                         }, 500)
                     }
@@ -207,13 +210,13 @@
                 me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.result
+                            me.res = res.data
                             me.total = res.data.total
-
-                            res.data.result.forEach((item, i) => {
-                                me.values.push(item)
-                            })
-                            me.values.push(res.data.total)
+                            //
+                            // res.data.result.forEach((item, i) => {
+                            //     me.values.push(item)
+                            // })
+                            // me.values.push(res.data.total)
 
                             me.$axios.get('api/studios', {
                                 headers: {

@@ -134,15 +134,13 @@
             attributes () {
                 const me = this
                 return [
-                    ...this.values.map(value => ({
-                        'ID': value.id,
-                        'Date': this.$moment(value.date).format('MMMM DD, YYYY'),
+                    ...me.values.map(value => ({
+                        'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
                         'Start Time': value.schedule.start_time,
                         'End Time': value.schedule.end_time,
                         'Studio': value.schedule.studio.name,
                         'Peak Type': value.schedule.peak_type,
-                        'Class Type': value.schedule.class_type.name,
-                        'Custom Class Type Name': value.schedule.custom_name,
+                        'Class Type': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
                         'Class Length': value.schedule.class_length_formatted,
                         'Class Credits': value.schedule.class_credits,
                         'Instructor': `${value.schedule.instructor_schedules[0].user.first_name} ${value.schedule.instructor_schedules[0].user.last_name}`,

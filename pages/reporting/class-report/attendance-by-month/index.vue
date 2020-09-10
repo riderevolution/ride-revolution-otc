@@ -12,8 +12,13 @@
                             <h2 class="header_subtitle">Attendance per time slot by month</h2>
                         </div>
                         <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <download-csv
+                                v-if="schedules.length > 0"
+                                class="action_btn alternate"
+                                :data="attendanceByMonthAttributes"
+                                :name="`attendance-by-month-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -98,6 +103,7 @@
             Foot,
         },
         data () {
+            const values = []
             return {
                 name: 'Attendance by Month',
                 access: true,
@@ -109,7 +115,9 @@
                 value: 0,
                 monthName: '',
                 yearName: '',
+                studio: [],
                 studios: [],
+                values: [],
                 instructors: [],
                 classTypes: [],
                 schedules: [],
@@ -121,6 +129,24 @@
                     instructor_id: 0,
                     month: this.$moment().format('MMMM YYYY')
                 }
+            }
+        },
+        computed: {
+            attendanceByMonthAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMMM DD, YYYY'),
+                        'Start Time': me.$moment(value.schedule.start_time, 'hh:mm A').format('h:mm A'),
+                        'End Time': me.$moment(value.schedule.end_time, 'hh:mm A').format('h:mm A'),
+                        'Studio': me.studio.name,
+                        'Peak Type': value.schedule.peak_type,
+                        'Class Type': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
+                        'Class Credits': value.schedule.class_credits,
+                        'Class Length': value.schedule.class_length_formatted,
+                        'Total Riders': value.bookings.length
+                    }))
+                ]
             }
         },
         methods: {
@@ -184,6 +210,8 @@
                 me.clearTableRows()
                 me.currentDate = me.$moment().date()
 
+                me.values = []
+
                 if (search != 1) {
                     me.monthName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('MMMM')
                     me.yearName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('YYYY')
@@ -205,6 +233,10 @@
 
                 await me.$axios.post(`api/reporting/classes/attendance-by-month`, formData).then(res => {
                     me.schedules = res.data.schedules
+                    res.data.schedules.forEach((item, key) => {
+                        me.values.push(item)
+                    })
+
                 })
 
                 /**
@@ -330,8 +362,20 @@
             },
             fetchExtraAPI () {
                 const me = this
-                me.$axios.get('api/studios?enabled=1').then(res => {
-                    me.studios = res.data.studios
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                let studio_id = me.$cookies.get('CSID')
+                me.$axios.get('api/studios', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data) {
+                        me.studios = res.data.studios
+                        me.form.studio_id = studio_id
+                        me.$axios.get(`api/studios/${studio_id}`).then(res => {
+                            me.studio = res.data.studio
+                        })
+                    }
                 })
                 me.$axios.get(`api/instructors?enabled=1`).then(res => {
                     me.instructors = res.data.instructors.data

@@ -7,13 +7,21 @@
                         <div>
                             <div class="header_title">
                                 <h1>Summary of Instructor Subbing per Period</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Instructor Subbing per class schedule.</h2>
                         </div>
                         <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <div class="action_btn alternate" @click="getClasses()" v-if="res.scheduledDates.data.length > 0">
+                                Export
+                            </div>
+                            <download-csv
+                                v-if="res.scheduledDates.data.length > 0"
+                                class="hidden me"
+                                :data="summaryInstructorSubbingPerPeriodAttributes"
+                                :name="`summary-instructor-subbing-per-period-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -48,7 +56,7 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div class="total">Total Subbed Classes: 0</div>
+                        <div class="total">Total Subbed Classes: {{ totalItems(res.scheduledDates.data.length) }}</div>
                     </div>
                     <table class="cms_table alt">
                         <thead>
@@ -57,31 +65,31 @@
                                 <th class="stick">Time</th>
                                 <th class="stick">Class Type</th>
                                 <th class="stick">Schedule Released</th>
-                                <th class="stick">Branch</th>
+                                <th class="stick">Studio</th>
                                 <th class="stick">Primary Instructor</th>
                                 <th class="stick">Substitute Instructor</th>
                                 <th class="stick">Remarks</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.customers.data.length > 0">
-                            <tr v-for="(data, key) in res.customers.data" :key="key">
-                                <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                                <td>{{ $moment().format('h:mm A') }}</td>
-                                <td>Sample</td>
-                                <td>Yes</td>
-                                <td>Malate</td>
-                                <td>Steve Kurt</td>
-                                <td>Young Steve</td>
-                                <td>HelLowszxc</td>
+                        <tbody v-if="res.scheduledDates.data.length > 0">
+                            <tr v-for="(data, key) in res.scheduledDates.data" :key="key">
+                                <td>{{ $moment(data.date, 'YYYY-MM-DD').format('MMMM DD, YYYY') }}</td>
+                                <td>{{ $moment(data.schedule.start_time, 'HH:mm A').format('h:mm A') }}</td>
+                                <td>{{ data.schedule.class_type.name }}</td>
+                                <td>{{ (data.schedule.enabled) ? 'Yes' : 'No' }}</td>
+                                <td>{{ data.schedule.studio.name }}</td>
+                                <td>{{ data.primary.user.first_name }} {{ data.primary.user.last_name }}</td>
+                                <td>{{ data.substitute.user.first_name }} {{ data.substitute.user.last_name }}</td>
+                                <td>{{ data.substitute.remarks }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
                             <tr>
-                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                <td colspan="8">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
-                    <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
+                    <pagination :apiRoute="res.scheduledDates.path" :current="res.scheduledDates.current_page" :last="res.scheduledDates.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -100,12 +108,14 @@
             Pagination
         },
         data () {
+            const values = []
             return {
                 name: 'Summary of Instructor Subbing per Period',
                 access: true,
                 loaded: false,
+                filter: true,
                 rowCount: 0,
-                status: 'all',
+                values: [],
                 res: [],
                 studios: [],
                 studio: [],
@@ -118,29 +128,62 @@
                 }
             }
         },
+        computed: {
+            summaryInstructorSubbingPerPeriodAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMMM DD, YYYY'),
+                        'Time': me.$moment(value.schedule.start_time, 'HH:mm A').format('h:mm A'),
+                        'Class Type': value.schedule.class_type.name,
+                        'Schedule Released': (value.schedule.enabled) ? 'Yes' : 'No',
+                        'Studio': value.schedule.studio.name,
+                        'Primary Instructor': `${value.primary.user.first_name } ${ value.primary.user.last_name}`,
+                        'Substitute Instructor': `${value.substitute.user.first_name } ${ value.substitute.user.last_name}`,
+                        'Remarks': value.substitute.remarks
+                    }))
+                ]
+            }
+        },
         methods: {
-            submissionSuccess () {
+            getClasses () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('enabled', me.status)
                 me.loader(true)
-                me.$axios.post(`api/customers/search`, formData).then(res => {
-                    me.res = res.data
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
+                me.$axios.post(`api/reporting/classes/summary-of-instructor-subbing-per-period?all=1`, formData).then(res => {
+                    if (res.data) {
+
+                        res.data.scheduledDates.forEach((item, index) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
                 }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                    }, 500)
+                    me.loader(false)
+                    document.querySelector('.me').click()
                 })
             },
-            fetchData (value) {
+            submissionSuccess () {
+                const me = this
+                me.filter = true
+                me.fetchData()
+            },
+            fetchData () {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
-                    me.res = res.data
-                    me.loaded = true
+
+                let formData = new FormData()
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                formData.append('studio_id', me.form.studio_id)
+                formData.append('instructor_id', me.form.instructor_id)
+
+                me.$axios.post(`api/reporting/classes/summary-of-instructor-subbing-per-period`, formData).then(res => {
+                    setTimeout( () => {
+                        me.res = res.data
+                        me.loaded = true
+                    }, 500)
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
@@ -177,8 +220,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData(1)
                 me.fetchExtraAPI()
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

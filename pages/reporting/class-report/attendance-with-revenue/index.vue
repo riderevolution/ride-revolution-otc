@@ -7,13 +7,21 @@
                         <div>
                             <div class="header_title">
                                 <h1>Attendance with Revenue</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Revenue for each class schedule</h2>
                         </div>
                         <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <div class="action_btn alternate" @click="getClasses()" v-if="res.scheduled_dates.data.length > 0">
+                                Export
+                            </div>
+                            <download-csv
+                                v-if="res.scheduled_dates.data.length > 0"
+                                class="hidden me"
+                                :data="attendanceWithRevenueAttributes"
+                                :name="`attendance-with-revenue-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -81,7 +89,7 @@
                                 <th>Total Net Revenue</th>
                             </tr>
                         </thead>
-                        <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="res.length > 0">
+                        <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.scheduled_dates.data" v-if="res.scheduled_dates.data.length > 0">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment(data.date).format('MMMM DD, YYYY') }}</td>
                                 <td>{{ data.schedule.start_time }}</td>
@@ -128,12 +136,13 @@
                                 </td>
                             </tr>
                         </tbody>
-                        <tbody class="no_results" v-if="res.length == 0">
+                        <tbody class="no_results" v-if="res.scheduled_dates.data.length == 0">
                             <tr>
                                 <td colspan="8">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.scheduled_dates.path" :current="res.scheduled_dates.current_page" :last="res.scheduled_dates.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -145,11 +154,14 @@
 
 <script>
     import Foot from '../../.././../components/Foot'
+    import Pagination from '../../.././../components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
+            const values = []
             return {
                 form: {
                     studio_id: 0,
@@ -168,16 +180,58 @@
                 res: [],
                 total_count: 0,
                 studios: [],
+                studio: [],
                 types: [],
+                values: [],
                 classTypes: [],
                 classPackages: [],
                 instructors: [],
                 name: 'Attendance with Revenue',
                 access: true,
                 loaded: false,
+                filter: true
+            }
+        },
+        computed: {
+            attendanceWithRevenueAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
+                        'Time': value.schedule.start_time,
+                        'Class Type': (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name,
+                        'Instructor': me.getInstructorsInSchedule(value),
+                        'Spot': (value.seat.position != 'Online') ? value.seat.number : '-',
+                        'Customer': `${value.user.first_name} ${value.user.last_name}`,
+                        'Status': value.status,
+                        'Revenue': value.revenue
+                    }))
+                ]
             }
         },
         methods: {
+            getClasses () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+                me.loader(true)
+                me.$axios.post(`api/reporting/classes/attendance-with-revenue?all=1`, formData).then(res => {
+                    if (res.data) {
+
+                        res.data.scheduled_dates.forEach((item, index) => {
+                            item.bookings.forEach((child, index) => {
+                                child.schedule = item.schedule
+                                child.parent = false
+                                me.values.push(child)
+                            })
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             getInstructorsInSchedule (data) {
                 const me = this
                 let result = ''
@@ -201,6 +255,7 @@
             },
             submissionSuccess () {
                 const me = this
+                me.filter = true
                 me.fetchData()
             },
             /**
@@ -212,8 +267,8 @@
             toggleAccordion (event, key) {
                 const me = this
                 const target = event.target
-                me.res[key].open ^= true
-                if (me.res[key].open) {
+                me.res.scheduled_dates.data[key].open ^= true
+                if (me.res.scheduled_dates.data[key].open) {
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
                 } else {
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
@@ -237,7 +292,13 @@
                 formData.append('customer_type_id', me.form.customer_type_id)
                 me.$axios.post(`api/reporting/classes/attendance-with-revenue`, formData).then(res => {
                     setTimeout( () => {
-                        me.res = res.data.scheduled_dates
+
+                        res.data.scheduled_dates.data.forEach((item, index) => {
+                            item.open = false
+                        })
+
+                        me.res = res.data
+
                         me.fetchExtraAPI()
                         me.loaded = true
                     }, 500)
@@ -256,11 +317,23 @@
             },
             fetchExtraAPI () {
                 const me = this
-                me.$axios.get('api/studios?enabled=1').then(res => {
-                    me.studios = res.data.studios
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                let studio_id = me.$cookies.get('CSID')
+                me.$axios.get('api/studios', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data) {
+                        me.studios = res.data.studios
+                        me.form.studio_id = studio_id
+                        me.$axios.get(`api/studios/${studio_id}`).then(res => {
+                            me.studio = res.data.studio
+                        })
+                    }
                 })
-                me.$axios.get(`api/instructors?enabled=1`).then(res => {
-                    me.instructors = res.data.instructors.data
+                me.$axios.get(`api/instructors?enabled=1&all=1`).then(res => {
+                    me.instructors = res.data.instructors
                 })
                 me.$axios.get('api/extras/customer-types').then(res => {
                     me.types = res.data.customerTypes

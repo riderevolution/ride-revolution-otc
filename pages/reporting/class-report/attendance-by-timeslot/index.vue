@@ -11,10 +11,6 @@
                             </div>
                             <h2 class="header_subtitle">Average attendance per time slot.</h2>
                         </div>
-                        <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
-                        </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
