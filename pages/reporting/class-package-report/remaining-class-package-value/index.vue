@@ -19,6 +19,8 @@
                             </h2>
                         </div>
                         <div class="actions">
+                            <a :href="`/print/reporting/class-package/remaining-package-value?start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
                             <div class="action_btn alternate" @click="getPackages()" v-if="res.classPackages.data.length > 0">
                                 Export
                             </div>
@@ -128,7 +130,8 @@
         methods: {
             getPackages () {
                 const me = this
-                let formData = new FormData()
+                let formData = new FormData(document.getElementById('filter'))
+                me.values = []
                 me.loader(true)
                 me.$axios.post(`api/reporting/packages/remaining-class-package-value?all=1`, formData).then(res => {
                     if (res.data) {

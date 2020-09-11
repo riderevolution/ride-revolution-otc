@@ -97,6 +97,8 @@
             getPackages () {
                 const me = this
                 let formData = new FormData()
+                me.values = []
+
                 me.loader(true)
                 me.$axios.post(`api/reporting/packages/average-time-to-utilize-packages?all=1`, formData).then(res => {
                     if (res.data) {
