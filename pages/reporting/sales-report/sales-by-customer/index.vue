@@ -14,13 +14,18 @@
                         <div class="actions">
                             <div class="action_buttons">
                                 <a :href="`/print/reporting/sales/customer?customer_type_id=${form.customer_type_id}&gender=${form.gender}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
+                                <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
+                                    Export
+                                </div>
                                 <download-csv
-                                    v-if="res.length > 0"
-                                    class="action_btn alternate margin"
+                                    v-if="res.result.data.length > 0"
+                                    class="hidden me"
                                     :data="customerAttributes"
-                                    :name="`sales-by-customer-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                    :name="`sales-by-customer-${$moment(form.start_date).format('MM-DD-YY-hh-mm')}.csv`">
                                     Export
                                 </download-csv>
+
                             </div>
                         </div>
                     </div>
@@ -44,12 +49,12 @@
                             <div class="form_group margin">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ errors.first('start_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -68,17 +73,25 @@
                                 <th class="sticky">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.result.data.length > 0">
+                            <tr v-for="(data, key) in res.result.data" :key="key">
                                 <td>
-                                    <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
+                                    <div class="thumb">
+                                        <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
+                                    </div>
                                 </td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
                                 <td>Php {{ totalCount(data.total_class_package) }}</td>
                                 <td>Php {{ totalCount(data.total_merchandise) }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ data.customer_details.co_contact_number }}</td>
-                                <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : 'N/A' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number) ? data.customer_details.co_contact_number : '-' }}</td>
+                                <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : '-' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -87,6 +100,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -98,15 +112,18 @@
 
 <script>
     import Foot from '../../.././../components/Foot'
+    import Pagination from '../../.././../components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const values = []
             return {
                 name: 'Sales by Customer',
                 access: true,
+                filter: true,
                 loaded: false,
                 rowCount: 0,
                 status: 1,
@@ -127,34 +144,38 @@
                 return [
                     ...me.values.map(value => ({
                         'Full Name': `${value.first_name} ${value.last_name}`,
-                        'Customer Type': me.getCustomerType(),
+                        'Customer Type': value.customer_details.customer_type.name,
                         'Class Package Total': `Php ${value.total_class_package}`,
                         'Merchandise Total': `Php ${value.total_merchandise}`,
                         'Email': value.email,
-                        'Contact Number': value.customer_details.co_contact_number,
-                        'City': (value.customer_details.pa_city) ? value.customer_details.pa_city : 'N/A'
+                        'Contact Number': (value.customer_details.co_contact_number) ? value.customer_details.co_contact_number : '-',
+                        'City': (value.customer_details.pa_city) ? value.customer_details.pa_city : '-'
                     }))
                 ]
             }
         },
         methods: {
+            getSales () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/sales/sales-by-customer?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.result.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
-            },
-            getCustomerType () {
-                const me = this
-                let result = ''
-                if (me.form.customer_type_id != '') {
-                    me.types.forEach((type, index) => {
-                        if (type.id == me.form.customer_type_id) {
-                            result = type.name
-                        }
-                    })
-                } else {
-                    result = 'All Customer Type'
-                }
-                return result
             },
             submitFilter () {
                 const me = this
@@ -164,7 +185,7 @@
                 me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.result
+                            me.res = res.data
                         }, 500)
                     }
                 }).catch(err => {
@@ -186,11 +207,7 @@
                 me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.result
-
-                            res.data.result.forEach((item, i) => {
-                                me.values.push(item)
-                            })
+                            me.res = res.data
 
                             me.$axios.get('api/extras/customer-types').then(res => {
                                 if (res.data) {

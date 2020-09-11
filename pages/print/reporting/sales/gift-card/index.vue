@@ -60,7 +60,7 @@
                     formData.append('studio_id', me.$route.query.studio_id)
                 }
 
-                me.$axios.post('api/reporting/sales/gift-cards-redeemed', formData).then(res => {
+                me.$axios.post('api/reporting/sales/gift-cards-redeemed?all=1', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.total_count = res.data.grand_total

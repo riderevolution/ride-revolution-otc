@@ -68,7 +68,7 @@
                     formData.append('promo_id', me.$route.query.promo_id)
                 }
 
-                me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
+                me.$axios.post('api/reporting/sales/promotions-redeemed?all=1', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.total_count = res.data.grand_total

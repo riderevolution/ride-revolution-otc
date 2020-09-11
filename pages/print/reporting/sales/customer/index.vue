@@ -25,8 +25,8 @@
                     <td>Php {{ totalCount(data.total_class_package) }}</td>
                     <td>Php {{ totalCount(data.total_merchandise) }}</td>
                     <td>{{ data.email }}</td>
-                    <td>{{ data.customer_details.co_contact_number }}</td>
-                    <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : 'N/A' }}</td>
+                    <td>{{ (data.customer_details.co_contact_number) ? data.customer_details.co_contact_number : '-' }}</td>
+                    <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : '-' }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
@@ -68,7 +68,7 @@
                 formData.append('end_date', me.form.end_date)
                 formData.append('gender', me.form.gender)
                 formData.append('customer_type_id', me.form.customer_type_id)
-                me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
+                me.$axios.post('api/reporting/sales/sales-by-customer?all=1', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.result
