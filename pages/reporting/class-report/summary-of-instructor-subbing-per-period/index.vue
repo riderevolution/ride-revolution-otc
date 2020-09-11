@@ -138,8 +138,8 @@
             fetchData (value) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
-                    me.res = res.data
+                me.$axios.post(`api/reporting/classes/summary-of-instructor-subbing-per-period`, me.form).then(res => {
+                    me.res = res.data.scheduledDates
                     me.loaded = true
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
