@@ -12,6 +12,8 @@
                             <h2 class="header_subtitle">Instructor Subbing per class schedule.</h2>
                         </div>
                         <div class="actions">
+                            <a :href="`/print/reporting/class/summary-of-instructor-subbing-per-period?studio_id=${form.studio_id}&instructor_id=${form.instructor_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
                             <div class="action_btn alternate" @click="getClasses()" v-if="res.scheduledDates.data.length > 0">
                                 Export
                             </div>

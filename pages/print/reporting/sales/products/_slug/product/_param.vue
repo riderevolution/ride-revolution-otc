@@ -1,7 +1,7 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>{{ variant.product.category.name }}:{{ variant.variant }} - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.status }})</h2>
+            <h2>{{ variant.product.category.name }}:{{ variant.variant }} - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.payment_status }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <table class="cms_table print">
@@ -84,10 +84,10 @@
                 let formData = new FormData()
                 formData.append('slug', me.form.slug)
                 formData.append('variant_id', me.form.variant_id)
-                formData.append('status', me.$route.query.status)
+                formData.append('payment_status', me.$route.query.payment_status)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                if (me.$route.query.studio_id.length > 0) {
+                if (me.$route.query.studio_id) {
                     me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.form.studio_id)
                 }
