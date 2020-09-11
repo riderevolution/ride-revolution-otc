@@ -27,14 +27,19 @@
                     <div class="action_buttons alt">
                         <div class="actions">
                             <div class="toggler">
-                                <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
-                                <div :class="`status ${(status == 'active') ? 'active' : ''}`" @click="toggleTab('active')">Active</div>
-                                <div :class="`status ${(status == 'inactive') ? 'active' : ''}`" @click="toggleTab('inactive')">Inactive</div>
-                                <div :class="`status ${(status == 'unused') ? 'active' : ''}`" @click="toggleTab('unused')">Unused</div>
-                                <div :class="`status ${(status == 'deactivated') ? 'active' : ''}`" @click="toggleTab('deactivated')">Deactivated</div>
+                                <div :class="`status ${(type == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
+                                <div :class="`status ${(type == 'active') ? 'active' : ''}`" @click="toggleTab('active')">Active</div>
+                                <div :class="`status ${(type == 'inactive') ? 'active' : ''}`" @click="toggleTab('inactive')">Inactive</div>
+                                <div :class="`status ${(type == 'unused') ? 'active' : ''}`" @click="toggleTab('unused')">Unused</div>
+                                <div :class="`status ${(type == 'deactivated') ? 'active' : ''}`" @click="toggleTab('deactivated')">Deactivated</div>
                             </div>
                             <div class="total">Total: {{ totalItems(total) }}</div>
                         </div>
+                    </div>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter">
+                            <input type="hidden" name="status" :value="type">
+                        </form>
                     </div>
                 </section>
                 <section id="content">
@@ -100,7 +105,7 @@
                 loaded: false,
                 filter: true,
                 rowCount: 0,
-                status: 'all',
+                type: 'all',
                 res: [],
                 users: [],
                 total: 0
@@ -128,7 +133,7 @@
                 me.values = []
                 me.loader(true)
 
-                formData.append('status', me.status)
+                formData.append('status', me.type)
                 me.$axios.post('api/reporting/customers/customer-accounts?all=1', formData).then(res => {
                     if (res.data) {
 
@@ -149,7 +154,7 @@
             },
             toggleTab (value) {
                 const me = this
-                me.status = value
+                me.type = value
                 me.fetchData(value)
             },
             fetchData (value) {
