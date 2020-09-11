@@ -112,8 +112,8 @@
                         setTimeout( () => {
                             me.res = res.data.instructors
 
-                            if (me.$route.query.studio_id.length > 0 && me.$route.query.studio_id) {
-                                me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                            if (me.form.studio_id != '') {
+                                me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
                             }

@@ -148,7 +148,10 @@
                     gift_cards: []
                 },
                 studio: [],
-                studioID: ''
+                studioID: '',
+                form: {
+                    studio_id: ''
+                }
             }
         },
         methods: {
@@ -156,8 +159,9 @@
                 const me = this
                 let formData = new FormData()
 
-                if (me.$route.query.studio_id.length > 0) {
+                if (me.$route.query.studio_id) {
                     me.studioID = me.$route.query.studio_id
+                    me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.$route.query.studio_id)
                 }
                 if (me.$route.query.id.length > 0) {
@@ -170,7 +174,7 @@
                             me.res.variants = res.data.productVariants
                             me.res.gift_cards = res.data.giftCards
 
-                            if (me.$route.query.studio_id.length > 0 && me.$route.query.studio_id) {
+                            if (me.form.studio_id != '') {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
