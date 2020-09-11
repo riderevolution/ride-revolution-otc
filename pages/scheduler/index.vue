@@ -8,9 +8,9 @@
                         <div class="actions">
                             <download-csv
                                 class="action_btn alternate"
-                                :data="attributes"
+                                :data="scheduleAttributes"
                                 :name="`schedule-${$moment().format('MM-DD-YY-hh-mm')}.csv`" v-if="schedules.length > 0">
-                                Export Schedule
+                                Export
                             </download-csv>
                         </div>
                     </div>
@@ -131,7 +131,7 @@
             }
         },
         computed: {
-            attributes () {
+            scheduleAttributes () {
                 const me = this
                 return [
                     ...me.values.map(value => ({
@@ -143,8 +143,8 @@
                         'Class Type': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
                         'Class Length': value.schedule.class_length_formatted,
                         'Class Credits': value.schedule.class_credits,
-                        'Instructor': `${value.schedule.instructor_schedules[0].user.first_name} ${value.schedule.instructor_schedules[0].user.last_name}`,
-                        'Substitute Instructor': `${(value.schedule.instructor_schedules[1]) ? `${value.schedule.instructor_schedules[1].user.first_name} ${value.schedule.instructor_schedules[1].user.last_name}` : '- -'}`,
+                        'Instructor': me.getInstructorsInSchedule(value, 'primary'),
+                        'Substitute Instructor': me.getInstructorsInSchedule(value, 'substitute'),
                         'Zoom Link': value.zoom_link,
                         'No. of Bookings': value.bookings.length,
                         'No. of Available Seats': value.availableSeatsCount
@@ -153,6 +153,45 @@
             }
         },
         methods: {
+            getInstructorsInSchedule (data, type) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let ins_ctr = 0
+                    let ins_sub_ctr = 0
+                    let instructor = []
+                    let sub_instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
+                        }
+                        if (type == 'substitute') {
+                            if (ins.substitute == 1) {
+                                ins_sub_ctr += 1
+                                sub_instructor = ins
+                            }
+                        }
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                    } else {
+                        if (ins_sub_ctr > 0) {
+                            result = `${sub_instructor.user.fullname}`
+                        } else {
+                            result = `${instructor.user.fullname}`
+                        }
+                    }
+
+                } else {
+                    result = '- -'
+                }
+
+                return result
+            },
             async submissionSuccess () {
                 const me = this
                 me.generateCalendar(me.currentYear, me.currentMonth, 0, 1)

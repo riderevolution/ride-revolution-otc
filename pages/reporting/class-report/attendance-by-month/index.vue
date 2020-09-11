@@ -144,12 +144,54 @@
                         'Class Type': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
                         'Class Credits': value.schedule.class_credits,
                         'Class Length': value.schedule.class_length_formatted,
-                        'Total Riders': value.bookings.length
+                        'Instructor': me.getInstructorsInSchedule(value, 'primary'),
+                        'Substitute Instructor': me.getInstructorsInSchedule(value, 'substitute'),
+                        'Zoom Link': value.zoom_link,
+                        'No. of Bookings': value.bookings.length
                     }))
                 ]
             }
         },
         methods: {
+            getInstructorsInSchedule (data, type) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let ins_ctr = 0
+                    let ins_sub_ctr = 0
+                    let instructor = []
+                    let sub_instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
+                        }
+                        if (type == 'substitute') {
+                            if (ins.substitute == 1) {
+                                ins_sub_ctr += 1
+                                sub_instructor = ins
+                            }
+                        }
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                    } else {
+                        if (ins_sub_ctr > 0) {
+                            result = `${sub_instructor.user.fullname}`
+                        } else {
+                            result = `${instructor.user.fullname}`
+                        }
+                    }
+
+                } else {
+                    result = '- -'
+                }
+
+                return result
+            },
             computeAvg () {
                 const me = this
                 let hasSchedules = false
@@ -236,7 +278,7 @@
                     res.data.schedules.forEach((item, key) => {
                         me.values.push(item)
                     })
-
+                    console.log(me.schedules);
                 })
 
                 /**
