@@ -1,7 +1,7 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>{{ replacer($route.params.slug) }} - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.status }})</h2>
+            <h2>{{ replacer($route.params.slug) }} - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.payment_status }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <table class="cms_table print">
@@ -68,8 +68,8 @@
                 formData.append('payment_method', me.$route.params.slug)
                 formData.append('start_date', me.$route.query.start_date)
                 formData.append('end_date',  me.$route.query.end_date)
-                formData.append('status', me.$route.query.status)
-                me.$axios.post(`api/reporting/sales/sales-by-payment-type/${me.$route.params.slug}`, formData).then(res => {
+                formData.append('payment_status', me.$route.query.payment_status)
+                me.$axios.post(`api/reporting/sales/sales-by-payment-type/${me.$route.params.slug}?all=1`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.result

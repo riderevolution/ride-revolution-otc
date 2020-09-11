@@ -213,6 +213,7 @@
             getClasses () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                me.values = []
                 me.loader(true)
                 me.$axios.post(`api/reporting/classes/attendance-with-revenue?all=1`, formData).then(res => {
                     if (res.data) {

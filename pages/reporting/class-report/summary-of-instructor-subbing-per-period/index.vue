@@ -148,6 +148,7 @@
         methods: {
             getClasses () {
                 const me = this
+                me.values = []
                 let formData = new FormData(document.getElementById('filter'))
                 me.loader(true)
                 me.$axios.post(`api/reporting/classes/summary-of-instructor-subbing-per-period?all=1`, formData).then(res => {

@@ -7,21 +7,36 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ replacer($route.params.param) }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ status }})</h1>
+                                <h1>{{ replacer($route.params.param) }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ payment_status }})</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">{{ totalItems(total) }} Transaction(s)</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/payment-type/${$route.params.param}?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/payment-type/${$route.params.param}?payment_status=${payment_status}&payment_method=${$route.params.param}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
+                            <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
+                                Export
+                            </div>
                             <download-csv
                                 v-if="res.result.data.length > 0"
-                                class="action_btn alternate margin"
+                                class="hidden me"
                                 :data="paymentTypeParamAttributes"
-                                :name="`sales-by-payment-type-${$route.params.slug}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`sales-by-payment-type-${$route.params.slug}-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
+
                         </div>
+                    </div>
+
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter">
+                            <input type="hidden" name="payment_status" :value="payment_status">
+                            <input type="hidden" name="payment_method" :value="form.payment_method">
+                            <input type="hidden" name="start_date" :value="form.start_date">
+                            <input type="hidden" name="end_date" :value="form.end_date">
+                            <input type="hidden" name="studio_id" :value="form.studio_id">
+                        </form>
                     </div>
                 </section>
                 <section id="content">
@@ -92,7 +107,7 @@
                 filter: true,
                 loaded: false,
                 rowCount: 0,
-                status: 'all',
+                payment_status: 'all',
                 res: [],
                 values: [],
                 total: [],
@@ -112,7 +127,7 @@
                     ...me.values.map(value => ({
                         'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
                         'Payment Type': me.$route.params.param,
-                        'Payment Status': me.status,
+                        'Payment Status': me.payment_status,
                         'Date': me.$moment(value.updated_at).format('MMMM DD, YYYY'),
                         'Time': me.$moment(value.updated_at).format('h:mm A'),
                         'Order ID': value.payment_code,
@@ -126,6 +141,25 @@
             }
         },
         methods: {
+            getSales () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+                me.values = []
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/sales/sales-by-payment-type/${me.$route.params.param}?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.result.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
@@ -137,7 +171,7 @@
                 me.form.payment_method = me.$route.params.param
                 me.loader(true)
                 let formData = new FormData()
-                formData.append('status', value)
+                formData.append('payment_status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 formData.append('payment_method', me.form.payment_method)
@@ -150,10 +184,6 @@
                         setTimeout( () => {
                             me.res = res.data
                             me.total = res.data.total
-
-                            // res.data.result.forEach((item, i) => {
-                            //     me.values.push(item)
-                            // })
 
                             if (me.form.studio_id != '') {
                                 me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
@@ -179,8 +209,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.status = me.$route.query.status
-                me.fetchData(me.status)
+                me.payment_status = me.$route.query.payment_status
+                me.fetchData(me.payment_status)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

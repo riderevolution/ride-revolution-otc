@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Income for each payment type, except store credit.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/payment-type?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/payment-type?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
                                 v-if="res.length > 0"
                                 class="action_btn alternate margin"
@@ -41,15 +41,16 @@
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
+                            <input type="hidden" name="payment_status" :value="payment_status">
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
                     </div>
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
-                        <div :class="`status ${(status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
-                        <div :class="`status ${(status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
+                        <div :class="`status ${(payment_status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
+                        <div :class="`status ${(payment_status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
+                        <div :class="`status ${(payment_status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
                     </div>
                     <table class="cms_table alt">
                         <thead>
@@ -90,7 +91,7 @@
                         </tbody>
                     </table>
                     <div class="cms_table_toggler">
-                        <a :href="`/print/reporting/sales/payment-type/register-sales-summary?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                        <a :href="`/print/reporting/sales/payment-type/register-sales-summary?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                         <download-csv
                             v-if="studio_res.length > 0"
                             class="action_btn alternate"
@@ -158,7 +159,7 @@
                 access: true,
                 loaded: false,
                 rowCount: 0,
-                status: 'all',
+                payment_status: 'all',
                 studios: [],
                 values: [],
                 summary_values: [],
@@ -180,7 +181,7 @@
                     ...me.values.map(value => ({
                         'Studio': this.getStudio(),
                         'Payment': value.name,
-                        'Payment Status': me.status,
+                        'Payment Status': me.payment_status,
                         'Transaction Count': value.transaction_count,
                         'Gross Receipts': `Php ${(value.gross_receipts) ? value.gross_receipts : 0}`,
                         'Gross Refunds': `Php ${(value.gross_refunds) ? value.gross_refunds : 0}`,
@@ -223,16 +224,16 @@
             toggleInnerReport (path) {
                 const me = this
                 if (me.form.studio_id != '') {
-                    me.$router.push(`${path}?status=${me.status}&studio_id=${me.form.studio_id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                    me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
                 } else {
-                    me.$router.push(`${path}?status=${me.status}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                    me.$router.push(`${path}?payment_status=${me.payment_status}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
                 }
             },
             toggleTab (value) {
                 const me = this
                 me.values = []
                 me.summary_values = []
-                me.status = value
+                me.payment_status = value
                 me.fetchData(value)
             },
             submitFilter () {
@@ -241,7 +242,7 @@
                 me.summary_values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('status', me.status)
+                formData.append('payment_status', me.payment_status)
                 me.$axios.post('api/reporting/sales/sales-by-payment-type', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -279,7 +280,7 @@
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
-                formData.append('status', value)
+                formData.append('payment_status', value)
                 if (me.form.studio_id != '') {
                     formData.append('studio_id', me.form.studio_id)
                 }
@@ -330,6 +331,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
+                let studio_id = me.$cookies.get('CSID')
+                me.form.studio_id = studio_id
                 me.fetchData('all')
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

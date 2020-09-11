@@ -180,7 +180,6 @@
             },
             submitFilter () {
                 const me = this
-                me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
