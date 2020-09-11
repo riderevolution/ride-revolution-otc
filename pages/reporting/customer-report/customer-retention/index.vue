@@ -12,12 +12,12 @@
                             <h2 class="header_subtitle">Returning Customers</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/customer/customer-retention?start_date=${form.start_date}&end_date=${form.end_date}&status=${status}`" target="_blank" class="action_btn alternate">Print</a>
-                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.data.length > 0">
+                            <a :href="`/print/reporting/customer/customer-retention?start_date=${form.start_date}&end_date=${form.end_date}&status=${type}`" target="_blank" class="action_btn alternate">Print</a>
+                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.customers.data.length > 0">
                                 Export
                             </div>
                             <download-csv
-                                v-if="res.data.length > 0"
+                                v-if="res.customers.data.length > 0"
                                 class="hidden me"
                                 :data="customerRetentionAttributes"
                                 :name="`customer-retention-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -37,17 +37,18 @@
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
+                            <input type="hidden" name="type" :value="type">
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
                     </div>
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div class="total">Total: {{ totalItems(res.total) }}</div>
-                        <div :class="`status ${(status == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First time</div>
-                        <div :class="`status ${(status == 'second') ? 'active' : ''}`" @click="toggleStatus('second')">Second Time</div>
-                        <div :class="`status ${(status == 'third') ? 'active' : ''}`" @click="toggleStatus('third')">Third Time</div>
-                        <div :class="`status ${(status == 'fourth') ? 'active' : ''}`" @click="toggleStatus('fourth')">Fourth Time &amp; Above</div>
+                        <div class="total">Total: {{ totalItems(total) }}</div>
+                        <div :class="`status ${(type == 'first') ? 'active' : ''}`" @click="toggleStatus('first')">First time</div>
+                        <div :class="`status ${(type == 'second') ? 'active' : ''}`" @click="toggleStatus('second')">Second Time</div>
+                        <div :class="`status ${(type == 'third') ? 'active' : ''}`" @click="toggleStatus('third')">Third Time</div>
+                        <div :class="`status ${(type == 'fourth') ? 'active' : ''}`" @click="toggleStatus('fourth')">Fourth Time &amp; Above</div>
                     </div>
                     <table class="cms_table">
                         <thead>
@@ -59,8 +60,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.data.length > 0">
-                            <tr v-for="(data, key) in res.data" :key="key">
+                        <tbody v-if="res.customers.data.length > 0">
+                            <tr v-for="(data, key) in res.customers.data" :key="key">
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -84,7 +85,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <pagination :apiRoute="res.path" :current="res.current_page" :last="res.last_page" />
+                    <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -107,10 +108,11 @@
             return {
                 name: 'Customer Retention',
                 access: true,
-                filter: false,
+                filter: true,
                 loaded: false,
                 rowCount: 0,
-                status: 'first',
+                total: 0,
+                type: 'first',
                 res: [],
                 values: [],
                 form: {
@@ -139,8 +141,6 @@
             getCustomers () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
-
-                formData.append('type', me.status)
                 me.loader(true)
                 me.$axios.post(`api/reporting/customers/customer-retention?all=1`, formData).then(res => {
                     if (res.data) {
@@ -163,12 +163,12 @@
             submissionSuccess () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('type', me.status)
                 me.loader(true)
                 me.filter = true
                 me.$axios.post(`api/reporting/customers/customer-retention`, formData).then(res => {
                     setTimeout( () => {
-                        me.res = res.data.customers
+                        me.res = res.data
+                        me.total = res.data.total_count
                     }, 500)
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
@@ -181,7 +181,7 @@
             },
             toggleStatus (status) {
                 const me = this
-                me.status = status
+                me.type = status
                 me.fetchData(status)
             },
             fetchData (status) {
@@ -190,11 +190,11 @@
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                formData.append('type', me.status)
+                formData.append('type', me.type)
                 me.$axios.post(`api/reporting/customers/customer-retention`, formData).then(res => {
                     setTimeout( () => {
-                        me.res = res.data.customers
-
+                        me.res = res.data
+                        me.total = res.data.total_count
                         me.loaded = true
                     }, 500)
                 }).catch(err => {
@@ -212,7 +212,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData(me.status)
+                me.fetchData(me.type)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

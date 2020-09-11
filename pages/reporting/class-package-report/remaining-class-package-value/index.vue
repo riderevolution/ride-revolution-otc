@@ -19,8 +19,16 @@
                             </h2>
                         </div>
                         <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <div class="action_btn alternate" @click="getPackages()" v-if="res.classPackages.data.length > 0">
+                                Export
+                            </div>
+                            <download-csv
+                                v-if="res.classPackages.data.length > 0"
+                                class="hidden me"
+                                :data="remainingPackageValueAttributes"
+                                :name="`remaining-package-value-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -43,22 +51,24 @@
                     <table class="cms_table alt">
                         <thead>
                             <tr>
-                                <th>Class Package</th>
-                                <th>Starting Class Count</th>
-                                <th>Starting Value</th>
-                                <th>Remaining Class Count</th>
-                                <th>Remaining Value</th>
+                                <th class="sticky">Package Type</th>
+                                <th class="sticky">Class Package</th>
+                                <th class="sticky">Starting Class Count</th>
+                                <th class="sticky">Starting Value</th>
+                                <th class="sticky">Remaining Class Count</th>
+                                <th class="sticky">Remaining Value</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><b>Summary</b></td>
+                                <td colspan="2"><b>Summary</b></td>
                                 <td><b>{{ totalItems(res.summary.starting_class_count) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
                                 <td><b>{{ totalItems(res.summary.remaining_class_count) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.remaining_value) }}</b></td>
                             </tr>
-                            <tr v-for="(data, key) in res.classPackages" :key="key">
+                            <tr v-for="(data, key) in res.classPackages.data" :key="key">
+                                <td>{{ data.package_type.name }}</td>
                                 <td>{{ data.name }}</td>
                                 <td>{{ (data.starting_class_count == 'Unlimited') ? data.starting_class_count : totalItems(data.starting_class_count) }}</td>
                                 <td>Php {{ totalCount(data.starting_value) }}</td>
@@ -67,6 +77,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.classPackages.path" :current="res.classPackages.current_page" :last="res.classPackages.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -85,19 +96,54 @@
             Pagination
         },
         data () {
+            const values = []
             return {
                 form: {
-                    studio_id: 0,
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
                 name: 'Remaining Class Package Value',
                 access: true,
+                filter: true,
                 loaded: false,
-                res: []
+                res: [],
+                values: []
+            }
+        },
+        computed: {
+            remainingPackageValueAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Package Type': value.package_type.name,
+                        'Class Package': value.name,
+                        'Starting Class Count': (value.starting_class_count == 'Unlimited') ? value.starting_class_count : me.totalItems(value.starting_class_count),
+                        'Starting Value': `Php ${me.totalCount(value.starting_value)}`,
+                        'Remaining Class Count': (value.remaining_class_count == 'Unlimited') ? value.remaining_class_count : me.totalItems(value.remaining_class_count),
+                        'Remaining Value': `Php ${me.totalCount(value.remaining_value)}`
+                    }))
+                ]
             }
         },
         methods: {
+            getPackages () {
+                const me = this
+                let formData = new FormData()
+                me.loader(true)
+                me.$axios.post(`api/reporting/packages/remaining-class-package-value?all=1`, formData).then(res => {
+                    if (res.data) {
+
+                        res.data.classPackages.forEach((item, index) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             submissionSuccess () {
                 const me = this
                 me.fetchData()
@@ -106,7 +152,6 @@
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
-                formData.append('studio_id', me.form.studio_id)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 me.$axios.post('api/reporting/packages/remaining-class-package-value', formData).then(res => {

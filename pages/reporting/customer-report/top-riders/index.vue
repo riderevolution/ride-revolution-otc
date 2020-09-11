@@ -14,11 +14,11 @@
                         <div class="actions">
                             <a :href="`/print/reporting/customer/top-riders?studio_id=${form.studio_id}&class_type_id=${form.class_type_id}&timeslot=${form.timeslot}&instructor_id=${form.instructor_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
-                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.data.length > 0">
+                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.topRiders.data.length > 0">
                                 Export
                             </div>
                             <download-csv
-                                v-if="res.data.length > 0"
+                                v-if="res.topRiders.data.length > 0"
                                 class="hidden me"
                                 :data="topRidersAttributes"
                                 :name="`top-riders-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -85,9 +85,9 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.data.length > 0">
-                            <tr v-for="(data, key) in res.data" :key="key">
-                                <td>{{ key + 1 }}</td>
+                        <tbody v-if="res.topRiders.data.length > 0">
+                            <tr v-for="(data, key) in res.topRiders.data" :key="key">
+                                <td>{{ res.topRiders.from + key }}</td>
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -114,6 +114,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.topRiders.path" :current="res.topRiders.current_page" :last="res.topRiders.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -125,17 +126,19 @@
 
 <script>
     import Foot from '../../../../components/Foot'
+    import Pagination from '../../../../components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const values = []
             return {
                 name: 'Top Riders',
                 access: true,
-                filter: false,
-                loaded: false,
+                filter: true,
+                loaded: true,
                 rowCount: 0,
                 res: [],
                 values: [],
@@ -203,7 +206,7 @@
                 me.$axios.post('api/reporting/customers/top-riders', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.topRiders
+                            me.res = res.data
                         }, 500)
                     }
                 }).catch(err => {
@@ -226,7 +229,7 @@
                 me.$axios.post('api/reporting/customers/top-riders', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.topRiders
+                            me.res = res.data
 
                             me.$axios.get('api/packages/class-types?enabled=1').then(res => {
                                 if (res.data) {

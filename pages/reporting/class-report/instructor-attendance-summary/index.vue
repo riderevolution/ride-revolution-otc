@@ -7,13 +7,21 @@
                         <div>
                             <div class="header_title">
                                 <h1>Instructor Attendance Summary</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Summary of instructor attendance and revenue per class schedule</h2>
                         </div>
                         <div class="actions">
-
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <div class="action_btn alternate" @click="getClasses()" v-if="res.instructors.data.length > 0">
+                                Export
+                            </div>
+                            <download-csv
+                                v-if="res.instructors.data.length > 0"
+                                class="hidden me"
+                                :data="instructorAttendanceSummaryAttributes"
+                                :name="`instructor-attendance-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -64,8 +72,8 @@
                                 <th class="stick">Total Revenue</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.instructors.data.length > 0">
+                            <tr v-for="(data, key) in res.instructors.data" :key="key">
                                 <td>{{ data.first_name }} {{ data.last_name }}</td>
                                 <td>{{ data.total_riders }}</td>
                                 <td>{{ data.paying_riders }}</td>
@@ -87,7 +95,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
+                    <pagination :apiRoute="res.instructors.path" :current="res.instructors.current_page" :last="res.instructors.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -106,6 +114,7 @@
             Pagination
         },
         data () {
+            const values = []
             return {
                 form: {
                     studio_id: '',
@@ -115,19 +124,57 @@
                 },
                 name: 'Instructor Attendance Summary',
                 access: true,
-                filter: false,
+                filter: true,
                 loaded: false,
-                id: 0,
-                type: 0,
                 rowCount: 0,
-                status: 'all',
                 res: [],
+                values: [],
                 studio: [],
                 studios: [],
                 classTypes: []
             }
         },
+        computed: {
+            instructorAttendanceSummaryAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Instructor': `${ value.first_name } ${ value.last_name }`,
+                        'Total Rides': value.total_riders,
+                        'Paying Riders': value.paying_riders,
+                        'Comped Riders': value.comped_riders,
+                        'First Timers': value.first_timers,
+                        'No Shows': value.no_shows,
+                        'Repeat': value.repeats,
+                        'Avg Riders': me.totalPercentage('average', value),
+                        'Number Classes': value.number_of_classes,
+                        'Avg Spots': (me.studio.online_class) ? 'Unlimited' : me.studio.capacity,
+                        'Capacity': me.totalPercentage('capacity', value),
+                        'Paying': me.totalPercentage('paying', value),
+                        'Total Revenue': `Php ${me.totalCount(value.revenue)}`
+                    }))
+                ]
+            }
+        },
         methods: {
+            getClasses () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+                me.loader(true)
+                me.$axios.post(`api/reporting/classes/instructor-attendance-summary?all=1`, formData).then(res => {
+                    if (res.data) {
+
+                        res.data.instructors.forEach((item, index) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             totalPercentage (type, data) {
                 const me = this
                 let percent = 0
@@ -164,7 +211,7 @@
 
                 me.$axios.post(`api/reporting/classes/instructor-attendance-summary`, formData).then(res => {
                     setTimeout( () => {
-                        me.res = res.data.instructors
+                        me.res = res.data
                     }, 500)
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
@@ -189,7 +236,7 @@
 
                 me.$axios.post(`api/reporting/classes/instructor-attendance-summary`, formData).then(res => {
                     setTimeout( () => {
-                        me.res = res.data.instructors
+                        me.res = res.data
                         me.loaded = true
                     }, 500)
                 }).catch(err => {

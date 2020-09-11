@@ -13,11 +13,11 @@
                         </div>
                         <div class="actions">
                             <a :href="`/print/reporting/customer/non-returning-customers?class_package_id=${form.class_package_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
-                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.data.length > 0">
+                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.customers.data.length > 0">
                                 Export
                             </div>
                             <download-csv
-                                v-if="res.data.length > 0"
+                                v-if="res.customers.data.length > 0"
                                 class="hidden me"
                                 :data="nonReturningCustomersAttributes"
                                 :name="`non-returning-customers-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -61,8 +61,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.data.length > 0">
-                            <tr v-for="(data, key) in res.data" :key="key">
+                        <tbody v-if="res.customers.data.length > 0">
+                            <tr v-for="(data, key) in res.customers.data" :key="key">
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -88,7 +88,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <pagination :apiRoute="res.path" :current="res.current_page" :last="res.last_page" />
+                    <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -111,7 +111,7 @@
             return {
                 name: 'Non Returning Customers',
                 access: true,
-                filter: false,
+                filter: true,
                 loaded: false,
                 rowCount: 0,
                 res: [],
@@ -172,7 +172,7 @@
                 me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.customers
+                            me.res = res.data
                         }, 500)
                     }
                 }).catch(err => {
@@ -194,7 +194,7 @@
                 me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.customers
+                            me.res = res.data
 
                             me.$axios.get('api/packages/class-packages?enabled=1').then(res => {
                                 if (res.data) {

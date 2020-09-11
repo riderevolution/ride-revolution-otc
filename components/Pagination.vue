@@ -63,8 +63,15 @@
                 if (current != last) {
                     me.loader(true)
                     if (me.$parent.filter) {
-                        let formData = new FormData(document.getElementById('filter'))
-                        formData.append('enabled', me.$parent.status)
+                        let formData = ''
+                        if (document.getElementById('filter')) {
+                            formData = new FormData(document.getElementById('filter'))
+                        } else {
+                            formData = new FormData()
+                        }
+                        if (me.$parent.status) {
+                            formData.append('enabled', me.$parent.status)
+                        }
                         me.loader(true)
                         me.$axios.post(`${me.apiRoute}?page=${current + 1}`, formData).then(res => {
                             if (me.$route.params.slug == 'transactions') {
@@ -125,8 +132,15 @@
                     }
                 }
                 if (me.$parent.filter) {
-                    let formData = new FormData(document.getElementById('filter'))
-                    formData.append('enabled', me.$parent.status)
+                    let formData = ''
+                    if (document.getElementById('filter')) {
+                        formData = new FormData(document.getElementById('filter'))
+                    } else {
+                        formData = new FormData()
+                    }
+                    if (me.$parent.status) {
+                        formData.append('enabled', me.$parent.status)
+                    }
                     me.loader(true)
                     me.$axios.post(`${me.apiRoute}?page=${count}`, formData).then(res => {
                         if (me.$route.params.slug == 'transactions') {
@@ -164,8 +178,15 @@
                 if (current != 1) {
                     me.loader(true)
                     if (me.$parent.filter) {
-                        let formData = new FormData(document.getElementById('filter'))
-                        formData.append('enabled', me.$parent.status)
+                        let formData = ''
+                        if (document.getElementById('filter')) {
+                            formData = new FormData(document.getElementById('filter'))
+                        } else {
+                            formData = new FormData()
+                        }
+                        if (me.$parent.status) {
+                            formData.append('enabled', me.$parent.status)
+                        }
                         me.loader(true)
                         me.$axios.post(`${me.apiRoute}?page=${current - 1}`, formData).then(res => {
                             if (me.$route.params.slug == 'transactions') {

@@ -5312,12 +5312,12 @@ input::placeholder
 .cms_five_row
     display: flex
     flex-flow: row wrap
-    align-items: center
-    justify-content: space-between
+    align-items: flex-start
+    justify-content: flex-start
     margin-top: 30px
     .column
         flex: 0 0 calc((100% / 5) - 20px)
-        margin-right: 20px
+        margin: 0 10px
         background-color: $white
         border-radius: 5px
         .column_header
@@ -5335,8 +5335,8 @@ input::placeholder
                 color: $black
         .column_content
             padding: 10px 0 20px
-        &:last-child
-            margin-right: 0
+    .no_results
+        text-align: center
 
 .cms_two_row
     display: flex

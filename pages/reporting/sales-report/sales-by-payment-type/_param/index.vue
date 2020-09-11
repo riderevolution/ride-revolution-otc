@@ -15,7 +15,7 @@
                         <div class="actions">
                             <a :href="`/print/reporting/sales/payment-type/${$route.params.param}?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
-                                v-if="res.length > 0"
+                                v-if="res.result.data.length > 0"
                                 class="action_btn alternate margin"
                                 :data="paymentTypeParamAttributes"
                                 :name="`sales-by-payment-type-${$route.params.slug}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -38,8 +38,8 @@
                                 <th class="sticky">Remarks</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.result.data.length > 0">
+                            <tr v-for="(data, key) in res.result.data" :key="key">
                                 <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY') }}</td>
                                 <td>{{ $moment(data.updated_at).format('h:mm A') }}</td>
                                 <td>{{ data.payment_code }}</td>
@@ -66,6 +66,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -77,15 +78,18 @@
 
 <script>
     import Foot from '../../../../../components/Foot'
+    import Pagination from '../../../../../components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const values = []
             return {
                 name: 'Sales by Payment Type',
                 access: true,
+                filter: true,
                 loaded: false,
                 rowCount: 0,
                 status: 'all',
@@ -144,12 +148,12 @@
                 me.$axios.post(`api/reporting/sales/sales-by-payment-type/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.result
+                            me.res = res.data
                             me.total = res.data.total
 
-                            res.data.result.forEach((item, i) => {
-                                me.values.push(item)
-                            })
+                            // res.data.result.forEach((item, i) => {
+                            //     me.values.push(item)
+                            // })
 
                             if (me.form.studio_id != '') {
                                 me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {

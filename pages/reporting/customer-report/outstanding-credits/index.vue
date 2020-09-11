@@ -12,11 +12,11 @@
                         </div>
                         <div class="actions">
                             <a :href="`/print/reporting/customer/outstanding-credits`" target="_blank" class="action_btn alternate">Print</a>
-                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.data.length > 0">
+                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.result.data.length > 0">
                                 Export
                             </div>
                             <download-csv
-                                v-if="res.data.length > 0"
+                                v-if="res.result.data.length > 0"
                                 class="hidden me"
                                 :data="outstadingCreditsAttributes"
                                 :name="`outstanding-credits-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -44,8 +44,8 @@
                                 <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.data.length > 0">
-                            <tr v-for="(data, key) in res.data" :key="key">
+                        <tbody v-if="res.result.data.length > 0">
+                            <tr v-for="(data, key) in res.result.data" :key="key">
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -72,7 +72,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <pagination :apiRoute="res.path" :current="res.current_page" :last="res.last_page" />
+                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -84,9 +84,11 @@
 
 <script>
     import Foot from '../../../../components/Foot'
+    import Pagination from '../../../../components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const values = []
@@ -94,6 +96,7 @@
                 name: 'Outstanding Credits',
                 access: true,
                 loaded: false,
+                filter: true,
                 rowCount: 0,
                 status: 'all',
                 total: 0,
@@ -149,7 +152,7 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.total = res.data.totalStoreCredits
-                            me.res = res.data.result
+                            me.res = res.data
 
                             me.loaded = true
                         }, 500)
