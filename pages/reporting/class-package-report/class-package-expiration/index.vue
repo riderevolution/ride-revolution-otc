@@ -48,31 +48,33 @@
                                 <th class="stick">Customer</th>
                                 <th class="stick">Class Package</th>
                                 <th class="stick">Purchase Date</th>
+                                <th class="stick">Activation Date</th>
                                 <th class="stick">Expiration Date</th>
                                 <th class="stick">Total Class Count</th>
                                 <th class="stick">Remaining Class Count</th>
                                 <th class="stick">Class Package Value</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.customers.data.length > 0">
-                            <tr v-for="(data, key) in res.customers.data" :key="key">
+                        <tbody v-if="res.packages.length > 0">
+                            <tr v-for="(data, key) in res.packages" :key="key">
                                 <td>
                                     <div class="thumb">
-                                        <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
+                                        <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
                                         <div class="table_image_default" v-else>
                                             <div class="overlay">
-                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                                {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <nuxt-link class="table_data_link" :to="`/customers/${data.id}/packages`">{{ data.last_name }} {{ data.last_name }}</nuxt-link>
+                                        <nuxt-link class="table_data_link" :to="`/customers/${data.user.id}/packages`">{{ data.user.last_name }} {{ data.user.last_name }}</nuxt-link>
                                     </div>
                                 </td>
-                                <td>Package</td>
-                                <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                                <td>{{ $moment().format('MMMM DD, YYYY') }}</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>Php 25.00</td>
+                                <td>{{ data.class_package.name }}</td>
+                                <td>{{ (data.payment_item) ? $moment(data.payment_item.payment.updated_at, 'YYYY-MM-DD').format('MMMM DD, YYYY') : '-' }}</td>
+                                <td>{{ $moment(data.activation_date).format('MMMM DD, YYYY') }}</td>
+                                <td>{{ $moment(data.expiryDate).format('MMMM DD, YYYY') }}</td>
+                                <td>{{ data.original_package_count }}</td>
+                                <td>{{ data.count }}</td>
+                                <td>Php {{ totalCount(data.class_package.package_price) }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -81,7 +83,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" />
+                    <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
                 </section>
             </div>
             <transition name="fade">
@@ -102,8 +104,9 @@
         data () {
             return {
                 form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    start_date: this.$moment().subtract(1, 'months').format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD'),
+                    type: 'expiring'
                 },
                 name: 'Class Package Expiration',
                 access: true,
@@ -133,12 +136,15 @@
             toggleStatus (value) {
                 const me = this
                 me.status = value
+                me.form.type = value
+                me.fetchData()
             },
-            fetchData (value) {
+            fetchData () {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers?enabled=${value}`).then(res => {
+                me.$axios.post(`api/reporting/packages/class-package-expiration`, me.form).then(res => {
                     me.res = res.data
+                    console.log(me.res)
                     me.loaded = true
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
@@ -155,7 +161,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData(1)
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
