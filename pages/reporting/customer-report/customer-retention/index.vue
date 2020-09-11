@@ -20,7 +20,7 @@
                                 v-if="res.customers.data.length > 0"
                                 class="hidden me"
                                 :data="customerRetentionAttributes"
-                                :name="`customer-retention-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`customer-retention-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                         </div>

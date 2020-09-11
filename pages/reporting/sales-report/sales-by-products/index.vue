@@ -18,7 +18,7 @@
                                     v-if="res.length > 0"
                                     class="action_btn alternate margin"
                                     :data="productsAttributes"
-                                    :name="`sales-by-products-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                    :name="`sales-by-products-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                     Export
                                 </download-csv>
                             </div>

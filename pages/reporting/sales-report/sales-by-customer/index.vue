@@ -22,7 +22,7 @@
                                     v-if="res.result.data.length > 0"
                                     class="hidden me"
                                     :data="customerAttributes"
-                                    :name="`sales-by-customer-${$moment(form.start_date).format('MM-DD-YY-hh-mm')}.csv`">
+                                    :name="`sales-by-customer-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                     Export
                                 </download-csv>
 

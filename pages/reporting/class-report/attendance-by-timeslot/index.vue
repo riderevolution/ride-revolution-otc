@@ -11,6 +11,14 @@
                             </div>
                             <h2 class="header_subtitle">Average attendance per time slot.</h2>
                         </div>
+                        <div class="actions">
+                            <download-csv
+                                class="action_btn alternate margin"
+                                :data="attendanceByTimeslotAttributes"
+                                :name="`attendance-by-timeslot-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
+                                Export
+                            </download-csv>
+                        </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
@@ -94,6 +102,7 @@
             Foot
         },
         data () {
+            const values = []
             return {
                 name: 'Attendance by Timeslot',
                 access: true,
@@ -101,6 +110,7 @@
                 rowCount: 0,
                 tabStatus: 'weekdays',
                 res: [],
+                values: [],
                 studios: [],
                 studio: [],
                 classTypes: [],
@@ -112,7 +122,49 @@
                 }
             }
         },
+        computed: {
+            attendanceByTimeslotAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Studio': me.getStudio(),
+                        'Class Type': me.getClassType(),
+                        'Day': value.day,
+                        'Timeslot': value.time,
+                        'Average': value.average
+                    }))
+                ]
+            }
+        },
         methods: {
+            getStudio () {
+                const me = this
+                let result = ''
+                if (me.form.studio_id != '') {
+                    me.studios.forEach((studio, index) => {
+                        if (studio.id == me.form.studio_id) {
+                            result = studio.name
+                        }
+                    })
+                } else {
+                    result = 'All Studios'
+                }
+                return result
+            },
+            getClassType () {
+                const me = this
+                let result = ''
+
+                if (me.form.class_type_id != '') {
+                    me.$axios.get(`api/packages/class-types/${me.form.class_type_id}`).then(res => {
+                        result = res.data.classType.name
+                    })
+                } else {
+                    result = 'All Class Type'
+                }
+
+                return result
+            },
             computeTotalAvg (data) {
                 const me = this
                 let avg = 0
@@ -137,6 +189,7 @@
             },
             fetchData (type) {
                 const me = this
+                me.values = []
                 me.loader(true)
                 let formData = new FormData()
                 formData.append('studio_id', me.form.studio_id)
@@ -148,6 +201,12 @@
                 me.$axios.post(`api/reporting/classes/attendance-by-timeslot`, formData).then(res => {
                     setTimeout( () => {
                         me.res = res.data
+                        Object.keys(res.data).forEach((key) => {
+                            res.data[key].forEach((child, ckey) => {
+                                child.day = key
+                                me.values.push(child)
+                            })
+                        })
                         me.loaded = true
                     }, 500)
                 }).catch(err => {
@@ -186,8 +245,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData('weekdays')
                 me.fetchExtraAPI()
+                me.fetchData('weekdays')
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

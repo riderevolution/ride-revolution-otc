@@ -17,14 +17,14 @@
                                 v-if="tabStatus == 'summary'"
                                 class="action_btn alternate"
                                 :data="salesBreakdownAttributes"
-                                :name="`sales-breakdown-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`sales-breakdown-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                             <download-csv
                                 v-else
                                 class="action_btn alternate"
                                 :data="salesSummaryAttributes"
-                                :name="`${tabStatus}-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`${tabStatus}-summary-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                         </div>

@@ -21,7 +21,7 @@
                                 v-if="res.instructors.data.length > 0"
                                 class="hidden me"
                                 :data="instructorAttendanceSummaryAttributes"
-                                :name="`instructor-attendance-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`instructor-attendance-summary-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                         </div>

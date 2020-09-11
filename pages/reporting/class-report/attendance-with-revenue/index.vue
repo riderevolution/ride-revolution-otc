@@ -19,7 +19,7 @@
                                 v-if="res.scheduled_dates.data.length > 0"
                                 class="hidden me"
                                 :data="attendanceWithRevenueAttributes"
-                                :name="`attendance-with-revenue-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`attendance-with-revenue-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                         </div>

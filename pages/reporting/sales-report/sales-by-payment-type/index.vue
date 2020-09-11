@@ -17,7 +17,7 @@
                                 v-if="res.length > 0"
                                 class="action_btn alternate margin"
                                 :data="paymentTypeAttributes"
-                                :name="`sales-by-payment-type-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`sales-by-payment-type-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                         </div>
