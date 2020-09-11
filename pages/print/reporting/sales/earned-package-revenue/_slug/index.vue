@@ -85,16 +85,14 @@
 
                             me.class_package = res.data.class_package
                             me.loaded = true
+                            setTimeout( () => {
+                                window.print()
+                            }, 1000)
                         }, 500)
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
-                }).then(() => {
-                    me.la
-                    setTimeout( () => {
-                        window.print()
-                    }, 1000)
                 })
             }
         },

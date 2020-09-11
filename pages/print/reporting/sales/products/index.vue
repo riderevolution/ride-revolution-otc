@@ -64,7 +64,10 @@
                 loaded: false,
                 res: [],
                 studio: [],
-                total: []
+                total: [],
+                form: {
+                    studio_id: ''
+                }
             }
         },
         methods: {
@@ -84,22 +87,21 @@
                             me.res = res.data.result
                             me.total = res.data.total
 
-                            if (me.$route.query.studio_id.length > 0) {
+                            if (me.form.studio_id != '') {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
                             }
 
                             me.loaded = true
+                            setTimeout( () => {
+                                window.print()
+                            }, 1000)
                         }, 500)
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        window.print()
-                    }, 1000)
                 })
             }
         },

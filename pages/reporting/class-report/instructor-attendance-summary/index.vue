@@ -12,6 +12,8 @@
                             <h2 class="header_subtitle">Summary of instructor attendance and revenue per class schedule</h2>
                         </div>
                         <div class="actions">
+                            <a :href="`/print/reporting/class/instructor-attendance-summary?studio_id=${form.studio_id}&class_type_id=${form.class_type_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
                             <div class="action_btn alternate" @click="getClasses()" v-if="res.instructors.data.length > 0">
                                 Export
                             </div>

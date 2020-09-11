@@ -170,21 +170,20 @@
                             me.res.variants = res.data.productVariants
                             me.res.gift_cards = res.data.giftCards
 
-                            if (me.$route.query.studio_id.length > 0) {
+                            if (me.$route.query.studio_id.length > 0 && me.$route.query.studio_id) {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
                             }
                             me.loaded = true
+                            setTimeout( () => {
+                                window.print()
+                            }, 1000)
                         }, 500)
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        window.print()
-                    }, 1000)
                 })
             }
         },

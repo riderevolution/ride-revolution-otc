@@ -55,15 +55,6 @@
             }
         },
         methods: {
-            computeTotal () {
-                const me = this
-                let total = 0
-                me.res.forEach((value, index) => {
-                    total += parseFloat(value.revenue)
-                })
-
-                return me.totalCount(total)
-            },
             initial () {
                 const me = this
                 me.form.start_date = me.$route.query.start_date
@@ -81,16 +72,14 @@
                         setTimeout( () => {
                             me.res = res.data.scheduledDates
                             me.loaded = true
+                            setTimeout( () => {
+                                window.print()
+                            }, 1000)
                         }, 500)
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
-                }).then(() => {
-                    me.la
-                    setTimeout( () => {
-                        window.print()
-                    }, 1000)
                 })
             }
         },

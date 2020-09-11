@@ -73,15 +73,14 @@
                         setTimeout( () => {
                             me.res = res.data.result
                             me.loaded = true
+                            setTimeout( () => {
+                                window.print()
+                            }, 1000)
                         }, 500)
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        window.print()
-                    }, 1000)
                 })
             }
         },

@@ -51,7 +51,10 @@
                 loaded: false,
                 res: [],
                 studio: [],
-                payment_total: []
+                payment_total: [],
+                form: {
+                    studio_id: ''
+                }
             }
         },
         methods: {
@@ -62,7 +65,8 @@
                 formData.append('start_date', me.$route.query.start_date)
                 formData.append('end_date',  me.$route.query.end_date)
                 formData.append('payment_status', me.$route.query.payment_status)
-                if (me.$route.query.studio_id.length > 0) {
+                if (me.$route.query.studio_id) {
+                    me.form.studio = me.$route.query.studio_id
                     formData.append('studio_id', me.$route.query.studio_id)
                 }
                 me.$axios.post('api/reporting/sales/sales-by-payment-type', formData).then(res => {
@@ -71,22 +75,21 @@
                             me.res = res.data.result
                             me.payment_total = res.data.payment_grand_total
 
-                            if (me.$route.query.studio_id.length > 0) {
+                            if (me.form.studio_id != '') {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
                             }
 
                             me.loaded = true
+                            setTimeout( () => {
+                                window.print()
+                            }, 1000)
                         }, 500)
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data
                     me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        window.print()
-                    }, 1000)
                 })
             }
         },
