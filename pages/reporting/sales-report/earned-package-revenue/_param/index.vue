@@ -160,12 +160,21 @@
             fetchData () {
                 const me = this
                 me.loader(true)
-                me.form.start_date = me.$route.query.start_date
-                me.form.end_date = me.$route.query.end_date
-                me.form.type = me.$route.query.type
-                me.form.id = me.$route.query.id
-
                 let formData = new FormData()
+
+                if (me.$route.query.start_date) {
+                    me.form.start_date = me.$route.query.start_date
+                }
+                if (me.$route.query.end_date) {
+                    me.form.end_date = me.$route.query.end_date
+                }
+                if (me.$route.query.type) {
+                    me.form.type = me.$route.query.type
+                }
+                if (me.$route.query.id) {
+                    me.form.id = me.$route.query.id
+                }
+
                 formData.append('id', me.form.id)
                 formData.append('type', me.form.type)
                 formData.append('start_date', me.form.start_date)

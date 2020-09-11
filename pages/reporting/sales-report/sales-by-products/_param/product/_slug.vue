@@ -171,22 +171,35 @@
 
             fetchData (value) {
                 const me = this
-                me.form.start_date = me.$route.query.start_date
-                me.form.end_date = me.$route.query.end_date
-                me.form.slug = me.$route.query.slug
-                me.form.id = me.$route.query.id
-                me.form.variant_id = me.$route.query.variant_id
                 me.loader(true)
                 let formData = new FormData()
+
+                if (me.$route.query.start_date) {
+                    me.form.start_date = me.$route.query.start_date
+                }
+                if (me.$route.query.end_date) {
+                    me.form.end_date = me.$route.query.end_date
+                }
+                if (me.$route.query.slug) {
+                    me.form.slug = me.$route.query.slug
+                }
+                if (me.$route.query.id) {
+                    me.form.id = me.$route.query.id
+                }
+                if (me.$route.query.variant_id) {
+                    me.form.variant_id = me.$route.query.variant_id
+                }
+                if (me.$route.query.studio_id) {
+                    me.form.studio_id = me.$route.query.studio_id
+                }
+
                 formData.append('slug', me.form.slug)
                 formData.append('variant_id', me.form.variant_id)
                 formData.append('payment_status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                if (me.$route.query.studio_id.length > 0) {
-                    me.form.studio_id = me.$route.query.studio_id
-                    formData.append('studio_id', me.form.studio_id)
-                }
+                formData.append('studio_id', me.form.studio_id)
+
                 me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}/product/${me.$route.params.slug}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -218,7 +231,11 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.payment_status = me.$route.query.payment_status
+
+                if (me.$route.query.payment_status) {
+                    me.payment_status = me.$route.query.payment_status
+                }
+
                 me.fetchData(me.payment_status)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
