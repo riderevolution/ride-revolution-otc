@@ -12,14 +12,19 @@
                             <h2 class="header_subtitle">Income from class package sold.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package?status=${type}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
+                            <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
+                                Export
+                            </div>
                             <download-csv
                                 v-if="res.result.data.length > 0"
-                                class="action_btn alternate margin"
+                                class="hidden me"
                                 :data="classPackageAttributes"
-                                :name="`sales-by-class-package-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`sales-by-class-package-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
+
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -47,9 +52,9 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div :class="`status ${(type == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
-                        <div :class="`status ${(type == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
-                        <div :class="`status ${(type == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
+                        <div :class="`status ${(payment_status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
+                        <div :class="`status ${(payment_status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
+                        <div :class="`status ${(payment_status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
                     </div>
                     <table class="cms_table alt">
                         <thead>
@@ -89,6 +94,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -114,7 +120,7 @@
                 filter: true,
                 loaded: false,
                 rowCount: 0,
-                type: 'all',
+                payment_status: 'all',
                 studios: [],
                 res: [],
                 values: [],
@@ -132,7 +138,7 @@
                 return [
                     ...me.values.map(value => ({
                         'Studio': this.getStudio(),
-                        'Payment Status': me.status,
+                        'Payment Status': me.payment_status,
                         'Class Package': value.name,
                         'Sold': (value.sold) ? value.sold : 0,
                         'Returned': (value.returned) ? value.returned : 0,
@@ -146,6 +152,26 @@
             }
         },
         methods: {
+            getSales () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+                me.values = []
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.result.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                        me.values.push(res.data.total)
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             getStudio () {
                 const me = this
                 let result = ''
@@ -162,12 +188,12 @@
             },
             toggleInnerReport (type, path, id) {
                 const me = this
-                me.$router.push(`${path}?status=${me.type}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
                 me.values = []
-                me.type = value
+                me.payment_status = value
                 me.fetchData(value)
             },
             submitFilter () {
@@ -175,17 +201,12 @@
                 me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('status', me.type)
+                formData.append('payment_status', me.payment_status)
                 me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data
                             me.total = res.data.total
-
-                            // res.data.result.forEach((item, i) => {
-                            //     me.values.push(item)
-                            // })
-                            // me.values.push(res.data.total)
 
                         }, 500)
                     }
@@ -206,17 +227,13 @@
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
-                formData.append('status', value)
+                formData.append('payment_status', value)
                 me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data
                             me.total = res.data.total
-                            //
-                            // res.data.result.forEach((item, i) => {
-                            //     me.values.push(item)
-                            // })
-                            // me.values.push(res.data.total)
+                            me.values.push(res.data.total)
 
                             me.$axios.get('api/studios', {
                                 headers: {
@@ -246,6 +263,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
+                let studio_id = me.$cookies.get('CSID')
+                me.form.studio_id = studio_id
                 me.fetchData('all')
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

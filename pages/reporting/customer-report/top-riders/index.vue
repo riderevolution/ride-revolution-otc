@@ -21,7 +21,7 @@
                                 v-if="res.topRiders.data.length > 0"
                                 class="hidden me"
                                 :data="topRidersAttributes"
-                                :name="`top-riders-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`top-riders-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                         </div>
@@ -179,6 +179,7 @@
             getCustomers () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                me.values = []
 
                 me.loader(true)
                 me.$axios.post(`api/reporting/customers/top-riders?all=1`, formData).then(res => {

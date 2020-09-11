@@ -13,7 +13,7 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                <a :href="`/print/reporting/sales/products?status=${status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                                <a :href="`/print/reporting/sales/products?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                                 <download-csv
                                     v-if="res.length > 0"
                                     class="action_btn alternate margin"
@@ -50,9 +50,9 @@
                 <section id="content">
                     <div class="cms_table_toggler">
                         <div class="total">Total: {{ totalItems(total_count) }}</div>
-                        <div :class="`status ${(status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
-                        <div :class="`status ${(status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
-                        <div :class="`status ${(status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
+                        <div :class="`status ${(payment_status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
+                        <div :class="`status ${(payment_status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
+                        <div :class="`status ${(payment_status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
                     </div>
                     <table class="cms_table alt">
                         <thead>
@@ -120,7 +120,7 @@
                 access: true,
                 loaded: false,
                 rowCount: 0,
-                status: 'all',
+                payment_status: 'all',
                 studios: [],
                 values: [],
                 res: [],
@@ -139,7 +139,7 @@
                 return [
                     ...me.values.map(value => ({
                         'Studio': this.getStudio(),
-                        'Payment Status': me.status,
+                        'Payment Status': me.payment_status,
                         'Item': value.name,
                         'Sold': (value.sold) ? value.sold : 0,
                         'Returned': (value.returned) ? value.returned : 0,
@@ -171,12 +171,12 @@
             },
             toggleInnerReport (type, path, id) {
                 const me = this
-                me.$router.push(`${path}?payment_status=${me.status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
                 me.values = []
-                me.status = value
+                me.payment_status = value
                 me.fetchData(value)
             },
             submitFilter () {
@@ -184,7 +184,7 @@
                 me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('status', me.status)
+                formData.append('payment_status', me.payment_status)
                 me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -216,7 +216,7 @@
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
-                formData.append('status', value)
+                formData.append('payment_status', value)
                 if (me.form.studio_id != '') {
                     formData.append('studio_id', me.form.studio_id)
                 }
@@ -259,6 +259,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
+                let studio_id = me.$cookies.get('CSID')
+                me.form.studio_id = studio_id
                 me.fetchData('all')
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

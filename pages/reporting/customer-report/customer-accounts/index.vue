@@ -125,7 +125,7 @@
             getCustomers () {
                 const me = this
                 let formData = new FormData()
-
+                me.values = []
                 me.loader(true)
 
                 formData.append('status', me.status)

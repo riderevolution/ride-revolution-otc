@@ -145,7 +145,7 @@
             getCustomers () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
-
+                me.values = []
                 me.loader(true)
                 me.$axios.post(`api/reporting/customers/non-returning-customers?all=1`, formData).then(res => {
                     if (res.data) {

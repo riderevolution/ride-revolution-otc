@@ -93,6 +93,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -154,6 +155,7 @@
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                me.values = []
 
                 me.loader(true)
                 me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}?all=1`, formData).then(res => {

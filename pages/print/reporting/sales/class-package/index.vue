@@ -66,7 +66,7 @@
                     formData.append('studio_id', me.$route.query.studio_id)
                 }
 
-                me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
+                me.$axios.post('api/reporting/sales/sales-by-class-package?all=1', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.result

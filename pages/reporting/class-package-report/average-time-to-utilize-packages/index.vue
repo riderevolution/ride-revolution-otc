@@ -11,6 +11,8 @@
                             </div>
                         </div>
                         <div class="actions">
+                            <a href="/print/reporting/class-package/average-time-to-utilize-packages" target="_blank" class="action_btn alternate">Print</a>
+
                             <div class="action_btn alternate" @click="getPackages()" v-if="res.packages.data.length > 0">
                                 Export
                             </div>

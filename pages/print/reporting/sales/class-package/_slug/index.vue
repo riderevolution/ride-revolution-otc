@@ -77,7 +77,7 @@
                 formData.append('start_date', me.$route.query.start_date)
                 formData.append('end_date',  me.$route.query.end_date)
                 formData.append('status', me.$route.query.status)
-                me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.slug}`, formData).then(res => {
+                me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.slug}?all=1`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.result

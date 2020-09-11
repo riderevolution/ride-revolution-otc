@@ -82,6 +82,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -129,7 +130,7 @@
                         'Payment Status': me.payment_status,
                         'Variant': me.variant.variant,
                         'Date of Purchase': me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'Full Name': (value.payment.user) ? `${value.payment.user.fullname}` : '-',
+                        'Full Name': (value.payment.user != null) ? `${value.payment.user.fullname}` : '-',
                         'Qty': value.quantity,
                         'Payment': (value.payment) ? value.payment.payment_method.method : '-',
                         'Employee': (value.payment.employee != null) ? `${value.payment.employee.first_name} ${value.payment.employee.last_name}` : 'N/A',
@@ -142,6 +143,7 @@
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                me.values = []
 
                 me.loader(true)
                 me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}/product/${me.$route.params.slug}?all=1`, formData).then(res => {
@@ -149,6 +151,7 @@
                         res.data.result.forEach((item, key) => {
                             me.values.push(item)
                         })
+                        me.values.push(res.data.total)
                     }
                 }).catch((err) => {
 

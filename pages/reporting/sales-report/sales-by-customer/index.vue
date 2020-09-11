@@ -158,6 +158,7 @@
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                me.values = []
 
                 me.loader(true)
                 me.$axios.post(`api/reporting/sales/sales-by-customer?all=1`, formData).then(res => {

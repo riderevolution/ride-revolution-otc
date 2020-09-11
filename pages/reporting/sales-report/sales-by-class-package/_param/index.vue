@@ -7,21 +7,37 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ package.name }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ type }})</h1>
+                                <h1>{{ package.name }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ payment_status }})</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ package.name }}.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?status=${type}&slug=class-package&id=${$route.query.id}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?payment_status=${payment_status}&slug=class-package&id=${$route.query.id}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
+                            <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
+                                Export
+                            </div>
                             <download-csv
                                 v-if="res.result.data.length > 0"
-                                class="action_btn alternate margin"
+                                class="hidden me"
                                 :data="classPackageParamAttributes"
-                                :name="`sales-by-class-package-${$route.params.param}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`sales-by-class-package-${$route.params.param}-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
+
                         </div>
+                    </div>
+
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter">
+                            <input type="hidden" name="slug" :value="form.slug">
+                            <input type="hidden" name="id" :value="form.id">
+                            <input type="hidden" name="payment_status" :value="payment_status">
+                            <input type="hidden" name="start_date" :value="form.start_date">
+                            <input type="hidden" name="end_date" :value="form.end_date">
+                            <input type="hidden" name="studio_id" :value="form.studio_id">
+                        </form>
                     </div>
                 </section>
                 <section id="content">
@@ -49,8 +65,15 @@
                             <tr v-for="(data, key) in res.result.data" :key="key" v-if="res.result.data.length > 0">
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                                 <td>
-                                    <div class="table_data_link" @click="openWindow(`/customers/${data.payment.user.id}/packages`)" v-if="data.payment.user != null">{{ `${data.payment.user.first_name} ${data.payment.user.last_name}` }}</div>
-                                    <div v-else>N/A</div>
+                                    <div class="thumb">
+                                        <img :src="data.payment.user.customer_details.images[0].path_resized" v-if="data.payment.user.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.payment.user.first_name.charAt(0) }}{{ data.payment.user.last_name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.payment.user.id}/packages`)">{{ data.payment.user.fullname }}</div>
+                                    </div>
                                 </td>
                                 <td>{{ data.quantity }}</td>
                                 <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
@@ -66,6 +89,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -91,7 +115,7 @@
                 filter: true,
                 loaded: false,
                 rowCount: 0,
-                type: 'all',
+                payment_status: 'all',
                 studio: [],
                 res: [],
                 values: [],
@@ -112,9 +136,9 @@
                 return [
                     ...me.values.map(value => ({
                         'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
-                        'Date of Purchase': (value.name) ? value.name : me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'Full Name': (value.payment) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
-                        'Qty': (value.qty) ? value.qty : value.quantity,
+                        'Date of Purchase': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Full Name': (value.payment.user != null) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
+                        'Qty': value.quantity,
                         'Payment': (value.payment) ? value.payment.payment_method.method : '-',
                         'Comp Reason': (value.payment) ? (value.payment.payment_method.method == 'comp' ? value.payment.payment_method.comp_reason : 'N/A') : '-',
                         'Comp Value': `Php ${(value.total_comp) ? value.total_comp : 0}`,
@@ -125,6 +149,26 @@
             }
         },
         methods: {
+            getSales () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+                me.values = []
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.param}?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.result.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                        me.values.push(res.data.total)
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
@@ -139,7 +183,7 @@
                 let formData = new FormData()
                 formData.append('slug', me.form.slug)
                 formData.append('id', me.form.id)
-                formData.append('status', value)
+                formData.append('payment_status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 if (me.$route.query.studio_id.length > 0) {
@@ -153,11 +197,6 @@
                             me.res = res.data
                             me.total = res.data.total
                             me.package = res.data.package
-
-                            // res.data.result.forEach((item, i) => {
-                            //     me.values.push(item)
-                            // })
-                            // me.values.push(res.data.total)
 
                             if (me.form.studio_id != '') {
                                 me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
@@ -183,8 +222,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.type = me.$route.query.status
-                me.fetchData(me.type)
+                me.payment_status = me.$route.query.payment_status
+                me.fetchData(me.payment_status)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
