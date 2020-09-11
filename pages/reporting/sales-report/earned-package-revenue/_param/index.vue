@@ -14,20 +14,33 @@
                         <div class="actions">
                             <div class="action_buttons">
                                 <a :href="`/print/reporting/sales/earned-package-revenue/${class_package.slug}?id=${form.id}&type=${form.type}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
+                                <div class="action_btn alternate" @click="getSales()" v-if="res.user_packages.data.length > 0">
+                                    Export
+                                </div>
                                 <download-csv
-                                    v-if="res.length > 0"
-                                    class="action_btn alternate margin"
+                                    v-if="res.user_packages.data.length > 0"
+                                    class="hidden me"
                                     :data="earnedPackageRevenueSlugAttributes"
-                                    :name="`earned-package-revenue-${class_package.name}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                    :name="`earned-package-revenue-${class_package.name}-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                     Export
                                 </download-csv>
+
                             </div>
                         </div>
+                    </div>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter">
+                            <input type="hidden" name="id" :value="form.id">
+                            <input type="hidden" name="type" :value="form.type">
+                            <input type="hidden" name="start_date" :value="form.start_date">
+                            <input type="hidden" name="end_date" :value="form.end_date">
+                        </form>
                     </div>
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div class="total">Total: Php {{ computeTotal() }}</div>
+                        <div class="total">Total: Php {{ totalCount(res.total) }}</div>
                     </div>
                     <table class="cms_table alt">
                         <thead>
@@ -41,11 +54,18 @@
                                 <th class="sticky">Price</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.user_packages.data.length > 0">
+                            <tr v-for="(data, key) in res.user_packages.data" :key="key">
                                 <td>
-                                    <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)" v-if="data.user != null">{{ data.user.fullname }}</div>
-                                    <div v-else>N/A</div>
+                                    <div class="thumb">
+                                        <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
+                                    </div>
                                 </td>
                                 <td>{{ $moment((data.activation_date != 'NA') ? data.activation_date : data.created_at).format('MMM DD, YYYY') }}</td>
                                 <td>{{ $moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.updated_at).format('MMM DD, YYYY') }}</td>
@@ -61,6 +81,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.user_packages.path" :current="res.user_packages.current_page" :last="res.user_packages.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -72,15 +93,18 @@
 
 <script>
     import Foot from '../../../../../components/Foot'
+    import Pagination from '../../../../../components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const values = []
             return {
                 name: 'Earned Package Revenue',
                 access: true,
+                filter: true,
                 loaded: false,
                 res: [],
                 values: [],
@@ -111,18 +135,27 @@
             }
         },
         methods: {
+            getSales () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/sales/earned-class-package-revenue/${me.$route.params.param}?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.user_packages.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
-            },
-            computeTotal () {
-                const me = this
-                let total = 0
-                me.res.forEach((value, index) => {
-                    total += parseFloat(value.revenue)
-                })
-
-                return me.totalCount(total)
             },
             fetchData () {
                 const me = this
@@ -140,11 +173,7 @@
                 me.$axios.post(`api/reporting/sales/earned-class-package-revenue/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.user_packages
-
-                            res.data.user_packages.forEach((item, key) => {
-                                me.values.push(item)
-                            })
+                            me.res = res.data
 
                             me.class_package = res.data.class_package
                             me.loaded = true

@@ -14,13 +14,18 @@
                         <div class="actions">
                             <div class="action_buttons">
                                 <a :href="`/print/reporting/sales/gift-card?studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
+                                <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
+                                    Export
+                                </div>
                                 <download-csv
-                                    v-if="res.length > 0"
-                                    class="action_btn alternate margin"
+                                    v-if="res.result.data.length > 0"
+                                    class="hidden me"
                                     :data="giftCardsAttributes"
-                                    :name="`gift-cards-redeemed-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                    :name="`gift-cards-redeemed-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                     Export
                                 </download-csv>
+
                             </div>
                         </div>
                     </div>
@@ -62,8 +67,8 @@
                                 <th class="sticky">Redeemed By</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
-                            <tr v-for="(data, key) in res" :key="key">
+                        <tbody v-if="res.result.data.length > 0">
+                            <tr v-for="(data, key) in res.result.data" :key="key">
                                 <td>{{ data.card_code }}</td>
                                 <td>
                                     <p>{{ data.class_package.name }}</p>
@@ -81,6 +86,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -92,15 +98,18 @@
 
 <script>
     import Foot from '../../.././../components/Foot'
+    import Pagination from '../../.././../components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const values = []
             return {
                 name: 'Gift Cards Redeemed',
                 access: true,
+                filter: true,
                 loaded: false,
                 rowCount: 0,
                 res: [],
@@ -132,20 +141,33 @@
             }
         },
         methods: {
+            getSales () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/sales/gift-cards-redeemed?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.result.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             submitFilter () {
                 const me = this
-                me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post('api/reporting/sales/gift-cards-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.total_count = res.data.grand_total
-                            me.res = res.data.result
-
-                            res.data.result.forEach((item, i) => {
-                                me.values.push(item)
-                            })
+                            me.res = res.data
 
                         }, 500)
                     }
@@ -170,11 +192,7 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.total_count = res.data.grand_total
-                            me.res = res.data.result
-
-                            res.data.result.forEach((item, i) => {
-                                me.values.push(item)
-                            })
+                            me.res = res.data
 
                             me.$axios.get('api/studios', {
                                 headers: {
@@ -204,6 +222,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
+                let studio_id = me.$cookies.get('CSID')
+                me.form.studio_id = studio_id
                 me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

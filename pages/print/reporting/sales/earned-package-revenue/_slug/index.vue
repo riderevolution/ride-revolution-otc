@@ -78,7 +78,7 @@
                 formData.append('type', me.$route.query.type)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                me.$axios.post(`api/reporting/sales/earned-class-package-revenue/${me.$route.params.slug}`, formData).then(res => {
+                me.$axios.post(`api/reporting/sales/earned-class-package-revenue/${me.$route.params.slug}?all=1`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.user_packages

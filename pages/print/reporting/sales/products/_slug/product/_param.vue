@@ -91,7 +91,7 @@
                     me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.form.studio_id)
                 }
-                me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.slug}/product/${me.$route.params.param}`, formData).then(res => {
+                me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.slug}/product/${me.$route.params.param}?all=1`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.result

@@ -14,8 +14,8 @@
                     <th>City</th>
                 </tr>
             </thead>
-            <tbody v-if="res.data.length > 0">
-                <tr v-for="(data, key) in res.data" :key="key">
+            <tbody v-if="res.length > 0">
+                <tr v-for="(data, key) in res" :key="key">
                     <td>
                         <div class="table_data_link" >{{ data.fullname }}</div>
                     </td>

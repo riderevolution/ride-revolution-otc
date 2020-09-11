@@ -7,21 +7,36 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ variant.variant }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ status }})</h1>
+                                <h1>{{ variant.variant }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ payment_status }})</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ variant.variant }} ({{ variant.product.category.name }}).</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/products/${$route.params.param}/product/${$route.params.slug}?status=${status}&slug=${form.slug}&id=${form.id}&variant_id=${form.variant_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/products/${$route.params.param}/product/${$route.params.slug}?payment_status=${payment_status}&slug=${form.slug}&id=${form.id}&variant_id=${form.variant_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
+                            <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
+                                Export
+                            </div>
                             <download-csv
-                                v-if="res.length > 0"
-                                class="action_btn alternate margin"
+                                v-if="res.result.data.length > 0"
+                                class="hidden me"
                                 :data="productsParamProductAttributes"
-                                :name="`sales-by-products-${$route.params.param}-product-${$route.params.slug}-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`sales-by-products-${$route.params.param}-product-${$route.params.slug}-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
+
                         </div>
+                    </div>
+
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter">
+                            <input type="hidden" name="slug" :value="form.slug">
+                            <input type="hidden" name="variant_id" :value="form.variant_id">
+                            <input type="hidden" name="payment_status" :value="payment_status">
+                            <input type="hidden" name="start_date" :value="form.start_date">
+                            <input type="hidden" name="end_date" :value="form.end_date">
+                        </form>
                     </div>
                 </section>
                 <section id="content">
@@ -36,23 +51,23 @@
                                 <th class="sticky">Total</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.length > 0">
+                        <tbody v-if="res.result.data.length > 0">
                             <tr>
                                 <td colspan="2"><b>{{ total.name }}</b></td>
                                 <td colspan="3"><b>{{ total.qty }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_price) }}</b></td>
                             </tr>
-                            <tr v-for="(data, key) in res" :key="key">
+                            <tr v-for="(data, key) in res.result.data" :key="key">
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                                 <td>
-                                    <nuxt-link class="table_data_link" :to="`/customers/${data.payment.user.id}/packages`" v-if="data.payment.user != null">{{ `${data.payment.user.first_name} ${data.payment.user.last_name}` }}</nuxt-link>
-                                    <div v-else>N/A</div>
+                                    <nuxt-link class="table_data_link" :to="`/customers/${data.payment.user.id}/packages`" v-if="data.payment.user != null">{{ `${data.payment.user.fullname}` }}</nuxt-link>
+                                    <div v-else>- -</div>
                                 </td>
                                 <td>{{ data.quantity }}</td>
                                 <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
                                 <td>
-                                    <div v-if="data.employee != null">
-                                        {{ `${data.employee.first_name} ${data.employee.last_name}` }}
+                                    <div v-if="data.payment.employee != null">
+                                        {{ `${data.payment.employee.first_name} ${data.payment.employee.last_name}` }}
                                     </div>
                                     <div v-else>
                                         N/A
@@ -89,7 +104,7 @@
                 access: true,
                 loaded: false,
                 rowCount: 0,
-                status: 'all',
+                payment_status: 'all',
                 res: [],
                 values: [],
                 studio: [],
@@ -111,27 +126,46 @@
                 return [
                     ...me.values.map(value => ({
                         'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
-                        'Payment Status': me.status,
+                        'Payment Status': me.payment_status,
                         'Variant': me.variant.variant,
-                        'Date of Purchase': (value.name) ? value.name : me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'Full Name': (value.payment) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
-                        'Qty': (value.qty) ? value.qty : value.quantity,
+                        'Date of Purchase': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Full Name': (value.payment.user) ? `${value.payment.user.fullname}` : '-',
+                        'Qty': value.quantity,
                         'Payment': (value.payment) ? value.payment.payment_method.method : '-',
-                        'Employee': (value.employee != null) ? `${value.employee.first_name} ${value.employee.last_name}` : 'N/A',
-                        'Total Income': `Php ${(value.total_price) ? value.total_price : value.total}`
+                        'Employee': (value.payment.employee != null) ? `${value.payment.employee.first_name} ${value.payment.employee.last_name}` : 'N/A',
+                        'Total Income': `Php ${(value.total) ? me.totalCount(value.total) : 0}`
                     }))
                 ]
             }
         },
         methods: {
+            getSales () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}/product/${me.$route.params.slug}?all=1`, formData).then(res => {
+                    if (res.data) {
+                        res.data.result.forEach((item, key) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             backToSlug (path) {
                 const me = this
                 let temp = path.split('/')
                 temp.splice(temp.length - 1, 1)
                 temp.splice(temp.length - 1, 1)
                 temp = temp.join('/')
-                me.$router.push(`${temp}?status=${me.status}&studio_id=${me.form.studio_id}&slug=${me.form.slug}&id=${me.form.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${temp}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${me.form.slug}&id=${me.form.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
+
             fetchData (value) {
                 const me = this
                 me.form.start_date = me.$route.query.start_date
@@ -143,7 +177,7 @@
                 let formData = new FormData()
                 formData.append('slug', me.form.slug)
                 formData.append('variant_id', me.form.variant_id)
-                formData.append('status', value)
+                formData.append('payment_status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 if (me.$route.query.studio_id.length > 0) {
@@ -153,15 +187,9 @@
                 me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}/product/${me.$route.params.slug}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.result
+                            me.res = res.data
                             me.total = res.data.total
                             me.variant = res.data.variant
-
-                            res.data.result.forEach((item, i) => {
-                                me.values.push(item)
-                            })
-
-                            me.values.push(res.data.total)
 
                             if (me.form.studio_id != '') {
                                 me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
@@ -187,8 +215,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.status = me.$route.query.status
-                me.fetchData(me.status)
+                me.payment_status = me.$route.query.payment_status
+                me.fetchData(me.payment_status)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
