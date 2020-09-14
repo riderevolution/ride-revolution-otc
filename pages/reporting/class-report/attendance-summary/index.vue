@@ -325,6 +325,7 @@
             },
             fetchData () {
                 const me = this
+                me.loader(true)
                 let formData = new FormData()
                 let studio_id = me.$cookies.get('CSID')
 

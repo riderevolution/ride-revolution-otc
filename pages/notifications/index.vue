@@ -15,7 +15,7 @@
                                 <span>&#9679;</span>
                                 <div class="notification_desc">
                                     <div class="notification_title">{{ data.body }}</div>
-                                    <div class="notification_time">{{ getFromNow(data.created_at) }}</div>
+                                    <div class="notification_time"><b>{{ data.ip_address }}</b> ({{ getFromNow(data.created_at) }})</div>
                                 </div>
                             </div>
                         </div>

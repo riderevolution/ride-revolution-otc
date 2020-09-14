@@ -138,7 +138,7 @@
                 name: 'Top Riders',
                 access: true,
                 filter: true,
-                loaded: true,
+                loaded: false,
                 rowCount: 0,
                 res: [],
                 values: [],
