@@ -7,13 +7,23 @@
                         <div>
                             <div class="header_title">
                                 <h1>Attendance Summary</h1>
-                                <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Summary of rider count and revenue per class schedule</h2>
                         </div>
                         <div class="actions">
+                            <a :href="`/print/reporting/class/attendance-summary?studio_id=${form.studio_id}&class_package_id=${form.class_package_id}&customer_type_id=${form.customer_type_id}&instructor_id=${form.instructor_id}&class_type_id=${form.class_type_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
-                            <a href="javascript:void(0)" class="action_btn alternate margin">Export</a>
+                            <div class="action_btn alternate" @click="getClasses()" v-if="res.schedules.data.length > 0">
+                                Export
+                            </div>
+                            <download-csv
+                                v-if="res.schedules.data.length > 0"
+                                class="hidden me"
+                                :data="attendanceSummaryAttributes"
+                                :name="`attendance-summary-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -21,7 +31,6 @@
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
-                                    <option value="" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
@@ -89,51 +98,33 @@
                                 <th class="stick">Total Revenue</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><b>Summary</b></td>
-                                <td><b>165</b></td>
-                                <td><b>23</b></td>
-                                <td><b>23</b></td>
-                                <td><b>23</b></td>
-                                <td><b>0</b></td>
-                                <td><b>0</b></td>
-                                <td><b>0</b></td>
-                                <td><b>0</b></td>
-                                <td><b>0</b></td>
-                                <td><b>0</b></td>
-                                <td><b>0</b></td>
-                                <td><b>0</b></td>
-                                <td><b>86%</b></td>
-                                <td><b>83%</b></td>
-                                <td><b>1000</b></td>
-                            </tr>
-                            <tr v-for="(n, key) in 10" :key="key">
-                                <td>{{ $moment().format('MMM DD, YYYY') }}</td>
-                                <td>165</td>
-                                <td>23</td>
-                                <td>23</td>
-                                <td>23</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>86%</td>
-                                <td>83%</td>
-                                <td>1000</td>
+                        <tbody v-if="res.schedules.data.length > 0">
+                            <tr v-for="(data, key) in res.schedules.data" :key="key">
+                                <td>{{ $moment(data.date, 'YYYY-MM-DD').format('MMM DD, YYYY') }}</td>
+                                <td>{{ countValues(data, 'total_riders') }}</td>
+                                <td>{{ countValues(data, 'paying_riders') }}</td>
+                                <td>{{ countValues(data, 'comped_riders') }}</td>
+                                <td>{{ countValues(data, 'first_timers') }}</td>
+                                <td>{{ countValues(data, 'no_shows') }}</td>
+                                <td>{{ countValues(data, 'cancel') }}</td>
+                                <td>{{ countValues(data, 'waitlist') }}</td>
+                                <td>{{ countValues(data, 'repeats') }}</td>
+                                <td>{{ totalPercentage('average', data) }}</td>
+                                <td>{{ totalItems(data.values.length) }}</td>
+                                <td>{{ totalItems(data.values.length) }}</td>
+                                <td>{{ (studio.online_class) ? 'Unlimited' : studio.capacity }}</td>
+                                <td>{{ totalPercentage('capacity', data) }}</td>
+                                <td>{{ totalPercentage('paying', data) }}</td>
+                                <td>Php {{ totalCount(countValues(data, 'revenue')) }}</td>
                             </tr>
                         </tbody>
-                        <!-- <tbody class="no_results" v-else>
+                        <tbody class="no_results" v-else>
                             <tr>
                                 <td :colspan="rowCount">No Result(s) Found.</td>
                             </tr>
-                        </tbody> -->
+                        </tbody>
                     </table>
-                    <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
+                    <pagination :apiRoute="res.schedules.path" :current="res.schedules.current_page" :last="res.schedules.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -152,6 +143,7 @@
             Pagination
         },
         data () {
+            const values = []
             return {
                 form: {
                     studio_id: '',
@@ -159,14 +151,15 @@
                     class_type_id: '',
                     class_package_id: '',
                     customer_type_id: '',
-                    start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment('2020-10-01').format('YYYY-MM-DD')
+                    start_date: this.$moment('09-01-20').format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
                 },
                 name: 'Attendance Summary',
                 access: true,
                 loaded: false,
                 rowCount: 0,
                 res: [],
+                values: [],
                 studios: [],
                 studio: [],
                 types: [],
@@ -175,14 +168,184 @@
                 instructors: [],
             }
         },
+        computed: {
+            attendanceSummaryAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMM DD, YYYY'),
+                        'Total Rides': me.countValues(value, 'total_riders'),
+                        'Paying Riders': me.countValues(value, 'paying_riders'),
+                        'Comped Riders': me.countValues(value, 'comped_riders'),
+                        'First Timers': me.countValues(value, 'first_timers'),
+                        'No Shows': me.countValues(value, 'no_shows'),
+                        'Cancel': me.countValues(value, 'cancel'),
+                        'Waitlist': me.countValues(value, 'waitlist'),
+                        'Repeat': me.countValues(value, 'repeats'),
+                        'Avg Riders': me.totalPercentage('average', value),
+                        'Number Classes': me.totalItems(value.values.length),
+                        'Classes to Charge': me.totalItems(value.values.length),
+                        'Avg Spots': (me.studio.online_class) ? 'Unlimited' : me.studio.capacity,
+                        'Capacity': me.totalPercentage('capacity', value),
+                        'Paying': me.totalPercentage('paying', value),
+                        'Total Revenue': me.countValues(value, 'revenue')
+                    }))
+                ]
+            }
+        },
         methods: {
+            countValues (data, type) {
+                const me = this
+                let result = 0
+
+                data.values.forEach((value, key) => {
+                    switch (type) {
+                        case 'total_riders':
+                            result += value.total_riders
+                            break
+                        case 'paying_riders':
+                            result += value.paying_riders
+                            break
+                        case 'comped_riders':
+                            result += value.comped_riders
+                            break
+                        case 'first_timers':
+                            result += value.first_timers
+                            break
+                        case 'no_shows':
+                            result += value.no_shows
+                            break
+                        case 'cancel':
+                            result += value.cancel
+                            break
+                        case 'waitlist':
+                            result += value.waitlist
+                            break
+                        case 'repeats':
+                            result += value.repeats
+                            break
+                        case 'revenue':
+                            result += value.revenue
+                            break
+                    }
+                })
+
+                return result
+            },
+            getClasses () {
+                const me = this
+                me.values = []
+                let formData = new FormData(document.getElementById('filter'))
+                me.loader(true)
+                me.$axios.post(`api/reporting/classes/attendance-summary?all=1`, formData).then(res => {
+                    if (res.data) {
+
+                        res.data.schedules.forEach((item, index) => {
+                            me.values.push(item)
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
+            totalPercentage (type, data) {
+                const me = this
+                let percent = 0
+                let total_riders = 0
+                let avg_riders = 0
+                let paying_riders = 0
+                let comped_riders = 0
+
+                data.values.forEach((value, key) => {
+                    switch (type) {
+                        case 'capacity':
+                            if (value.temp_avg_riders != 0) {
+                                if (me.studio.online_class) {
+                                    total_riders += value.total_riders
+                                    avg_riders += value.temp_avg_riders
+                                } else {
+                                    avg_riders += value.temp_avg_riders
+                                }
+                            }
+                            break
+                        case 'paying':
+                            if (value.paying_riders != 0) {
+                                paying_riders += value.paying_riders
+                                comped_riders += value.comped_riders
+                            }
+                            break
+                        case 'average':
+                            if (value.temp_avg_riders != 0) {
+                                avg_riders += value.temp_avg_riders
+                            }
+                            break
+                    }
+                })
+
+                switch (type) {
+                    case 'capacity':
+                        if (me.studio.online_class) {
+                            percent = me.totalItems(`${(avg_riders / total_riders) * 100}`)
+                        } else {
+                            percent = me.totalItems(`${(avg_riders / me.studio.capacity) * 100}`)
+                        }
+                        break
+                    case 'paying':
+                        percent = me.totalItems(`${(paying_riders / (paying_riders - comped_riders)) * 100}`)
+                        break
+                    case 'average':
+                        percent = me.totalItems(avg_riders / data.values.length)
+                        break
+                }
+
+                return (type == 'average') ? percent : `${percent}%`
+            },
             submissionSuccess () {
                 const me = this
+                let formData = new FormData(document.getElementById('filter'))
+                me.loader(true)
+                me.filter = true
+
+                me.$axios.post(`api/reporting/classes/attendance-summary`, formData).then(res => {
+                    setTimeout( () => {
+                        me.res = res.data
+                    }, 500)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.rowCount = document.getElementsByTagName('th').length
+                        me.loader(false)
+                    }, 500)
+                })
             },
             fetchData () {
                 const me = this
-                me.fetchExtraAPI()
-                me.loaded = true
+                let formData = new FormData()
+                let studio_id = me.$cookies.get('CSID')
+
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                formData.append('studio_id', studio_id)
+
+                me.$axios.post(`api/reporting/classes/attendance-summary`, formData).then(res => {
+                    setTimeout( () => {
+                        me.res = res.data
+                        me.loaded = true
+                    }, 500)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.rowCount = document.getElementsByTagName('th').length
+                        me.loader(false)
+                    }, 500)
+                })
             },
             fetchExtraAPI () {
                 const me = this
@@ -220,6 +383,7 @@
             await me.checkPagePermission(me)
             if (me.access) {
                 me.fetchData()
+                me.fetchExtraAPI()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
