@@ -90,6 +90,9 @@
             <transition name="fade">
                 <calendar-duplicate v-if="$store.state.calendarDuplicateStatus" :type="calendarType" :datePicked="value" :yearPicked="currentYear" :monthPicked="currentMonth" />
             </transition>
+            <transition name="fade">
+                <calendar-action-message v-if="$store.state.calendarActionSuccess" :message="message" />
+            </transition>
         </div>
     </transition>
 </template>
@@ -98,11 +101,13 @@
     import Foot from '../../components/Foot'
     import CalendarClear from '../../components/modals/CalendarClear'
     import CalendarDuplicate from '../../components/modals/CalendarDuplicate'
+    import CalendarActionMessage from '../../components/modals/CalendarActionMessage'
     export default {
         components: {
             Foot,
             CalendarClear,
-            CalendarDuplicate
+            CalendarDuplicate,
+            CalendarActionMessage
         },
         data () {
             const values = []
@@ -111,6 +116,7 @@
                 name: 'Scheduler',
                 access: true,
                 lastRoute: '',
+                message: '',
                 loaded: false,
                 monthStatus: false,
                 currentDate: 0,

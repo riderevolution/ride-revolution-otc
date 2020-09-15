@@ -6,7 +6,7 @@
                 {{ message }}
             </div>
             <div class="button_group">
-                <div class="action_success_btn confirm margin" @click.once="toggleClose()">Confirm</div>
+                <div class="action_success_btn confirm" @click.once="toggleClose()">Confirm</div>
             </div>
         </div>
     </div>

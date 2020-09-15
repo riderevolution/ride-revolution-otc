@@ -187,16 +187,19 @@
                             }
                         }).then(res => {
                             if (res.data) {
+                                me.$parent.message = `Successfully duplicated this ${(me.type == 'day') ? 'day' : (me.type == 'week' ? 'week' : 'month')}.`
+                                me.$store.state.calendarActionSuccess = true
+                                me.$store.state.calendarDuplicateStatus = false
                                 me.$parent.generateCalendar(me.$parent.currentYear, me.$parent.currentMonth, 0, 0)
+                                document.body.classList.remove('no_scroll')
                             }
                         }).catch(err => {
+                            me.$store.state.errorOverlayStatus = true
                             me.$store.state.errorList = err.response.data.errors
                             me.$store.state.errorStatus = true
                         }).then(() => {
-                            me.$store.state.calendarDuplicateStatus = false
                             setTimeout( () => {
                                 me.loader(false)
-                                document.body.classList.remove('no_scroll')
                             }, 500)
                         })
                     } else {

@@ -300,6 +300,10 @@
                     </div>
                     <div class="form_overview">
                         <div class="wrapper">
+                            <label>Username/Member ID</label>
+                            <p>{{ value.member_id }}</p>
+                        </div>
+                        <div class="wrapper">
                             <label>Name</label>
                             <p>{{ value.first_name }} {{ value.last_name }}</p>
                         </div>
