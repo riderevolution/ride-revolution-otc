@@ -153,8 +153,8 @@
                             let ctr = 0
                             if (res.data.customer.user_package_counts.length > 0) {
                                 res.data.customer.user_package_counts.forEach((data, index) => {
-                                    console.log(parseInt(me.$moment(data.class_package.computed_expiration_date).diff(me.$moment())));
-                                    if (parseInt(me.$moment(data.class_package.computed_expiration_date).diff(me.$moment())) > 0 || data.class_package.computed_expiration_date == null) {
+                                    console.log(parseInt(me.$moment(data.computed_expiration_date).diff(me.$moment())));
+                                    if (parseInt(me.$moment(data.computed_expiration_date).diff(me.$moment())) > 0 || data.computed_expiration_date == null) {
                                         if (parseInt(data.count) > 0) {
                                             if (ctr == 0) {
                                                 if (parseInt(data.count) >= me.schedule.schedule.class_credits) {
