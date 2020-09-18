@@ -247,11 +247,11 @@
                                     <div class="flex_date">
                                         <div class="form_group">
                                             <label for="start_date">Start Date <span>*</span></label>
-                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :max-date="$moment().format('YYYY-MM-DD')" :label="'Select start date'"></v-ctk>
+                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'"></v-ctk>
                                         </div>
                                         <div class="form_group margin">
                                             <label for="end_date">End Date <span>*</span></label>
-                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :max-date="$moment(form.start_date).format('YYYY-MM-DD')"></v-ctk>
+                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'"></v-ctk>
                                         </div>
                                     </div>
                                     <div class="button">

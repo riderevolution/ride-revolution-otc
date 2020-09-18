@@ -120,7 +120,7 @@
                         'Start Time': this.schedule.schedule.start_time,
                         'Booking ID': value.id,
                         'Booking Status': value.status,
-                        'Class Package': value.user_package_count.class_package.name
+                        'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A'
                     }))
                 ]
             },
