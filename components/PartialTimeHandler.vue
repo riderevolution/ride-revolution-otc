@@ -52,7 +52,7 @@
             },
             checkTime () {
                 const me = this
-                if (me.$moment(`${me.$parent.$parent.targetDate} ${me.form.end_time}`).diff(me.$moment(`${me.$parent.$parent.targetDate} ${me.form.start_time}`), 'seconds') < 0) {
+                if (me.$moment(`${me.$parent.$parent.targetDate} ${me.form.end_time}`).diff(me.$moment(`${me.$parent.$parent.targetDate} ${me.form.start_time}`)) < 0) {
                     me.form.lowerThanStart = true
                 } else {
                     me.form.lowerThanStart = false

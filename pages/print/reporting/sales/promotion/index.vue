@@ -30,7 +30,7 @@
                     <td>{{ (data.promo.discount_type == 'percent') ? `${data.promo.discount_percent}%` : `Php ${data.promo.discount_flat_rate} off` }}</td>
                     <td>Php {{ totalCount(data.total_discount) }}</td>
                     <td>{{ data.remaining }}</td>
-                    <td>{{ (parseInt($moment(data.promo.end_Date).diff($moment(), 'days')) < 0) ? 'Inactive' : 'Active' }}</td>
+                    <td>{{ (parseInt($moment(data.promo.end_Date).diff($moment())) < 0) ? 'Inactive' : 'Active' }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>

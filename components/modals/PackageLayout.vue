@@ -34,7 +34,7 @@
                             <td>{{ formatDate(data.created_at, false) }} / {{ (data.activation_date != 'NA') ? formatDate(data.activation_date, false) : 'N/A' }}</td>
                             <td>{{ (data.class_package.computed_expiration_date) ? formatDate(data.class_package.computed_expiration_date, false) : 'N/A' }}</td>
                             <td class="violator">
-                                <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment(), 'days')) <= 15">{{ checkViolator(data, 'warning') }}</span>
+                                <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment())) < 0">{{ checkViolator(data, 'warning') }}</span>
                                 <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
                                 <span class="frozen" v-if="data.frozen">Frozen</span>
                             </td>
@@ -95,7 +95,11 @@
                 let current = me.$moment()
                 switch (type) {
                     case 'warning':
-                        result = expiry.diff(current, 'days') + ' Days Left'
+                        if (expiry.diff(current, 'days') == 0) {
+                            result = expiry.diff(current, 'hours') + ' Hours Left'
+                        } else {
+                            result = expiry.diff(current, 'days') + ' Days Left'
+                        }
                         break
                     case 'shared':
                         if (me.customer.id == data.user_id) {

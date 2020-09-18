@@ -12,7 +12,7 @@
                 <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="packageCount > 0 && (data.count > 0 && !data.expired)">
                     <h2 class="package_title">
                         {{ data.class_package.name }}
-                        <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment(), 'days')) <= 15 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
+                        <span class="warning" v-if="parseInt($moment(data.class_package.computed_expiration_date).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
                         <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
                         <span class="frozen" v-if="data.frozen">Frozen</span>
                     </h2>
@@ -975,7 +975,11 @@
                 let current = me.$moment()
                 switch (type) {
                     case 'warning':
-                        result = expiry.diff(current, 'days') + ' Days Left'
+                        if (expiry.diff(current, 'days') == 0) {
+                            result = expiry.diff(current, 'hours') + ' Hours Left'
+                        } else {
+                            result = expiry.diff(current, 'days') + ' Days Left'
+                        }
                         break
                     case 'shared':
                         if (me.$route.params.param == data.user_id) {

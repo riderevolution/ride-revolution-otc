@@ -121,6 +121,30 @@
                                     <textarea name="gift_card_description" rows="2" id="gift_card_description" class="default_text" v-validate="'required|max:200'"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('gift_card_description')">{{ properFormat(errors.first('gift_card_description')) }}</span></transition>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="form_wrapper">
+                            <div class="form_header_wrapper">
+                                <h2 class="form_title">Subscription</h2>
+                                <div class="form_check toggler" @click="isRecurring ^= true">
+                                    <input type="hidden" id="recurring" name="recurring" class="action_check" :value="(isRecurring) ? 1 : 0">
+                                    <div :class="`toggle ${(isRecurring) ? 'active' : ''}`"></div>
+                                    <label for="recurring">Recurring</label>
+                                </div>
+                            </div>
+                            <div class="form_main_group" v-if="isRecurring">
+                                <div class="form_group">
+                                    <label for="plan_code">Plan Code <span>*</span></label>
+                                    <input type="text" name="plan_code" autocomplete="off" placeholder="Enter plan code" class="default_text" v-model="res.plan_code" v-validate="'required'">
+                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('plan_code')">{{ properFormat(errors.first('plan_code')) }}</span></transition>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form_wrapper">
+                            <div class="form_header_wrapper">
+                                <h2 class="form_title">Class Package Configuration</h2>
+                            </div>
+                            <div class="form_main_group">
                                 <div class="form_flex">
                                     <div class="form_flex_radio">
                                         <label class="radio_label">Allow sharing of package? <span>*</span></label>
@@ -225,7 +249,7 @@
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ properFormat(errors.first('purchase_limit_per_customer')) }}</span></transition>
                                         </div>
                                     </div>
-                                    <div class="form_group flex">
+                                    <div class="form_group flex" v-if="!isRecurring">
                                         <label>Expire In <span>*</span></label>
                                         <div class="form_flex_input">
                                             <input type="text" name="expires_in" class="default_text number" placeholder="Enter expire in" autocomplete="off" v-model="form.expiryIn = res.expires_in" v-validate="'required|numeric|min_value:0|max_value:99999'">
@@ -253,7 +277,7 @@
                                 <image-handler-container ref="image_handler" :dimension="imageDimensions" :multiple="false" :data="res.images" :parent="res.id" />
                             </div>
                         </div>
-                        <div class="form_wrapper">
+                        <div class="form_wrapper" v-if="!isRecurring">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Activation Options</h2>
                             </div>
@@ -351,6 +375,7 @@
                 isComplimentary: true,
                 isNotActivated: false,
                 isPromo: false,
+                isRecurring: false,
                 lastRoute: '',
                 prevRoute: '',
                 types: [],
@@ -430,6 +455,13 @@
                     if (valid) {
                         let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
+                        if (me.isRecurring) {
+                            formData.append('expires_in', 99999)
+                            formData.append('expiry_type', 'month')
+                            formData.append('ao_activate_on_first_class_booked', 'No')
+                            formData.append('ao_expiry_if_not_activated', 99999)
+                            formData.append('ao_expiry_if_not_activated_type', 'month')
+                        }
                         formData.append('_method', 'PATCH')
                         me.loader(true)
                         me.$axios.post(`api/packages/class-packages/${me.$route.params.param}`, formData, {
@@ -544,6 +576,7 @@
                     me.form.classCount = me.res.class_count
                     me.form.notActivated = me.res.ao_expiry_if_not_activated
                     me.isPromo = (me.res.is_promo == 1) ? true : false
+                    me.isRecurring = (me.res.recurring == 1) ? true : false
                     me.isNotActivated = (me.res.ao_activate_on_first_class_booked == 1) ? true : false
                     me.isComplimentary = (me.res.por_has_complimentary_package == 1) ? true : false
                     me.isUnlimited = (me.res.class_count_unlimited == 1) ? true : false

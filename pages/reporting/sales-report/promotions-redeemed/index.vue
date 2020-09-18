@@ -88,7 +88,7 @@
                                 <td>{{ (data.promo.discount_type == 'percent') ? `${data.promo.discount_percent}%` : `Php ${data.promo.discount_flat_rate} off` }}</td>
                                 <td>Php {{ totalCount(data.total_discount) }}</td>
                                 <td>{{ data.remaining }}</td>
-                                <td>{{ (parseInt($moment(data.promo.end_Date).diff($moment(), 'days')) < 0) ? 'Inactive' : 'Active' }}</td>
+                                <td>{{ (parseInt($moment(data.promo.end_Date).diff($moment())) < 0) ? 'Inactive' : 'Active' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -149,7 +149,7 @@
                         'Discount': (value.promo.discount_type == 'percent') ? `${value.promo.discount_percent}%` : `Php ${value.promo.discount_flat_rate} off`,
                         'Total Discount': me.totalCount(value.total_discount),
                         'Remaining': value.remaining,
-                        'Status': (parseInt(me.$moment(value.promo.end_Date).diff(me.$moment(), 'days')) < 0) ? 'Inactive' : 'Active'
+                        'Status': (parseInt(me.$moment(value.promo.end_Date).diff(me.$moment())) < 0) ? 'Inactive' : 'Active'
                     }))
                 ]
             }
