@@ -1,5 +1,5 @@
 <template>
-    <div class="navbar_container" @focus="resetHoverToggle()" @mouseover="resetHoverToggle()" @mouseleave="resetLeaveToggle()">
+    <div :class="`navbar_container${(hasToggleThirdLevel) ? ' toggled' : (isHovered) ? ' toggled' : ''}`" @focus="resetHoverToggle()" @mouseover="resetHoverToggle()" @mouseleave="resetLeaveToggle()">
         <div class="navbar">
             <nuxt-link to="/" class="logo">
                 <img src="/logo.png" />
@@ -276,12 +276,13 @@
                         ]
                     }
                 ],
-                isHovered: true
+                isHovered: false
             }
         },
         methods: {
             resetHoverToggle () {
                 const me = this
+                me.isHovered = true
                 const elements = document.querySelectorAll('.nav_list .toggled .sub_wrapper')
                 if (me.isHovered) {
                     document.querySelector('.navbar_container').classList.add('toggled')
@@ -309,7 +310,7 @@
                         element.style.height = `${currentHeight}px`
                     }, 500)
                 })
-                me.isHovered = true
+                me.isHovered = false
             },
             resetToggle () {
                 document.querySelector('.navbar_container').classList.remove('toggled')
@@ -318,16 +319,12 @@
             toggleChild (event) {
                 const me = this
                 const target = event.target
-                me.isHovered = false
                 if (!target.parentNode.classList.contains('toggled')) {
                     target.nextElementSibling.style.height = `${target.nextElementSibling.scrollHeight}px`
                     target.parentNode.classList.add('toggled')
                 } else {
                     target.nextElementSibling.style.height = 0
                     target.parentNode.classList.remove('toggled')
-                    setTimeout( () => {
-                        me.isHovered = true
-                    }, 100)
                 }
             },
             toggleSubChild (data) {

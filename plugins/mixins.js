@@ -236,14 +236,14 @@ Vue.mixin({
                         }
                     }).then(res => {
                         if (res.data != 0) {
-                            let version = this.$cookies.get('version')
+                            let version = this.$cookies.get('secret')
                             if (version == null || version == undefined) {
                                 this.$store.state.patchNotesStatus = true
                             } else {
                                 if (version != res.data.version) {
                                     this.$store.state.patchNotesStatus = true
                                 } else {
-                                    this.$cookies.set('version', res.data.version)
+                                    this.$cookies.set('secret', res.data.version)
                                 }
                             }
                             this.$store.state.isAuth = true

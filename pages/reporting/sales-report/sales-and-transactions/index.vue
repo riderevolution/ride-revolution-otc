@@ -147,6 +147,7 @@
                                     <th>CQ</th>
                                     <th>PP</th>
                                     <th>PM</th>
+                                    <th>RC</th>
                                     <th>SC</th>
                                 </tr>
                             </thead>
@@ -163,6 +164,7 @@
                                     <td class="green">{{ res.item_payment_mode_total.check }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paymaya }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.recurly }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
                                 </tr>
                                 <tr v-for="(data, key) in res.items" :key="key">
@@ -177,6 +179,7 @@
                                     <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paypal : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paymaya : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.recurly : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
                                 </tr>
                             </tbody>
@@ -193,6 +196,7 @@
                                     <td class="green">{{ res.item_payment_mode_total.check }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paymaya }}</td>
+                                    <td class="green">{{ res.item_payment_mode_total.recurly }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
                                 </tr>
                                 <tr v-for="(data, key) in res.items" :key="key" v-if="data.qty > 0">
@@ -207,6 +211,7 @@
                                     <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paypal : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paymaya : 0 }}</td>
+                                    <td>{{ (data.paymentModes) ? data.paymentModes.recurly : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
                                 </tr>
                             </tbody>
@@ -301,6 +306,7 @@
                         'CQ': (key == current_length) ? me.res.item_payment_mode_total.check : (value.paymentModes) ? value.paymentModes.cash : 0,
                         'PP': (key == current_length) ? me.res.item_payment_mode_total.paypal : (value.paymentModes) ? value.paymentModes.cash : 0,
                         'PM': (key == current_length) ? me.res.item_payment_mode_total.paymaya : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'RC': (key == current_length) ? me.res.item_payment_mode_total.recurly : (value.paymentModes) ? value.paymentModes.cash : 0,
                         'SC': (key == current_length) ? me.res.item_payment_mode_total.storeCredit : (value.paymentModes) ? value.paymentModes.cash : 0
                     }))
                 ]
