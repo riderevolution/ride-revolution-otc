@@ -50,8 +50,7 @@
                                     <div v-if="data.class_package.por_allow_transferring_of_package && !data.frozen && data.sharedto_user_id == null" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
                                     <div v-if="data.class_package.por_allow_sharing_of_package" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
                                     <div v-if="data.class_package.por_allow_freezing_of_package" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
-                                    <div v-if="data.class_package.refundable == 1 && (data.payment_item != null && data.payment_item.refunded == 0) && (data.count == data.original_package_count)" class="option_link red" @click="togglePackageAction(data, 'refund')">Refund Package</div>
-                                    <!-- <div class="option_link">Print Receipt</div> -->
+                                    <div v-if="data.class_package.recurring == 0 && data.class_package.refundable == 1 && (data.payment_item != null && data.payment_item.refunded == 0) && (data.count == data.original_package_count)" class="option_link red" @click="togglePackageAction(data, 'refund')">Refund Package</div>
                                 </div>
                             </div>
                         </div>
@@ -217,7 +216,7 @@
                 </thead>
                 <tbody :class="`${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
                     <tr class="parent alt">
-                        <td class="toggler" @click.self="toggleAccordion($event, key)">{{ (data.studio_id != null) ? data.payment_code : (data.payment_method.method == 'paypal') ? data.payment_method.paypal_transaction_id : (data.payment_method.method == 'store-credits') ? data.payment_code : data.payment_method.paymaya_transaction_id }}</td>
+                        <td class="toggler" @click.self="toggleAccordion($event, key)">{{ checkPaymentMethod(data) }}</td>
                         <td>{{ formatDate(data.created_at, true) }}</td>
                         <td>{{ (data.studio_id != null) ? data.studio.name : 'Website' }}</td>
                         <td>{{ countVariantQty(data.payment_items) }}</td>
@@ -645,6 +644,31 @@
             }
         },
         methods: {
+            checkPaymentMethod (data) {
+                const me = this
+                let result = ''
+
+                if (data.studio_id != null) {
+                    switch (data.payment_method.method) {
+                        case 'paypal':
+                            result = data.payment_method.paypal_transaction_id
+                            break
+                        case 'store-credits':
+                            result = data.payment_code
+                            break
+                        case 'paymaya':
+                            result = data.payment_method.paymaya_transaction_id
+                            break
+                        case 'recurly-subscription':
+                            result = data.payment_method.recurly_subscription_id
+                            break
+                    }
+                } else {
+                    result = data.payment_code
+                }
+
+                return result
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
