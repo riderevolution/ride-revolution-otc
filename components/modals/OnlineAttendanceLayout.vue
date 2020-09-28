@@ -91,6 +91,12 @@
             },
             instructorDashboard: {
                 default: false
+            },
+            studio: {
+                type: Object/Array,
+                default: function () {
+                    return {}
+                }
             }
         },
         data () {
@@ -111,16 +117,20 @@
                 const me = this
                 return [
                     ...this.values.map(value => ({
+                        'Studio': me.studio.name,
+                        'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
+                        'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
+                        'Start Time': me.schedule.schedule.start_time,
+                        'Instructor': me.getInstructorsInSchedule(me.schedule),
                         'Customer ID': value.user.id,
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.user.customer_details.customer_type.name,
                         'Email Address': value.user.email,
                         'Contact Number': value.user.customer_details.co_contact_number,
-                        'Schedule': (this.schedule.schedule.custom_name != null) ? this.schedule.schedule.custom_name : this.schedule.schedule.class_type.name,
-                        'Start Time': this.schedule.schedule.start_time,
                         'Booking ID': value.id,
                         'Booking Status': value.status,
-                        'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A'
+                        'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Revenue': me.computeRevenue(value)
                     }))
                 ]
             },
@@ -134,6 +144,46 @@
             }
         },
         methods: {
+            computeRevenue (data) {
+                const me = this
+                let result = ''
+                let base_value = 0
+                if (data.user_package_count.payment_item) {
+                    base_value = me.totalCount(data.user_package_count.payment_item.price_per_item / me.dateDiff(data))
+                    result = `Php ${me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))}`
+                } else {
+                    result = 'From Import'
+                }
+
+                return result
+            },
+            getInstructorsInSchedule (data) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let ins_ctr = 0
+                    let instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
+                        }
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                    } else {
+                        result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                    }
+
+                } else {
+                    result = 'Please Select a Class'
+                }
+
+                return result
+            },
             submitFilter () {
                 const me = this
                 let ctr = 0
@@ -207,6 +257,7 @@
             },
             initial () {
                 const me = this
+                console.log(me.schedule);
                 me.loader(true)
                 me.$axios.get(`api/online-class-bookings?scheduled_date_id=${me.schedule.id}`).then(res => {
                     if (res.data) {

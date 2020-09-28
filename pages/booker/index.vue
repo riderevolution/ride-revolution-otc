@@ -209,7 +209,7 @@
                                     <seat-plan ref="plan" :customer="customer" :onlineClass="(studio.online_class) ? true : false" />
                                 </panZoom>
 
-                                <online-attendance-layout ref="online" v-else-if="studio.online_class" :schedule="schedule" />
+                                <online-attendance-layout ref="online" v-else-if="studio.online_class" :schedule="schedule" :studio="studio" />
 
                                 <div class="seat_legends" v-if="!studio.online_class">
                                     <div class="legend_title gray"><span></span> Booked</div>

@@ -2,6 +2,17 @@ import Vue from 'vue'
 
 Vue.mixin({
     methods: {
+        dateDiff (value) {
+            const me = this
+            let result = 0
+            if (value.user_package_count.activation_date != 'NA') {
+                result = me.$moment(value.user_package_count.expiry_date_if_activated).diff(me.$moment(value.user_package_count.activation_date), 'days')
+            } else {
+                result = me.$moment(value.user_package_count.activation_date).diff(me.$moment(value.user_package_count.created_at), 'days')
+            }
+
+            return parseInt(result)
+        },
         properFormat (value) {
             let newValue = value.split('The ')[1].split(' field')[0].split('.')
             if (newValue.length > 1) {
