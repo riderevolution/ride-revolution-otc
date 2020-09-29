@@ -170,7 +170,7 @@
                     class_package_id: 0,
                     customer_type_id: 0,
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment('2020-10-01').format('YYYY-MM-DD')
+                    end_date: this.$moment().format('YYYY-MM-DD')
                 },
                 isUser: 0,
                 id: 0,
