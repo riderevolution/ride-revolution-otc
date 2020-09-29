@@ -168,6 +168,10 @@
                                         link: '/reporting/class-report/attendance-with-revenue'
                                     },
                                     {
+                                        title: 'Attendance by Schedule',
+                                        link: '/reporting/class-report/attendance-by-schedule'
+                                    },
+                                    {
                                         title: 'Attendance by Timeslot',
                                         link: '/reporting/class-report/attendance-by-timeslot'
                                     },

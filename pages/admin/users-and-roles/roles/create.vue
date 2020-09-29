@@ -229,6 +229,11 @@
                         checked: false
                     },
                     {
+                        name: 'Attendance by Schedule',
+                        class: 'child',
+                        checked: false
+                    },
+                    {
                         name: 'Attendance by Timeslot',
                         class: 'child',
                         checked: false
