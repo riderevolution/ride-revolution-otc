@@ -38,7 +38,7 @@
                             </div>
                             <div class="date margin">
                                 <p>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, false) : 'N/A' }}</p>
-                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')" v-if="packageStatus != 'expired'">Edit</a></label>
+                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')">Edit</a></label>
                             </div>
                         </div>
                         <div class="package_action" v-if="packageStatus != 'expired'">
