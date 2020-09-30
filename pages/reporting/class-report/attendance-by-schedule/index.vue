@@ -203,9 +203,9 @@
                         'Instructor': me.getInstructorsInSchedule(value),
                         'Bookings': me.totalItems(value.bookings .length),
                         'Riders': me.totalItems(value.riders),
-                        'Revenue': value.revenue,
-                        'Discount': value.discount,
-                        'Net Revenue': value.net_revenue
+                        'Revenue': me.totalCount(value.revenue),
+                        'Discount': me.totalCount(value.discount),
+                        'Net Revenue': me.totalCount(value.net_revenue)
                     }))
                 ]
             }
