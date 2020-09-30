@@ -59,14 +59,14 @@
                                 </td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : '-' }}</td>
                                 <td>
                                     <div class="table_actions" v-if="data.totalPendingPayments">
                                         <div class="table_action_text red">Php {{ totalCount(data.totalPendingPayments) }}</div>
                                         <div class="link table_action_success" @click="togglePendingTransactions(data.id)">Pay Now</div>
                                     </div>
                                     <div v-else>
-                                        N/A
+                                        -
                                     </div>
                                 </td>
                             </tr>

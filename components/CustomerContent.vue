@@ -47,10 +47,17 @@
                             <div class="package_options" v-if=" (data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package)">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
+
                                     <div v-if="data.class_package.por_allow_transferring_of_package && !data.frozen && data.sharedto_user_id == null" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+
                                     <div v-if="data.class_package.por_allow_sharing_of_package" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
+
                                     <div v-if="data.class_package.por_allow_freezing_of_package" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
+
+                                    <div v-if="data.class_package.recurring" class="option_link red" @click="togglePackageAction(data, 'recurring')">Cancel Package</div>
+
                                     <div v-if="data.class_package.recurring == 0 && data.class_package.refundable == 1 && (data.payment_item != null && data.payment_item.refunded == 0) && (data.count == data.original_package_count)" class="option_link red" @click="togglePackageAction(data, 'refund')">Refund Package</div>
+
                                 </div>
                             </div>
                         </div>
@@ -409,7 +416,7 @@
                     </div>
                     <div class="form_main_group">
                         <div class="form_group no_margin">
-                            <textarea name="notes" rows="8" id="notes" class="default_text" placeholder="Enter notes/alerts" v-model="value.customer_details.notes"></textarea>
+                            <textarea name="notes" rows="8" id="notes" class="default_text area" placeholder="Enter notes/alerts" v-model="value.customer_details.notes"></textarea>
                         </div>
                     </div>
                 </div>

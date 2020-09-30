@@ -31,11 +31,11 @@
                                     <option :value="type.id" v-for="(type, key) in types" :key="key">{{ type.name }}</option>
                                 </select>
                             </div>
-                            <div class="form_group" v-if="package_status == 3">
+                            <div class="form_group alternate" v-if="package_status == 4">
                                 <label for="q">Find a credit</label>
                                 <input type="text" name="q" placeholder="Search for a credits" autocomplete="off" class="default_text search_alternate">
                             </div>
-                            <button type="submit" name="button" class="action_btn alternate margin" v-if="package_status != 2">Search</button>
+                            <button type="submit" name="button" class="action_btn alternate margin" v-if="package_status != 3">Search</button>
                         </form>
                     </div>
                 </section>
@@ -43,10 +43,11 @@
                     <div class="cms_table_toggler">
                         <div class="total">Total: {{ totalItems((res.classPackages) ? res.classPackages.total : res.storeCredits.total) }}</div>
                         <div :class="`status ${(package_status == 1) ? 'active' : ''}`" @click="togglePackages(1)">Regular</div>
-                        <div :class="`status ${(package_status == 2) ? 'active' : ''}`" @click="togglePackages(2)">Promo</div>
-                        <div :class="`status ${(package_status == 3) ? 'active' : ''}`" @click="togglePackages(3)">Store Credits</div>
+                        <div :class="`status ${(package_status == 2) ? 'active' : ''}`" @click="togglePackages(2)">Recurring</div>
+                        <div :class="`status ${(package_status == 3) ? 'active' : ''}`" @click="togglePackages(3)">Promo</div>
+                        <div :class="`status ${(package_status == 4) ? 'active' : ''}`" @click="togglePackages(4)">Store Credits</div>
                     </div>
-                    <table class="cms_table" v-if="res.classPackages && package_status != 3">
+                    <table class="cms_table" v-if="res.classPackages && package_status != 4">
                         <thead>
                             <tr>
                                 <th class="stick">Package Name</th>
@@ -82,7 +83,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <table class="cms_table" v-if="res.storeCredits && package_status == 3">
+                    <table class="cms_table" v-if="res.storeCredits && package_status == 4">
                         <thead>
                             <tr>
                                 <th class="stick">Package Name</th>
@@ -223,9 +224,12 @@
                         apiRoute = `api/packages/class-packages?enabled=${value}`
                         break
                     case 2:
-                        apiRoute = `api/packages/class-packages?enabled=${value}&promo=${packageStatus}`
+                        apiRoute = `api/packages/class-packages?enabled=${value}&recurring=1`
                         break
                     case 3:
+                        apiRoute = `api/packages/class-packages?enabled=${value}&promo=2`
+                        break
+                    case 4:
                         apiRoute = `api/packages/store-credits?enabled=${value}`
                         break
                 }
