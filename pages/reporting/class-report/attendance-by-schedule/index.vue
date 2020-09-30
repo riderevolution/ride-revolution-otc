@@ -196,11 +196,12 @@
                 return [
                     ...me.values.map((value, key) => ({
                         'Schedule ID': value.id,
+                        'Studio': me.studio.name,
                         'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
                         'Time': value.schedule.start_time,
                         'Class Type': (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name,
                         'Instructor': me.getInstructorsInSchedule(value),
-                        'Bookings': me.totalItems(value.bookings.length),
+                        'Bookings': me.totalItems(value.bookings .length),
                         'Riders': me.totalItems(value.riders),
                         'Revenue': value.revenue,
                         'Discount': value.discount,
