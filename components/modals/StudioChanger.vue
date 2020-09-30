@@ -11,12 +11,6 @@
                             {{ data.name }}
                         </div>
                     </div>
-                    <!-- <div class="form_group">
-                        <select class="default_select" name="studio" v-model="studio">
-                            <option value="" selected disabled>Select a Studio</option>
-                            <option :value="studio.id" v-for="(studio, key) in studios" :key="key" v-if="studio.id != currentStudio.id">{{ studio.name }}</option>
-                        </select>
-                    </div> -->
                     <div class="form_footer_wrapper">
                         <div class="form_flex">
                             <div class="form_check default">

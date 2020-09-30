@@ -515,6 +515,9 @@
         <transition name="fade">
             <refund :payment="payment" :paymentItemId="paymentItemId" v-if="$store.state.refundStatus" />
         </transition>
+        <transition name="fade">
+            <recurring-refund v-if="recurring" />
+        </transition>
     </div>
 </template>
 
@@ -526,6 +529,7 @@
     import PackageActionValidate from '../components/modals/PackageActionValidate'
     import PackageEditExpiryPrompt from '../components/modals/PackageEditExpiryPrompt'
     import Refund from '../components/modals/Refund'
+    import RecurringRefund from '../components/modals/RecurringRefund'
     import Pagination from '../components/Pagination'
     export default {
         components: {
@@ -536,6 +540,7 @@
             PackageActionValidate,
             PackageEditExpiryPrompt,
             Refund,
+            RecurringRefund,
             Pagination
         },
         props: {
@@ -562,6 +567,7 @@
                 rowCount: 0,
                 promptMessage: '',
                 isActivated: true,
+                recurring: false,
                 loaded: false,
                 violatorClass: '',
                 violator: {
@@ -818,6 +824,9 @@
                         me.paymentItemId = data.payment_item.id
                         me.$store.state.refundStatus = true
                         document.body.classList.add('no_scroll')
+                        break
+                    case 'recurring':
+                        me.recurring = true
                         break
                 }
                 me.userPackageCountId = data.id

@@ -8,7 +8,7 @@ Vue.mixin({
             if (value.user_package_count.activation_date != 'NA') {
                 result = me.$moment(value.user_package_count.expiry_date_if_activated).diff(me.$moment(value.user_package_count.activation_date), 'days')
             } else {
-                result = me.$moment(value.user_package_count.activation_date).diff(me.$moment(value.user_package_count.created_at), 'days')
+                result = me.$moment(value.user_package_count.expiry_date_if_not_activated).diff(me.$moment(value.user_package_count.created_at), 'days')
             }
 
             return parseInt(result)
