@@ -655,7 +655,7 @@
             },
             computePayment (items) {
                 const me = this
-                let result = ''
+                let result = 0
                 items.forEach((item, index) => {
                     result += parseFloat(item.total)
                 })
