@@ -162,24 +162,18 @@
                 let result = ''
                 if (data != '') {
                     let ins_ctr = 0
-                    let instructor = []
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.substitute == 0) {
                             ins_ctr += 1
                         }
-                        if (ins.primary == 1) {
-                            instructor = ins
-                        }
                     })
 
                     if (ins_ctr == 2) {
-                        result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        result = `${data.schedule.instructor_schedules[0].user.first_name} ${data.schedule.instructor_schedules[0].user.last_name} + ${data.schedule.instructor_schedules[1].user.first_name} ${data.schedule.instructor_schedules[1].user.last_name}`
                     } else {
-                        result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        result = `${data.schedule.instructor_schedules[0].user.first_name} ${data.schedule.instructor_schedules[0].user.last_name}`
                     }
 
-                } else {
-                    result = 'Please Select a Class'
                 }
 
                 return result
