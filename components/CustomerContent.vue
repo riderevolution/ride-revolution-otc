@@ -665,14 +665,14 @@
                         case 'paypal':
                             result = data.payment_method.paypal_transaction_id
                             break
-                        case 'store-credits':
-                            result = data.payment_code
-                            break
                         case 'paymaya':
                             result = data.payment_method.paymaya_transaction_id
                             break
                         case 'recurly-subscription':
                             result = data.payment_method.recurly_subscription_id
+                            break
+                        default:
+                            result = data.payment_code
                             break
                     }
                 } else {
