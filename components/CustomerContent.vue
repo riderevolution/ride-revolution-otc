@@ -1072,7 +1072,7 @@
             togglePackages (status) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${(status != 'expired') ? status : 'all'}`).then(res => {
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${(status != 'expired') ? status : 'expired'}`).then(res => {
                     if (res.data) {
                         me.packageCount = 0
                         me.$parent.customer = res.data.customer
