@@ -38,19 +38,25 @@
                             </div>
                             <div class="date margin">
                                 <p>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, false) : 'N/A' }}</p>
-                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')" v-if="packageStatus != 'expired'">Edit</a></label>
+                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')">Edit</a></label>
                             </div>
                         </div>
                         <div class="package_action" v-if="packageStatus != 'expired'">
                             <div v-if="!data.frozen" class="action_success_btn" @click="getCurrentCustomer()">Book a Class</div>
-                            <div v-else class="action_success_btn disabled">Book a Class</div>
-                            <div class="package_options" v-if=" (data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package)">
+                            <div class="package_options" :class="{ no_margin: data.frozen }" v-if=" (data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package)">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
+
                                     <div v-if="data.class_package.por_allow_transferring_of_package && !data.frozen && data.sharedto_user_id == null" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+
                                     <div v-if="data.class_package.por_allow_sharing_of_package" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
+
                                     <div v-if="data.class_package.por_allow_freezing_of_package" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
+
+                                    <div v-if="data.class_package.recurring" class="option_link red" @click="togglePackageAction(data, 'recurring')">Cancel Package</div>
+
                                     <div v-if="data.class_package.recurring == 0 && data.class_package.refundable == 1 && (data.payment_item != null && data.payment_item.refunded == 0) && (data.count == data.original_package_count)" class="option_link red" @click="togglePackageAction(data, 'refund')">Refund Package</div>
+
                                 </div>
                             </div>
                         </div>
@@ -409,7 +415,7 @@
                     </div>
                     <div class="form_main_group">
                         <div class="form_group no_margin">
-                            <textarea name="notes" rows="8" id="notes" class="default_text" placeholder="Enter notes/alerts" v-model="value.customer_details.notes"></textarea>
+                            <textarea name="notes" rows="8" id="notes" class="default_text area" placeholder="Enter notes/alerts" v-model="value.customer_details.notes"></textarea>
                         </div>
                     </div>
                 </div>
@@ -508,6 +514,9 @@
         <transition name="fade">
             <refund :payment="payment" :paymentItemId="paymentItemId" v-if="$store.state.refundStatus" />
         </transition>
+        <transition name="fade">
+            <recurring-refund v-if="recurring" />
+        </transition>
     </div>
 </template>
 
@@ -519,6 +528,7 @@
     import PackageActionValidate from '../components/modals/PackageActionValidate'
     import PackageEditExpiryPrompt from '../components/modals/PackageEditExpiryPrompt'
     import Refund from '../components/modals/Refund'
+    import RecurringRefund from '../components/modals/RecurringRefund'
     import Pagination from '../components/Pagination'
     export default {
         components: {
@@ -529,6 +539,7 @@
             PackageActionValidate,
             PackageEditExpiryPrompt,
             Refund,
+            RecurringRefund,
             Pagination
         },
         props: {
@@ -555,6 +566,7 @@
                 rowCount: 0,
                 promptMessage: '',
                 isActivated: true,
+                recurring: false,
                 loaded: false,
                 violatorClass: '',
                 violator: {
@@ -653,14 +665,14 @@
                         case 'paypal':
                             result = data.payment_method.paypal_transaction_id
                             break
-                        case 'store-credits':
-                            result = data.payment_code
-                            break
                         case 'paymaya':
                             result = data.payment_method.paymaya_transaction_id
                             break
                         case 'recurly-subscription':
                             result = data.payment_method.recurly_subscription_id
+                            break
+                        default:
+                            result = data.payment_code
                             break
                     }
                 } else {
@@ -811,6 +823,9 @@
                         me.paymentItemId = data.payment_item.id
                         me.$store.state.refundStatus = true
                         document.body.classList.add('no_scroll')
+                        break
+                    case 'recurring':
+                        me.recurring = true
                         break
                 }
                 me.userPackageCountId = data.id
@@ -1057,7 +1072,7 @@
             togglePackages (status) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${(status != 'expired') ? status : 'all'}`).then(res => {
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${(status != 'expired') ? status : 'expired'}`).then(res => {
                     if (res.data) {
                         me.packageCount = 0
                         me.$parent.customer = res.data.customer
