@@ -631,7 +631,7 @@
                     if (me.packageStatus != 'expired') {
                         me.res.user_package_counts.forEach((element, index) => {
                             let expiry = me.$moment(element.computed_expiration_date)
-                            if (parseInt(expiry.diff(current, 'hours')) > 0) {
+                            if (parseInt(expiry.diff(current)) > 0) {
                                 element.expired = false
                                 if (element.count > 0) {
                                     me.packageCount++
@@ -644,7 +644,7 @@
                     } else {
                         me.res.user_package_counts.forEach((element, index) => {
                             let expiry = me.$moment(element.computed_expiration_date)
-                            if (parseInt(expiry.diff(current, 'hours')) <= 0) {
+                            if (parseInt(expiry.diff(current)) <= 0) {
                                 element.expired = false
                                 me.packageCount++
                             } else {
