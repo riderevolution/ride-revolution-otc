@@ -631,7 +631,7 @@
                     if (me.packageStatus != 'expired') {
                         me.res.user_package_counts.forEach((element, index) => {
                             let expiry = me.$moment(element.computed_expiration_date)
-                            if (parseInt(expiry.diff(current, 'days')) > 0) {
+                            if (parseInt(expiry.diff(current, 'hours')) > 0) {
                                 element.expired = false
                                 if (element.count > 0) {
                                     me.packageCount++
@@ -644,14 +644,17 @@
                     } else {
                         me.res.user_package_counts.forEach((element, index) => {
                             let expiry = me.$moment(element.computed_expiration_date)
-                            if (parseInt(expiry.diff(current, 'days')) <= 0) {
+                            if (parseInt(expiry.diff(current, 'hours')) <= 0) {
                                 element.expired = false
                                 me.packageCount++
+                            } else {
+                                element.expired = true
                             }
                             result.push(element)
                         })
                     }
                 }
+                console.log(result);
                 return result
             }
         },
@@ -1072,7 +1075,7 @@
             togglePackages (status) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${(status != 'expired') ? status : 'expired'}`).then(res => {
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${(status != 'expired') ? status : 'all'}`).then(res => {
                     if (res.data) {
                         me.packageCount = 0
                         me.$parent.customer = res.data.customer
