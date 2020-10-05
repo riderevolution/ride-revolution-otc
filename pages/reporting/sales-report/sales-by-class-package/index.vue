@@ -56,7 +56,7 @@
                         <div :class="`status ${(payment_status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
                         <div :class="`status ${(payment_status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
                     </div>
-                    <table class="cms_table alt">
+                    <table class="cms_table_accordion">
                         <thead>
                             <tr>
                                 <th>Class Package</th>
@@ -70,7 +70,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr class="parent bb">
                                 <td><b>{{ total.name }}</b></td>
                                 <td><b>{{ total.sold }}</b></td>
                                 <td><b>{{ total.returned }}</b></td>
@@ -80,17 +80,55 @@
                                 <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
-                            <tr v-for="(data, key) in res.result.data" :key="key">
-                                <td>
-                                    <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
+                        </tbody>
+                        <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.result.data">
+                            <tr class="parent">
+                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.parent.name }}</td>
+                                <td>{{ data.parent.sold }}</td>
+                                <td>{{ data.parent.returned }}</td>
+                                <td>{{ data.parent.comp }}</td>
+                                <td>Php {{ totalCount(data.parent.total_comp) }}</td>
+                                <td>Php {{ totalCount(data.parent.total_discount) }}</td>
+                                <td>Php {{ totalCount(data.parent.total_tax) }}</td>
+                                <td>Php {{ totalCount(data.parent.total_income) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="pads" colspan="8">
+                                    <div class="accordion_table">
+                                        <table class="cms_table alt">
+                                            <thead>
+                                                <tr>
+                                                    <th>Spot</th>
+                                                    <th>Customer</th>
+                                                    <th>Status</th>
+                                                    <th>Package Used</th>
+                                                    <th>Revenue</th>
+                                                    <th>Discount</th>
+                                                    <th>Net Revenue</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody v-if="data.values.length > 0">
+                                                <tr v-for="(data, key) in data.values" :key="key">
+                                                    <td>
+                                                        <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
+                                                    </td>
+                                                    <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                                                    <td>{{ (data.returned) ? data.returned : 0 }}</td>
+                                                    <td>{{ (data.comp) ? data.comp : 0 }}</td>
+                                                    <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
+                                                    <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
+                                                    <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
+                                                    <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody class="no_results" v-else>
+                                                <tr>
+                                                    <td colspan="8">No Result(s) Found.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </td>
-                                <td>{{ (data.sold) ? data.sold : 0 }}</td>
-                                <td>{{ (data.returned) ? data.returned : 0 }}</td>
-                                <td>{{ (data.comp) ? data.comp : 0 }}</td>
-                                <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
-                                <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
-                                <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
-                                <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -119,7 +157,6 @@
                 access: true,
                 filter: true,
                 loaded: false,
-                rowCount: 0,
                 payment_status: 'all',
                 studios: [],
                 res: [],
@@ -140,6 +177,7 @@
                         'Studio': this.getStudio(),
                         'Payment Status': me.payment_status,
                         'Class Package': value.name,
+                        'Package Type': (value.package_type) ? value.package_type.name : '-' ,
                         'Sold': (value.sold) ? value.sold : 0,
                         'Returned': (value.returned) ? value.returned : 0,
                         'Comp': (value.comp) ? value.comp : 0,
@@ -161,7 +199,9 @@
                 me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1`, formData).then(res => {
                     if (res.data) {
                         res.data.result.forEach((item, key) => {
-                            me.values.push(item)
+                            item.values.forEach((value, key) => {
+                                me.values.push(value)
+                            })
                         })
                         me.values.push(res.data.total)
                     }
@@ -185,6 +225,16 @@
                     result = 'All Studios'
                 }
                 return result
+            },
+            toggleAccordion (event, key) {
+                const me = this
+                const target = event.target
+                me.res.result.data[key].open ^= true
+                if (me.res.result.data[key].open) {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
+                } else {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
+                }
             },
             toggleInnerReport (type, path, id) {
                 const me = this
@@ -216,7 +266,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        me.rowCount = document.getElementsByTagName('th').length
+                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                 })
             },
@@ -225,6 +278,7 @@
                 me.loader(true)
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
+                formData.append('studio_id', me.form.studio_id)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
                 formData.append('payment_status', value)
@@ -254,7 +308,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        me.rowCount = document.getElementsByTagName('th').length
+                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                 })
             }
