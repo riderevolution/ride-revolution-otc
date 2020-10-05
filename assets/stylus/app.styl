@@ -5100,6 +5100,9 @@ input::placeholder
                 border-bottom: 1px solid $border
                 box-shadow: 0px 3px 10px transparent
                 transition: .3s ease-in-out
+                &.bb
+                    td
+                        color: $black
                 &.alt
                     td
                         sf_pro_semibold(14px)
@@ -5107,6 +5110,8 @@ input::placeholder
             &:last-child
                 &.parent
                     border-bottom: 1px solid transparent
+                    &.bb
+                        border-bottom: 1px solid $border
             td
                 position: relative
                 sf_pro_semibold(14px)

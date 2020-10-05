@@ -8,6 +8,7 @@
             <thead>
                 <tr>
                     <th>Class Package</th>
+                    <th>Package Type</th>
                     <th>Sold</th>
                     <th>Returned</th>
                     <th>Comp</th>
@@ -19,7 +20,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><b>{{ total.name }}</b></td>
+                    <td colspan="2"><b>{{ total.name }}</b></td>
                     <td><b>{{ total.sold }}</b></td>
                     <td><b>{{ total.returned }}</b></td>
                     <td><b>{{ total.comp }}</b></td>
@@ -30,6 +31,7 @@
                 </tr>
                 <tr v-for="(data, key) in res" :key="key">
                     <td>{{ data.name }}</td>
+                    <td>{{ data.package_type.name }}</td>
                     <td>{{ (data.sold) ? data.sold : 0 }}</td>
                     <td>{{ (data.returned) ? data.returned : 0 }}</td>
                     <td>{{ (data.comp) ? data.comp : 0 }}</td>
@@ -73,7 +75,11 @@
                 me.$axios.post('api/reporting/sales/sales-by-class-package?all=1', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.result
+                            res.data.result.forEach((item, key) => {
+                                item.values.forEach((value, key) => {
+                                    me.res.push(value)
+                                })
+                            })
                             me.total = res.data.total
 
                             if (me.form.studio_id != '') {
