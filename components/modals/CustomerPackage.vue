@@ -287,7 +287,7 @@
                             let ctr = 0
                             if (res.data.customer.user_package_counts.length > 0) {
                                 res.data.customer.user_package_counts.forEach((data, index) => {
-                                    if (parseInt(me.$moment(data.computed_expiration_date).diff(me.$moment())) > 0 || data.computed_expiration_date == null) {
+                                    if (parseInt(me.$moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff(me.$moment())) > 0) {
                                         if (parseInt(data.count) > 0) {
                                             if (ctr == 0) {
                                                 if (parseInt(data.count) >= me.$parent.schedule.schedule.class_credits) {
