@@ -68,7 +68,7 @@
                                     </div>
                                 </td>
                                 <td>{{ $moment((data.activation_date != 'NA') ? data.activation_date : data.created_at).format('MMM DD, YYYY') }}</td>
-                                <td>{{ $moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.updated_at).format('MMM DD, YYYY') }}</td>
+                                <td>{{ $moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).format('MMM DD, YYYY') }}</td>
                                 <td>{{ data.original_package_count }}</td>
                                 <td>{{ data.count }}</td>
                                 <td>Php {{ totalCount(data.revenue) }}</td>
@@ -125,7 +125,7 @@
                         'Class Package': me.class_package.name,
                         'Full Name': value.user.fullname,
                         'Activation Date': me.$moment((value.activation_date != 'NA') ? value.activation_date : value.created_at).format('MMM DD, YYYY'),
-                        'Expiration Date': me.$moment((value.computed_expiration_date != null) ? value.computed_expiration_date : value.updated_at).format('MMM DD, YYYY'),
+                        'Expiration Date': me.$moment((value.computed_expiration_date != null) ? value.computed_expiration_date : value.expiry_date_if_not_activated).format('MMM DD, YYYY'),
                         'Count': value.original_package_count,
                         'Remaining': value.count,
                         'Revenue': `Php ${me.totalCount(value.revenue)}`,

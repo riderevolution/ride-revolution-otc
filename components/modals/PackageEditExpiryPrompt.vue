@@ -32,7 +32,7 @@
         data () {
             return {
                 form: {
-                    date: this.$moment(this.data.computed_expiration_date).format('YYYY-MM-DD')
+                    date: this.$moment((this.data.computed_expiration_date != null) ? this.data.computed_expiration_date : this.data.expiry_date_if_not_activated).format('YYYY-MM-DD')
                 }
             }
         },

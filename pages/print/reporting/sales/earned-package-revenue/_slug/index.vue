@@ -24,7 +24,7 @@
                         <div v-else>N/A</div>
                     </td>
                     <td>{{ $moment((data.activation_date != 'NA') ? data.activation_date : data.created_at).format('MMM DD, YYYY') }}</td>
-                    <td>{{ $moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.updated_at).format('MMM DD, YYYY') }}</td>
+                    <td>{{ $moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).format('MMM DD, YYYY') }}</td>
                     <td>{{ data.original_package_count }}</td>
                     <td>{{ data.count }}</td>
                     <td>Php {{ totalCount(data.revenue) }}</td>
