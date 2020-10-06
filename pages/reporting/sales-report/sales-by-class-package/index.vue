@@ -110,7 +110,7 @@
                                             <tbody v-if="data.values.length > 0">
                                                 <tr v-for="(data, key) in data.values" :key="key">
                                                     <td>
-                                                        <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
+                                                        <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${data.slug}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${data.slug}`, data.id)">{{ data.name }}</nuxt-link>
                                                     </td>
                                                     <td>{{ (data.sold) ? data.sold : 0 }}</td>
                                                     <td>{{ (data.returned) ? data.returned : 0 }}</td>
