@@ -27,8 +27,9 @@
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
-                                    <option value="" selected>All Studios</option>
+                                    <option value="0" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                    <option value="os">Online Sales</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
@@ -76,7 +77,7 @@
                                 <td><b>Php {{ totalCount(payment_total.net_receipts) }}</b></td>
                                 <td><b>Php {{ totalCount(payment_total.net_refunds) }}</b></td>
                             </tr>
-                            <tr v-for="(data, key) in res" :key="key">
+                            <tr v-for="(data, key) in res" :key="key" :class="{ grayed: data.gray }">
                                 <td>
                                     <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${data.unique}`" @click.native="toggleInnerReport(`${$route.path}/${data.unique}`)">{{ data.name }}</nuxt-link>
                                 </td>
@@ -170,7 +171,7 @@
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
-                    studio_id: ''
+                    studio_id: 0
                 }
             }
         },
@@ -196,7 +197,7 @@
                 const me = this
                 return [
                     ...me.summary_values.map(value => ({
-                        'Branch': value.name,
+                        'Studio': value.name,
                         'Subtotal': `Php ${(value.subtotal) ? value.subtotal : 0}`,
                         'Tax': `Php ${(value.total_tax) ? value.total_tax : 0}`,
                         'Refund Subtotal': `Php ${(value.subtotal_refund) ? value.subtotal_refund : 0}`,

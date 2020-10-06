@@ -1,7 +1,7 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>Sales by Payment Type - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.payment_status }})</h2>
+            <h2>Sales by Payment Type - {{ studio.name }} ({{ $route.query.payment_status }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <table class="cms_table print">
@@ -53,7 +53,7 @@
                 studio: [],
                 payment_total: [],
                 form: {
-                    studio_id: ''
+                    studio_id: 0
                 }
             }
         },
@@ -66,7 +66,7 @@
                 formData.append('end_date',  me.$route.query.end_date)
                 formData.append('payment_status', me.$route.query.payment_status)
                 if (me.$route.query.studio_id) {
-                    me.form.studio = me.$route.query.studio_id
+                    me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.$route.query.studio_id)
                 }
                 me.$axios.post('api/reporting/sales/sales-by-payment-type', formData).then(res => {
@@ -75,10 +75,14 @@
                             me.res = res.data.result
                             me.payment_total = res.data.payment_grand_total
 
-                            if (me.form.studio_id != '') {
+                            if (me.form.studio_id != 0 && me.form.studio_id != 'os') {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
+                            } else {
+                                me.studio = {
+                                    name: (me.form.studio_id == 'os' ? 'Online Sales' : 'All Studios')
+                                }
                             }
 
                             me.loaded = true

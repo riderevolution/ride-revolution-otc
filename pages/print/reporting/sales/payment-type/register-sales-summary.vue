@@ -1,7 +1,7 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>Register Sales Summary - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.payment_status }})</h2>
+            <h2>Register Sales Summary - {{ studio.name  }} ({{ $route.query.payment_status }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <table class="cms_table print">
@@ -47,7 +47,7 @@
                 studio: [],
                 studio_total: [],
                 form: {
-                    studio_id: ''
+                    studio_id: 0
                 }
             }
         },
@@ -59,7 +59,7 @@
                 formData.append('end_date',  me.$route.query.end_date)
                 formData.append('payment_status', me.$route.query.payment_status)
                 if (me.$route.query.studio_id) {
-                    me.form.studio = me.$route.query.studio_id
+                    me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.$route.query.studio_id)
                 }
                 me.$axios.post('api/reporting/sales/sales-by-payment-type', formData).then(res => {
@@ -68,10 +68,14 @@
                             me.studio_res = res.data.studio_sales_summary
                             me.studio_total = res.data.studio_grand_total
 
-                            if (me.form.studio_id != '') {
+                            if (me.form.studio_id != 0 && me.form.studio_id != 'os') {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
+                            } else {
+                                me.studio = {
+                                    name: (me.form.studio_id == 'os' ? 'Online Sales' : 'All Studios')
+                                }
                             }
 
                             me.loaded = true
