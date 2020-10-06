@@ -1,7 +1,7 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>{{ replacer($route.params.slug) }} - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.payment_status }})</h2>
+            <h2>{{ replacer($route.params.slug) }} - {{ studio.name }} ({{ $route.query.payment_status }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <table class="cms_table print">
@@ -66,7 +66,7 @@
                 let formData = new FormData()
 
                 if (me.$route.query.studio_id) {
-                    me.form.studio = me.$route.query.studio_id
+                    me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.$route.query.studio_id)
                 }
                 formData.append('payment_method', me.$route.params.slug)
@@ -79,10 +79,14 @@
                             me.res = res.data.result
                             me.total = res.data.total
 
-                            if (me.form.studio_id != '') {
+                            if (me.form.studio_id != 0 && me.form.studio_id != 'os') {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
+                            } else {
+                                me.studio = {
+                                    name: (me.form.studio_id == 'os' ? 'Online Sales' : 'All Studios')
+                                }
                             }
 
                             me.loaded = true
