@@ -345,7 +345,6 @@
                     let studio_id = me.$cookies.get('CSID')
                     me.form.studio_id = studio_id
                 }
-
                 if (me.$route.query.payment_status) {
                     me.payment_status = me.$route.query.payment_status
                 }
