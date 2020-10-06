@@ -20,7 +20,8 @@
             </thead>
             <tbody>
                 <tr>
-                    <td colspan="2"><b>{{ total.name }}</b></td>
+                    <td><b>{{ total.name }}</b></td>
+                    <td><b>-</b></td>
                     <td><b>{{ total.sold }}</b></td>
                     <td><b>{{ total.returned }}</b></td>
                     <td><b>{{ total.comp }}</b></td>

@@ -73,7 +73,8 @@
                                                 {{ data.payment.user.first_name.charAt(0) }}{{ data.payment.user.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <div class="table_data_link" @click="openWindow(`/customers/${data.payment.user.id}/packages`)">{{ data.payment.user.fullname }}</div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.payment.user.id}/packages`)" v-if="data.payment.user != null">{{ data.payment.user.fullname }}</div>
+                                        <div v-else>N/A</div>
                                     </div>
                                 </td>
                                 <td>{{ data.quantity }}</td>
