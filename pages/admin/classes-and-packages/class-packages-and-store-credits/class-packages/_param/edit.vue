@@ -22,9 +22,9 @@
                             <transition name="fade">
                                 <div class="form_main_group alternate" v-if="isPromo">
                                     <div class="form_group">
-                                        <label for="discounted_package_price">Discounted Package Price <span>*</span></label>
                                         <div class="form_flex_input full">
-                                            <input type="text" name="discounted_package_price" placeholder="Enter discounted package price" class="default_text number" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 999999}" v-model="res.discounted_price">
+                                            <label for="discounted_package_price">Discounted Package Price <span>*</span></label>
+                                            <input type="text" name="discounted_package_price" placeholder="Enter discounted package price" class="default_text number" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 999999}" v-model="form.discounted_price">
                                             <div class="placeholder">PHP</div>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('discounted_package_price')">{{ properFormat(errors.first('discounted_package_price')) }}</span></transition>
                                         </div>
@@ -394,6 +394,7 @@
                     notActivated: 0,
                     purchaseLimit: 0,
                     package_price: 0,
+                    discounted_price: 0,
                     estimated_price: 0,
                     expiry_type: 'day'
                 }
@@ -402,10 +403,11 @@
         methods: {
             computeEstimatedPrice () {
                 const me = this
+                let price = (me.isPromo) ? me.form.discounted_price : me.form.package_price
                 if (me.form.expiry_type == 'day') {
-                    if (me.form.package_price && me.form.package_price != 0) {
+                    if (price && price != 0) {
                         if (me.form.expiryIn) {
-                            me.form.estimated_price = parseFloat(me.form.package_price / (parseInt(me.form.expiryIn) + 1)).toFixed(2)
+                            me.form.estimated_price = parseFloat(price / (parseInt(me.form.expiryIn) + 1)).toFixed(2)
                         } else {
                             me.form.estimated_price = 0
                         }
@@ -413,8 +415,8 @@
                 } else {
                     if (me.form.expiryIn) {
                         let current = me.$moment(), month = me.$moment().add(me.form.expiryIn, 'M'), days = month.diff(current, 'days')
-                        if (me.form.package_price && me.form.package_price != 0) {
-                            me.form.estimated_price = parseFloat(me.form.package_price / (days + 1)).toFixed(2)
+                        if (price && price != 0) {
+                            me.form.estimated_price = parseFloat(price / (days + 1)).toFixed(2)
                         }
                     } else {
                         me.form.estimated_price = 0
@@ -613,6 +615,7 @@
                     me.form.expiryIn = me.res.expires_in
                     me.form.expiry_type = me.res.expiry_type
                     me.form.package_price = me.res.package_price
+                    me.form.discounted_price = me.res.discounted_price
                     me.form.estimated_price = me.res.estimated_price_per_class
                     me.computeEstimatedPrice()
                 })
