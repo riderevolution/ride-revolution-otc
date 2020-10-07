@@ -251,7 +251,7 @@
                                     <div class="form_group flex">
                                         <label for="class_count">Class Count <span>*</span></label>
                                         <div :class="`form_flex_input ${(isUnlimited) ? 'not_active' : 'active'}`">
-                                            <input type="text" name="class_count" class="default_text number" placeholder="Enter class count" autocomplete="off" v-model="form.classCount" v-validate="'required|numeric|max_value:99999|min_value:0'">
+                                            <input type="text" name="class_count" class="default_text number" placeholder="Enter class count" autocomplete="off" v-model="form.classCount" v-validate="'required|numeric|max_value:99999|min_value:1'">
                                             <!-- <div class="up" @click="addCount('classCount')"></div> -->
                                             <!-- <div class="down" @click="subtractCount('classCount')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('class_count')">{{ properFormat(errors.first('class_count')) }}</span></transition>
@@ -389,7 +389,7 @@
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: '',
-                    classCount: 0,
+                    classCount: 1,
                     expiryIn: 0,
                     notActivated: 0,
                     purchaseLimit: 0,
