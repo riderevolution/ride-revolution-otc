@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Income from class package sold.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package?payment_status=${payment_status}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -29,14 +29,14 @@
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
-                            <div class="form_group">
+                            <!-- <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
                                     <option value="" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
-                            </div>
-                            <div class="form_group margin">
+                            </div> -->
+                            <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
@@ -56,7 +56,7 @@
                         <div :class="`status ${(payment_status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
                         <div :class="`status ${(payment_status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
                     </div>
-                    <table class="cms_table alt">
+                    <table class="cms_table_accordion">
                         <thead>
                             <tr>
                                 <th>Class Package</th>
@@ -70,7 +70,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr class="parent bb">
                                 <td><b>{{ total.name }}</b></td>
                                 <td><b>{{ total.sold }}</b></td>
                                 <td><b>{{ total.returned }}</b></td>
@@ -80,17 +80,56 @@
                                 <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
-                            <tr v-for="(data, key) in res.result.data" :key="key">
-                                <td>
-                                    <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${convertToSlug(data.name)}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${convertToSlug(data.name)}`, data.id)">{{ data.name }}</nuxt-link>
+                        </tbody>
+                        <tbody :class="`${(data.open) ? 'toggled' : ''} tbp`" v-for="(data, key) in res.result.data">
+                            <tr class="parent">
+                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.parent.name }}</td>
+                                <td>{{ data.parent.sold }}</td>
+                                <td>{{ data.parent.returned }}</td>
+                                <td>{{ data.parent.comp }}</td>
+                                <td>Php {{ totalCount(data.parent.total_comp) }}</td>
+                                <td>Php {{ totalCount(data.parent.total_discount) }}</td>
+                                <td>Php {{ totalCount(data.parent.total_tax) }}</td>
+                                <td>Php {{ totalCount(data.parent.total_income) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="pads" colspan="8">
+                                    <div class="accordion_table">
+                                        <table class="cms_table alt">
+                                            <thead>
+                                                <tr>
+                                                    <th>Spot</th>
+                                                    <th>Customer</th>
+                                                    <th>Status</th>
+                                                    <th>Package Used</th>
+                                                    <th>Comp</th>
+                                                    <th>Revenue</th>
+                                                    <th>Discount</th>
+                                                    <th>Net Revenue</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody v-if="data.values.length > 0">
+                                                <tr v-for="(data, key) in data.values" :key="key">
+                                                    <td>
+                                                        <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${data.slug}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${data.slug}`, data.id)">{{ data.name }}</nuxt-link>
+                                                    </td>
+                                                    <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                                                    <td>{{ (data.returned) ? data.returned : 0 }}</td>
+                                                    <td>{{ (data.comp) ? data.comp : 0 }}</td>
+                                                    <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
+                                                    <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
+                                                    <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
+                                                    <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody class="no_results" v-else>
+                                                <tr>
+                                                    <td colspan="8">No Result(s) Found.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </td>
-                                <td>{{ (data.sold) ? data.sold : 0 }}</td>
-                                <td>{{ (data.returned) ? data.returned : 0 }}</td>
-                                <td>{{ (data.comp) ? data.comp : 0 }}</td>
-                                <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
-                                <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
-                                <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
-                                <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -119,16 +158,15 @@
                 access: true,
                 filter: true,
                 loaded: false,
-                rowCount: 0,
                 payment_status: 'all',
-                studios: [],
+                // studios: [],
                 res: [],
                 values: [],
                 total: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD'),
-                    studio_id: ''
+                    end_date: this.$moment().format('YYYY-MM-DD')
+                    // studio_id: ''
                 }
             }
         },
@@ -137,9 +175,10 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': this.getStudio(),
+                        // 'Studio': this.getStudio(),
                         'Payment Status': me.payment_status,
                         'Class Package': value.name,
+                        'Package Type': (value.package_type) ? value.package_type.name : '-' ,
                         'Sold': (value.sold) ? value.sold : 0,
                         'Returned': (value.returned) ? value.returned : 0,
                         'Comp': (value.comp) ? value.comp : 0,
@@ -161,7 +200,9 @@
                 me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1`, formData).then(res => {
                     if (res.data) {
                         res.data.result.forEach((item, key) => {
-                            me.values.push(item)
+                            item.values.forEach((value, key) => {
+                                me.values.push(value)
+                            })
                         })
                         me.values.push(res.data.total)
                     }
@@ -172,23 +213,34 @@
                     document.querySelector('.me').click()
                 })
             },
-            getStudio () {
+            // getStudio () {
+            //     const me = this
+            //     let result = ''
+            //     if (me.form.studio_id != '') {
+            //         me.studios.forEach((studio, index) => {
+            //             if (studio.id == me.form.studio_id) {
+            //                 result = studio.name
+            //             }
+            //         })
+            //     } else {
+            //         result = 'All Studios'
+            //     }
+            //     return result
+            // },
+            toggleAccordion (event, key) {
                 const me = this
-                let result = ''
-                if (me.form.studio_id != '') {
-                    me.studios.forEach((studio, index) => {
-                        if (studio.id == me.form.studio_id) {
-                            result = studio.name
-                        }
-                    })
+                const target = event.target
+                me.res.result.data[key].open ^= true
+                if (me.res.result.data[key].open) {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
                 } else {
-                    result = 'All Studios'
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
                 }
-                return result
             },
             toggleInnerReport (type, path, id) {
                 const me = this
-                me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                // me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${path}?payment_status=${me.payment_status}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
@@ -216,7 +268,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        me.rowCount = document.getElementsByTagName('th').length
+                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                 })
             },
@@ -225,6 +280,7 @@
                 me.loader(true)
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
+                // formData.append('studio_id', me.form.studio_id)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
                 formData.append('payment_status', value)
@@ -235,15 +291,15 @@
                             me.total = res.data.total
                             me.values.push(res.data.total)
 
-                            me.$axios.get('api/studios', {
-                                headers: {
-                                    Authorization: `Bearer ${token}`
-                                }
-                            }).then(res => {
-                                if (res.data) {
-                                    me.studios = res.data.studios
-                                }
-                            })
+                            // me.$axios.get('api/studios', {
+                            //     headers: {
+                            //         Authorization: `Bearer ${token}`
+                            //     }
+                            // }).then(res => {
+                            //     if (res.data) {
+                            //         me.studios = res.data.studios
+                            //     }
+                            // })
 
                             me.loaded = true
                         }, 500)
@@ -254,7 +310,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        me.rowCount = document.getElementsByTagName('th').length
+                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                 })
             }
@@ -263,9 +322,20 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                let studio_id = me.$cookies.get('CSID')
-                me.form.studio_id = studio_id
-                me.fetchData('all')
+                // let studio_id = me.$cookies.get('CSID')
+                // me.form.studio_id = studio_id
+
+                if (me.$route.query.start_date) {
+                    me.form.start_date = me.$route.query.start_date
+                }
+                if (me.$route.query.end_date) {
+                    me.form.end_date = me.$route.query.end_date
+                }
+                if (me.$route.query.payment_status) {
+                    me.payment_status = me.$route.query.payment_status
+                }
+
+                me.fetchData(me.payment_status)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

@@ -12,7 +12,7 @@
                 <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="packageCount > 0 && (data.count > 0 && !data.expired)">
                     <h2 class="package_title">
                         {{ data.class_package.name }}
-                        <span class="warning" v-if="parseInt($moment(data.computed_expiration_date).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
+                        <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
                         <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
                         <span class="frozen" v-if="data.frozen">Frozen</span>
                     </h2>
@@ -37,7 +37,7 @@
                                 <label>Purchase Date / Activation Date</label>
                             </div>
                             <div class="date margin">
-                                <p>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, false) : 'N/A' }}</p>
+                                <p>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, false) : formatDate(data.expiry_date_if_not_activated, false) }}</p>
                                 <label>Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')">Edit</a></label>
                             </div>
                         </div>
@@ -630,8 +630,13 @@
                     let current = me.$moment()
                     if (me.packageStatus != 'expired') {
                         me.res.user_package_counts.forEach((element, index) => {
+<<<<<<< HEAD
                             let expiry = me.$moment(element.computed_expiration_date)
                             if (parseInt(expiry.diff(current, 'hours')) > 0) {
+=======
+                            let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
+                            if (parseInt(expiry.diff(current)) > 0) {
+>>>>>>> master
                                 element.expired = false
                                 if (element.count > 0) {
                                     me.packageCount++
@@ -643,8 +648,13 @@
                         })
                     } else {
                         me.res.user_package_counts.forEach((element, index) => {
+<<<<<<< HEAD
                             let expiry = me.$moment(element.computed_expiration_date)
                             if (parseInt(expiry.diff(current, 'hours')) <= 0) {
+=======
+                            let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
+                            if (parseInt(expiry.diff(current)) <= 0) {
+>>>>>>> master
                                 element.expired = false
                                 me.packageCount++
                             } else {
@@ -1013,7 +1023,7 @@
             checkViolator (data, type) {
                 const me = this
                 let result = ''
-                let expiry = me.$moment(data.computed_expiration_date)
+                let expiry = me.$moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated)
                 let current = me.$moment()
                 switch (type) {
                     case 'warning':

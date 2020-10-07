@@ -32,9 +32,9 @@
                             <td>{{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : (parseInt(data.count) == data.original_package_count) ? parseInt(data.original_package_count) : parseInt(data.count) }}</td>
                             <td>{{ parseInt(data.original_package_count) - parseInt(data.count) }}</td>
                             <td>{{ formatDate(data.created_at, false) }} / {{ (data.activation_date != 'NA') ? formatDate(data.activation_date, false) : 'N/A' }}</td>
-                            <td>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, false) : 'N/A' }}</td>
+                            <td>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, false) : formatDate(data.expiry_date_if_not_activated, false) }}</td>
                             <td class="violator">
-                                <span class="warning" v-if="parseInt($moment(data.computed_expiration_date).diff($moment())) < 0">{{ checkViolator(data, 'warning') }}</span>
+                                <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0">{{ checkViolator(data, 'warning') }}</span>
                                 <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
                                 <span class="frozen" v-if="data.frozen">Frozen</span>
                             </td>
@@ -73,7 +73,7 @@
                 let result = []
                 let current = me.$moment()
                 me.res.user_package_counts.forEach((element, index) => {
-                    let expiry = me.$moment(element.computed_expiration_date)
+                    let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
                     if (parseInt(expiry.diff(current, 'days')) > 0) {
                         element.expired = false
                     } else {
@@ -91,7 +91,7 @@
             checkViolator (data, type) {
                 const me = this
                 let result = ''
-                let expiry = me.$moment(data.computed_expiration_date)
+                let expiry = me.$moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated)
                 let current = me.$moment()
                 switch (type) {
                     case 'warning':
