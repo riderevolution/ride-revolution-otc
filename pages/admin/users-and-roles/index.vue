@@ -240,7 +240,7 @@
                         reportingsCtr++
                     }
                 })
-                if ((pagesCtr + reportingsCtr) == 45) {
+                if ((pagesCtr + reportingsCtr) == 46) {
                     return 'All'
                 } else {
                     return pagesCtr + reportingsCtr
