@@ -53,6 +53,7 @@
                                 <th class="stick">Package ID</th>
                                 <th class="stick">Class Count</th>
                                 <th class="stick">Price</th>
+                                <th class="stick">Estimated Price Per Class</th>
                                 <th class="stick">Action</th>
                             </tr>
                         </thead>
@@ -67,6 +68,7 @@
                                 </td>
                                 <td>{{ (data.class_count_unlimited) ? 'Unlimited' : data.class_count }}</td>
                                 <td>PHP {{ totalCount(data.package_price) }}</td>
+                                <td>PHP {{ totalCount(data.estimated_price_per_class) }}</td>
                                 <td width="20%">
                                     <div class="table_actions">
                                         <nuxt-link class="table_action_edit" :to="`${$route.path}/class-packages/${data.id}/edit`">Edit</nuxt-link>

@@ -67,7 +67,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody v-if="data.groups.length > 0">
-                                                <tr v-for="(value, key) in data.groups" :key="key">
+                                                <tr :class="{ grayed: value.grayed }" v-for="(value, key) in data.groups" :key="key">
                                                     <td class="sign">
                                                         {{ value.name }}
                                                         <div class="circle add" v-if="value.negative != undefined && !value.negative"></div>

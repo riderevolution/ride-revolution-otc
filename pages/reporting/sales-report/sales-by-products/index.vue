@@ -29,7 +29,7 @@
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
-                                    <option value="" selected>All Studios</option>
+                                    <option value="0" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
@@ -129,7 +129,7 @@
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
-                    studio_id: ''
+                    studio_id: 0
                 }
             }
         },
@@ -158,7 +158,7 @@
             getStudio () {
                 const me = this
                 let result = ''
-                if (me.form.studio_id != '') {
+                if (me.form.studio_id != 0) {
                     me.studios.forEach((studio, index) => {
                         if (studio.id == me.form.studio_id) {
                             result = studio.name
