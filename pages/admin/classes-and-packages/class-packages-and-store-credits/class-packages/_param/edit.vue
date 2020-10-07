@@ -226,7 +226,7 @@
                                         </div>
                                         <div class="form_flex_input">
                                             <label for="estimated_price_per_class">Estimated Price Per Class</label>
-                                            <input type="text" name="estimated_price_per_class" readonly class="default_text disabled number" autocomplete="off" v-validate="{required: true, decimal: 2, min_value: 1, max_value: 999999}" v-model="form.estimated_price">
+                                            <input type="text" name="estimated_price_per_class" readonly class="default_text disabled number" autocomplete="off" v-validate="{required: true, decimal: 2, min_value: 0, max_value: 999999}" v-model="form.estimated_price">
                                             <div class="placeholder">PHP</div>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('estimated_price_per_class')">{{ properFormat(errors.first('estimated_price_per_class')) }}</span></transition>
                                         </div>
