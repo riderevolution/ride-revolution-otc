@@ -117,18 +117,19 @@
                 const me = this
                 return [
                     ...this.values.map(value => ({
+                        'Booking ID': value.id,
+                        'Booking Status': value.status,
+                        'Booking Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
                         'Studio': me.studio.name,
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,
-                        'Instructor': me.getInstructorsInSchedule(me.schedule),
+                        'Instructor': me.getInstructorsInSchedule(me.schedule, 1),
                         'Customer ID': value.user.id,
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.user.customer_details.customer_type.name,
                         'Email Address': value.user.email,
                         'Contact Number': value.user.customer_details.co_contact_number,
-                        'Booking ID': value.id,
-                        'Booking Status': value.status,
                         'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
                         'Revenue': me.computeRevenue(value)
                     }))
@@ -157,7 +158,7 @@
 
                 return result
             },
-            getInstructorsInSchedule (data) {
+            getInstructorsInSchedule (data, export_status = null) {
                 const me = this
                 let result = ''
                 if (data != '') {
@@ -173,9 +174,17 @@
                     })
 
                     if (ins_ctr == 2) {
-                        result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        if (export_status != null) {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        } else {
+                            result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        }
                     } else {
-                        result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        if (export_status != null) {
+                            result = `${instructor.user.fullname}`
+                        } else {
+                            result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        }
                     }
 
                 } else {
