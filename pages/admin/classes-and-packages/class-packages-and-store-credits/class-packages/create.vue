@@ -32,12 +32,12 @@
                                     <div class="form_flex">
                                         <div class="form_group">
                                             <label for="promo_start_date">Start Date <span>*</span></label>
-                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'promo_start_date'" :name="'promo_start_date'" :min-date="$moment().format('YYYY-MM-DD')" :label="'Select start date'" v-validate="'required'"></v-ctk>
+                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'promo_start_date'" :name="'promo_start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_start_date')">{{ properFormat(errors.first('promo_start_date')) }}</span></transition>
                                         </div>
                                         <div class="form_group">
                                             <label for="promo_end_date">End Date <span>*</span></label>
-                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'promo_end_date'" :name="'promo_end_date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" :label="'Select end date'" v-validate="'required'"></v-ctk>
+                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'promo_end_date'" :name="'promo_end_date'" :label="'Select end date'" v-validate="'required'"></v-ctk>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_end_date')">{{ properFormat(errors.first('promo_end_date')) }}</span></transition>
                                         </div>
                                     </div>
