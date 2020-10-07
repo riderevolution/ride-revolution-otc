@@ -258,7 +258,7 @@
                                         </div>
                                         <div class="form_flex_input">
                                             <div class="form_check">
-                                                <input type="checkbox" id="class_count_unlimited" name="class_count_unlimited" class="action_check" @change="isUnlimited ^= true">
+                                                <input type="checkbox" id="class_count_unlimited" name="class_count_unlimited" class="action_check" @change="toggleUnlimited()">
                                                 <label for="class_count_unlimited">Unlimited</label>
                                             </div>
                                         </div>
@@ -401,25 +401,40 @@
             }
         },
         methods: {
+            toggleUnlimited () {
+                const me = this
+                me.isUnlimited ^= true
+                me.computeEstimatedPrice()
+            },
             computeEstimatedPrice () {
                 const me = this
                 let price = (me.isPromo) ? me.form.discounted_price : me.form.package_price
-                if (me.form.expiry_type == 'day') {
-                    if (price && price != 0) {
+                if (me.isUnlimited) {
+                    if (me.form.expiry_type == 'day') {
+                        if (price && price != 0) {
+                            if (me.form.expiryIn) {
+                                me.form.estimated_price = parseFloat(price / (parseInt(me.form.expiryIn) + 1)).toFixed(2)
+                            } else {
+                                me.form.estimated_price = 0
+                            }
+                        }
+                    } else {
                         if (me.form.expiryIn) {
-                            me.form.estimated_price = parseFloat(price / (parseInt(me.form.expiryIn) + 1)).toFixed(2)
+                            let current = me.$moment(), month = me.$moment().add(me.form.expiryIn, 'M'), days = month.diff(current, 'days')
+                            if (price && price != 0) {
+                                me.form.estimated_price = parseFloat(price / (days + 1)).toFixed(2)
+                            }
                         } else {
                             me.form.estimated_price = 0
                         }
                     }
                 } else {
-                    if (me.form.expiryIn) {
-                        let current = me.$moment(), month = me.$moment().add(me.form.expiryIn, 'M'), days = month.diff(current, 'days')
-                        if (price && price != 0) {
-                            me.form.estimated_price = parseFloat(price / (days + 1)).toFixed(2)
+                    if (price && price != 0) {
+                        if (me.form.classCount) {
+                            me.form.estimated_price = parseFloat(price / parseInt(me.form.classCount)).toFixed(2)
+                        } else {
+                            me.form.estimated_price = 0
                         }
-                    } else {
-                        me.form.estimated_price = 0
                     }
                 }
             },
