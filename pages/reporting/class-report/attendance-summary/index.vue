@@ -110,8 +110,8 @@
                                 <td>{{ countValues(data, 'waitlist') }}</td>
                                 <td>{{ countValues(data, 'repeats') }}</td>
                                 <td>{{ totalPercentage('average', data) }}</td>
-                                <td>{{ totalItems(data.values.length) }}</td>
-                                <td>{{ totalItems(data.values.length) }}</td>
+                                <td>{{ totalItems(data.number_of_classes) }}</td>
+                                <td>{{ totalItems(data.number_of_classes) }}</td>
                                 <td>{{ (studio.online_class) ? 'Unlimited' : studio.capacity }}</td>
                                 <td>{{ totalPercentage('capacity', data) }}</td>
                                 <td>{{ totalPercentage('paying', data) }}</td>
@@ -198,37 +198,35 @@
                 const me = this
                 let result = 0
 
-                data.values.forEach((value, key) => {
-                    switch (type) {
-                        case 'total_riders':
-                            result += value.total_riders
-                            break
-                        case 'paying_riders':
-                            result += value.paying_riders
-                            break
-                        case 'comped_riders':
-                            result += value.comped_riders
-                            break
-                        case 'first_timers':
-                            result += value.first_timers
-                            break
-                        case 'no_shows':
-                            result += value.no_shows
-                            break
-                        case 'cancel':
-                            result += value.cancel
-                            break
-                        case 'waitlist':
-                            result += value.waitlist
-                            break
-                        case 'repeats':
-                            result += value.repeats
-                            break
-                        case 'revenue':
-                            result += value.revenue
-                            break
-                    }
-                })
+                switch (type) {
+                    case 'total_riders':
+                        result += data.total_riders
+                        break
+                    case 'paying_riders':
+                        result += data.paying_riders
+                        break
+                    case 'comped_riders':
+                        result += data.comped_riders
+                        break
+                    case 'first_timers':
+                        result += data.first_timers
+                        break
+                    case 'no_shows':
+                        result += data.no_shows
+                        break
+                    case 'cancel':
+                        result += data.cancel
+                        break
+                    case 'waitlist':
+                        result += data.waitlist
+                        break
+                    case 'repeats':
+                        result += data.repeats
+                        break
+                    case 'revenue':
+                        result += data.revenue
+                        break
+                }
 
                 return result
             },
@@ -259,31 +257,29 @@
                 let paying_riders = 0
                 let comped_riders = 0
 
-                data.values.forEach((value, key) => {
-                    switch (type) {
-                        case 'capacity':
-                            if (value.temp_avg_riders != 0) {
-                                if (me.studio.online_class) {
-                                    total_riders += value.total_riders
-                                    avg_riders += value.temp_avg_riders
-                                } else {
-                                    avg_riders += value.temp_avg_riders
-                                }
+                switch (type) {
+                    case 'capacity':
+                        if (data.temp_avg_riders != 0) {
+                            if (me.studio.online_class) {
+                                total_riders += data.total_riders
+                                avg_riders += data.temp_avg_riders
+                            } else {
+                                avg_riders += data.temp_avg_riders
                             }
-                            break
-                        case 'paying':
-                            if (value.paying_riders != 0) {
-                                paying_riders += value.paying_riders
-                                comped_riders += value.comped_riders
-                            }
-                            break
-                        case 'average':
-                            if (value.temp_avg_riders != 0) {
-                                avg_riders += value.temp_avg_riders
-                            }
-                            break
-                    }
-                })
+                        }
+                        break
+                    case 'paying':
+                        if (data.paying_riders != 0) {
+                            paying_riders += data.paying_riders
+                            comped_riders += data.comped_riders
+                        }
+                        break
+                    case 'average':
+                        if (data.temp_avg_riders != 0) {
+                            avg_riders += data.temp_avg_riders
+                        }
+                        break
+                }
 
                 switch (type) {
                     case 'capacity':
@@ -297,7 +293,7 @@
                         percent = me.totalItems(`${(paying_riders / (paying_riders - comped_riders)) * 100}`)
                         break
                     case 'average':
-                        percent = me.totalItems(avg_riders / data.values.length)
+                        percent = me.totalItems(avg_riders / data.number_of_classes)
                         break
                 }
 
