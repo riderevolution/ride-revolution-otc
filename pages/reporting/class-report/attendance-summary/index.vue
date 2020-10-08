@@ -69,7 +69,7 @@
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
-                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" :max-date="$moment().subtract(1, 'days').format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
@@ -151,8 +151,8 @@
                     class_type_id: '',
                     class_package_id: '',
                     customer_type_id: '',
-                    start_date: this.$moment('09-01-20').format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    start_date: this.$moment().subtract(1, 'days').format('YYYY-MM-DD'),
+                    end_date: this.$moment().subtract(1, 'days').format('YYYY-MM-DD')
                 },
                 name: 'Attendance Summary',
                 access: true,
@@ -325,7 +325,6 @@
             },
             fetchData () {
                 const me = this
-                me.loader(true)
                 let formData = new FormData()
                 let studio_id = me.$cookies.get('CSID')
 
@@ -391,6 +390,10 @@
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)
+        },
+        beforeMount () {
+            const me = this
+            me.loader(true)
         }
     }
 </script>
