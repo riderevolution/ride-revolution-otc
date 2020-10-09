@@ -64,7 +64,7 @@
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res.result.data" :key="key" v-if="res.result.data.length > 0">
-                                <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
+                                <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY hh:mm A') }}</td>
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.payment.user.customer_details.images[0].path_resized" v-if="data.payment.user.customer_details.images[0].path != null" />

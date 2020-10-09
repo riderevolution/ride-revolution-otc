@@ -111,7 +111,7 @@
                                             <tbody v-if="data.values.length > 0">
                                                 <tr v-for="(data, key) in data.values" :key="key">
                                                     <td>
-                                                        <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${data.slug}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${data.slug}`, data.id)">{{ data.name }}</nuxt-link>
+                                                        <a target="_blank" class="table_data_link" :href="`${$route.path}/${data.slug}?payment_status=${payment_status}&slug=class-package&id=${data.id}&start_date=${form.start_date}&end_date=${form.end_date}`">{{ data.name }}</a>
                                                     </td>
                                                     <td>{{ (data.sold) ? data.sold : 0 }}</td>
                                                     <td>{{ (data.returned) ? data.returned : 0 }}</td>
@@ -241,7 +241,19 @@
             toggleInnerReport (type, path, id) {
                 const me = this
                 // me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
-                me.$router.push(`${path}?payment_status=${me.payment_status}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(
+                    {
+                        path: `${path}`,
+                        query: {
+                            payment_status: me.payment_status,
+                            slug: type,
+                            id: id,
+                            start_date: me.form.start_date,
+                            end_date: me.form.end_date
+                        }
+                    }
+                )
+                // me.$router.push(`${path}?payment_status=${me.payment_status}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
