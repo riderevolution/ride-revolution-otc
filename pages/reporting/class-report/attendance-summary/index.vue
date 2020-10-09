@@ -111,7 +111,7 @@
                                 <td>{{ countValues(data, 'repeats') }}</td>
                                 <td>{{ totalPercentage('average', data) }}</td>
                                 <td>{{ totalItems(data.number_of_classes) }}</td>
-                                <td>{{ totalItems(data.number_of_classes) }}</td>
+                                <td>{{ totalItems(data.classes_to_charge) }}</td>
                                 <td>{{ (studio.online_class) ? 'Unlimited' : studio.capacity }}</td>
                                 <td>{{ totalPercentage('capacity', data) }}</td>
                                 <td>{{ totalPercentage('paying', data) }}</td>
