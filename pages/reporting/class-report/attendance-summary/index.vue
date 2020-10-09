@@ -283,10 +283,12 @@
 
                 switch (type) {
                     case 'capacity':
-                        if (me.studio.online_class) {
-                            percent = me.totalItems(`${(avg_riders / total_riders) * 100}`)
-                        } else {
-                            percent = me.totalItems(`${(avg_riders / me.studio.capacity) * 100}`)
+                        if (avg_riders != 0) {
+                            if (me.studio.online_class) {
+                                percent = me.totalItems(`${(avg_riders / total_riders) * 100}`)
+                            } else {
+                                percent = me.totalItems(`${(avg_riders / me.studio.capacity) * 100}`)
+                            }
                         }
                         break
                     case 'paying':
