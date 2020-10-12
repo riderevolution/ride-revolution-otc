@@ -9,7 +9,7 @@
             </div>
             <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
             <div class="cms_table_package">
-                <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="packageCount > 0 && (data.count > 0 && !data.expired)">
+                <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="packageCount > 0 && !data.expired">
                     <h2 class="package_title">
                         {{ data.class_package.name }}
                         <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
@@ -61,7 +61,8 @@
                             </div>
                         </div>
                         <div class="package_action" v-else>
-                            <div class="action_cancel_btn none">Expired</div>
+                            <div class="action_cancel_btn none" v-if="data.no_count">Consumed</div>
+                            <div class="action_cancel_btn none" v-else-if="!data.no_count && !data.expired">Expired</div>
                         </div>
                     </div>
                 </div>
@@ -648,7 +649,13 @@
                                 element.expired = false
                                 me.packageCount++
                             } else {
-                                element.expired = true
+                                if (element.count <= 0) {
+                                    me.packageCount++
+                                    element.expired = false
+                                    element.no_count = true
+                                } else {
+                                    element.expired = true
+                                }
                             }
                             result.push(element)
                         })
