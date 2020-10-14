@@ -226,7 +226,7 @@
                                         </div>
                                         <div class="form_flex_input">
                                             <label for="estimated_price_per_class">Estimated Price Per Class</label>
-                                            <input type="text" name="estimated_price_per_class" readonly class="default_text disabled number" autocomplete="off" v-validate="{required: true, decimal: 2, min_value: 1, max_value: 999999}" v-model="form.estimated_price">
+                                            <input type="text" name="estimated_price_per_class" readonly class="default_text disabled number" autocomplete="off" v-validate="{required: true, decimal: 2, min_value: 0, max_value: 999999}" v-model="form.estimated_price">
                                             <div class="placeholder">PHP</div>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('estimated_price_per_class')">{{ properFormat(errors.first('estimated_price_per_class')) }}</span></transition>
                                         </div>
@@ -251,14 +251,14 @@
                                     <div class="form_group flex">
                                         <label for="class_count">Class Count <span>*</span></label>
                                         <div :class="`form_flex_input ${(isUnlimited) ? 'not_active' : 'active'}`">
-                                            <input type="text" name="class_count" class="default_text number" placeholder="Enter class count" autocomplete="off" v-model="form.classCount" v-validate="'required|numeric|max_value:99999|min_value:0'">
+                                            <input type="text" name="class_count" class="default_text number" placeholder="Enter class count" autocomplete="off" v-model="form.classCount" v-validate="'required|numeric|max_value:99999|min_value:1'">
                                             <!-- <div class="up" @click="addCount('classCount')"></div> -->
                                             <!-- <div class="down" @click="subtractCount('classCount')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('class_count')">{{ properFormat(errors.first('class_count')) }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <div class="form_check">
-                                                <input type="checkbox" id="class_count_unlimited" name="class_count_unlimited" class="action_check" @change="isUnlimited ^= true">
+                                                <input type="checkbox" id="class_count_unlimited" name="class_count_unlimited" class="action_check" @change="toggleUnlimited()">
                                                 <label for="class_count_unlimited">Unlimited</label>
                                             </div>
                                         </div>
@@ -389,7 +389,7 @@
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: '',
-                    classCount: 0,
+                    classCount: 1,
                     expiryIn: 0,
                     notActivated: 0,
                     purchaseLimit: 0,
@@ -401,25 +401,40 @@
             }
         },
         methods: {
+            toggleUnlimited () {
+                const me = this
+                me.isUnlimited ^= true
+                me.computeEstimatedPrice()
+            },
             computeEstimatedPrice () {
                 const me = this
                 let price = (me.isPromo) ? me.form.discounted_price : me.form.package_price
-                if (me.form.expiry_type == 'day') {
-                    if (price && price != 0) {
+                if (me.isUnlimited) {
+                    if (me.form.expiry_type == 'day') {
+                        if (price && price != 0) {
+                            if (me.form.expiryIn) {
+                                me.form.estimated_price = parseFloat(price / (parseInt(me.form.expiryIn) + 1)).toFixed(2)
+                            } else {
+                                me.form.estimated_price = 0
+                            }
+                        }
+                    } else {
                         if (me.form.expiryIn) {
-                            me.form.estimated_price = parseFloat(price / (parseInt(me.form.expiryIn) + 1)).toFixed(2)
+                            let current = me.$moment(), month = me.$moment().add(me.form.expiryIn, 'M'), days = month.diff(current, 'days')
+                            if (price && price != 0) {
+                                me.form.estimated_price = parseFloat(price / (days + 1)).toFixed(2)
+                            }
                         } else {
                             me.form.estimated_price = 0
                         }
                     }
                 } else {
-                    if (me.form.expiryIn) {
-                        let current = me.$moment(), month = me.$moment().add(me.form.expiryIn, 'M'), days = month.diff(current, 'days')
-                        if (price && price != 0) {
-                            me.form.estimated_price = parseFloat(price / (days + 1)).toFixed(2)
+                    if (price && price != 0) {
+                        if (me.form.classCount) {
+                            me.form.estimated_price = parseFloat(price / parseInt(me.form.classCount)).toFixed(2)
+                        } else {
+                            me.form.estimated_price = 0
                         }
-                    } else {
-                        me.form.estimated_price = 0
                     }
                 }
             },

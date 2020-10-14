@@ -1,6 +1,7 @@
 <template>
     <transition name="fade">
         <div class="content" v-if="loaded">
+            {{ attendanceSummaryAttributes }}
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
                     <div class="action_wrapper">
@@ -69,7 +70,7 @@
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
-                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" :max-date="$moment().subtract(1, 'days').format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
@@ -110,8 +111,8 @@
                                 <td>{{ countValues(data, 'waitlist') }}</td>
                                 <td>{{ countValues(data, 'repeats') }}</td>
                                 <td>{{ totalPercentage('average', data) }}</td>
-                                <td>{{ totalItems(data.values.length) }}</td>
-                                <td>{{ totalItems(data.values.length) }}</td>
+                                <td>{{ totalItems(data.number_of_classes) }}</td>
+                                <td>{{ totalItems(data.number_of_classes) }}</td>
                                 <td>{{ (studio.online_class) ? 'Unlimited' : studio.capacity }}</td>
                                 <td>{{ totalPercentage('capacity', data) }}</td>
                                 <td>{{ totalPercentage('paying', data) }}</td>
@@ -151,8 +152,8 @@
                     class_type_id: '',
                     class_package_id: '',
                     customer_type_id: '',
-                    start_date: this.$moment('09-01-20').format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    start_date: this.$moment().subtract(1, 'days').format('YYYY-MM-DD'),
+                    end_date: this.$moment().subtract(1, 'days').format('YYYY-MM-DD')
                 },
                 name: 'Attendance Summary',
                 access: true,
@@ -198,37 +199,35 @@
                 const me = this
                 let result = 0
 
-                data.values.forEach((value, key) => {
-                    switch (type) {
-                        case 'total_riders':
-                            result += value.total_riders
-                            break
-                        case 'paying_riders':
-                            result += value.paying_riders
-                            break
-                        case 'comped_riders':
-                            result += value.comped_riders
-                            break
-                        case 'first_timers':
-                            result += value.first_timers
-                            break
-                        case 'no_shows':
-                            result += value.no_shows
-                            break
-                        case 'cancel':
-                            result += value.cancel
-                            break
-                        case 'waitlist':
-                            result += value.waitlist
-                            break
-                        case 'repeats':
-                            result += value.repeats
-                            break
-                        case 'revenue':
-                            result += value.revenue
-                            break
-                    }
-                })
+                switch (type) {
+                    case 'total_riders':
+                        result += data.total_riders
+                        break
+                    case 'paying_riders':
+                        result += data.paying_riders
+                        break
+                    case 'comped_riders':
+                        result += data.comped_riders
+                        break
+                    case 'first_timers':
+                        result += data.first_timers
+                        break
+                    case 'no_shows':
+                        result += data.no_shows
+                        break
+                    case 'cancel':
+                        result += data.cancel
+                        break
+                    case 'waitlist':
+                        result += data.waitlist
+                        break
+                    case 'repeats':
+                        result += data.repeats
+                        break
+                    case 'revenue':
+                        result += data.revenue
+                        break
+                }
 
                 return result
             },
@@ -259,31 +258,29 @@
                 let paying_riders = 0
                 let comped_riders = 0
 
-                data.values.forEach((value, key) => {
-                    switch (type) {
-                        case 'capacity':
-                            if (value.temp_avg_riders != 0) {
-                                if (me.studio.online_class) {
-                                    total_riders += value.total_riders
-                                    avg_riders += value.temp_avg_riders
-                                } else {
-                                    avg_riders += value.temp_avg_riders
-                                }
+                switch (type) {
+                    case 'capacity':
+                        if (data.temp_avg_riders != 0) {
+                            if (me.studio.online_class) {
+                                total_riders += data.total_riders
+                                avg_riders += data.temp_avg_riders
+                            } else {
+                                avg_riders += data.temp_avg_riders
                             }
-                            break
-                        case 'paying':
-                            if (value.paying_riders != 0) {
-                                paying_riders += value.paying_riders
-                                comped_riders += value.comped_riders
-                            }
-                            break
-                        case 'average':
-                            if (value.temp_avg_riders != 0) {
-                                avg_riders += value.temp_avg_riders
-                            }
-                            break
-                    }
-                })
+                        }
+                        break
+                    case 'paying':
+                        if (data.paying_riders != 0) {
+                            paying_riders += data.paying_riders
+                            comped_riders += data.comped_riders
+                        }
+                        break
+                    case 'average':
+                        if (data.temp_avg_riders != 0) {
+                            avg_riders += data.temp_avg_riders
+                        }
+                        break
+                }
 
                 switch (type) {
                     case 'capacity':
@@ -297,7 +294,7 @@
                         percent = me.totalItems(`${(paying_riders / (paying_riders - comped_riders)) * 100}`)
                         break
                     case 'average':
-                        percent = me.totalItems(avg_riders / data.values.length)
+                        percent = me.totalItems(avg_riders / data.number_of_classes)
                         break
                 }
 
@@ -325,7 +322,6 @@
             },
             fetchData () {
                 const me = this
-                me.loader(true)
                 let formData = new FormData()
                 let studio_id = me.$cookies.get('CSID')
 
@@ -391,6 +387,10 @@
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }, 300)
+        },
+        beforeMount () {
+            const me = this
+            me.loader(true)
         }
     }
 </script>

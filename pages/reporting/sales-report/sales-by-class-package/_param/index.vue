@@ -137,9 +137,9 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        // 'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
+                        'Class Package': me.package.name,
                         'Date of Purchase': me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'Full Name': (value.payment.user != null) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
+                        'Full Name': (value.payment != null) ? `${value.payment.user.fullname}` : '-',
                         'Qty': value.quantity,
                         'Payment': (value.payment) ? value.payment.payment_method.method : '-',
                         'Comp Reason': (value.payment) ? (value.payment.payment_method.method == 'comp' ? value.payment.payment_method.comp_reason : 'N/A') : '-',

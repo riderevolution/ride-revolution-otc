@@ -59,7 +59,7 @@
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th>Class Package</th>
+                                <th>Package Type</th>
                                 <th>Sold</th>
                                 <th>Returned</th>
                                 <th>Comp</th>
@@ -98,14 +98,14 @@
                                         <table class="cms_table alt">
                                             <thead>
                                                 <tr>
-                                                    <th>Spot</th>
-                                                    <th>Customer</th>
-                                                    <th>Status</th>
-                                                    <th>Package Used</th>
+                                                    <th>Package</th>
+                                                    <th>Sold</th>
+                                                    <th>Returned</th>
                                                     <th>Comp</th>
-                                                    <th>Revenue</th>
+                                                    <th>Comp Value</th>
                                                     <th>Discount</th>
-                                                    <th>Net Revenue</th>
+                                                    <th>Discount</th>
+                                                    <th>Income</th>
                                                 </tr>
                                             </thead>
                                             <tbody v-if="data.values.length > 0">
@@ -200,6 +200,7 @@
                 me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1`, formData).then(res => {
                     if (res.data) {
                         res.data.result.forEach((item, key) => {
+                            console.log(item);
                             item.values.forEach((value, key) => {
                                 me.values.push(value)
                             })

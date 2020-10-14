@@ -99,8 +99,6 @@ Vue.mixin({
                 let token = this.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 formData.append('page_name', page.name)
-
-                me.loader(true)
                 let nav = []
                 if (token != null || token != undefined) {
                     me.$axios.post('api/extras/page-permission', formData, {
@@ -113,7 +111,6 @@ Vue.mixin({
                         console.log(err);
                     }).then(() => {
                         resolve('ok')
-                        me.loader(false)
                     })
                 } else {
                     this.logout()
@@ -123,7 +120,6 @@ Vue.mixin({
         getNavItems (page) {
             const me = this
             return new Promise((resolve, reject) => {
-                me.loader(true)
                 let token = this.$cookies.get('70hokcotc3hhhn5')
                 let nav = []
                 if (token != null || token != undefined) {
@@ -135,8 +131,6 @@ Vue.mixin({
                         page.navItems = res.data.items
                     }).catch(err => {
                         console.log(err);
-                    }).then(() => {
-                        me.loader(false)
                     })
                 } else {
                     this.logout()
