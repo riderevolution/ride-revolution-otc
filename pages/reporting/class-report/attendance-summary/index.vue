@@ -1,6 +1,7 @@
 <template>
     <transition name="fade">
         <div class="content" v-if="loaded">
+            {{ attendanceSummaryAttributes }}
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
                     <div class="action_wrapper">
