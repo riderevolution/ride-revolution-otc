@@ -63,10 +63,8 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="2"><b>Summary</b></td>
-                                <td><b>{{ totalItems(res.summary.starting_class_count) }}</b></td>
-                                <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
-                                <td><b>{{ totalItems(res.summary.remaining_class_count) }}</b></td>
+                                <td colspan="3"><b>Summary</b></td>
+                                <td colspan="2"><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.remaining_value) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res.classPackages.data" :key="key">

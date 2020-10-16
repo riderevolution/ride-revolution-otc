@@ -6,7 +6,7 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>Attendance with Revenue</h1>
+                                <h1>Attendance by Schedule</h1>
                                 <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Revenue for each class schedule</h2>
@@ -18,8 +18,8 @@
                             <download-csv
                                 v-if="res.scheduled_dates.data.length > 0"
                                 class="hidden me"
-                                :data="attendanceWithRevenueAttributes"
-                                :name="`attendance-with-revenue-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
+                                :data="attendanceByScheduleAttributes"
+                                :name="`attendance-by-schedule-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                         </div>
@@ -80,50 +80,48 @@
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                <th>Time</th>
-                                <th>Class Type</th>
-                                <th>Instructor</th>
+                                <th>Total Class</th>
                                 <th>Total Riders</th>
                                 <th>Total Revenue</th>
                                 <th>Total Discount</th>
                                 <th>Total Net Revenue</th>
                             </tr>
                         </thead>
-                        <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.scheduled_dates.data" v-if="res.scheduled_dates.data.length > 0">
+                        <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.scheduled_dates.data" v-if="res.scheduled_dates.data.length > 0">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment(data.date).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ data.schedule.start_time }}</td>
-                                <td>{{ (data.schedule.set_custom_name) ? data.schedule.custom_name : data.schedule.class_type.name }}</td>
-                                <td>{{ getInstructorsInSchedule(data) }}</td>
-                                <td>{{ data.bookings.length }}</td>
+                                <td>{{ data.values.length }}</td>
+                                <td>{{ totalItems(data.total_riders) }}</td>
                                 <td>Php {{ totalCount(data.total_revenue) }}</td>
-                                <td>0</td>
+                                <td>Php {{ totalCount(data.total_discount) }}</td>
                                 <td>Php {{ totalCount(data.total_net_revenue) }}</td>
                             </tr>
                             <tr>
-                                <td class="pads" colspan="8">
+                                <td class="pads" colspan="7">
                                     <div class="accordion_table">
                                         <table class="cms_table alt">
                                             <thead>
                                                 <tr>
-                                                    <th>Spot</th>
-                                                    <th>Customer</th>
-                                                    <th>Status</th>
-                                                    <th>Package Used</th>
+                                                    <th>Time</th>
+                                                    <th>Class Type</th>
+                                                    <th>Instructor</th>
+                                                    <th>Bookings</th>
+                                                    <th>Riders</th>
                                                     <th>Revenue</th>
                                                     <th>Discount</th>
                                                     <th>Net Revenue</th>
                                                 </tr>
                                             </thead>
-                                            <tbody v-if="data.bookings.length > 0">
-                                                <tr v-for="(booking, key) in data.bookings" :key="key">
-                                                    <td>{{ (booking.seat.position != 'Online') ? booking.seat.number : '-' }}</td>
-                                                    <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
-                                                    <td>{{ replacer(booking.status).charAt(0).toUpperCase()}}{{ replacer(booking.status).slice(1) }}</td>
-                                                    <td>{{ booking.class_package.name }}</td>
-                                                    <td>Php {{ totalCount(booking.revenue) }}</td>
-                                                    <td>Php 0</td>
-                                                    <td>Php {{ totalCount(booking.net_revenue) }}</td>
+                                            <tbody v-if="data.values.length > 0">
+                                                <tr v-for="(value, key) in data.values" :key="key">
+                                                    <td>{{ value.schedule.start_time }}</td>
+                                                    <td>{{ (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name }}</td>
+                                                    <td>{{ getInstructorsInSchedule(value) }}</td>
+                                                    <td>{{ totalItems(value.bookings.length) }}</td>
+                                                    <td>{{ totalItems(value.riders) }}</td>
+                                                    <td>Php {{ totalCount(value.revenue) }}</td>
+                                                    <td>Php {{ totalCount(value.discount) }}</td>
+                                                    <td>Php {{ totalCount(value.net_revenue) }}</td>
                                                 </tr>
                                             </tbody>
                                             <tbody class="no_results" v-else>
@@ -138,7 +136,7 @@
                         </tbody>
                         <tbody class="no_results" v-if="res.scheduled_dates.data.length == 0">
                             <tr>
-                                <td colspan="8">No Result(s) Found.</td>
+                                <td colspan="7">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -186,25 +184,28 @@
                 classTypes: [],
                 classPackages: [],
                 instructors: [],
-                name: 'Attendance with Revenue',
+                name: 'Attendance by Schedule',
                 access: true,
                 loaded: false,
                 filter: true
             }
         },
         computed: {
-            attendanceWithRevenueAttributes () {
+            attendanceByScheduleAttributes () {
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
+                        'Schedule ID': value.id,
+                        'Studio': me.studio.name,
                         'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
                         'Time': value.schedule.start_time,
                         'Class Type': (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name,
                         'Instructor': me.getInstructorsInSchedule(value),
-                        'Spot': (value.seat.position != 'Online') ? value.seat.number : '-',
-                        'Customer': `${value.user.first_name} ${value.user.last_name}`,
-                        'Status': value.status,
-                        'Revenue': value.revenue
+                        'Bookings': me.totalItems(value.bookings .length),
+                        'Riders': me.totalItems(value.riders),
+                        'Revenue': me.totalCount(value.revenue),
+                        'Discount': me.totalCount(value.discount),
+                        'Net Revenue': me.totalCount(value.net_revenue)
                     }))
                 ]
             }
@@ -215,13 +216,11 @@
                 let formData = new FormData(document.getElementById('filter'))
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/attendance-with-revenue?all=1`, formData).then(res => {
+                me.$axios.post(`api/reporting/classes/attendance-by-schedule?all=1`, formData).then(res => {
                     if (res.data) {
 
                         res.data.scheduled_dates.forEach((item, index) => {
-                            item.bookings.forEach((child, index) => {
-                                child.schedule = item.schedule
-                                child.parent = false
+                            item.values.forEach((child, index) => {
                                 me.values.push(child)
                             })
                         })
@@ -291,7 +290,7 @@
                 formData.append('class_type_id', me.form.class_type_id)
                 formData.append('class_package_id', me.form.class_package_id)
                 formData.append('customer_type_id', me.form.customer_type_id)
-                me.$axios.post(`api/reporting/classes/attendance-with-revenue`, formData).then(res => {
+                me.$axios.post(`api/reporting/classes/attendance-by-schedule`, formData).then(res => {
                     setTimeout( () => {
 
                         res.data.scheduled_dates.data.forEach((item, index) => {

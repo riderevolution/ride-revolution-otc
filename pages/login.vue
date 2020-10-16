@@ -98,8 +98,13 @@
                     case 'prev':
                         me.step = 1
                         me.userType = null
+                        me.hasStudio = false
                         break
                 }
+                me.form.email = ''
+                me.form.password = ''
+                me.form.type = 0
+                me.form.studio_id = 0
             },
             selectStudio (event) {
                 const me = this

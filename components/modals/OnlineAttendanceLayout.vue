@@ -163,13 +163,9 @@
                 let result = ''
                 if (data != '') {
                     let ins_ctr = 0
-                    let instructor = []
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.substitute == 0) {
                             ins_ctr += 1
-                        }
-                        if (ins.primary == 1) {
-                            instructor = ins
                         }
                     })
 
@@ -186,9 +182,6 @@
                             result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         }
                     }
-
-                } else {
-                    result = 'Please Select a Class'
                 }
 
                 return result
