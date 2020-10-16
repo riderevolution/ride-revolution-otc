@@ -92,7 +92,6 @@
                                 <th class="stick">Repeat</th>
                                 <th class="stick">Avg Riders</th>
                                 <th class="stick">Number Classes</th>
-                                <th class="stick">Classes to Charge</th>
                                 <th class="stick">Avg Spots</th>
                                 <th class="stick">Capacity</th>
                                 <th class="stick">Paying</th>
@@ -112,7 +111,6 @@
                                 <td>{{ countValues(data, 'repeats') }}</td>
                                 <td>{{ totalPercentage('average', data) }}</td>
                                 <td>{{ totalItems(data.number_of_classes) }}</td>
-                                <td>{{ totalItems(data.classes_to_charge) }}</td>
                                 <td>{{ (studio.online_class) ? 'Unlimited' : studio.capacity }}</td>
                                 <td>{{ totalPercentage('capacity', data) }}</td>
                                 <td>{{ totalPercentage('paying', data) }}</td>
