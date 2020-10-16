@@ -181,8 +181,7 @@
                         'Waitlist': me.countValues(value, 'waitlist'),
                         'Repeat': me.countValues(value, 'repeats'),
                         'Avg Riders': me.totalPercentage('average', value),
-                        'Number Classes': me.totalItems(value.values.length),
-                        'Classes to Charge': me.totalItems(value.values.length),
+                        'Number Classes': me.totalItems(value.number_of_classes),
                         'Avg Spots': (me.studio.online_class) ? 'Unlimited' : me.studio.capacity,
                         'Capacity': me.totalPercentage('capacity', value),
                         'Paying': me.totalPercentage('paying', value),
@@ -235,7 +234,7 @@
                 me.loader(true)
                 me.$axios.post(`api/reporting/classes/attendance-summary?all=1`, formData).then(res => {
                     if (res.data) {
-
+                        console.log(res.data);
                         res.data.schedules.forEach((item, index) => {
                             me.values.push(item)
                         })
