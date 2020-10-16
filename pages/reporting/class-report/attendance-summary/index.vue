@@ -1,7 +1,6 @@
 <template>
     <transition name="fade">
         <div class="content" v-if="loaded">
-            {{ attendanceSummaryAttributes }}
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
                     <div class="action_wrapper">
@@ -255,6 +254,8 @@
                 let avg_riders = 0
                 let paying_riders = 0
                 let comped_riders = 0
+                let no_shows = 0
+                let to_less = 0
 
                 switch (type) {
                     case 'capacity':
@@ -276,10 +277,11 @@
                     case 'average':
                         if (data.temp_avg_riders != 0) {
                             avg_riders += data.temp_avg_riders
+                            no_shows += data.no_shows
+                            comped_riders += data.comped_riders
                         }
                         break
                 }
-
                 switch (type) {
                     case 'capacity':
                         if (avg_riders != 0) {
@@ -294,6 +296,7 @@
                         percent = me.totalItems(`${(paying_riders / (paying_riders - comped_riders)) * 100}`)
                         break
                     case 'average':
+                        to_less = no_shows + comped_riders
                         percent = me.totalItems(avg_riders / data.number_of_classes)
                         break
                 }
