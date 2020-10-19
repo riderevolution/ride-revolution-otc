@@ -37,8 +37,7 @@
                     <td>{{ countValues(data, 'waitlist') }}</td>
                     <td>{{ countValues(data, 'repeats') }}</td>
                     <td>{{ totalPercentage('average', data) }}</td>
-                    <td>{{ totalItems(data.values.length) }}</td>
-                    <td>{{ totalItems(data.values.length) }}</td>
+                    <td>{{ totalItems(data.number_of_classes) }}</td>
                     <td>{{ (studio.online_class) ? 'Unlimited' : studio.capacity }}</td>
                     <td>{{ totalPercentage('capacity', data) }}</td>
                     <td>{{ totalPercentage('paying', data) }}</td>
@@ -119,46 +118,50 @@
                 let avg_riders = 0
                 let paying_riders = 0
                 let comped_riders = 0
-
-                data.values.forEach((value, key) => {
-                    switch (type) {
-                        case 'capacity':
-                            if (value.temp_avg_riders != 0) {
-                                if (me.studio.online_class) {
-                                    total_riders += value.total_riders
-                                    avg_riders += value.temp_avg_riders
-                                } else {
-                                    avg_riders += value.temp_avg_riders
-                                }
-                            }
-                            break
-                        case 'paying':
-                            if (value.paying_riders != 0) {
-                                paying_riders += value.paying_riders
-                                comped_riders += value.comped_riders
-                            }
-                            break
-                        case 'average':
-                            if (value.temp_avg_riders != 0) {
-                                avg_riders += value.temp_avg_riders
-                            }
-                            break
-                    }
-                })
+                let no_shows = 0
+                let to_less = 0
 
                 switch (type) {
                     case 'capacity':
-                        if (me.studio.online_class) {
-                            percent = me.totalItems(`${(avg_riders / total_riders) * 100}`)
-                        } else {
-                            percent = me.totalItems(`${(avg_riders / me.studio.capacity) * 100}`)
+                        if (data.temp_avg_riders != 0) {
+                            if (me.studio.online_class) {
+                                total_riders += data.total_riders
+                                avg_riders += data.temp_avg_riders
+                            } else {
+                                avg_riders += data.temp_avg_riders
+                            }
                         }
                         break
                     case 'paying':
-                        percent = me.totalItems(`${(paying_riders / (paying_riders - comped_riders)) * 100}`)
+                        if (data.paying_riders != 0) {
+                            paying_riders += data.paying_riders
+                            comped_riders += data.comped_riders
+                        }
                         break
                     case 'average':
-                        percent = me.totalItems(avg_riders / data.values.length)
+                        if (data.temp_avg_riders != 0) {
+                            avg_riders += data.temp_avg_riders
+                            no_shows += data.no_shows
+                            comped_riders += data.comped_riders
+                        }
+                        break
+                }
+                switch (type) {
+                    case 'capacity':
+                        if (avg_riders != 0) {
+                            if (me.studio.online_class) {
+                                percent = me.totalItems(`${(avg_riders / total_riders) * 100}`)
+                            } else {
+                                percent = me.totalItems(`${(avg_riders / me.studio.capacity) * 100}`)
+                            }
+                        }
+                        break
+                    case 'paying':
+                        percent = me.totalItems(`${(paying_riders / data.total_riders) * 100}`)
+                        break
+                    case 'average':
+                        to_less = no_shows + comped_riders
+                        percent = me.totalItems(avg_riders / data.number_of_classes)
                         break
                 }
 

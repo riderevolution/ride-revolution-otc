@@ -36,7 +36,7 @@
                                 <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
                                     <option value="" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                                    <option value="ol">Website/Online Sales</option>
+                                    <option value="os">Website/Online Sales</option>
                                 </select>
                             </div>
                             <div class="form_group margin">

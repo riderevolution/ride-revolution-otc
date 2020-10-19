@@ -64,7 +64,7 @@
                             </div>
                             <div class="form_group margin">
                                 <label for="start_date">Start Date <span>*</span></label>
-                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'" :max-date="$moment().subtract(1, 'days').format('YYYY-MM-DD')"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
@@ -81,7 +81,7 @@
                         <thead>
                             <tr>
                                 <th class="stick">Date</th>
-                                <th class="stick">Total Rides</th>
+                                <th class="stick">Total Riders</th>
                                 <th class="stick">Paying Riders</th>
                                 <th class="stick">Comped Riders</th>
                                 <th class="stick">First Timers</th>
@@ -194,7 +194,6 @@
             countValues (data, type) {
                 const me = this
                 let result = 0
-                let comped = 0
 
                 switch (type) {
                     case 'total_riders':
@@ -202,7 +201,6 @@
                         break
                     case 'paying_riders':
                         result += data.paying_riders
-                        comped += data.comped_riders
                         break
                     case 'comped_riders':
                         result += data.comped_riders
@@ -226,13 +224,7 @@
                         result += data.revenue
                         break
                 }
-
-                if (type == 'paying_riders') {
-                    result = result - comped
-                    return result
-                } else {
-                    return result
-                }
+                return result
             },
             getClasses () {
                 const me = this
@@ -299,7 +291,7 @@
                         }
                         break
                     case 'paying':
-                        percent = me.totalItems(`${(paying_riders / (paying_riders - comped_riders)) * 100}`)
+                        percent = me.totalItems(`${(paying_riders / data.total_riders) * 100}`)
                         break
                     case 'average':
                         to_less = no_shows + comped_riders
