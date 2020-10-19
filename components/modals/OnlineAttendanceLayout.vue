@@ -162,10 +162,13 @@
                 const me = this
                 let result = ''
                 if (data != '') {
-                    let ins_ctr = 0
+                    let ins_ctr = 0, instructor = []
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.substitute == 0) {
                             ins_ctr += 1
+                        }
+                        if (ins.primary == 1) {
+                            instructor = ins
                         }
                     })
 
@@ -259,7 +262,6 @@
             },
             initial () {
                 const me = this
-                console.log(me.schedule);
                 me.loader(true)
                 me.$axios.get(`api/online-class-bookings?scheduled_date_id=${me.schedule.id}`).then(res => {
                     if (res.data) {
