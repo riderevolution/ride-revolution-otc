@@ -3,17 +3,18 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
-                    <nuxt-link to="/reporting/sales-report/sales-by-class-package" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Class Package</span></nuxt-link>
+                    <nuxt-link :to="`/reporting/sales-report/sales-by-class-package?payment_status=${payment_status}&start_date=${form.start_date}&end_date=${form.end_date}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Class Package</span></nuxt-link>
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ package.name }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ payment_status }})</h1>
+                                <h1>{{ package.name }} - ({{ payment_status }})</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ package.name }}.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?payment_status=${payment_status}&slug=class-package&id=${$route.query.id}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <!-- <a :href="`/print/reporting/sales/class-package/${$route.params.param}?payment_status=${payment_status}&slug=class-package&id=${$route.query.id}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a> -->
+                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?payment_status=${payment_status}&slug=class-package&id=${$route.query.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -36,7 +37,7 @@
                             <input type="hidden" name="payment_status" :value="payment_status">
                             <input type="hidden" name="start_date" :value="form.start_date">
                             <input type="hidden" name="end_date" :value="form.end_date">
-                            <input type="hidden" name="studio_id" :value="form.studio_id">
+                            <!-- <input type="hidden" name="studio_id" :value="form.studio_id"> -->
                         </form>
                     </div>
                 </section>
@@ -63,7 +64,7 @@
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res.result.data" :key="key" v-if="res.result.data.length > 0">
-                                <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
+                                <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY hh:mm A') }}</td>
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.payment.user.customer_details.images[0].path_resized" v-if="data.payment.user.customer_details.images[0].path != null" />
@@ -72,7 +73,8 @@
                                                 {{ data.payment.user.first_name.charAt(0) }}{{ data.payment.user.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <div class="table_data_link" @click="openWindow(`/customers/${data.payment.user.id}/packages`)">{{ data.payment.user.fullname }}</div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.payment.user.id}/packages`)" v-if="data.payment.user != null">{{ data.payment.user.fullname }}</div>
+                                        <div v-else>N/A</div>
                                     </div>
                                 </td>
                                 <td>{{ data.quantity }}</td>
@@ -135,9 +137,9 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
+                        'Class Package': me.package.name,
                         'Date of Purchase': me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'Full Name': (value.payment.user != null) ? `${value.payment.user.first_name} ${value.payment.user.last_name}` : '-',
+                        'Full Name': (value.payment != null) ? `${value.payment.user.fullname}` : '-',
                         'Qty': value.quantity,
                         'Payment': (value.payment) ? value.payment.payment_method.method : '-',
                         'Comp Reason': (value.payment) ? (value.payment.payment_method.method == 'comp' ? value.payment.payment_method.comp_reason : 'N/A') : '-',
@@ -190,16 +192,16 @@
                 if (me.$route.query.id) {
                     me.form.id = me.$route.query.id
                 }
-                if (me.$route.query.studio_id) {
-                    me.form.studio_id = me.$route.query.studio_id
-                }
+                // if (me.$route.query.studio_id) {
+                //     me.form.studio_id = me.$route.query.studio_id
+                // }
 
                 formData.append('slug', me.form.slug)
                 formData.append('id', me.form.id)
                 formData.append('payment_status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                formData.append('studio_id', me.form.studio_id)
+                // formData.append('studio_id', me.form.studio_id)
 
                 me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
@@ -208,11 +210,11 @@
                             me.total = res.data.total
                             me.package = res.data.package
 
-                            if (me.form.studio_id != '') {
-                                me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
-                                    me.studio = res.data.studio
-                                })
-                            }
+                            // if (me.form.studio_id != '') {
+                            //     me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                            //         me.studio = res.data.studio
+                            //     })
+                            // }
 
                             me.loaded = true
                         }, 500)

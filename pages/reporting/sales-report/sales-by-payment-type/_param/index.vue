@@ -3,7 +3,7 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
-                    <nuxt-link to="/reporting/sales-report/sales-by-payment-type" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Payment Type</span></nuxt-link>
+                    <nuxt-link :to="`/reporting/sales-report/sales-by-payment-type?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Payment Type</span></nuxt-link>
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
@@ -59,8 +59,16 @@
                                 <td>{{ $moment(data.updated_at).format('h:mm A') }}</td>
                                 <td>{{ data.payment_code }}</td>
                                 <td>
-                                    <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</div>
-                                    <div v-else>N/A</div>
+                                    <div class="thumb">
+                                        <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)" v-if="data.user != null">{{ data.user.fullname }}</div>
+                                        <div v-else>N/A</div>
+                                    </div>
                                 </td>
                                 <td :class="`${(data.status == 'paid') ? 'green' : 'red'}`">{{ (data.status == 'paid') ? 'Paid' : 'Pending' }}</td>
                                 <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
@@ -125,7 +133,7 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
+                        'Studio': me.studio.name,
                         'Payment Type': me.$route.params.param,
                         'Payment Status': me.payment_status,
                         'Date': me.$moment(value.updated_at).format('MMMM DD, YYYY'),
@@ -193,10 +201,14 @@
                             me.res = res.data
                             me.total = res.data.total
 
-                            if (me.form.studio_id != '') {
-                                me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                            if (me.form.studio_id != 0 && me.form.studio_id != 'os') {
+                                me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
+                            } else {
+                                me.studio = {
+                                    name: (me.form.studio_id == 'os' ? 'Online Sales' : 'All Studios')
+                                }
                             }
 
                             me.loaded = true

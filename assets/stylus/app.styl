@@ -2757,7 +2757,7 @@ input::placeholder
             right: calc(0px + 15px)
     .placeholder
         position: absolute
-        top: 50%
+        top: calc(50% + 13px)
         right: calc(0px + 10px)
         z-index: 1
         sf_pro_regular(14px)
@@ -4874,6 +4874,9 @@ input::placeholder
                                 margin-bottom: 3px
                                 text-decoration: none
                                 &.private
+                                    &.completed
+                                        img
+                                            filter: invert(1)
                                     .class_text
                                         display: flex
                                         align-items: center
@@ -5210,6 +5213,10 @@ input::placeholder
                         margin-bottom: 0
                         tbody
                             box-shadow: none
+                            tr
+                                &.grayed
+                                    td
+                                        color: $gray
                             td
                                 sf_pro_regular(14px)
                                 color: $black

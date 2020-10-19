@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Income from class package sold.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package?payment_status=${payment_status}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -29,14 +29,14 @@
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
-                            <div class="form_group">
+                            <!-- <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
                                     <option value="" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
-                            </div>
-                            <div class="form_group margin">
+                            </div> -->
+                            <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
@@ -59,7 +59,7 @@
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th>Class Package</th>
+                                <th>Package Type</th>
                                 <th>Sold</th>
                                 <th>Returned</th>
                                 <th>Comp</th>
@@ -81,7 +81,7 @@
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
                         </tbody>
-                        <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.result.data">
+                        <tbody :class="`${(data.open) ? 'toggled' : ''} tbp`" v-for="(data, key) in res.result.data">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.parent.name }}</td>
                                 <td>{{ data.parent.sold }}</td>
@@ -98,19 +98,20 @@
                                         <table class="cms_table alt">
                                             <thead>
                                                 <tr>
-                                                    <th>Spot</th>
-                                                    <th>Customer</th>
-                                                    <th>Status</th>
-                                                    <th>Package Used</th>
-                                                    <th>Revenue</th>
+                                                    <th>Package</th>
+                                                    <th>Sold</th>
+                                                    <th>Returned</th>
+                                                    <th>Comp</th>
+                                                    <th>Comp Value</th>
                                                     <th>Discount</th>
-                                                    <th>Net Revenue</th>
+                                                    <th>Discount</th>
+                                                    <th>Income</th>
                                                 </tr>
                                             </thead>
                                             <tbody v-if="data.values.length > 0">
                                                 <tr v-for="(data, key) in data.values" :key="key">
                                                     <td>
-                                                        <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${data.slug}`" @click.native.prevent="toggleInnerReport('class-package', `${$route.path}/${data.slug}`, data.id)">{{ data.name }}</nuxt-link>
+                                                        <a target="_blank" class="table_data_link" :href="`${$route.path}/${data.slug}?payment_status=${payment_status}&slug=class-package&id=${data.id}&start_date=${form.start_date}&end_date=${form.end_date}`">{{ data.name }}</a>
                                                     </td>
                                                     <td>{{ (data.sold) ? data.sold : 0 }}</td>
                                                     <td>{{ (data.returned) ? data.returned : 0 }}</td>
@@ -158,14 +159,14 @@
                 filter: true,
                 loaded: false,
                 payment_status: 'all',
-                studios: [],
+                // studios: [],
                 res: [],
                 values: [],
                 total: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD'),
-                    studio_id: ''
+                    end_date: this.$moment().format('YYYY-MM-DD')
+                    // studio_id: ''
                 }
             }
         },
@@ -174,7 +175,7 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': this.getStudio(),
+                        // 'Studio': this.getStudio(),
                         'Payment Status': me.payment_status,
                         'Class Package': value.name,
                         'Package Type': (value.package_type) ? value.package_type.name : '-' ,
@@ -199,6 +200,7 @@
                 me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1`, formData).then(res => {
                     if (res.data) {
                         res.data.result.forEach((item, key) => {
+                            console.log(item);
                             item.values.forEach((value, key) => {
                                 me.values.push(value)
                             })
@@ -212,20 +214,20 @@
                     document.querySelector('.me').click()
                 })
             },
-            getStudio () {
-                const me = this
-                let result = ''
-                if (me.form.studio_id != '') {
-                    me.studios.forEach((studio, index) => {
-                        if (studio.id == me.form.studio_id) {
-                            result = studio.name
-                        }
-                    })
-                } else {
-                    result = 'All Studios'
-                }
-                return result
-            },
+            // getStudio () {
+            //     const me = this
+            //     let result = ''
+            //     if (me.form.studio_id != '') {
+            //         me.studios.forEach((studio, index) => {
+            //             if (studio.id == me.form.studio_id) {
+            //                 result = studio.name
+            //             }
+            //         })
+            //     } else {
+            //         result = 'All Studios'
+            //     }
+            //     return result
+            // },
             toggleAccordion (event, key) {
                 const me = this
                 const target = event.target
@@ -238,7 +240,20 @@
             },
             toggleInnerReport (type, path, id) {
                 const me = this
-                me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                // me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(
+                    {
+                        path: `${path}`,
+                        query: {
+                            payment_status: me.payment_status,
+                            slug: type,
+                            id: id,
+                            start_date: me.form.start_date,
+                            end_date: me.form.end_date
+                        }
+                    }
+                )
+                // me.$router.push(`${path}?payment_status=${me.payment_status}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
@@ -266,7 +281,7 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
                         elements.forEach((element, index) => {
                             element.querySelector('.accordion_table').style.height = 0
                         })
@@ -278,7 +293,7 @@
                 me.loader(true)
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
-                formData.append('studio_id', me.form.studio_id)
+                // formData.append('studio_id', me.form.studio_id)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
                 formData.append('payment_status', value)
@@ -289,15 +304,15 @@
                             me.total = res.data.total
                             me.values.push(res.data.total)
 
-                            me.$axios.get('api/studios', {
-                                headers: {
-                                    Authorization: `Bearer ${token}`
-                                }
-                            }).then(res => {
-                                if (res.data) {
-                                    me.studios = res.data.studios
-                                }
-                            })
+                            // me.$axios.get('api/studios', {
+                            //     headers: {
+                            //         Authorization: `Bearer ${token}`
+                            //     }
+                            // }).then(res => {
+                            //     if (res.data) {
+                            //         me.studios = res.data.studios
+                            //     }
+                            // })
 
                             me.loaded = true
                         }, 500)
@@ -320,9 +335,20 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                let studio_id = me.$cookies.get('CSID')
-                me.form.studio_id = studio_id
-                me.fetchData('all')
+                // let studio_id = me.$cookies.get('CSID')
+                // me.form.studio_id = studio_id
+
+                if (me.$route.query.start_date) {
+                    me.form.start_date = me.$route.query.start_date
+                }
+                if (me.$route.query.end_date) {
+                    me.form.end_date = me.$route.query.end_date
+                }
+                if (me.$route.query.payment_status) {
+                    me.payment_status = me.$route.query.payment_status
+                }
+
+                me.fetchData(me.payment_status)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

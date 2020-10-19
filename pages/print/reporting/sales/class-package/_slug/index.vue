@@ -1,7 +1,7 @@
 <template>
     <div class="print_table" v-if="loaded">
         <div class="text">
-            <h2>{{ package.name }} - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.payment_status }})</h2>
+            <h2>{{ package.name }} - ({{ $route.query.payment_status }})</h2>
             <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
         </div>
         <table class="cms_table print">
@@ -71,10 +71,10 @@
                 const me = this
                 let formData = new FormData()
 
-                if (me.$route.query.studio_id) {
-                    me.form.studio = me.$route.query.studio_id
-                    formData.append('studio_id', me.$route.query.studio_id)
-                }
+                // if (me.$route.query.studio_id) {
+                //     me.form.studio = me.$route.query.studio_id
+                //     formData.append('studio_id', me.$route.query.studio_id)
+                // }
                 formData.append('slug', me.$route.query.slug)
                 formData.append('id', me.$route.query.id)
                 formData.append('start_date', me.$route.query.start_date)
@@ -87,11 +87,11 @@
                             me.total = res.data.total
                             me.package = res.data.package
 
-                            if (me.form.studio_id != '') {
-                                me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
-                                    me.studio = res.data.studio
-                                })
-                            }
+                            // if (me.form.studio_id != '') {
+                            //     me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
+                            //         me.studio = res.data.studio
+                            //     })
+                            // }
 
                             me.loaded = true
                             setTimeout( () => {

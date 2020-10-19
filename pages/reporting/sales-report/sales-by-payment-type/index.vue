@@ -332,9 +332,24 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                let studio_id = me.$cookies.get('CSID')
-                me.form.studio_id = studio_id
-                me.fetchData('all')
+
+                if (me.$route.query.start_date) {
+                    me.form.start_date = me.$route.query.start_date
+                }
+                if (me.$route.query.end_date) {
+                    me.form.end_date = me.$route.query.end_date
+                }
+                if (me.$route.query.studio_id) {
+                    me.form.studio_id = me.$route.query.studio_id
+                } else {
+                    let studio_id = me.$cookies.get('CSID')
+                    me.form.studio_id = studio_id
+                }
+                if (me.$route.query.payment_status) {
+                    me.payment_status = me.$route.query.payment_status
+                }
+
+                me.fetchData(me.payment_status)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

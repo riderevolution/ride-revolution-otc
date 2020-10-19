@@ -22,9 +22,9 @@
                             <transition name="fade">
                                 <div class="form_main_group alternate" v-if="isPromo">
                                     <div class="form_group">
-                                        <label for="discounted_package_price">Discounted Package Price <span>*</span></label>
                                         <div class="form_flex_input full">
-                                            <input type="text" name="discounted_package_price" placeholder="Enter discounted package price" class="default_text number" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 999999}">
+                                            <label for="discounted_package_price">Discounted Package Price <span>*</span></label>
+                                            <input type="text" name="discounted_package_price" placeholder="Enter discounted package price" class="default_text number" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 999999}" v-model="form.discounted_price">
                                             <div class="placeholder">PHP</div>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('discounted_package_price')">{{ properFormat(errors.first('discounted_package_price')) }}</span></transition>
                                         </div>
@@ -32,12 +32,12 @@
                                     <div class="form_flex">
                                         <div class="form_group">
                                             <label for="promo_start_date">Start Date <span>*</span></label>
-                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'promo_start_date'" :name="'promo_start_date'" :min-date="$moment().format('YYYY-MM-DD')" :label="'Select start date'" v-validate="'required'"></v-ctk>
+                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'promo_start_date'" :name="'promo_start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_start_date')">{{ properFormat(errors.first('promo_start_date')) }}</span></transition>
                                         </div>
                                         <div class="form_group">
                                             <label for="promo_end_date">End Date <span>*</span></label>
-                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'promo_end_date'" :name="'promo_end_date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" :label="'Select end date'" v-validate="'required'"></v-ctk>
+                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'promo_end_date'" :name="'promo_end_date'" :label="'Select end date'" v-validate="'required'"></v-ctk>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('promo_end_date')">{{ properFormat(errors.first('promo_end_date')) }}</span></transition>
                                         </div>
                                     </div>
@@ -46,8 +46,8 @@
                                             <label>Purchase Limit <span>*</span></label>
                                             <div class="form_flex_input full">
                                                 <input type="text" name="por_purchase_limit" class="default_text number" autocomplete="off" v-model="form.purchaseLimit" v-validate="'required|numeric|max_value:99999|min_value:0'">
-                                                <div class="up" @click="addCount('purchaseLimit')"></div>
-                                                <div class="down" @click="subtractCount('purchaseLimit')"></div>
+                                                <!-- <div class="up" @click="addCount('purchaseLimit')"></div> -->
+                                                <!-- <div class="down" @click="subtractCount('purchaseLimit')"></div> -->
                                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('por_purchase_limit')">{{ properFormat(errors.first('por_purchase_limit')) }}</span></transition>
                                             </div>
                                         </div>
@@ -218,52 +218,56 @@
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group flex">
-                                        <label for="class_count">Class Count <span>*</span></label>
-                                        <div :class="`form_flex_input ${(isUnlimited) ? 'not_active' : 'active'}`">
-                                            <input type="text" name="class_count" class="default_text number" placeholder="Enter class count" autocomplete="off" v-model="form.classCount" v-validate="'required|numeric|max_value:99999|min_value:0'">
-                                            <div class="up" @click="addCount('classCount')"></div>
-                                            <div class="down" @click="subtractCount('classCount')"></div>
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('class_count')">{{ properFormat(errors.first('class_count')) }}</span></transition>
-                                        </div>
                                         <div class="form_flex_input">
-                                            <div class="form_check">
-                                                <input type="checkbox" id="class_count_unlimited" name="class_count_unlimited" class="action_check" @change="isUnlimited ^= true">
-                                                <label for="class_count_unlimited">Unlimited</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form_group flex">
-                                        <label for="package_price">Package Price <span>*</span></label>
-                                        <div class="form_flex_input full">
-                                            <input type="text" name="package_price" class="default_text number" placeholder="Enter package price" autocomplete="off" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', max_value: 999999}">
+                                            <label for="package_price">Package Price <span>*</span></label>
+                                            <input type="text" name="package_price" class="default_text number" placeholder="Enter package price" autocomplete="off" v-validate="{required: true, decimal: 2, min_value: 1, max_value: 999999}" v-model="form.package_price" @keyup="computeEstimatedPrice()">
                                             <div class="placeholder">PHP</div>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('package_price')">{{ properFormat(errors.first('package_price')) }}</span></transition>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="form_flex">
-                                    <div class="form_group flex">
-                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer</label>
-                                        <div class="form_flex_input full">
-                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" autocomplete="off"v-validate="'numeric|max_value:99999'">
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ properFormat(errors.first('purchase_limit_per_customer')) }}</span></transition>
+                                        <div class="form_flex_input">
+                                            <label for="estimated_price_per_class">Estimated Price Per Class</label>
+                                            <input type="text" name="estimated_price_per_class" readonly class="default_text disabled number" autocomplete="off" v-validate="{required: true, decimal: 2, min_value: 0, max_value: 999999}" v-model="form.estimated_price">
+                                            <div class="placeholder">PHP</div>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('estimated_price_per_class')">{{ properFormat(errors.first('estimated_price_per_class')) }}</span></transition>
                                         </div>
                                     </div>
                                     <div class="form_group flex" v-if="!isRecurring">
                                         <label>Expire In <span>*</span></label>
                                         <div class="form_flex_input">
-                                            <input type="text" name="expires_in" class="default_text number" placeholder="Enter expire in" autocomplete="off" v-model="form.expiryIn" v-validate="'required|numeric|max_value:99999|min_value:0'">
-                                            <div class="up" @click="addCount('expiryIn')"></div>
-                                            <div class="down" @click="subtractCount('expiryIn')"></div>
+                                            <input type="text" name="expires_in" class="default_text number" placeholder="Enter expire in" autocomplete="off" v-model="form.expiryIn" v-validate="'required|numeric|max_value:99999|min_value:0'" @keyup="computeEstimatedPrice()">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('expires_in')">{{ properFormat(errors.first('expires_in')) }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
-                                            <select class="default_select alternate" name="expiry_type">
+                                            <select class="default_select alternate" name="expiry_type" v-model="form.expiry_type" @change="computeEstimatedPrice()">
                                                 <option value="" disabled>Choose a Type</option>
                                                 <option value="day">Days</option>
                                                 <option value="month">Months</option>
                                             </select>
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('expiry_type')">{{ properFormat(errors.first('expiry_type')) }}</span></transition>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form_flex">
+                                    <div class="form_group flex">
+                                        <label for="class_count">Class Count <span>*</span></label>
+                                        <div :class="`form_flex_input ${(isUnlimited) ? 'not_active' : 'active'}`">
+                                            <input type="text" name="class_count" class="default_text number" placeholder="Enter class count" autocomplete="off" v-model="form.classCount" v-validate="'required|numeric|max_value:99999|min_value:1'">
+                                            <!-- <div class="up" @click="addCount('classCount')"></div> -->
+                                            <!-- <div class="down" @click="subtractCount('classCount')"></div> -->
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('class_count')">{{ properFormat(errors.first('class_count')) }}</span></transition>
+                                        </div>
+                                        <div class="form_flex_input">
+                                            <div class="form_check">
+                                                <input type="checkbox" id="class_count_unlimited" name="class_count_unlimited" class="action_check" @change="toggleUnlimited()">
+                                                <label for="class_count_unlimited">Unlimited</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form_group flex">
+                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer</label>
+                                        <div class="form_flex_input full">
+                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" autocomplete="off"v-validate="'numeric|max_value:99999'">
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ properFormat(errors.first('purchase_limit_per_customer')) }}</span></transition>
                                         </div>
                                     </div>
                                 </div>
@@ -303,8 +307,8 @@
                                         <label>Days/months to expire if not activated:</label>
                                         <div :class="`form_flex_input ${(!isNotActivated) ? 'not_active' : 'active'}`">
                                             <input type="text" name="ao_expiry_if_not_activated" class="default_text number" autocomplete="off" v-model="form.notActivated" v-validate="'required|numeric|max_value:99999|min_value:0'">
-                                            <div class="up" @click="addCount('notActivated')"></div>
-                                            <div class="down" @click="subtractCount('notActivated')"></div>
+                                            <!-- <div class="up" @click="addCount('notActivated')"></div> -->
+                                            <!-- <div class="down" @click="subtractCount('notActivated')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('ao_expiry_if_not_activated')">{{ properFormat(errors.first('ao_expiry_if_not_activated')) }}</span></transition>
                                         </div>
                                         <div :class="`form_flex_input ${(!isNotActivated) ? 'not_active' : 'active'}`">
@@ -385,14 +389,55 @@
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: '',
-                    classCount: 0,
+                    classCount: 1,
                     expiryIn: 0,
                     notActivated: 0,
-                    purchaseLimit: 0
+                    purchaseLimit: 0,
+                    package_price: 0,
+                    discounted_price: 0,
+                    estimated_price: 0,
+                    expiry_type: 'day'
                 }
             }
         },
         methods: {
+            toggleUnlimited () {
+                const me = this
+                me.isUnlimited ^= true
+                me.computeEstimatedPrice()
+            },
+            computeEstimatedPrice () {
+                const me = this
+                let price = (me.isPromo) ? me.form.discounted_price : me.form.package_price
+                if (me.isUnlimited) {
+                    if (me.form.expiry_type == 'day') {
+                        if (price && price != 0) {
+                            if (me.form.expiryIn) {
+                                me.form.estimated_price = parseFloat(price / (parseInt(me.form.expiryIn) + 1)).toFixed(2)
+                            } else {
+                                me.form.estimated_price = 0
+                            }
+                        }
+                    } else {
+                        if (me.form.expiryIn) {
+                            let current = me.$moment(), month = me.$moment().add(me.form.expiryIn, 'M'), days = month.diff(current, 'days')
+                            if (price && price != 0) {
+                                me.form.estimated_price = parseFloat(price / (days + 1)).toFixed(2)
+                            }
+                        } else {
+                            me.form.estimated_price = 0
+                        }
+                    }
+                } else {
+                    if (price && price != 0) {
+                        if (me.form.classCount) {
+                            me.form.estimated_price = parseFloat(price / parseInt(me.form.classCount)).toFixed(2)
+                        } else {
+                            me.form.estimated_price = 0
+                        }
+                    }
+                }
+            },
             toggleFirstClass (status) {
                 const me = this
                 if (status) {

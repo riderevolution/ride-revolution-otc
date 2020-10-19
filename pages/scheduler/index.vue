@@ -429,14 +429,8 @@
                         <div class="gear_overlay">
                             <ul class="gear_list_wrapper">
                                 <li class="gear_list">
-                                    <div class="duplicate gear_item">Clear Week</div>
-                                </li>
-                                <li class="gear_list">
-<<<<<<< HEAD
-                                    <div class="clear gear_item">Duplicate Week</div>
-=======
-                                    <div class="gear_item clear">Duplicate Week</div>
->>>>>>> staging
+                                    <div class="clear gear_item">Clear Week</div>
+                                    <div class="gear_item duplicate">Duplicate Week</div>
                                 </li>
                             </ul>
                         </div>
@@ -480,13 +474,13 @@
                         if (data.schedule.private_class == 1) {
                             if (data.schedule.enabled == 1) {
                                 result += `
-                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper private">
+                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'} private">
                                         <div class="class_text margin"><img src="/icons/private-class.svg" /><span>${data.schedule.start_time}</span></div>
                                         <div class="class_text">${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                                     </a>`
                             } else {
                                 result += `
-                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft private">
+                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft private ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
                                         <div class="class_text margin"><img src="/icons/private-class.svg" /><span>${data.schedule.start_time}</span></div>
                                         <div class="class_text">${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                                     </a>`
@@ -500,7 +494,7 @@
                                     </a>`
                             } else {
                                 result += `
-                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft">
+                                    <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
                                         <div class="class_text margin">${data.schedule.start_time}</div>
                                         <div class="class_text">${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                                     </a>`
