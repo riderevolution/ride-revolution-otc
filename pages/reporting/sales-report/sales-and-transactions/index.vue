@@ -142,7 +142,7 @@
                                 </tr>
                                 <tr>
                                     <th>Items</th>
-                                    <th>Qty</th>
+                                    <th>Sum</th>
                                     <th>ITY</th>
                                     <th>ITD</th>
                                     <th>CA</th>
@@ -159,7 +159,7 @@
                             <tbody v-if="!filtered">
                                 <tr>
                                     <td class="green">Total</td>
-                                    <td class="green">{{ res.item_total.totalQty }}</td>
+                                    <td class="green">Php {{ totalCount(res.item_total.totalSum) }}</td>
                                     <td class="green">Php {{ totalCount(res.item_total.totalITY) }}</td>
                                     <td class="green">Php {{ totalCount(res.item_total.totalITD) }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.cash }}</td>
@@ -176,7 +176,7 @@
                                     <td>
                                         <div class="table_data_link">{{ (data.card_code) ? data.card_code : (data.variant ? data.variant : data.name) }}</div>
                                     </td>
-                                    <td>{{ (data.qty) ? data.qty : 0 }}</td>
+                                    <td>Php {{ (data.sum) ? totalCount(data.sum) : 0 }}</td>
                                     <td>Php {{ totalCount(data.ITY) }}</td>
                                     <td>Php {{ totalCount(data.ITD) }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.cash : 0 }}</td>
@@ -193,7 +193,7 @@
                             <tbody v-else-if="filtered">
                                 <tr>
                                     <td class="green">Total</td>
-                                    <td class="green">{{ res.item_total.totalQty }}</td>
+                                    <td class="green">Php {{ totalCount(res.item_total.totalSum) }}</td>
                                     <td class="green">Php {{ totalCount(res.item_total.totalITY) }}</td>
                                     <td class="green">Php {{ totalCount(res.item_total.totalITD) }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.cash }}</td>
@@ -206,11 +206,11 @@
                                     <td class="green">{{ res.item_payment_mode_total.recurly }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
                                 </tr>
-                                <tr v-for="(data, key) in res.items" :key="key" v-if="data.qty > 0">
+                                <tr v-for="(data, key) in res.items" :key="key" v-if="data.sum > 0">
                                     <td>
                                         <div class="table_data_link">{{ (data.card_code) ? data.card_code : (data.variant ? data.variant : data.name) }}</div>
                                     </td>
-                                    <td>{{ (data.qty) ? data.qty : 0 }}</td>
+                                    <td>Php {{ (data.sum) ? totalCount(data.sum) : 0 }}</td>
                                     <td>Php {{ totalCount(data.ITY) }}</td>
                                     <td>Php {{ totalCount(data.ITD) }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.cash : 0 }}</td>
