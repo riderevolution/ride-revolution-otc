@@ -11,17 +11,17 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/sales-and-transactions/sales-summary/sales-breakdown?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate" v-if="tabStatus == 'summary'">Print</a>
-                            <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-else>Print</a>
-                            <download-csv
+                            <!-- <a :href="`/print/reporting/sales/sales-and-transactions/sales-summary/sales-breakdown?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate" v-if="tabStatus == 'summary'">Print</a> -->
+                            <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="tabStatus != 'summary'">Print</a>
+                            <!-- <download-csv
                                 v-if="tabStatus == 'summary'"
                                 class="action_btn alternate"
                                 :data="salesBreakdownAttributes"
                                 :name="`sales-breakdown-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
-                            </download-csv>
+                            </download-csv> -->
                             <download-csv
-                                v-else
+                                v-if="tabStatus != 'summary'"
                                 class="action_btn alternate"
                                 :data="salesSummaryAttributes"
                                 :name="`${tabStatus}-summary-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
@@ -56,7 +56,7 @@
                 <section id="content">
                     <div class="cms_table_toggler">
                         <div :class="`status ${(tabStatus == 'summary') ? 'active' : ''}`" @click="toggleTab('summary', 'sales-summary', 'reporting/sales/sales-and-transactions/sales-summary')">Sales Summary</div>
-                        <div :class="`status ${(tabStatus == 'packages') ? 'active' : ''}`" @click="toggleTab('packages', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/class-packages')">Class Packages</div>
+                        <div :class="`status ${(tabStatus == 'class-packages') ? 'active' : ''}`" @click="toggleTab('class-packages', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/class-packages')">Class Packages</div>
                         <div :class="`status ${(tabStatus == convertToSlug(category.name)) ? 'active' : ''}`" v-for="(category, key) in categories" :key="key" @click="toggleTab(convertToSlug(category.name), 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/product-categories/${category.id}`)">{{ category.name }}</div>
                         <div :class="`status ${(tabStatus == 'gift-cards') ? 'active' : ''}`" @click="toggleTab('gift-cards', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/gift-cards')">Gift Cards</div>
                         <div :class="`status ${(tabStatus == 'promos') ? 'active' : ''}`" @click="toggleTab('promos', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/promos')">Promotions</div>
@@ -82,14 +82,14 @@
                                 </tr>
                                 <tr v-for="(data, key) in res.sales_breakdown" :key="key">
                                     <td>
-                                        <div class="table_data_link">{{ data.name }}</div>
+                                        <div class="table_data_link" @click="toggleTab(data.status, 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/${data.status}`)">{{ data.name }}</div>
                                     </td>
                                     <td>Php {{ totalCount(data.ITY) }}</td>
                                     <td>Php {{ totalCount(data.ITD) }}</td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="cms_table_toggler">
+                        <!-- <div class="cms_table_toggler">
                             <a :href="`/print/reporting/sales/sales-and-transactions/sales-summary/income-breakdown?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                             <download-csv
                                 v-if="res.income_breakdown.length > 0"
@@ -98,7 +98,7 @@
                                 :name="`income-breakdown-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
                             </download-csv>
-                        </div>
+                        </div> -->
                         <table class="cms_table alt">
                             <thead>
                                 <tr>
