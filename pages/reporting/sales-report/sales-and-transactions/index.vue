@@ -34,7 +34,7 @@
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
-                                    <option value="" selected>All Studios</option>
+                                    <option value="0" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                     <option value="os">Website/Online Sales</option>
                                 </select>
@@ -118,7 +118,7 @@
                                 </tr>
                                 <tr v-for="(data, key) in res.income_breakdown" :key="key">
                                     <td>
-                                        <div class="table_data_link">{{ data.name }}</div>
+                                        <div class="table_data_link" @click="toggledPaymentType(data)">{{ data.name }}</div>
                                     </td>
                                     <td>Php {{ totalCount(data.ITY) }}</td>
                                     <td>Php {{ totalCount(data.ITD) }}</td>
@@ -269,7 +269,7 @@
                 studios: [],
                 categories: [],
                 form: {
-                    studio_id: '',
+                    studio_id: 0,
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
@@ -322,10 +322,18 @@
             }
         },
         methods: {
+            toggledPaymentType (payment_type) {
+                const me = this
+                if (me.form.studio_id != 0) {
+                    me.$router.push(`${me.$route.path}/payment-type/${payment_type.status}?start_date=${me.form.start_date}&end_date=${me.form.end_date}&studio_id=${me.form.studio_id}`)
+                } else {
+                    me.$router.push(`${me.$route.path}/payment-type/${payment_type.status}?start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                }
+            },
             getStudio () {
                 const me = this
                 let result = ''
-                if (me.form.studio_id != '') {
+                if (me.form.studio_id != 0) {
                     me.studios.forEach((studio, index) => {
                         if (studio.id == me.form.studio_id) {
                             result = studio.name
