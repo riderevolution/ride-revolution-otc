@@ -210,10 +210,17 @@
                                         </div>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('stay_as_first_timer')">{{ properFormat(errors.first('stay_as_first_timer')) }}</span></transition>
                                     </div>
-                                    <div class="form_group">
-                                        <label for="max_per_class">Max Number of Bookings Per Class <span>*</span></label>
-                                        <input type="text" name="max_per_class" class="default_text number" placeholder="Enter max number of bookings per class" v-model="res.max_per_class" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'">
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('max_per_class')">{{ properFormat(errors.first('max_per_class')) }}</span></transition>
+                                    <div class="form_group flex">
+                                        <div :class="`form_flex_input ${(isUnlimited) ? '' : 'full'}`">
+                                            <label for="max_per_class">Max Number of Bookings Per Class <span>*</span></label>
+                                            <input type="text" name="max_per_class" class="default_text number" placeholder="Enter max number of bookings per class" v-model="res.max_per_class" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'">
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('max_per_class')">{{ properFormat(errors.first('max_per_class')) }}</span></transition>
+                                        </div>
+                                        <div class="form_flex_input" v-if="isUnlimited">
+                                            <label for="max_classes">Max Classes <span>*</span></label>
+                                            <input type="text" name="max_classes" placeholder="Enter max classes" class="default_text number" v-model="res.max_classes" value="1" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'">
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('max_classes')">{{ properFormat(errors.first('max_classes')) }}</span></transition>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form_flex">
