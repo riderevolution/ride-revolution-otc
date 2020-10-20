@@ -218,7 +218,7 @@
                                         </div>
                                         <div class="form_flex_input" v-if="isUnlimited">
                                             <label for="max_classes">Max Classes <span>*</span></label>
-                                            <input type="text" name="max_classes" placeholder="Enter max classes" class="default_text number" value="1" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'">
+                                            <input type="text" name="max_classes" placeholder="Enter max classes" class="default_text number" value="1" autocomplete="off" v-validate="'required|numeric|min_value:0|max_value:5'">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('max_classes')">{{ properFormat(errors.first('max_classes')) }}</span></transition>
                                         </div>
                                     </div>
