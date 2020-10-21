@@ -74,13 +74,27 @@
                                     <th>ITD</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody v-if="!filtered">
                                 <tr>
                                     <td class="green">Total</td>
                                     <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITYTotal) }}</td>
                                     <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITDTotal) }}</td>
                                 </tr>
                                 <tr v-for="(data, key) in res.sales_breakdown" :key="key">
+                                    <td>
+                                        <div class="table_data_link" @click="toggleTab(data.status, 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/${data.status}`)">{{ data.name }}</div>
+                                    </td>
+                                    <td>Php {{ totalCount(data.ITY) }}</td>
+                                    <td>Php {{ totalCount(data.ITD) }}</td>
+                                </tr>
+                            </tbody>
+                            <tbody v-else-if="filtered">
+                                <tr>
+                                    <td class="green">Total</td>
+                                    <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITYTotal) }}</td>
+                                    <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITDTotal) }}</td>
+                                </tr>
+                                <tr v-for="(data, key) in res.sales_breakdown" :key="key" v-if="data.ITY > 0 && data.ITD > 0">
                                     <td>
                                         <div class="table_data_link" @click="toggleTab(data.status, 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/${data.status}`)">{{ data.name }}</div>
                                     </td>
@@ -110,13 +124,27 @@
                                     <th>ITD</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody v-if="!filtered">
                                 <tr>
                                     <td class="green">Total</td>
                                     <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITYTotal) }}</td>
                                     <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITDTotal) }}</td>
                                 </tr>
                                 <tr v-for="(data, key) in res.income_breakdown" :key="key">
+                                    <td>
+                                        <div class="table_data_link" @click="toggledPaymentType(data)">{{ data.name }}</div>
+                                    </td>
+                                    <td>Php {{ totalCount(data.ITY) }}</td>
+                                    <td>Php {{ totalCount(data.ITD) }}</td>
+                                </tr>
+                            </tbody>
+                            <tbody v-else-if="filtered">
+                                <tr>
+                                    <td class="green">Total</td>
+                                    <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITYTotal) }}</td>
+                                    <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITDTotal) }}</td>
+                                </tr>
+                                <tr v-for="(data, key) in res.income_breakdown" :key="key" v-if="data.ITY > 0 && data.ITD > 0">
                                     <td>
                                         <div class="table_data_link" @click="toggledPaymentType(data)">{{ data.name }}</div>
                                     </td>
@@ -152,7 +180,7 @@
                                     <th>CQ</th>
                                     <th>PP</th>
                                     <th>PM</th>
-                                    <th>RC</th>
+                                    <!-- <th>RC</th> -->
                                     <th>SC</th>
                                 </tr>
                             </thead>
@@ -169,7 +197,7 @@
                                     <td class="green">{{ res.item_payment_mode_total.check }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paymaya }}</td>
-                                    <td class="green">{{ res.item_payment_mode_total.recurly }}</td>
+                                    <!-- <td class="green">{{ res.item_payment_mode_total.recurly }}</td> -->
                                     <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
                                 </tr>
                                 <tr v-for="(data, key) in res.items" :key="key">
@@ -186,7 +214,7 @@
                                     <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paypal : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paymaya : 0 }}</td>
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.recurly : 0 }}</td>
+                                    <!-- <td>{{ (data.paymentModes) ? data.paymentModes.recurly : 0 }}</td> -->
                                     <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
                                 </tr>
                             </tbody>
@@ -203,7 +231,7 @@
                                     <td class="green">{{ res.item_payment_mode_total.check }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paymaya }}</td>
-                                    <td class="green">{{ res.item_payment_mode_total.recurly }}</td>
+                                    <!-- <td class="green">{{ res.item_payment_mode_total.recurly }}</td> -->
                                     <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
                                 </tr>
                                 <tr v-for="(data, key) in res.items" :key="key" v-if="data.sum > 0">
@@ -220,7 +248,7 @@
                                     <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paypal : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paymaya : 0 }}</td>
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.recurly : 0 }}</td>
+                                    <!-- <td>{{ (data.paymentModes) ? data.paymentModes.recurly : 0 }}</td> -->
                                     <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
                                 </tr>
                             </tbody>
@@ -315,7 +343,7 @@
                         'CQ': (key == current_length) ? me.res.item_payment_mode_total.check : (value.paymentModes) ? value.paymentModes.cash : 0,
                         'PP': (key == current_length) ? me.res.item_payment_mode_total.paypal : (value.paymentModes) ? value.paymentModes.cash : 0,
                         'PM': (key == current_length) ? me.res.item_payment_mode_total.paymaya : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        'RC': (key == current_length) ? me.res.item_payment_mode_total.recurly : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        // 'RC': (key == current_length) ? me.res.item_payment_mode_total.recurly : (value.paymentModes) ? value.paymentModes.cash : 0,
                         'SC': (key == current_length) ? me.res.item_payment_mode_total.storeCredit : (value.paymentModes) ? value.paymentModes.cash : 0
                     }))
                 ]
@@ -324,21 +352,21 @@
         methods: {
             toggledPaymentType (payment_type) {
                 const me = this
-                if (me.form.studio_id != 0) {
-                    me.$router.push(`${me.$route.path}/payment-type/${payment_type.status}?start_date=${me.form.start_date}&end_date=${me.form.end_date}&studio_id=${me.form.studio_id}`)
-                } else {
-                    me.$router.push(`${me.$route.path}/payment-type/${payment_type.status}?start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
-                }
+                me.$router.push(`${me.$route.path}/payment-type/${payment_type.status}?start_date=${me.form.start_date}&end_date=${me.form.end_date}&studio_id=${me.form.studio_id}`)
             },
             getStudio () {
                 const me = this
                 let result = ''
                 if (me.form.studio_id != 0) {
-                    me.studios.forEach((studio, index) => {
-                        if (studio.id == me.form.studio_id) {
-                            result = studio.name
-                        }
-                    })
+                    if (me.form.studio_id == 'os') {
+                        result = 'Website/Online Sales'
+                    } else {
+                        me.studios.forEach((studio, index) => {
+                            if (studio.id == me.form.studio_id) {
+                                result = studio.name
+                            }
+                        })
+                    }
                 } else {
                     result = 'All Studios'
                 }

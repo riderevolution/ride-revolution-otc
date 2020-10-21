@@ -79,7 +79,7 @@
                             </tr>
                             <tr v-for="(data, key) in res" :key="key" :class="{ grayed: data.gray }">
                                 <td>
-                                    <nuxt-link :event="''" class="table_data_link" :to="`${$route.path}/${data.unique}`" @click.native="toggleInnerReport(`${$route.path}/${data.unique}`)">{{ data.name }}</nuxt-link>
+                                    <div class="table_data_link" @click="toggleInnerReport(`${$route.path}/${data.unique}`)">{{ data.name }}</div>
                                 </td>
                                 <td>{{ data.transaction_count }}</td>
                                 <td>Php {{ (data.gross_receipts) ? totalCount(data.gross_receipts) : 0 }}</td>

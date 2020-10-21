@@ -122,6 +122,13 @@ table
         margin: 0.75cm
         -webkit-print-color-adjust: exact
 
+.cms_table_scroll
+    height: 100%
+    max-height: 600px
+    overflow-y: auto
+    .cms_table
+        margin-bottom: 0
+
 .print_table
     .text
         margin: 0 0 20px
@@ -7978,6 +7985,8 @@ input::placeholder
             sf_pro_medium(14px)
             color: $border_alt2
             margin-top: 5px
+            b
+                text-transform: capitalize
             ul
                 padding: 0 0 0 15px
                 margin-top: 10px
@@ -8550,7 +8559,7 @@ input::placeholder
             .left
                 flex: 1 0 10%
                 background-color: #2e3c44
-                padding: 60px 30px 30px
+                padding: 30px 30px 0
                 .target_header
                     display: flex
                     flex-flow: row wrap

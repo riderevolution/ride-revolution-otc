@@ -14,55 +14,57 @@
                         <div :class="`status ${(classesHistoryStatus == 'cancelled') ? 'active' : ''}`" @click="initial('cancelled')">Cancelled</div>
                     </div>
                 </div>
-                <table class="cms_table">
-                    <thead>
-                        <tr>
-                            <th>Date &amp; Time</th>
-                            <th>Bike No.</th>
-                            <th>Class</th>
-                            <th>Studio</th>
-                            <th>Instructor</th>
-                            <th>Guests</th>
-                            <th>Status</th>
-                            <th>Series ID</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="res.classHistory.length > 0">
-                        <tr v-for="(data, key) in res.classHistory" :key="key">
-                            <td>{{ formatClassDate(data.created_at, true) }}</td>
-                            <td>{{ data.seat.number }}</td>
-                            <td>{{ (data.scheduled_date.schedule.custom_name != null) ? data.scheduled_date.schedule.custom_name : data.scheduled_date.schedule.class_type.name }}</td>
-                            <td>{{ data.scheduled_date.schedule.studio.name }}</td>
-                            <td>
-                                <div class="thumb">
-                                    <img :src="data.instructor.user.instructor_details.images[0].path_resized" />
-                                    <nuxt-link class="table_data_link" :to="`/instructors/${data.instructor.id}/class-schedules`">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="table_select" v-if="data.guestBookings && data.guestBookings.length > 0">
-                                    <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">{{ data.guestBookings.length }} Guests</div>
-                                    <div class="overlay">
-                                        <ul>
-                                            <li v-for="(subData, key) in data.guestBookings" :key="key" v-line-clamp="1">{{ subData.seat.number }} - {{ subData.guest_first_name }} {{ subData.guest_last_name }}</li>
-                                        </ul>
+                <div class="cms_table_scroll">
+                    <table class="cms_table">
+                        <thead>
+                            <tr>
+                                <th>Date &amp; Time</th>
+                                <th>Bike No.</th>
+                                <th>Class</th>
+                                <th>Studio</th>
+                                <th>Instructor</th>
+                                <th>Guests</th>
+                                <th>Status</th>
+                                <th>Series ID</th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="res.classHistory.length > 0">
+                            <tr v-for="(data, key) in res.classHistory" :key="key">
+                                <td>{{ formatClassDate(data.created_at, true) }}</td>
+                                <td>{{ data.seat.number }}</td>
+                                <td>{{ (data.scheduled_date.schedule.custom_name != null) ? data.scheduled_date.schedule.custom_name : data.scheduled_date.schedule.class_type.name }}</td>
+                                <td>{{ data.scheduled_date.schedule.studio.name }}</td>
+                                <td>
+                                    <div class="thumb">
+                                        <img :src="data.instructor.user.instructor_details.images[0].path_resized" />
+                                        <nuxt-link class="table_data_link" :to="`/instructors/${data.instructor.id}/class-schedules`">{{ data.instructor.user.first_name }} {{ data.instructor.user.last_name }}</nuxt-link>
                                     </div>
-                                </div>
-                                <p v-else>N/A</p>
-                            </td>
-                            <td class="alt">{{ checkStatus(data) }}</td>
-                            <td>
-                                <p>{{ data.class_package.name }}</p>
-                                <p class="id">{{ data.class_package.sku_id }}</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody class="no_results" v-else>
-                        <tr>
-                            <td :colspan="rowCount">No Result(s) Found.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </td>
+                                <td>
+                                    <div class="table_select" v-if="data.guestBookings && data.guestBookings.length > 0">
+                                        <div :id="`table_select_${key}`" class="table_select_label" @click="toggleGuest($event)">{{ data.guestBookings.length }} Guests</div>
+                                        <div class="overlay">
+                                            <ul>
+                                                <li v-for="(subData, key) in data.guestBookings" :key="key" v-line-clamp="1">{{ subData.seat.number }} - {{ subData.guest_first_name }} {{ subData.guest_last_name }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <p v-else>N/A</p>
+                                </td>
+                                <td class="alt">{{ checkStatus(data) }}</td>
+                                <td>
+                                    <p>{{ data.class_package.name }}</p>
+                                    <p class="id">{{ data.class_package.sku_id }}</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td :colspan="rowCount">No Result(s) Found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </transition>
@@ -137,7 +139,10 @@
                         break
                     case 'no-show':
                         result = 'No Show'
-                        break;
+                        break
+                    case 'reserved':
+                        result = 'Reserved'
+                        break
                 }
                  return result
             },
