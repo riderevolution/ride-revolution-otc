@@ -12,14 +12,14 @@
                             <h2 class="header_subtitle">{{ $moment(form.start_date).format('MMMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMMM DD, YYYY') }}</h2>
                         </div>
                         <div class="actions">
-                            <div class="action_btn alternate" @click="getClasses()" v-if="res.payments.data.length > 0">
+                            <div class="action_btn alternate" @click="getTransactions()" v-if="res.payments.data.length > 0">
                                 Export
                             </div>
                             <download-csv
                                 v-if="res.payments.data.length > 0"
                                 class="hidden me"
-                                :data="attendanceByScheduleAttributes"
-                                :name="`attendance-by-schedule-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
+                                :data="salesSummaryPaymentType"
+                                :name="`sales-summary-payment-type-${$route.params.slug}-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                         </div>
@@ -56,47 +56,44 @@
                                 </td>
                                 <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : '-' }}</td>
                             </tr>
-                            <!-- <tr>
-                                <td class="pads" colspan="7">
+                            <tr>
+                                <td class="pads" colspan="9">
                                     <div class="accordion_table">
                                         <table class="cms_table alt">
                                             <thead>
                                                 <tr>
-                                                    <th>Time</th>
-                                                    <th>Class Type</th>
-                                                    <th>Instructor</th>
-                                                    <th>Bookings</th>
-                                                    <th>Riders</th>
-                                                    <th>Revenue</th>
-                                                    <th>Discount</th>
-                                                    <th>Net Revenue</th>
+                                                    <th>SKU ID</th>
+                                                    <th>Item</th>
+                                                    <th>Category</th>
+                                                    <th>Qty</th>
+                                                    <th>Price</th>
                                                 </tr>
                                             </thead>
-                                            <tbody v-if="data.values.length > 0">
-                                                <tr v-for="(value, key) in data.values" :key="key">
-                                                    <td>{{ value.schedule.start_time }}</td>
-                                                    <td>{{ (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name }}</td>
-                                                    <td>{{ getInstructorsInSchedule(value) }}</td>
-                                                    <td>{{ totalItems(value.bookings.length) }}</td>
-                                                    <td>{{ totalItems(value.riders) }}</td>
-                                                    <td>Php {{ totalCount(value.revenue) }}</td>
-                                                    <td>Php {{ totalCount(value.discount) }}</td>
-                                                    <td>Php {{ totalCount(value.net_revenue) }}</td>
+                                            <tbody v-if="data.payment_items.length > 0">
+                                                <tr v-for="(child, key) in data.payment_items" :key="key">
+                                                    <td>{{ getPaymentItem(child, 'sku') }}</td>
+                                                    <td>{{ getPaymentItem(child, 'name') }}</td>
+                                                    <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
+                                                    <td>{{ child.quantity }}</td>
+                                                    <td class="price">
+                                                        <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item) }}</p>
+                                                        <p>PHP {{ totalCount(child.total) }}</p>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                             <tbody class="no_results" v-else>
                                                 <tr>
-                                                    <td colspan="7">No Result(s) Found.</td>
+                                                    <td colspan="8">No Result(s) Found.</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </td>
-                            </tr> -->
+                            </tr>
                         </tbody>
                         <tbody class="no_results" v-if="res.payments.data.length == 0">
                             <tr>
-                                <td colspan="7">No Result(s) Found.</td>
+                                <td colspan="8">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -137,26 +134,78 @@
             }
         },
         computed: {
-            attendanceByScheduleAttributes () {
+            salesSummaryPaymentType () {
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Schedule ID': value.id,
-                        'Studio': me.studio.name,
-                        'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
-                        'Time': value.schedule.start_time,
-                        'Class Type': (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name,
-                        'Instructor': me.getInstructorsInSchedule(value),
-                        'Bookings': me.totalItems(value.bookings .length),
-                        'Riders': me.totalItems(value.riders),
-                        'Revenue': me.totalCount(value.revenue),
-                        'Discount': me.totalCount(value.discount),
-                        'Net Revenue': me.totalCount(value.net_revenue)
+                        'Payment ID': value.parent.id,
+                        'Transaction ID': me.getPaymentCode(value.parent),
+                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Studio': me.getPaymentStudio(value.parent),
+                        'Payment Status': value.parent.status,
+                        'Payment Method': me.replacer(value.parent.payment_method.method),
+                        'Quantity': value.quantity,
+                        'Price': `Php ${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Payment Item Id': value.id,
+                        'SKU ID': me.getPaymentItem(value, 'sku'),
+                        'Item': me.getPaymentItem(value, 'name'),
+                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                        'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
+                        'Email Address': value.parent.user.email,
+                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : value.parent.user.customer_details.ec_contact_number,
+                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
+                        'Remarks': value.parent.remarks
                     }))
                 ]
             }
         },
         methods: {
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
             getPaymentDetails (payment, type) {
                 const me = this
                 let result = 0
@@ -216,7 +265,7 @@
 
                 return result
             },
-            getClasses () {
+            getTransactions () {
                 const me = this
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
@@ -228,11 +277,13 @@
                 me.$axios.post(`api/reporting/sales/sales-and-transactions/sales-summary/payment-type/${me.$route.params.slug}`, formData).then(res => {
                     if (res.data) {
 
-                        res.data.scheduled_dates.forEach((item, index) => {
-                            item.values.forEach((child, index) => {
-                                me.values.push(child)
+                        res.data.payments.forEach((payment, index) => {
+                            payment.payment_items.forEach((payment_item, index) => {
+                                payment_item.parent = payment
+                                me.values.push(payment_item)
                             })
                         })
+
                     }
                 }).catch((err) => {
 
