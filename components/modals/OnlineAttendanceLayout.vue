@@ -31,7 +31,7 @@
                                 <th>Customer</th>
                                 <th>Type</th>
                                 <th>Email Address</th>
-                                <th>Contact No.</th>
+                                <th>Contact/Emergency Contact No.</th>
                                 <th>Class Package</th>
                                 <th>Status</th>
                             </tr>
@@ -51,7 +51,7 @@
                                 </td>
                                 <td>{{ data.user.customer_details.customer_type.name }}</td>
                                 <td>{{ data.user.email }}</td>
-                                <td>{{ data.user.customer_details.co_contact_number }}</td>
+                                <td>{{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : data.user.customer_details.ec_contact_number }}</td>
                                 <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
                                 <td>
                                     <div class="form_group no_margin">
@@ -129,7 +129,7 @@
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.user.customer_details.customer_type.name,
                         'Email Address': value.user.email,
-                        'Contact Number': value.user.customer_details.co_contact_number,
+                        'Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : value.user.customer_details.ec_contact_number,
                         'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Revenue': me.computeRevenue(value)
