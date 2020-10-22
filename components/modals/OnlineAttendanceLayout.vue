@@ -131,6 +131,7 @@
                         'Email Address': value.user.email,
                         'Contact Number': value.user.customer_details.co_contact_number,
                         'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Revenue': me.computeRevenue(value)
                     }))
                 ]
@@ -149,11 +150,11 @@
                 const me = this
                 let result = ''
                 let base_value = 0
-                if (data.user_package_count.payment_item) {
+                if (data.user_package_count.payment_item.payment_method.method != 'comp') {
                     base_value = me.totalCount(data.user_package_count.estimated_price_per_class)
-                    result = `Php ${me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))}`
+                    result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
                 } else {
-                    result = 'From Import'
+                    result = 0
                 }
 
                 return result
