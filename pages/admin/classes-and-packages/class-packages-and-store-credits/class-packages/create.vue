@@ -123,7 +123,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form_wrapper">
+                        <!-- <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Subscription</h2>
                                 <div class="form_check toggler" @click="isRecurring ^= true">
@@ -139,7 +139,7 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('plan_code')">{{ properFormat(errors.first('plan_code')) }}</span></transition>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Class Package Configuration</h2>

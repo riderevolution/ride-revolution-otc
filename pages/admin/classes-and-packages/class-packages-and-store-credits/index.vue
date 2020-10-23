@@ -43,7 +43,7 @@
                     <div class="cms_table_toggler">
                         <div class="total">Total: {{ totalItems((res.classPackages) ? res.classPackages.total : res.storeCredits.total) }}</div>
                         <div :class="`status ${(package_status == 1) ? 'active' : ''}`" @click="togglePackages(1)">Regular</div>
-                        <div :class="`status ${(package_status == 2) ? 'active' : ''}`" @click="togglePackages(2)">Recurring</div>
+                        <!-- <div :class="`status ${(package_status == 2) ? 'active' : ''}`" @click="togglePackages(2)">Recurring</div> -->
                         <div :class="`status ${(package_status == 3) ? 'active' : ''}`" @click="togglePackages(3)">Promo</div>
                         <div :class="`status ${(package_status == 4) ? 'active' : ''}`" @click="togglePackages(4)">Store Credits</div>
                     </div>
@@ -227,9 +227,9 @@
                     case 1:
                         apiRoute = `api/packages/class-packages?enabled=${value}`
                         break
-                    case 2:
-                        apiRoute = `api/packages/class-packages?enabled=${value}&recurring=1`
-                        break
+                    // case 2:
+                    //     apiRoute = `api/packages/class-packages?enabled=${value}&recurring=1`
+                    //     break
                     case 3:
                         apiRoute = `api/packages/class-packages?enabled=${value}&promo=2`
                         break

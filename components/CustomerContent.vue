@@ -43,7 +43,7 @@
                         </div>
                         <div class="package_action" v-if="packageStatus != 'expired'">
                             <div v-if="!data.frozen" class="action_success_btn" @click="getCurrentCustomer()">Book a Class</div>
-                            <div class="package_options" :class="{ no_margin: data.frozen }" v-if=" (data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package)">
+                            <div class="package_options" :class="{ no_margin: data.frozen }" v-if="(data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package)">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
 
