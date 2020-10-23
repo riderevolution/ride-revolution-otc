@@ -5,7 +5,7 @@
                 <div class="info">
                     <div class="text">
                     </div>
-                    <div class="action_buttons" v-if="res.length > 0">
+                    <div class="action_buttons" v-if="schedule">
                         <div class="action_btn" @click="toggleCustomer()"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg><span>Add Customer</span></div>
                     </div>
                 </div>
@@ -117,10 +117,13 @@
                 const me = this
                 return [
                     ...this.values.map(value => ({
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
+                        'Studio': me.studio.name,
+                        'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
                         'Booking ID': value.id,
                         'Booking Status': value.status,
                         'Booking Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
-                        'Studio': me.studio.name,
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,
@@ -129,9 +132,7 @@
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.user.customer_details.customer_type.name,
                         'Email Address': value.user.email,
-                        'Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : value.user.customer_details.ec_contact_number,
-                        'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
-                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
+                        'Contact/Emergency Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : value.user.customer_details.ec_contact_number,
                         'Revenue': me.computeRevenue(value)
                     }))
                 ]
@@ -146,6 +147,23 @@
             }
         },
         methods: {
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                switch (data.payment_item.payment_method.method) {
+                    case 'paypal':
+                        result = data.payment_item.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = data.payment_item.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = data.payment.payment_code
+                }
+
+                return result
+            },
             computeRevenue (data) {
                 const me = this
                 let result = ''

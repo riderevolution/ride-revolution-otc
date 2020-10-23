@@ -213,7 +213,7 @@
                     <tr>
                         <th>Reference Number</th>
                         <th>Transaction Date</th>
-                        <th>Branch</th>
+                        <th>Studio</th>
                         <th>Total Qty.</th>
                         <th>Payment Method</th>
                         <th>Total Price</th>

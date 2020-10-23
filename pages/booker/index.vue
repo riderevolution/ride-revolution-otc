@@ -120,7 +120,12 @@
                                     <div class="accordion_content">
                                         <div :id="`class_${dkey}_${key}`" :class="`class_content ${(data.schedule.studio.online_class) ? 'online' : ''}`" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
                                             <div class="class_title">
-                                                <span>{{ data.schedule.start_time }}, {{ (data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name }} {{ (!data.schedule.studio.online_class) ? '' : '(Online Class)' }}</span>
+                                                <span>
+                                                    {{ data.schedule.start_time }},
+                                                    {{ (data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name }}
+                                                    {{ (!data.schedule.studio.online_class) ? '' : '(Online Class)' }}
+                                                    <img src="/icons/private-class.svg" v-if="data.schedule.private_class == 1" />
+                                                </span>
                                                 <div :class="`class_status ${(data.isFull) ? 'full' : ''}`">
                                                     {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.enrolled}` }}
                                                 </div>

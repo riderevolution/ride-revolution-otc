@@ -29,7 +29,7 @@
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th>Transaction ID</th>
+                                <th>Reference Number</th>
                                 <th>Transaction Date</th>
                                 <th>Studio</th>
                                 <th>Total Qty.</th>
@@ -139,7 +139,7 @@
                 return [
                     ...me.values.map((value, key) => ({
                         'Payment ID': value.parent.id,
-                        'Transaction ID': me.getPaymentCode(value.parent),
+                        'Reference Number': me.getPaymentCode(value.parent),
                         'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
                         'Studio': me.getPaymentStudio(value.parent),
                         'Payment Status': value.parent.status,
