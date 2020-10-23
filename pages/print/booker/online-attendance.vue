@@ -10,9 +10,10 @@
                     <th>Seat Number</th>
                     <th>Signed In</th>
                     <th>Full Name</th>
+                    <th>Class Package</th>
                     <th>Customer Type</th>
                     <th>Email Address</th>
-                    <th>Contact Number</th>
+                    <th>Contact/Emergency Contact Number</th>
                     <th>Shoe size</th>
                 </tr>
             </thead>
@@ -23,16 +24,19 @@
                         <img :src="(data.status == 'signed-in') ? '/icons/check-icon.svg' : '/icons/uncheck-icon.svg'" />
                     </td>
                     <td>
-                        {{ data.user.first_name }} {{ data.user.last_name }}
+                        {{ data.user.fullname }}
                     </td>
                     <td>
-                        <img :src="data.user.customer_details.customer_type.images[0].path" />
+                        {{ data.user_package_count.class_package.name }}
+                    </td>
+                    <td>
+                        {{ data.user.customer_details.customer_type.name }}
                     </td>
                     <td>
                         {{ data.user.email }}
                     </td>
                     <td>
-                        {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : 'N/A' }}
+                        {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : data.user.customer_details.ec_contact_number }}
                     </td>
                     <td>
                         {{ (data.user.customer_details.co_shoe_size != null) ? data.user.customer_details.co_shoe_size : 'N/A' }}
@@ -78,7 +82,7 @@
                 }).then(() => {
                     setTimeout( () => {
                         window.print()
-                    }, 1000)
+                    }, 2000)
                 })
             }
         },

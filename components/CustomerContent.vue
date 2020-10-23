@@ -166,6 +166,7 @@
                         <th>Instructor</th>
                         <th>Guests</th>
                         <th>Status</th>
+                        <th>Reference Number</th>
                         <th>Series ID</th>
                     </tr>
                 </thead>
@@ -193,6 +194,7 @@
                             <p v-else>N/A</p>
                         </td>
                         <td class="alt">{{ checkStatus(data) }}</td>
+                        <td>{{ getPaymentCode(data.user_package_count.payment) }}</td>
                         <td>
                             <p>{{ data.class_package.name }}</p>
                             <p class="id">{{ data.class_package.sku_id }}</p>
@@ -219,17 +221,18 @@
                         <th>Total Price</th>
                         <th>Employee</th>
                         <th>Status</th>
+                        <th>Remarks</th>
                     </tr>
                 </thead>
                 <tbody :class="`${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
                     <tr class="parent alt">
-                        <td class="toggler" @click.self="toggleAccordion($event, key)">{{ checkPaymentMethod(data) }}</td>
-                        <td>{{ formatDate(data.created_at, true) }}</td>
-                        <td>{{ (data.studio_id != null) ? data.studio.name : 'Website' }}</td>
-                        <td>{{ countVariantQty(data.payment_items) }}</td>
+                        <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
+                        <td>{{ formatDate(data.updated_at, true) }}</td>
+                        <td>{{ getPaymentStudio(data) }}</td>
+                        <td>{{ getPaymentDetails(data, 'qty') }}</td>
                         <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
-                        <td :class="`${(data.status == 'pending') ? 'red' : ''}`">Php {{ totalCount(data.total) }}</td>
-                        <td>{{ (data.employee) ? data.employee.fullname : 'Online' }}</td>
+                        <td :class="`${(data.status == 'pending') ? 'red' : ''}`">{{ getPaymentDetails(data, 'price') }}</td>
+                        <td>{{ getPaymentDetails(data, 'employee') }}</td>
                         <td>
                             <div class="table_actions">
                                 <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
@@ -237,14 +240,16 @@
                                 <div class="table_action_edit link" @click="toggleForm(data.id)" v-if="data.status == 'pending'">Pay Now</div>
                             </div>
                         </td>
+                        <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : '-' }}</td>
                     </tr>
                     <tr>
-                        <td class="pads" colspan="8">
+                        <td class="pads" colspan="9">
                             <div class="accordion_table">
                                 <table class="cms_table">
                                     <thead>
                                         <tr>
-                                            <th>Product</th>
+                                            <th>SKU ID</th>
+                                            <th>Item</th>
                                             <th>Category</th>
                                             <th>Qty</th>
                                             <th>Price</th>
@@ -253,11 +258,12 @@
                                     </thead>
                                     <tbody  v-if="data.payment_items.length > 0">
                                         <tr v-for="(item, key) in data.payment_items" :key="key">
-                                            <td><b>{{ (item.type == 'custom-gift-card') ? 'Digital Gift Card - ' : (item.type == 'physical-gift-card' ? 'Physical Gift Card - ' : '') }}</b> {{ (item.product_variant) ? `${item.product_variant.product.name} ${item.product_variant.variant}` : (item.class_package ? item.class_package.name : (item.store_credit ? item.store_credit.name : item.gift_card.card_code )) }}</td>
+                                            <td>{{ getPaymentItem(item, 'sku') }}</td>
+                                            <td>{{ getPaymentItem(item, 'name') }}</td>
                                             <td>{{ (item.product_variant) ? item.product_variant.product.category.name : 'N/A' }}</td>
                                             <td>{{ item.quantity }}</td>
                                             <td class="price">
-                                                <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.originalTotal) }}</p>
+                                                <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.price_per_item) }}</p>
                                                 <p>PHP {{ totalCount(item.total) }}</p>
                                             </td>
                                             <td v-if="data.status == 'paid'">
@@ -661,32 +667,81 @@
                         })
                     }
                 }
-                console.log(result);
                 return result
             }
         },
         methods: {
-            checkPaymentMethod (data) {
+            getPaymentItem (payment_item, type) {
                 const me = this
                 let result = ''
 
-                if (data.studio_id != null) {
-                    switch (data.payment_method.method) {
-                        case 'paypal':
-                            result = data.payment_method.paypal_transaction_id
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
                             break
-                        case 'paymaya':
-                            result = data.payment_method.paymaya_transaction_id
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
                             break
-                        case 'recurly-subscription':
-                            result = data.payment_method.recurly_subscription_id
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.sku_id
                             break
-                        default:
-                            result = data.payment_code
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
                             break
                     }
                 } else {
-                    result = data.payment_code
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        result = payment.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
                 }
 
                 return result
@@ -951,13 +1006,35 @@
                     }
                 })
             },
-            countVariantQty (items) {
+            getPaymentDetails (payment, type) {
                 const me = this
-                let ctr = 0
-                items.forEach((item, index) => {
-                    ctr += parseInt(item.quantity)
+                let result = 0
+
+                payment.payment_items.forEach((payment_item, key) => {
+                    switch (type) {
+                        case 'qty':
+                            result += payment_item.quantity
+                            break
+                    }
                 })
-                return ctr
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        result = `Php ${me.totalCount(payment.total)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = '-'
+                        }
+                        break
+                }
+
+                return result
             },
             toggleAccordion (event, key) {
                 const me = this
