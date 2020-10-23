@@ -10,12 +10,17 @@
             <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
             <div class="cms_table_package">
                 <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="packageCount > 0 && !data.expired">
-                    <h2 class="package_title">
-                        {{ data.class_package.name }}
-                        <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
-                        <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
-                        <span class="frozen" v-if="data.frozen">Frozen</span>
-                    </h2>
+                    <div class="package_title">
+                        <div class="p_inline">
+                            {{ data.class_package.name }}
+                            <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
+                            <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
+                            <span class="frozen" v-if="data.frozen">Frozen</span>
+                        </div>
+                        <div class="p_label">
+                            Reference Number: <b>{{ getPaymentCode(data.payment) }}</b>
+                        </div>
+                    </div>
                     <div class="package_details">
                         <div class="package_status">
                             <div class="box">

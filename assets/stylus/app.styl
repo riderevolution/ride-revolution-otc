@@ -7798,26 +7798,34 @@ input::placeholder
                     &:last-child
                         border-bottom: 2px dashed transparent
                     .package_title
-                        display: flex
-                        flex-flow: row wrap
-                        align-items: center
                         sf_pro_bold(18px)
                         color: $black
-                        span
-                            sf_pro_medium(12px)
-                            border-radius: 5px
-                            padding: 5px
-                            margin-left: 10px
-                            text-transform: uppercase
-                            &.shared
-                                color: $blue
-                                background-color: $light_blue
-                            &.frozen
-                                color: $light_blue
-                                background-color: $blue
-                            &.warning
-                                color: $white
-                                background-color: $red
+                        .p_inline
+                            display: flex
+                            flex-flow: row wrap
+                            align-items: center
+                            span
+                                sf_pro_medium(12px)
+                                border-radius: 5px
+                                padding: 5px
+                                margin-left: 10px
+                                text-transform: uppercase
+                                &.shared
+                                    color: $blue
+                                    background-color: $light_blue
+                                &.frozen
+                                    color: $light_blue
+                                    background-color: $blue
+                                &.warning
+                                    color: $white
+                                    background-color: $red
+                        .p_label
+                            margin-top: 5px
+                            sf_pro_regular(14px)
+                            color: $black_alternate
+                            b
+                                sf_pro_bold(14px)
+                                color: $green
                     .package_details
                         display: flex
                         flex-flow: row wrap
