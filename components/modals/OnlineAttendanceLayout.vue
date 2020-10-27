@@ -51,12 +51,12 @@
                                 </td>
                                 <td>
                                     <div class="thumb alt">
-                                        <img :src="data.user.customer_details.customer_type.images[0].path_resized" v-if="data.user.customer_details.customer_type.images[0].path != null" />
-                                        <div class="table_data_link">{{ data.user.customer_details.customer_type.name }}</div>
+                                        <img :src="data.customer_type_image[0].path_resized" v-if="data.customer_type_image[0].path != null" />
+                                        <div class="table_data_link">{{ data.customer_type }}</div>
                                     </div>
                                 </td>
                                 <td>{{ data.user.email }}</td>
-                                <td>{{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : data.user.customer_details.ec_contact_number }}</td>
+                                <td>{{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : '-' }}</td>
                                 <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
                                 <td>
                                     <div class="form_group no_margin">
@@ -137,9 +137,9 @@
                         'Instructor': me.getInstructorsInSchedule(me.schedule, 1),
                         'Customer ID': value.user.id,
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
-                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
-                        'Contact/Emergency Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : value.user.customer_details.ec_contact_number,
+                        'Contact/Emergency Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : (value.user.customer_details.ec_contact_number) ? value.user.customer_details.ec_contact_number : '-',
                         'Revenue': me.computeRevenue(value)
                     }))
                 ]

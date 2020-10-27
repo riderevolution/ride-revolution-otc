@@ -38,9 +38,10 @@
                         <thead>
                             <tr>
                                 <th class="stick">Full Name</th>
-                                <th class="stick">Type</th>
+                                <th class="stick">Username</th>
+                                <th class="stick">Customer Type</th>
                                 <th class="stick">Email Address</th>
-                                <th class="stick">Contact No.</th>
+                                <th class="stick">Contact/Emergency Contact No.</th>
                                 <th class="stick">Pending Payment</th>
                             </tr>
                         </thead>
@@ -54,12 +55,23 @@
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`">{{ data.first_name }} {{ data.last_name }}</nuxt-link>
+                                        <nuxt-link class="table_data_link" :to="`${$route.path}/${data.id}/packages`">{{ data.fullname }}</nuxt-link>
                                     </div>
                                 </td>
-                                <td>{{ data.customer_details.customer_type.name }}</td>
+                                <td>
+                                    <div class="table_actions">
+                                        <input class="textbox" :id="`user_id_${key}`" v-model="data.member_id" />
+                                        <div class="table_action_success link" @click="codeClipboard(data, key)">Copy</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="thumb alt">
+                                        <img :src="data.customer_details.customer_type.images[0].path_resized" v-if="data.customer_details.customer_type.images[0].path != null" />
+                                        <div class="table_data_link">{{ data.customer_details.customer_type.name }}</div>
+                                    </div>
+                                </td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : '-' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : '-' }}</td>
                                 <td>
                                     <div class="table_actions" v-if="data.totalPendingPayments">
                                         <div class="table_action_text red">Php {{ totalCount(data.totalPendingPayments) }}</div>
@@ -129,6 +141,17 @@
             }
         },
         methods: {
+            codeClipboard (data, key) {
+                const me = this
+                let element = document.getElementById(`user_id_${key}`)
+                element.select()
+                element.setSelectionRange(0, 99999)
+                document.execCommand("copy")
+                element.nextElementSibling.innerHTML = 'Copied!'
+                setTimeout( () => {
+                    element.nextElementSibling.innerHTML = 'Copy'
+                }, 500)
+            },
             submitPaginate () {
                 const me = this
                 me.fetchData(me.status)
