@@ -265,6 +265,7 @@
                 const me = this
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData(document.getElementById('action'))
+                formData.append('scheduled_date_id', me.schedule.id)
                 me.loader(true)
                 me.$axios.post('api/online-class-bookings/bulk-update', formData, {
                     headers: {
@@ -275,6 +276,14 @@
                         if (res.data) {
                             me.$store.state.onlineAttendancePrompt = true
                             document.body.classList.add('no_scroll')
+                            me.res = []
+                            setTimeout( () => {
+                                res.data.bookings.forEach((data, index) => {
+                                    data.searched = true
+                                    me.res.push(data)
+                                })
+                                me.values = me.res
+                            }, 500)
                         }
                     }, 500)
                 }).catch(err => {
