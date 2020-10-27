@@ -49,7 +49,12 @@
                                         <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
                                     </div>
                                 </td>
-                                <td>{{ data.user.customer_details.customer_type.name }}</td>
+                                <td>
+                                    <div class="thumb alt">
+                                        <img :src="data.user.customer_details.customer_type.images[0].path_resized" v-if="data.user.customer_details.customer_type.images[0].path != null" />
+                                        <div class="table_data_link">{{ data.user.customer_details.customer_type.name }}</div>
+                                    </div>
+                                </td>
                                 <td>{{ data.user.email }}</td>
                                 <td>{{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : data.user.customer_details.ec_contact_number }}</td>
                                 <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
@@ -123,7 +128,9 @@
                         'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
                         'Booking ID': value.id,
                         'Booking Status': value.status,
-                        'Booking Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Employee': (value.employee) ? value.employee.fullname : '-',
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,
