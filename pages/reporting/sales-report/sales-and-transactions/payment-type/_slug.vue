@@ -67,6 +67,7 @@
                                                     <th>Category</th>
                                                     <th>Qty</th>
                                                     <th>Price</th>
+                                                    <th>Customer</th>
                                                 </tr>
                                             </thead>
                                             <tbody v-if="data.payment_items.length > 0">
@@ -78,6 +79,17 @@
                                                     <td class="price">
                                                         <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item) }}</p>
                                                         <p>PHP {{ totalCount(child.total) }}</p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="thumb">
+                                                            <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                                            <div class="table_image_default" v-else>
+                                                                <div class="overlay">
+                                                                    {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </tbody>
