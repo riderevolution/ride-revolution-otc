@@ -176,7 +176,7 @@
                 let result = ''
                 let base_value = 0
                 if (data.user_package_count.payment_item.payment_method.method != 'comp') {
-                    base_value = me.totalCount(data.user_package_count.estimated_price_per_class)
+                    base_value = me.totalCount(data.revenue)
                     result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
                 } else {
                     result = 0

@@ -639,7 +639,7 @@
                     me.form.package_price = me.res.package_price
                     me.form.discounted_price = me.res.discounted_price
                     me.form.estimated_price = me.res.estimated_price_per_class
-                    me.computeEstimatedPrice()
+                    // me.computeEstimatedPrice()
                 })
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
