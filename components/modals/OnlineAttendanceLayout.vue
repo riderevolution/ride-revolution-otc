@@ -298,27 +298,34 @@
             initial () {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/online-class-bookings?scheduled_date_id=${me.schedule.id}`).then(res => {
-                    if (res.data) {
-                        me.res = []
-                        setTimeout( () => {
-                            res.data.bookings.forEach((data, index) => {
-                                data.searched = true
-                                me.res.push(data)
-                            })
-                            me.values = me.res
-                            me.loaded = true
-                        }, 500)
-                    }
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
+                if (!me.schedule) {
                     setTimeout( () => {
-                        me.rowCount = document.getElementsByTagName('th').length
+                        me.loaded = true
                         me.loader(false)
                     }, 500)
-                })
+                } else {
+                    me.$axios.get(`api/online-class-bookings?scheduled_date_id=${me.schedule.id}`).then(res => {
+                        if (res.data) {
+                            me.res = []
+                            setTimeout( () => {
+                                res.data.bookings.forEach((data, index) => {
+                                    data.searched = true
+                                    me.res.push(data)
+                                })
+                                me.values = me.res
+                                me.loaded = true
+                            }, 500)
+                        }
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    }).then(() => {
+                        setTimeout( () => {
+                            me.rowCount = document.getElementsByTagName('th').length
+                            me.loader(false)
+                        }, 500)
+                    })
+                }
             }
         },
         mounted () {
