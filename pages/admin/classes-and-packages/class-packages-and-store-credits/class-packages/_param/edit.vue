@@ -278,6 +278,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form_group">
+                                    <div class="form_check">
+                                        <input type="checkbox" id="allow_multiple_purchase" name="allow_multiple_purchase" class="action_check" :checked="res.allow_multiple_purchase">
+                                        <label for="allow_multiple_purchase">Allow Multiple Purchase</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form_wrapper">

@@ -193,7 +193,7 @@
                                         <td class="item_name" width="35%">({{ data.quantity }}) {{ (data.item.product.product) ? `${data.item.product.product.name} - ${data.item.name}` : data.item.name }}</td>
                                         <td width="15%">
                                             <div class="form_flex_input" :data-vv-scope="`breakdown_${key}`">
-                                                <input type="text" name="quantity" :id="`quantity_${key}`" class="disabled default_text number" maxlength="1" autocomplete="off" :data-vv-name="`breakdown_${key}.quantity`" v-model="data.quantity" v-validate="'numeric|min_value:1|max_value:1'">
+                                                <input type="text" name="quantity" :id="`quantity_${key}`" :class="`default_text number ${(data.item.product.allow_multiple_purchase == 1) ? '' : 'disabled'}`" maxlength="1" autocomplete="off" :data-vv-name="`breakdown_${key}.quantity`" v-model="data.quantity" v-validate="'numeric|min_value:1'">
                                                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`breakdown_${key}.quantity`)">The quantity field is required</span></transition>
                                             </div>
                                         </td>
