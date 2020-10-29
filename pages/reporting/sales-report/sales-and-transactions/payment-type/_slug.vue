@@ -24,6 +24,14 @@
                             </download-csv>
                         </div>
                     </div>
+
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter">
+                            <input type="hidden" name="start_date" :value="form.start_date">
+                            <input type="hidden" name="end_date" :value="form.end_date">
+                            <input type="hidden" name="studio_id" :value="form.studio_id">
+                        </form>
+                    </div>
                 </section>
                 <section id="content">
                     <table class="cms_table_accordion">

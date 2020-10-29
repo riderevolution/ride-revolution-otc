@@ -193,14 +193,13 @@
                                         <td class="item_name" width="35%">({{ data.quantity }}) {{ (data.item.product.product) ? `${data.item.product.product.name} - ${data.item.name}` : data.item.name }}</td>
                                         <td width="15%">
                                             <div class="form_flex_input" :data-vv-scope="`breakdown_${key}`">
-                                                <input type="text" name="quantity" :id="`quantity_${key}`" :class="`default_text number ${(data.item.product.allow_multiple_purchase == 1) ? '' : 'disabled'}`" maxlength="1" autocomplete="off" :data-vv-name="`breakdown_${key}.quantity`" v-model="data.quantity" v-validate="'numeric|min_value:1'">
+                                                <input type="text" name="quantity" :id="`quantity_${key}`" @input="computeQuantity(data.id, data.quantity, key, parseFloat(data.item.product.package_price))" :class="`default_text number ${(data.item.product.allow_multiple_purchase == 1) ? '' : 'disabled'}`" maxlength="2" autocomplete="off" :data-vv-name="`breakdown_${key}.quantity`" v-model="data.quantity" v-validate="'required|numeric|min_value:1|max_value:99'">
                                                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`breakdown_${key}.quantity`)">The quantity field is required</span></transition>
                                             </div>
                                         </td>
                                         <td class="item_price" width="25%">PHP {{ totalCount(data.item.origPrice) }}</td>
                                         <td class="item_price" width="25%" v-if="!promo_applied">
-                                            <p :class="`${(data.item.product.discounted_price) ? 'prev_price' : ''}`" >PHP {{ totalCount(data.price) }}</p>
-                                            <p v-if="data.item.product.discounted_price">PHP {{ totalCount(data.item.product.discounted_price) }}</p>
+                                            <p>PHP {{ totalCount(data.price) }}</p>
                                         </td>
                                         <td class="item_price" width="25%" v-else>
                                             <p class="prev_price" >PHP {{ totalCount(data.price) }}</p>
@@ -386,6 +385,19 @@
             }
         },
         methods: {
+            computeQuantity (id, quantity, key, price) {
+                const me = this
+                if (quantity != '') {
+                    if (parseInt(quantity) != 99) {
+                        me.totalPrice.forEach((data, index) => {
+                            if (data.id == id) {
+                                data.quantity = parseInt(quantity)
+                                data.price = parseInt(parseInt(quantity)) * price
+                            }
+                        })
+                    }
+                }
+            },
             applyPromo () {
                 const me = this
                 if (document.getElementsByName("promo_code")[0].value != "") {
