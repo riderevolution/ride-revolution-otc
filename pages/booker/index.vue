@@ -906,6 +906,15 @@
                         me.$refs.plan.hasCustomer = true
                     }
                 }, 10)
+                if (me.customer != null) {
+                    for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
+                        for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
+                            if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
+                                me.schedules[i].highlighted = true
+                            }
+                        }
+                    }
+                }
             },
             search (event) {
                 const me = this
