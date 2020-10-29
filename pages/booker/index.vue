@@ -21,7 +21,7 @@
                                 </div>
                                 <div class="form_group selection margin" v-click-outside="closeMe">
                                     <label for="q">Find a Customer</label>
-                                    <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @click="toggleCustomers = true" @input="searchCustomer($event)">
+                                    <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @input="search($event)" v-model="form.search">
                                     <transition name="slide"><span class="validation_errors alt" v-if="!findCustomer && customer == ''">Select Customer</span></transition>
                                     <div :class="`customer_selection ${(customerLength > 6) ? 'scrollable' : ''}`" v-if="toggleCustomers">
                                         <div class="customer_selection_list">
@@ -441,7 +441,11 @@
                 user: [],
                 plan: {
                     message: ''
-                }
+                },
+                form: {
+                    search: ''
+                },
+                typing_timeout: ''
             }
         },
         computed: {
@@ -897,24 +901,34 @@
                     me.$refs.plan.hasCustomer = true
                 }, 10)
             },
-            searchCustomer (event) {
+            search (event) {
                 const me = this
-                let value = event.target.value
-                if (value.length > 1) {
-                    let formData = new FormData()
-                    formData.append('q', value)
-                    formData.append('forBooker', 1)
-                    formData.append('enabled', 1)
-                    me.$axios.post('api/customers/search', formData).then(res => {
-                        if (res.data) {
-                            me.customers = res.data.customers
-                            me.customerLength = me.customers.length
-                        }
-                    }).catch(err => {
-                        me.$store.state.errorList = err.response.data.errors
-                        me.$store.state.errorStatus = true
-                    })
-                }
+                clearTimeout(me.typing_timeout)
+                me.typing_timeout = setTimeout( () => {
+                    me.searchCustomer(event.target.value)
+                }, 500)
+            },
+            searchCustomer (data) {
+                const me = this
+                let formData = new FormData()
+                me.loader(true)
+                formData.append('q', data)
+                formData.append('forBooker', 1)
+                formData.append('enabled', 1)
+                me.$axios.post('api/customers/search', formData).then(res => {
+                    if (res.data) {
+                        me.customers = res.data.customers
+                        me.customerLength = me.customers.length
+                        me.toggleCustomers = true
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
             },
             getSeats () {
                 const me = this
