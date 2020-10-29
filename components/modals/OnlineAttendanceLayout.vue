@@ -49,7 +49,7 @@
                                         <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
                                     </div>
                                 </td>
-                                <td>
+                                <td width="15%">
                                     <div class="thumb alt">
                                         <img :src="data.customer_type_image[0].path_resized" v-if="data.customer_type_image[0].path != null" />
                                         <div class="table_data_link">{{ data.customer_type }}</div>
