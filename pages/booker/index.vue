@@ -906,7 +906,7 @@
                         me.$refs.plan.hasCustomer = true
                     }
                 }, 10)
-                if (me.customer != null) {
+                if (me.customer != '') {
                     for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
                         for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
                             if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
@@ -1222,7 +1222,7 @@
                     await me.$axios.get(`api/schedules?month=${month}&year=${year}&day=${day}&studio_id=${me.studioID}&for_booker=1`).then(res => {
                         if (res.data) {
                             me.schedules = res.data.schedules
-                            if (me.customer != null) {
+                            if (me.customer != '') {
                                 for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
                                     for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
                                         if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
