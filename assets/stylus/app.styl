@@ -5886,6 +5886,13 @@ input::placeholder
                                 span
                                     color: $blue
                                     transition: .3s ease-in-out
+                        &.highlighted
+                            border-left: 2px solid $violet
+                            transition: .3s ease-in-out
+                            .class_title
+                                span
+                                    color: $violet
+                                    transition: .3s ease-in-out
                         .class_title
                             display: flex
                             flex-flow: row wrap
@@ -5933,6 +5940,13 @@ input::placeholder
                             .class_text
                                 color: $black
                                 transition: .3s ease-in-out
+                            &.highlighted
+                                border-left: 2px solid $violet
+                                transition: .3s ease-in-out
+                                .class_title
+                                    span
+                                        color: $violet
+                                        transition: .3s ease-in-out
 
     .booker_content
         flex: 1 0 10%

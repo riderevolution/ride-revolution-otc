@@ -58,7 +58,7 @@
                                 <td>{{ data.user.email }}</td>
                                 <td>{{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : '-' }}</td>
                                 <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
-                                <td>
+                                <td width="15%">
                                     <div class="form_group no_margin">
                                         <select class="default_select alternate" :name="`status[${key}]`" v-model="data.status">
                                             <option value="reserved" selected>Reserved</option>

@@ -21,7 +21,7 @@
                                 </div>
                                 <div class="form_group selection margin" v-click-outside="closeMe">
                                     <label for="q">Find a Customer</label>
-                                    <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @input="search($event)" v-model="form.search">
+                                    <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" :class="`default_text search_alternate ${(selectCustomer) ? '' : 'disabled'} ${(!findCustomer && customer == '') ? 'highlighted' : ''}`" @click="toggleCustomers = true" @keyup="search($event)" v-model="form.search">
                                     <transition name="slide"><span class="validation_errors alt" v-if="!findCustomer && customer == ''">Select Customer</span></transition>
                                     <div :class="`customer_selection ${(customerLength > 6) ? 'scrollable' : ''}`" v-if="toggleCustomers">
                                         <div class="customer_selection_list">
@@ -118,7 +118,7 @@
                                 <div class="class_accordion" v-for="(result, key) in results" :key="key">
                                     <div class="accordion_header" @click.self="toggleClass($event, $moment(result.date).format('M'), $moment(result.date).format('D'), $moment(result.date).format('YYYY'))">{{ result.abbr }} | {{ result.date }}</div>
                                     <div class="accordion_content">
-                                        <div :id="`class_${dkey}_${key}`" :class="`class_content ${(data.schedule.studio.online_class) ? 'online' : ''}`" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
+                                        <div :id="`class_${dkey}_${key}`" :class="[ 'class_content', (data.schedule.studio.online_class) ? 'online' : '', (data.highlighted) ? 'highlighted' : '' ]" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
                                             <div class="class_title">
                                                 <span>
                                                     {{ data.schedule.start_time }},
@@ -434,6 +434,7 @@
                 buyCredits: false,
                 findCustomer: true,
                 cancel: false,
+                hit: false,
                 schedule: '',
                 waitlists: [],
                 waitlistCount: 0,
@@ -746,50 +747,46 @@
                         me.$refs.plan.hasCustomer = false
                     }
                 }, 10)
+                for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
+                    me.schedules[i].highlighted = false
+                }
             },
             getBookings (data, sunique, unique) {
                 const me = this
-                // if (me.studio.online_class) {
-                //     me.$store.state.onlineAttendanceLayoutStatus = true
-                // } else {
-                    if (me.studioID) {
-                        let element = document.getElementById(`class_${sunique}_${unique}`)
-                        let parents = document.querySelectorAll('.booker_classes .content_wrapper .class_accordion')
-                        parents.forEach((parent, pindex) => {
-                            let children = parent.querySelectorAll('.accordion_content .class_content')
-                            children.forEach((child, cindex) => {
-                                child.classList.remove('active')
-                            })
+                if (me.studioID) {
+                    let element = document.getElementById(`class_${sunique}_${unique}`), parents = document.querySelectorAll('.booker_classes .content_wrapper .class_accordion')
+                    parents.forEach((parent, pindex) => {
+                        let children = parent.querySelectorAll('.accordion_content .class_content')
+                        children.forEach((child, cindex) => {
+                            child.classList.remove('active')
                         })
-                        if (element) {
-                            if (element.classList.contains('active')) {
-                                element.classList.remove('active')
-                            } else {
-                                element.classList.add('active')
-                            }
+                    })
+                    if (element) {
+                        if (element.classList.contains('active')) {
+                            element.classList.remove('active')
+                        } else {
+                            element.classList.add('active')
                         }
-                        setTimeout(() => {
-                            if (me.$refs.plan) {
-                                me.$refs.plan.fetchSeats(data.id, me.studioID)
-                                document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
-                            }
-                        }, 10)
-                    } else {
-                        me.selectStudio = false
-                        me.$store.state.promptStatus = true
-                        me.message = 'Please select a studio first.'
-                        document.body.classList.add('no_scroll')
-                        me.$scrollTo('.validation_errors', {
-                            offset: -250
-                        })
                     }
-                // }
+                    setTimeout(() => {
+                        if (me.$refs.plan) {
+                            me.$refs.plan.fetchSeats(data.id, me.studioID)
+                            document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
+                        }
+                    }, 10)
+                } else {
+                    me.selectStudio = false
+                    me.$store.state.promptStatus = true
+                    me.message = 'Please select a studio first.'
+                    document.body.classList.add('no_scroll')
+                    me.$scrollTo('.validation_errors', {
+                        offset: -250
+                    })
+                }
 
                 me.schedule = data
 
-                let formData = new FormData()
-                let token = me.$cookies.get('70hokcotc3hhhn5')
-                let id = me.$store.state.user.id
+                let formData = new FormData(), token = me.$cookies.get('70hokcotc3hhhn5'), id = me.$store.state.user.id
 
                 formData.append('scheduled_date_id', data.id)
                 formData.append('user_id', id)
@@ -804,20 +801,24 @@
                 if (!me.studio.online_class) {
                     me.selectCustomer = true
                     if (me.selectStudio) {
-                        let scheduleTime = me.$moment(`${me.schedule.date} ${me.schedule.schedule.start_time}`)
-                        let currentTime = me.$moment()
-                        if (scheduleTime.diff(currentTime) < 0) {
-                            me.findCustomer = false
-                            // me.past = true
-                            me.removeCustomer()
-                        } else {
-                            me.findCustomer = false
-                            // me.past = false
-                        }
+                        // let scheduleTime = me.$moment(`${me.schedule.date} ${me.schedule.schedule.start_time}`)
+                        // let currentTime = me.$moment()
+                        // if (scheduleTime.diff(currentTime) < 0) {
+                        //     me.findCustomer = false
+                        //     // me.past = true
+                        //     me.removeCustomer()
+                        // } else {
+                        //     me.findCustomer = false
+                        //     // me.past = false
+                        // }
                     }
                 } else {
+                    // let scheduleTime = me.$moment(`${me.schedule.date} ${me.schedule.schedule.start_time}`)
+                    // let currentTime = me.$moment()
                     setTimeout( () => {
-                        me.removeCustomer()
+                        // if (scheduleTime.diff(currentTime) < 0) {
+                        //     me.removeCustomer()
+                        // }
                         me.$refs.online.initial()
                     }, 10)
                 }
@@ -844,8 +845,7 @@
             },
             toggleOverlays (e) {
                 const me = this
-                let target = e.target
-                let element = document.getElementById(`legend_toggler`)
+                let target = e.target, element = document.getElementById(`legend_toggler`)
                 if (element !== target) {
                     if (element.nextElementSibling) {
                         if (element.nextElementSibling.classList.contains('active')) {
@@ -857,10 +857,14 @@
             toggleLegends (event) {
                 const me = this
                 let element = event.target
-                if (element.nextElementSibling.classList.contains('active')) {
-                    element.nextElementSibling.classList.remove('active')
-                } else {
-                    element.nextElementSibling.classList.add('active')
+                if (element) {
+                    if (element.nextElementSibling) {
+                        if (element.nextElementSibling.classList.contains('active')) {
+                            element.nextElementSibling.classList.remove('active')
+                        } else {
+                            element.nextElementSibling.classList.add('active')
+                        }
+                    }
                 }
             },
             toggleLayout (type) {
@@ -898,13 +902,19 @@
                 me.$store.state.customerID = data.id
                 me.customer = data
                 setTimeout( () => {
-                    me.$refs.plan.hasCustomer = true
+                    if (me.$refs.plan) {
+                        me.$refs.plan.hasCustomer = true
+                    }
                 }, 10)
             },
             search (event) {
                 const me = this
+                me.hit = false
                 clearTimeout(me.typing_timeout)
                 me.typing_timeout = setTimeout( () => {
+                    if (event.keyCode == 13) {
+                        me.hit = true
+                    }
                     me.searchCustomer(event.target.value)
                 }, 500)
             },
@@ -919,7 +929,11 @@
                     if (res.data) {
                         me.customers = res.data.customers
                         me.customerLength = me.customers.length
-                        me.toggleCustomers = true
+                        if (me.hit) {
+                            me.getCustomer(me.customers[0])
+                        } else {
+                            me.toggleCustomers = true
+                        }
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
@@ -1199,6 +1213,15 @@
                     await me.$axios.get(`api/schedules?month=${month}&year=${year}&day=${day}&studio_id=${me.studioID}&for_booker=1`).then(res => {
                         if (res.data) {
                             me.schedules = res.data.schedules
+                            if (me.customer != null) {
+                                for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
+                                    for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
+                                        if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
+                                            me.schedules[i].highlighted = true
+                                        }
+                                    }
+                                }
+                            }
                             setTimeout( () => {
                                 target.nextElementSibling.style.height = `${target.nextElementSibling.scrollHeight}px`
                                 target.parentNode.classList.add('toggled')
