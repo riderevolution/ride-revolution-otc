@@ -31,7 +31,6 @@
                                 <th>Customer</th>
                                 <th>Type</th>
                                 <th>Email Address</th>
-                                <th>Contact/Emergency Contact No.</th>
                                 <th>Class Package</th>
                                 <th>Status</th>
                             </tr>
@@ -56,7 +55,6 @@
                                     </div>
                                 </td>
                                 <td>{{ data.user.email }}</td>
-                                <td>{{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : '-' }}</td>
                                 <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
                                 <td width="15%">
                                     <div class="form_group no_margin">
