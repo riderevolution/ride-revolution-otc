@@ -194,6 +194,8 @@
                                         <td width="15%">
                                             <div class="form_flex_input" :data-vv-scope="`breakdown_${key}`">
                                                 <input type="text" name="quantity" :id="`quantity_${key}`" @input="computeQuantity(data.id, data.quantity, key, parseFloat(data.item.product.package_price))" :class="`default_text number ${(data.item.product.allow_multiple_purchase == 1) ? '' : 'disabled'}`" maxlength="2" autocomplete="off" :data-vv-name="`breakdown_${key}.quantity`" v-model="data.quantity" v-validate="'required|numeric|min_value:1|max_value:99'">
+                                                <div class="up" @click="computeQuantity(data.id, data.quantity + 1, key, parseFloat(data.item.product.package_price))"></div>
+                                                <div class="down" @click="computeQuantity(data.id, data.quantity - 1, key, parseFloat(data.item.product.package_price))"></div>
                                                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`breakdown_${key}.quantity`)">The quantity field is required</span></transition>
                                             </div>
                                         </td>
