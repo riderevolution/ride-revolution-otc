@@ -137,7 +137,6 @@
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
-                        'Contact/Emergency Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : (value.user.customer_details.ec_contact_number) ? value.user.customer_details.ec_contact_number : '-',
                         'Revenue': me.computeRevenue(value)
                     }))
                 ]
