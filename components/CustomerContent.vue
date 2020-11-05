@@ -1217,6 +1217,9 @@
                 me.res = me.value.payments
             } else {
                 me.res = me.value
+                if (me.res.classHistory) {
+                    me.res.classHistory.sort((a,b) => (me.$moment(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`) > me.$moment(`${a.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`)) ? 1 : ((me.$moment(`${a.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) > me.$moment(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`)) ? -1 : 0))
+                }
             }
             me.loaded = true
             setTimeout( () => {
