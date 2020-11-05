@@ -253,7 +253,7 @@
                                 <table class="cms_table">
                                     <thead>
                                         <tr>
-                                            <th>SKU ID</th>
+                                            <th>Reference Number</th>
                                             <th>Item</th>
                                             <th>Category</th>
                                             <th>Qty</th>
@@ -263,7 +263,7 @@
                                     </thead>
                                     <tbody  v-if="data.payment_items.length > 0">
                                         <tr v-for="(item, key) in data.payment_items" :key="key">
-                                            <td>{{ getPaymentItem(item, 'sku') }}</td>
+                                            <td>{{ getPaymentCode(data) }}</td>
                                             <td>{{ getPaymentItem(item, 'name') }}</td>
                                             <td>{{ (item.product_variant) ? item.product_variant.product.category.name : 'N/A' }}</td>
                                             <td>{{ item.quantity }}</td>
