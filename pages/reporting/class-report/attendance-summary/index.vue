@@ -107,7 +107,7 @@
                                 <td>{{ countValues(data, 'no_shows') }}</td>
                                 <td>{{ countValues(data, 'cancel') }}</td>
                                 <td>{{ countValues(data, 'waitlist') }}</td>
-                                <td>{{ countValues(data, 'repeats') }}</td>
+                                <td>{{ countValues(data, 'total_riders') - (countValues(data, 'repeats') + countValues(data, 'first_timers') + countValues(data, 'no_shows')) }}</td>
                                 <td>{{ totalPercentage('average', data) }}</td>
                                 <td>{{ totalItems(data.number_of_classes) }}</td>
                                 <td>{{ (studio.online_class) ? 'Unlimited' : studio.capacity }}</td>
