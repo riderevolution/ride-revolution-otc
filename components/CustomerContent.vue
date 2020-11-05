@@ -232,7 +232,7 @@
                 <tbody :class="`${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
                     <tr class="parent alt">
                         <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
-                        <td>{{ formatDate((data.payment_items[0].user_package_count.from_old == 1) ? data.created_at : data.updated_at, true) }}</td>
+                        <td>{{ formatTransactionDate(data, true) }}</td>
                         <td>{{ getPaymentStudio(data) }}</td>
                         <td>{{ getPaymentDetails(data, 'qty') }}</td>
                         <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
@@ -1081,12 +1081,49 @@
                 })
                 me.$router.push('/booker')
             },
-            formatDate (value, withTime) {
-                if (value) {
-                    if (withTime) {
-                        return this.$moment(value).format('MMM DD, YYYY hh:mm A')
+            formatTransactionDate (value, withTime) {
+                if (value.payment_items[0].user_package_count) {
+                    if (value.payment_items[0].user_package_count.from_old == 1) {
+                        if (withTime) {
+                            return this.$moment(value.created_at).format('MMM DD, YYYY hh:mm A')
+                        } else {
+                            return this.$moment(value.created_at).format('MMM DD, YYYY')
+                        }
                     } else {
-                        return this.$moment(value).format('MMM DD, YYYY')
+                        if (withTime) {
+                            return this.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A')
+                        } else {
+                            return this.$moment(value.updated_at).format('MMM DD, YYYY')
+                        }
+                    }
+                } else {
+                    if (withTime) {
+                        return this.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A')
+                    } else {
+                        return this.$moment(value.updated_at).format('MMM DD, YYYY')
+                    }
+                }
+            },
+            formatDate (value, withTime) {
+                if (value.payment_items[0].user_package_count) {
+                    if (value.payment_items[0].user_package_count.from_old == 1) {
+                        if (withTime) {
+                            return this.$moment(value.created_at).format('MMM DD, YYYY hh:mm A')
+                        } else {
+                            return this.$moment(value.created_at).format('MMM DD, YYYY')
+                        }
+                    } else {
+                        if (withTime) {
+                            return this.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A')
+                        } else {
+                            return this.$moment(value.updated_at).format('MMM DD, YYYY')
+                        }
+                    }
+                } else {
+                    if (withTime) {
+                        return this.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A')
+                    } else {
+                        return this.$moment(value.updated_at).format('MMM DD, YYYY')
                     }
                 }
             },
