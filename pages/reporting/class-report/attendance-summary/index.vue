@@ -310,6 +310,9 @@
                 me.$axios.post(`api/reporting/classes/attendance-summary`, formData).then(res => {
                     setTimeout( () => {
                         me.res = res.data
+                        me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
+                            me.studio = res.data.studio
+                        })
                     }, 500)
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
