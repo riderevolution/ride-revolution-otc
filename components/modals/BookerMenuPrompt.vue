@@ -255,6 +255,7 @@
         mounted () {
             const me = this
             me.seat = me.$store.state.seat
+            console.log(me.$store.state.seat);
         }
     }
 </script>

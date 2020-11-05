@@ -193,6 +193,7 @@
                 me.$store.state.bookingID = (seat.bookings.length > 0) ? seat.bookings[0].id : 0
                 me.$store.state.userPackageCountId = (seat.bookings.length > 0) ? seat.bookings[0].user_package_count_id : 0
                 me.$store.state.seat = seat
+                console.log(me.$store.state.seat);
                 switch (status) {
                     case 'open':
                         if (me.$parent.hasCustomer && me.customer.id !== undefined) {

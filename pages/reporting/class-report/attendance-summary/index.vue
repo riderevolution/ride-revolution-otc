@@ -299,7 +299,7 @@
                         break
                 }
 
-                return (type == 'average') ? percent : `${percent}%`
+                return (type == 'average') ? percent : `${(percent == 'infinity') ? 100 : percent}%`
             },
             submissionSuccess () {
                 const me = this
