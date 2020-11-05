@@ -31,7 +31,6 @@
                                 <th>Customer</th>
                                 <th>Type</th>
                                 <th>Email Address</th>
-                                <th>Contact/Emergency Contact No.</th>
                                 <th>Class Package</th>
                                 <th>Status</th>
                             </tr>
@@ -51,7 +50,6 @@
                                 </td>
                                 <td>{{ data.user.customer_details.customer_type.name }}</td>
                                 <td>{{ data.user.email }}</td>
-                                <td>{{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : data.user.customer_details.ec_contact_number }}</td>
                                 <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
                                 <td>
                                     <div class="form_group no_margin">
@@ -132,7 +130,6 @@
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.user.customer_details.customer_type.name,
                         'Email Address': value.user.email,
-                        'Contact/Emergency Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : value.user.customer_details.ec_contact_number,
                         'Revenue': me.computeRevenue(value)
                     }))
                 ]
