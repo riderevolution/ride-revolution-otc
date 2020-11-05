@@ -184,41 +184,7 @@
                                     <th>SC</th>
                                 </tr>
                             </thead>
-                            <tbody v-if="!filtered">
-                                <tr>
-                                    <td class="green">Total</td>
-                                    <td class="green">Php {{ totalCount(res.item_total.totalSum) }}</td>
-                                    <td class="green">Php {{ totalCount(res.item_total.totalITY) }}</td>
-                                    <td class="green">Php {{ totalCount(res.item_total.totalITD) }}</td>
-                                    <td class="green">{{ res.item_payment_mode_total.cash }}</td>
-                                    <td class="green">{{ res.item_payment_mode_total.gcash }}</td>
-                                    <td class="green">{{ res.item_payment_mode_total.creditCard }}</td>
-                                    <td class="green">{{ res.item_payment_mode_total.debitCard }}</td>
-                                    <td class="green">{{ res.item_payment_mode_total.check }}</td>
-                                    <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
-                                    <td class="green">{{ res.item_payment_mode_total.paymaya }}</td>
-                                    <!-- <td class="green">{{ res.item_payment_mode_total.recurly }}</td> -->
-                                    <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
-                                </tr>
-                                <tr v-for="(data, key) in res.items" :key="key">
-                                    <td>
-                                        <div class="table_data_link">{{ (data.card_code) ? data.card_code : (data.variant ? data.variant : data.name) }}</div>
-                                    </td>
-                                    <td>Php {{ (data.sum) ? totalCount(data.sum) : 0 }}</td>
-                                    <td>Php {{ totalCount(data.ITY) }}</td>
-                                    <td>Php {{ totalCount(data.ITD) }}</td>
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.cash : 0 }}</td>
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.gcash : 0 }}</td>
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.creditCard : 0 }}</td>
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.debitCard : 0 }}</td>
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.paypal : 0 }}</td>
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.paymaya : 0 }}</td>
-                                    <!-- <td>{{ (data.paymentModes) ? data.paymentModes.recurly : 0 }}</td> -->
-                                    <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
-                                </tr>
-                            </tbody>
-                            <tbody v-else-if="filtered">
+                            <tbody>
                                 <tr>
                                     <td class="green">Total</td>
                                     <td class="green">Php {{ totalCount(res.item_total.totalSum) }}</td>
