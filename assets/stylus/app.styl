@@ -4168,6 +4168,16 @@ input::placeholder
                     display: flex
                     flex-flow: row wrap
                     align-items: center
+                    &.alt
+                        img
+                            width: 20px
+                            height: 20px
+                            border-radius: 0
+                            object-fit: contain
+                        .table_data_link
+                            text-decoration: none
+                            color: $black
+                            margin-left: 10px
                     img
                         width: 35px
                         height: 35px
@@ -5865,7 +5875,7 @@ input::placeholder
                         padding: 10px 15px
                         text-decoration: none
                         box-shadow: 0px 0px 15px transparent
-                        border-left: 2px solid $border
+                        border-left: 2px solid $blue
                         border-bottom: 1px solid $border
                         transition: .3s ease-in-out
                         cursor: pointer
@@ -5876,6 +5886,13 @@ input::placeholder
                                 span
                                     color: $blue
                                     transition: .3s ease-in-out
+                        &.highlighted
+                            border-left: 2px solid $violet
+                            transition: .3s ease-in-out
+                            .class_title
+                                span
+                                    color: $violet
+                                    transition: .3s ease-in-out
                         .class_title
                             display: flex
                             flex-flow: row wrap
@@ -5884,7 +5901,7 @@ input::placeholder
                             span
                                 flex: 1 0 10%
                                 sf_pro_medium(14px)
-                                color: $black
+                                color: $blue
                                 transition: .3s ease-in-out
                                 img
                                     filter: invert(1)
@@ -5923,6 +5940,13 @@ input::placeholder
                             .class_text
                                 color: $black
                                 transition: .3s ease-in-out
+                            &.highlighted
+                                border-left: 2px solid $violet
+                                transition: .3s ease-in-out
+                                .class_title
+                                    span
+                                        color: $violet
+                                        transition: .3s ease-in-out
 
     .booker_content
         flex: 1 0 10%

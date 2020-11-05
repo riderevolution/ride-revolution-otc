@@ -278,6 +278,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form_group">
+                                    <div class="form_check">
+                                        <input type="checkbox" id="allow_multiple_purchase" name="allow_multiple_purchase" class="action_check" :checked="res.allow_multiple_purchase">
+                                        <label for="allow_multiple_purchase">Allow Multiple Purchase</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form_wrapper">
@@ -639,7 +645,7 @@
                     me.form.package_price = me.res.package_price
                     me.form.discounted_price = me.res.discounted_price
                     me.form.estimated_price = me.res.estimated_price_per_class
-                    me.computeEstimatedPrice()
+                    // me.computeEstimatedPrice()
                 })
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

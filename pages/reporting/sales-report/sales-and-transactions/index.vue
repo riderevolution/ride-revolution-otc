@@ -41,12 +41,12 @@
                             </div>
                             <div class="form_group margin">
                                 <label for="start_date">Start Date <span>*</span></label>
-                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
-                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
@@ -352,7 +352,7 @@
         methods: {
             toggledPaymentType (payment_type) {
                 const me = this
-                me.$router.push(`${me.$route.path}/payment-type/${payment_type.status}?start_date=${me.form.start_date}&end_date=${me.form.end_date}&studio_id=${me.form.studio_id}`)
+                me.$router.push(`${me.$route.path}/payment-type/${payment_type.status}?tab_status=${me.tabStatus}&start_date=${me.form.start_date}&end_date=${me.form.end_date}&studio_id=${me.form.studio_id}`)
             },
             getStudio () {
                 const me = this
@@ -477,12 +477,36 @@
             fetchData () {
                 const me = this
                 me.loader(true)
-                let studio_id = me.$cookies.get('CSID')
+                let studio_id = me.$cookies.get('CSID'), ctr = 0
+                if (me.$route.query.studio_id) {
+                    me.form.studio_id = me.$route.query.studio_id
+                    ctr += 1
+                } else {
+                    me.form.studio_id = studio_id
+                }
+
+                if (me.$route.query.start_date) {
+                    me.form.start_date = me.$route.query.start_date
+                    ctr += 1
+                }
+                if (me.$route.query.end_date) {
+                    me.form.end_date = me.$route.query.end_date
+                    ctr += 1
+                }
+                if (me.$route.query.tab_status) {
+                    me.tabStatus = me.$route.query.tab_status
+                    ctr += 1
+                }
+
+                if (ctr > 1) {
+                    me.filtered = true
+                }
+
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
-                formData.append('studio_id',  studio_id)
+                formData.append('studio_id',  me.form.studio_id)
                 me.$axios.post(`api/${me.apiRoute}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -508,7 +532,6 @@
                             }).then(res => {
                                 if (res.data) {
                                     me.studios = res.data.studios
-                                    me.form.studio_id = studio_id
                                 }
                             })
 

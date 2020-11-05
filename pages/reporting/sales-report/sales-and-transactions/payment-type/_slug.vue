@@ -3,6 +3,7 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
+                    <nuxt-link :to="generateLink()" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales &amp; Transactions</span></nuxt-link>
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
@@ -23,6 +24,14 @@
                                 Export
                             </download-csv>
                         </div>
+                    </div>
+
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter">
+                            <input type="hidden" name="start_date" :value="form.start_date">
+                            <input type="hidden" name="end_date" :value="form.end_date">
+                            <input type="hidden" name="studio_id" :value="form.studio_id">
+                        </form>
                     </div>
                 </section>
                 <section id="content">
@@ -67,6 +76,8 @@
                                                     <th>Category</th>
                                                     <th>Qty</th>
                                                     <th>Price</th>
+                                                    <th>Customer</th>
+                                                    <th>Contact/Emergency Contact No.</th>
                                                 </tr>
                                             </thead>
                                             <tbody v-if="data.payment_items.length > 0">
@@ -78,6 +89,20 @@
                                                     <td class="price">
                                                         <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item) }}</p>
                                                         <p>PHP {{ totalCount(child.total) }}</p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="thumb">
+                                                            <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                                            <div class="table_image_default" v-else>
+                                                                <div class="overlay">
+                                                                    {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : '-' }}
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -123,6 +148,7 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
+                tab_status: '',
                 res: [],
                 total_count: 0,
                 studio: [],
@@ -152,7 +178,7 @@
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
                         'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
                         'Email Address': value.parent.user.email,
-                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : value.parent.user.customer_details.ec_contact_number,
+                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : '-' ,
                         'Employee': me.getPaymentDetails(value.parent, 'employee'),
                         'Remarks': value.parent.remarks
                     }))
@@ -160,6 +186,12 @@
             }
         },
         methods: {
+            generateLink () {
+                const me = this
+                let result = `/reporting/sales-report/sales-and-transactions?tab_status=${me.tab_status}&studio_id=${me.form.studio_id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`
+
+                return result
+            },
             getPaymentItem (payment_item, type) {
                 const me = this
                 let result = ''
@@ -318,6 +350,9 @@
                 }
                 if (me.$route.query.end_date) {
                     me.form.end_date = me.$route.query.end_date
+                }
+                if (me.$route.query.tab_status) {
+                    me.tab_status = me.$route.query.tab_status
                 }
 
                 let formData = new FormData()

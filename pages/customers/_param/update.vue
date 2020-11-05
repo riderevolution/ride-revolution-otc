@@ -33,12 +33,12 @@
                                 <div class="form_flex">
                                     <div class="form_group">
                                         <label for="first_name">First Name <span>*</span></label>
-                                        <input type="text" name="first_name" autocomplete="off" class="default_text" v-model="res.first_name" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
+                                        <input type="text" name="first_name" autocomplete="off" class="default_text" v-model="res.first_name" v-validate="{required: true, regex: '^[a-zA-Z_ ]*$', max: 100}">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('first_name')">{{ properFormat(errors.first('first_name')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
                                         <label for="last_name">Last Name <span>*</span></label>
-                                        <input type="text" name="last_name" autocomplete="off" class="default_text" v-model="res.last_name" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
+                                        <input type="text" name="last_name" autocomplete="off" class="default_text" v-model="res.last_name" v-validate="{required: true, regex: '^[a-zA-Z_ ]*$', max: 100}">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('last_name')">{{ properFormat(errors.first('last_name')) }}</span></transition>
                                     </div>
                                 </div>
@@ -220,7 +220,7 @@
                                     <div class="form_flex">
                                         <div class="form_group">
                                             <label for="ec_full_name">Full Name <span>*</span></label>
-                                            <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-model="res.customer_details.ec_full_name" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 100}">
+                                            <input type="text" name="ec_full_name" autocomplete="off" class="default_text" v-model="res.customer_details.ec_full_name" v-validate="{required: true, regex: '^[a-zA-Z_ ]*$', max: 100}">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_full_name')">{{ properFormat(errors.first('ec_full_name')) }}</span></transition>
                                         </div>
                                         <div class="form_group">
@@ -232,7 +232,7 @@
                                     <div class="form_flex">
                                         <div class="form_group">
                                             <label for="ec_relationship">Relationship <span>*</span></label>
-                                            <input type="text" name="ec_relationship" autocomplete="off" v-model="res.customer_details.ec_relationship" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z0-9_ ]*$', max: 50}">
+                                            <input type="text" name="ec_relationship" autocomplete="off" v-model="res.customer_details.ec_relationship" class="default_text" v-validate="{required: true, regex: '^[a-zA-Z_ ]*$', max: 50}">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('ec_relationship')">{{ properFormat(errors.first('ec_relationship')) }}</span></transition>
                                         </div>
                                     </div>

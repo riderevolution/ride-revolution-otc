@@ -48,10 +48,15 @@
                                         <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
                                     </div>
                                 </td>
-                                <td>{{ data.user.customer_details.customer_type.name }}</td>
+                                <td width="15%">
+                                    <div class="thumb alt">
+                                        <img :src="data.customer_type_image[0].path_resized" v-if="data.customer_type_image[0].path != null" />
+                                        <div class="table_data_link">{{ data.customer_type }}</div>
+                                    </div>
+                                </td>
                                 <td>{{ data.user.email }}</td>
                                 <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
-                                <td>
+                                <td width="15%">
                                     <div class="form_group no_margin">
                                         <select class="default_select alternate" :name="`status[${key}]`" v-model="data.status">
                                             <option value="reserved" selected>Reserved</option>
@@ -121,15 +126,18 @@
                         'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
                         'Booking ID': value.id,
                         'Booking Status': value.status,
-                        'Booking Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Employee': (value.employee) ? value.employee.fullname : '-',
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,
                         'Instructor': me.getInstructorsInSchedule(me.schedule, 1),
                         'Customer ID': value.user.id,
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
-                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
+                        'Contact/Emergency Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : (value.user.customer_details.ec_contact_number) ? value.user.customer_details.ec_contact_number : '-',
                         'Revenue': me.computeRevenue(value)
                     }))
                 ]
@@ -166,7 +174,7 @@
                 let result = ''
                 let base_value = 0
                 if (data.user_package_count.payment_item.payment_method.method != 'comp') {
-                    base_value = me.totalCount(data.user_package_count.estimated_price_per_class)
+                    base_value = me.totalCount(data.revenue)
                     result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
                 } else {
                     result = 0
@@ -255,6 +263,7 @@
                 const me = this
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData(document.getElementById('action'))
+                formData.append('scheduled_date_id', me.schedule.id)
                 me.loader(true)
                 me.$axios.post('api/online-class-bookings/bulk-update', formData, {
                     headers: {
@@ -265,6 +274,14 @@
                         if (res.data) {
                             me.$store.state.onlineAttendancePrompt = true
                             document.body.classList.add('no_scroll')
+                            me.res = []
+                            setTimeout( () => {
+                                res.data.bookings.forEach((data, index) => {
+                                    data.searched = true
+                                    me.res.push(data)
+                                })
+                                me.values = me.res
+                            }, 500)
                         }
                     }, 500)
                 }).catch(err => {
@@ -279,27 +296,34 @@
             initial () {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/online-class-bookings?scheduled_date_id=${me.schedule.id}`).then(res => {
-                    if (res.data) {
-                        me.res = []
-                        setTimeout( () => {
-                            res.data.bookings.forEach((data, index) => {
-                                data.searched = true
-                                me.res.push(data)
-                            })
-                            me.values = me.res
-                            me.loaded = true
-                        }, 500)
-                    }
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
+                if (!me.schedule) {
                     setTimeout( () => {
-                        me.rowCount = document.getElementsByTagName('th').length
+                        me.loaded = true
                         me.loader(false)
                     }, 500)
-                })
+                } else {
+                    me.$axios.get(`api/online-class-bookings?scheduled_date_id=${me.schedule.id}`).then(res => {
+                        if (res.data) {
+                            me.res = []
+                            setTimeout( () => {
+                                res.data.bookings.forEach((data, index) => {
+                                    data.searched = true
+                                    me.res.push(data)
+                                })
+                                me.values = me.res
+                                me.loaded = true
+                            }, 500)
+                        }
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    }).then(() => {
+                        setTimeout( () => {
+                            me.rowCount = document.getElementsByTagName('th').length
+                            me.loader(false)
+                        }, 500)
+                    })
+                }
             }
         },
         mounted () {
