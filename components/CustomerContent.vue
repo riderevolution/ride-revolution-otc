@@ -1218,7 +1218,9 @@
             } else {
                 me.res = me.value
                 if (me.res.classHistory) {
-                    me.res.classHistory.sort((a,b) => (me.$moment(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`) > me.$moment(`${a.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`)) ? 1 : ((me.$moment(`${a.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) > me.$moment(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`)) ? -1 : 0))
+                    me.res.classHistory.sort(function(a,b){
+                        return new Date(b.scheduled_date.date) - new Date(a.scheduled_date.date);
+                    });
                 }
             }
             me.loaded = true
