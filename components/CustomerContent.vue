@@ -1219,7 +1219,7 @@
                 me.res = me.value
                 if (me.res.classHistory) {
                     me.res.classHistory.sort(function(a,b){
-                        return new Date(b.scheduled_date.date) - new Date(a.scheduled_date.date);
+                        return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
                     });
                 }
             }
