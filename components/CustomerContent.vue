@@ -1187,6 +1187,9 @@
                 me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?classHistoryStatus=${status}`).then(res => {
                     if (res.data) {
                         me.res = res.data.customer
+                        me.res.classHistory.sort(function(a,b){
+                            return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
+                        })
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
@@ -1220,7 +1223,7 @@
                 if (me.res.classHistory) {
                     me.res.classHistory.sort(function(a,b){
                         return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
-                    });
+                    })
                 }
             }
             me.loaded = true
