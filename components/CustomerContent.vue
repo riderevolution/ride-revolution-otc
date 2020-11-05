@@ -232,7 +232,7 @@
                 <tbody :class="`${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
                     <tr class="parent alt">
                         <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
-                        <td>{{ formatDate(data.updated_at, true) }}</td>
+                        <td>{{ formatDate((data.payment_items[0].user_package_count.from_old == 1) ? data.created_at : data.updated_at, true) }}</td>
                         <td>{{ getPaymentStudio(data) }}</td>
                         <td>{{ getPaymentDetails(data, 'qty') }}</td>
                         <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
