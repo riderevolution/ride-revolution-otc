@@ -1105,21 +1105,7 @@
                 }
             },
             formatDate (value, withTime) {
-                if (value.payment_items[0].user_package_count) {
-                    if (value.payment_items[0].user_package_count.from_old == 1) {
-                        if (withTime) {
-                            return this.$moment(value.created_at).format('MMM DD, YYYY hh:mm A')
-                        } else {
-                            return this.$moment(value.created_at).format('MMM DD, YYYY')
-                        }
-                    } else {
-                        if (withTime) {
-                            return this.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A')
-                        } else {
-                            return this.$moment(value.updated_at).format('MMM DD, YYYY')
-                        }
-                    }
-                } else {
+                if (value) {
                     if (withTime) {
                         return this.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A')
                     } else {
