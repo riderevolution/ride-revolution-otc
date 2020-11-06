@@ -14,6 +14,7 @@
                     <th>Customer Type</th>
                     <th>Email Address</th>
                     <th>Contact/Emergency Contact Number</th>
+                    <th>Dumbbell</th>
                     <th>Shoe size</th>
                 </tr>
             </thead>
@@ -37,6 +38,9 @@
                     </td>
                     <td>
                         {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : data.user.customer_details.ec_contact_number }}
+                    </td>
+                    <td>
+                        {{ (data.user.customer_details.co_dumbbells != null) ? data.user.customer_details.co_dumbbells : 'N/A' }}
                     </td>
                     <td>
                         {{ (data.user.customer_details.co_shoe_size != null) ? data.user.customer_details.co_shoe_size : 'N/A' }}
