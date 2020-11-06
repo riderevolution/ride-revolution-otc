@@ -97,6 +97,14 @@
                                         </select>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('co_shoe_size')">{{ properFormat(errors.first('co_shoe_size')) }}</span></transition>
                                     </div>
+                                    <div class="form_group">
+                                        <label for="co_dumbbells">Shoe Size <span>*</span></label>
+                                        <select class="default_select alternate" name="co_dumbbells" v-validate="'required'" v-model="res.customer_details.co_dumbbells">
+                                            <option value="" selected disabled>Choose Dumbbell</option>
+                                            <option :value="dumbbell" v-for="(dumbbell, index) in dumbbells">{{ dumbbell }}</option>
+                                        </select>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_dumbbells')">{{ properFormat(errors.first('co_dumbbells')) }}</span></transition>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -301,6 +309,7 @@
                 ba_states: [],
                 types: [],
                 sizes: [],
+                dumbbells: ['1LB', '2LBS', '3LBS', '5LBS'],
                 professions: ['Accounting/Finance', 'Admin/Human Resources', 'Arts/Media/Communications', 'Building/Construction', 'Information Technology', 'Education/Training', 'Engineering', 'Healthcare', 'Hotel/Restaurant', 'Manufacturing', 'Sales/Marketing', 'Sciences', 'Services', 'Others'],
                 studios: []
             }

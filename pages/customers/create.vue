@@ -95,16 +95,22 @@
                                     </div>
                                 </div>
                                 <div class="form_flex">
-                                    <transition name="fade">
-                                        <div class="form_group">
-                                            <label for="co_shoe_size">Shoe Size <span>*</span></label>
-                                            <select :class="`default_select alternate ${(form.gender.length > 0) ? '' : 'disabled'}`" name="co_shoe_size" v-validate="'required|max:20'">
-                                                <option value="" selected disabled>Choose Shoe Size</option>
-                                                <option :value="size" v-for="(size, index) in sizes">{{ size }}</option>
-                                            </select>
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('co_shoe_size')">{{ properFormat(errors.first('co_shoe_size')) }}</span></transition>
-                                        </div>
-                                    </transition>
+                                    <div class="form_group">
+                                        <label for="co_shoe_size">Shoe Size <span>*</span></label>
+                                        <select :class="`default_select alternate ${(form.gender.length > 0) ? '' : 'disabled'}`" name="co_shoe_size" v-validate="'required'">
+                                            <option value="" selected disabled>Choose Shoe Size</option>
+                                            <option :value="size" v-for="(size, index) in sizes">{{ size }}</option>
+                                        </select>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_shoe_size')">{{ properFormat(errors.first('co_shoe_size')) }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="co_dumbbells">Shoe Size <span>*</span></label>
+                                        <select class="default_select alternate" name="co_dumbbells" v-validate="'required'">
+                                            <option value="" selected disabled>Choose Dumbbell</option>
+                                            <option :value="dumbbell" v-for="(dumbbell, index) in dumbbells">{{ dumbbell }}</option>
+                                        </select>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('co_dumbbells')">{{ properFormat(errors.first('co_dumbbells')) }}</span></transition>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -383,6 +389,7 @@
                 ba_states: [],
                 types: [],
                 sizes: [],
+                dumbbells: ['1LB', '2LBS', '3LBS', '5LBS'],
                 professions: ['Accounting/Finance', 'Admin/Human Resources', 'Arts/Media/Communications', 'Building/Construction', 'Information Technology', 'Education/Training', 'Engineering', 'Healthcare', 'Hotel/Restaurant', 'Manufacturing', 'Sales/Marketing', 'Sciences', 'Services', 'Others']
             }
         },
