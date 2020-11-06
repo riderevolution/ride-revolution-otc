@@ -190,6 +190,7 @@
             Foot
         },
         data () {
+            const sales_summary_values = []
             return {
                 name: 'Sales & Transactions',
                 filtered: false,
@@ -208,6 +209,7 @@
                 },
                 slug: 'sales-summary',
                 apiRoute: 'reporting/sales/sales-and-transactions/sales-summary',
+                sales_summary_values: [],
                 studios: [],
                 categories: [],
                 form: {
@@ -215,6 +217,30 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
+            }
+        },
+        computed: {
+            salesSummaryAttributes () {
+                const me = this
+                let current_length = me.sales_summary_values.length - 1
+                return [
+                    ...me.sales_summary_values.map((value, key) => ({
+                        'Studio': me.getStudio(),
+                        'Items': (key == current_length) ? 'Total' : (value.card_code) ? value.card_code : (value.variant ? value.variant : value.name),
+                        'Qty': (key == current_length) ? value.totalQty : (value.qty ? value.qty : 0),
+                        'ITY': `Php ${(key == current_length) ? me.totalCount(value.totalITY) : me.totalCount(value.ITY)}`,
+                        'ITD': `Php ${(key == current_length) ? me.totalCount(value.totalITD) : me.totalCount(value.ITD)}`,
+                        'CA': (key == current_length) ? me.res.item_payment_mode_total.cash : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'GC': (key == current_length) ? me.res.item_payment_mode_total.gcash : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'CC': (key == current_length) ? me.res.item_payment_mode_total.creditCard : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'DC/EPS': (key == current_length) ? me.res.item_payment_mode_total.debitCard : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'CQ': (key == current_length) ? me.res.item_payment_mode_total.check : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'PP': (key == current_length) ? me.res.item_payment_mode_total.paypal : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'PM': (key == current_length) ? me.res.item_payment_mode_total.paymaya : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        // 'RC': (key == current_length) ? me.res.item_payment_mode_total.recurly : (value.paymentModes) ? value.paymentModes.cash : 0,
+                        'SC': (key == current_length) ? me.res.item_payment_mode_total.storeCredit : (value.paymentModes) ? value.paymentModes.cash : 0
+                    }))
+                ]
             }
         },
         methods: {
@@ -258,17 +284,6 @@
                                 me.res.sales_breakdown_total = res.data.salesBreakdownTotal
                                 me.res.income_breakdown = res.data.incomeBreakdown
                                 me.res.income_breakdown_total = res.data.incomeBreakdownTotal
-
-                                res.data.incomeBreakdown.forEach((item, i) => {
-                                    me.income_values.push(item)
-                                })
-                                me.income_values.push(res.data.incomeBreakdownTotal)
-
-                                res.data.salesBreakdown.forEach((item, i) => {
-                                    me.sales_values.push(item)
-                                })
-                                me.sales_values.push(res.data.salesBreakdownTotal)
-
                             } else {
                                 me.res.items = res.data.items
                                 me.res.item_total = res.data.total
@@ -278,7 +293,6 @@
                                     me.sales_summary_values.push(item)
                                 })
                                 me.sales_summary_values.push(res.data.total)
-
                             }
                         }, 500)
                     }
@@ -307,17 +321,6 @@
                                 me.res.sales_breakdown_total = res.data.salesBreakdownTotal
                                 me.res.income_breakdown = res.data.incomeBreakdown
                                 me.res.income_breakdown_total = res.data.incomeBreakdownTotal
-
-                                res.data.incomeBreakdown.forEach((item, i) => {
-                                    me.income_values.push(item)
-                                })
-                                me.income_values.push(res.data.incomeBreakdownTotal)
-
-                                res.data.salesBreakdown.forEach((item, i) => {
-                                    me.sales_values.push(item)
-                                })
-                                me.sales_values.push(res.data.salesBreakdownTotal)
-
                             } else {
                                 me.res.items = res.data.items
                                 me.res.item_total = res.data.total
@@ -327,7 +330,6 @@
                                     me.sales_summary_values.push(item)
                                 })
                                 me.sales_summary_values.push(res.data.total)
-
                             }
                             me.filtered = true
                         }, 500)
@@ -382,16 +384,6 @@
                             me.res.sales_breakdown_total = res.data.salesBreakdownTotal
                             me.res.income_breakdown = res.data.incomeBreakdown
                             me.res.income_breakdown_total = res.data.incomeBreakdownTotal
-
-                            res.data.incomeBreakdown.forEach((item, i) => {
-                                me.income_values.push(item)
-                            })
-                            me.income_values.push(res.data.incomeBreakdownTotal)
-
-                            res.data.salesBreakdown.forEach((item, i) => {
-                                me.sales_values.push(item)
-                            })
-                            me.sales_values.push(res.data.salesBreakdownTotal)
 
                             me.$axios.get('api/studios', {
                                 headers: {
