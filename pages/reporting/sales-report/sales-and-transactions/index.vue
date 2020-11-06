@@ -374,8 +374,6 @@
 
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
-                formData.append('start_date', me.form.start_date)
-                formData.append('end_date',  me.form.end_date)
                 formData.append('studio_id',  me.form.studio_id)
                 me.$axios.post(`api/${me.apiRoute}`, formData).then(res => {
                     if (res.data) {
