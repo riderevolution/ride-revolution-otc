@@ -11,15 +11,7 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <!-- <a :href="`/print/reporting/sales/sales-and-transactions/sales-summary/sales-breakdown?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate" v-if="tabStatus == 'summary'">Print</a> -->
                             <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="tabStatus != 'summary'">Print</a>
-                            <!-- <download-csv
-                                v-if="tabStatus == 'summary'"
-                                class="action_btn alternate"
-                                :data="salesBreakdownAttributes"
-                                :name="`sales-breakdown-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
-                                Export
-                            </download-csv> -->
                             <download-csv
                                 v-if="tabStatus != 'summary'"
                                 class="action_btn alternate"
@@ -74,7 +66,7 @@
                                     <th>ITD</th>
                                 </tr>
                             </thead>
-                            <tbody v-if="!filtered">
+                            <tbody>
                                 <tr>
                                     <td class="green">Total</td>
                                     <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITYTotal) }}</td>
@@ -88,31 +80,7 @@
                                     <td>Php {{ totalCount(data.ITD) }}</td>
                                 </tr>
                             </tbody>
-                            <tbody v-else-if="filtered">
-                                <tr>
-                                    <td class="green">Total</td>
-                                    <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITYTotal) }}</td>
-                                    <td class="green">Php {{ totalCount(res.sales_breakdown_total.salesBreakdownITDTotal) }}</td>
-                                </tr>
-                                <tr v-for="(data, key) in res.sales_breakdown" :key="key" v-if="data.ITY > 0 && data.ITD > 0">
-                                    <td>
-                                        <div class="table_data_link" @click="toggleTab(data.status, 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/${data.status}`)">{{ data.name }}</div>
-                                    </td>
-                                    <td>Php {{ totalCount(data.ITY) }}</td>
-                                    <td>Php {{ totalCount(data.ITD) }}</td>
-                                </tr>
-                            </tbody>
                         </table>
-                        <!-- <div class="cms_table_toggler">
-                            <a :href="`/print/reporting/sales/sales-and-transactions/sales-summary/income-breakdown?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
-                            <download-csv
-                                v-if="res.income_breakdown.length > 0"
-                                class="action_btn alternate"
-                                :data="incomeBreakdownAttributes"
-                                :name="`income-breakdown-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
-                                Export
-                            </download-csv>
-                        </div> -->
                         <table class="cms_table alt">
                             <thead>
                                 <tr>
@@ -124,27 +92,13 @@
                                     <th>ITD</th>
                                 </tr>
                             </thead>
-                            <tbody v-if="!filtered">
+                            <tbody>
                                 <tr>
                                     <td class="green">Total</td>
                                     <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITYTotal) }}</td>
                                     <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITDTotal) }}</td>
                                 </tr>
                                 <tr v-for="(data, key) in res.income_breakdown" :key="key">
-                                    <td>
-                                        <div class="table_data_link" @click="toggledPaymentType(data)">{{ data.name }}</div>
-                                    </td>
-                                    <td>Php {{ totalCount(data.ITY) }}</td>
-                                    <td>Php {{ totalCount(data.ITD) }}</td>
-                                </tr>
-                            </tbody>
-                            <tbody v-else-if="filtered">
-                                <tr>
-                                    <td class="green">Total</td>
-                                    <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITYTotal) }}</td>
-                                    <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITDTotal) }}</td>
-                                </tr>
-                                <tr v-for="(data, key) in res.income_breakdown" :key="key" v-if="data.ITY > 0 && data.ITD > 0">
                                     <td>
                                         <div class="table_data_link" @click="toggledPaymentType(data)">{{ data.name }}</div>
                                     </td>
@@ -236,9 +190,6 @@
             Foot
         },
         data () {
-            const income_values = []
-            const sales_values = []
-            const sales_summary_values = []
             return {
                 name: 'Sales & Transactions',
                 filtered: false,
@@ -257,9 +208,6 @@
                 },
                 slug: 'sales-summary',
                 apiRoute: 'reporting/sales/sales-and-transactions/sales-summary',
-                income_values: [],
-                sales_values: [],
-                sales_summary_values: [],
                 studios: [],
                 categories: [],
                 form: {
@@ -267,52 +215,6 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
-            }
-        },
-        computed: {
-            incomeBreakdownAttributes () {
-                const me = this
-                return [
-                    ...me.income_values.map(value => ({
-                        'Studio': me.getStudio(),
-                        'Payment Type': (value.name) ? value.name : 'Total',
-                        'ITY': (value.ITY) ? me.totalCount(value.ITY) : me.totalCount(value.incomeBreakdownITYTotal),
-                        'ITD': (value.ITD) ? me.totalCount(value.ITD) : me.totalCount(value.incomeBreakdownITDTotal)
-                    }))
-                ]
-            },
-            salesBreakdownAttributes () {
-                const me = this
-                return [
-                    ...me.sales_values.map(value => ({
-                        'Studio': me.getStudio(),
-                        'Payment Type': (value.name) ? value.name : 'Total',
-                        'ITY': (value.ITY) ? me.totalCount(value.ITY) : me.totalCount(value.salesBreakdownITYTotal),
-                        'ITD': (value.ITD) ? me.totalCount(value.ITD) : me.totalCount(value.salesBreakdownITDTotal)
-                    }))
-                ]
-            },
-            salesSummaryAttributes () {
-                const me = this
-                let current_length = me.sales_summary_values.length - 1
-                return [
-                    ...me.sales_summary_values.map((value, key) => ({
-                        'Studio': me.getStudio(),
-                        'Items': (key == current_length) ? 'Total' : (value.card_code) ? value.card_code : (value.variant ? value.variant : value.name),
-                        'Qty': (key == current_length) ? value.totalQty : (value.qty ? value.qty : 0),
-                        'ITY': `Php ${(key == current_length) ? me.totalCount(value.totalITY) : me.totalCount(value.ITY)}`,
-                        'ITD': `Php ${(key == current_length) ? me.totalCount(value.totalITD) : me.totalCount(value.ITD)}`,
-                        'CA': (key == current_length) ? me.res.item_payment_mode_total.cash : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        'GC': (key == current_length) ? me.res.item_payment_mode_total.gcash : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        'CC': (key == current_length) ? me.res.item_payment_mode_total.creditCard : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        'DC/EPS': (key == current_length) ? me.res.item_payment_mode_total.debitCard : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        'CQ': (key == current_length) ? me.res.item_payment_mode_total.check : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        'PP': (key == current_length) ? me.res.item_payment_mode_total.paypal : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        'PM': (key == current_length) ? me.res.item_payment_mode_total.paymaya : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        // 'RC': (key == current_length) ? me.res.item_payment_mode_total.recurly : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        'SC': (key == current_length) ? me.res.item_payment_mode_total.storeCredit : (value.paymentModes) ? value.paymentModes.cash : 0
-                    }))
-                ]
             }
         },
         methods: {
