@@ -31,12 +31,12 @@
                                     <option value="os">Website/Online Sales</option>
                                 </select>
                             </div>
-                            <div class="form_group margin">
+                            <div class="form_group margin" v-if="user.staff_details.role_id == 1">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
-                            <div class="form_group margin">
+                            <div class="form_group margin" v-if="user.staff_details.role_id == 1">
                                 <label for="end_date">End Date <span>*</span></label>
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
@@ -192,6 +192,7 @@
         data () {
             const sales_summary_values = []
             return {
+                user: [],
                 name: 'Sales & Transactions',
                 filtered: false,
                 access: true,
@@ -373,6 +374,17 @@
                 }
 
                 let token = me.$cookies.get('70hokcotc3hhhn5')
+
+                me.$axios.get('api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    setTimeout( () => {
+                        me.user = res.data.user
+                    }, 500)
+                })
+
                 let formData = new FormData()
                 formData.append('studio_id',  me.form.studio_id)
                 me.$axios.post(`api/${me.apiRoute}`, formData).then(res => {
