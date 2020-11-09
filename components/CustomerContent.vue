@@ -1111,9 +1111,9 @@
             formatDate (value, withTime) {
                 if (value) {
                     if (withTime) {
-                        return this.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A')
+                        return this.$moment(value).format('MMM DD, YYYY hh:mm A')
                     } else {
-                        return this.$moment(value.updated_at).format('MMM DD, YYYY')
+                        return this.$moment(value).format('MMM DD, YYYY')
                     }
                 }
             },

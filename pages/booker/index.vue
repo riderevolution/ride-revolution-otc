@@ -912,10 +912,12 @@
                     }
                 }, 10)
                 if (me.customer != '') {
-                    for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
-                        for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
-                            if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
-                                me.schedules[i].highlighted = true
+                    if (me.customer.scheduled_dates) {
+                        for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
+                            for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
+                                if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
+                                    me.schedules[i].highlighted = true
+                                }
                             }
                         }
                     }
@@ -929,7 +931,9 @@
                     if (event.keyCode == 13) {
                         me.hit = true
                     }
-                    me.searchCustomer(event.target.value)
+                    if (event.keyCode != 8) {
+                        me.searchCustomer(event.target.value)
+                    }
                 }, 500)
             },
             searchCustomer (data) {
@@ -1228,10 +1232,12 @@
                         if (res.data) {
                             me.schedules = res.data.schedules
                             if (me.customer != '') {
-                                for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
-                                    for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
-                                        if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
-                                            me.schedules[i].highlighted = true
+                                if (me.customer.scheduled_dates) {
+                                    for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
+                                        for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
+                                            if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
+                                                me.schedules[i].highlighted = true
+                                            }
                                         }
                                     }
                                 }
