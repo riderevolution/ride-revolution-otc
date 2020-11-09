@@ -118,7 +118,7 @@
                         </tbody>
                         <tbody class="no_results" v-if="res.payments.data.length == 0">
                             <tr>
-                                <td colspan="8">No Result(s) Found.</td>
+                                <td colspan="9">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>

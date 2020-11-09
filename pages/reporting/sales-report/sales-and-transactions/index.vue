@@ -115,6 +115,95 @@
                             </div>
                         </div> -->
                     </div>
+                    <div v-else-if="slug == 'daily'">
+                        <table class="cms_table_accordion">
+                            <thead>
+                                <tr>
+                                    <th>Reference Number</th>
+                                    <th>Transaction Date</th>
+                                    <th>Studio</th>
+                                    <th>Total Qty.</th>
+                                    <th>Payment Method</th>
+                                    <th>Total Price</th>
+                                    <th>Employee</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in transactions.payments.data" v-if="transactions.payments.data.length > 0">
+                                <tr class="parent">
+                                    <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
+                                    <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY hh:mm A') }}</td>
+                                    <td>{{ getPaymentStudio(data) }}</td>
+                                    <td>{{ getPaymentDetails(data, 'qty') }}</td>
+                                    <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
+                                    <td>{{ getPaymentDetails(data, 'price') }}</td>
+                                    <td>{{ getPaymentDetails(data, 'employee') }}</td>
+                                    <td>
+                                        <div class="table_actions">
+                                            <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
+                                        </div>
+                                    </td>
+                                    <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="pads" colspan="9">
+                                        <div class="accordion_table">
+                                            <table class="cms_table alt">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Reference Number</th>
+                                                        <th>Item</th>
+                                                        <th>Category</th>
+                                                        <th>Qty</th>
+                                                        <th>Price</th>
+                                                        <th>Customer</th>
+                                                        <th>Contact/Emergency Contact No.</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody v-if="data.payment_items.length > 0">
+                                                    <tr v-for="(child, key) in data.payment_items" :key="key">
+                                                        <td>{{ getPaymentCode(data) }}</td>
+                                                        <td>{{ getPaymentItem(child, 'name') }}</td>
+                                                        <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
+                                                        <td>{{ child.quantity }}</td>
+                                                        <td class="price">
+                                                            <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item) }}</p>
+                                                            <p>PHP {{ totalCount(child.total) }}</p>
+                                                        </td>
+                                                        <td>
+                                                            <div class="thumb">
+                                                                <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                                                <div class="table_image_default" v-else>
+                                                                    <div class="overlay">
+                                                                        {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : '-' }}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                                <tbody class="no_results" v-else>
+                                                    <tr>
+                                                        <td colspan="8">No Result(s) Found.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody class="no_results" v-if="transactions.payments.data.length == 0">
+                                <tr>
+                                    <td colspan="9">No Result(s) Found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div v-else>
                         <table class="cms_table alt">
                             <thead>
@@ -174,6 +263,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <pagination :apiRoute="transactions.payments.path" :current="transactions.payments.current_page" :last="transactions.payments.last_page" v-if="transactions.payments.data.length > 0" />
                     </div>
                 </section>
             </div>
@@ -193,13 +283,18 @@
         data () {
             const sales_summary_values = []
             return {
-                user: [],
+                user: {
+                    staff_details: {
+                        role_id: 0
+                    }
+                },
                 name: 'Sales & Transactions',
                 filtered: false,
                 access: true,
                 loaded: false,
                 rowCount: 0,
                 tabStatus: 'daily',
+                transactions: [],
                 res: {
                     sales_breakdown: [],
                     sales_breakdown_total: [],
@@ -246,6 +341,121 @@
             }
         },
         methods: {
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                payment.payment_items.forEach((payment_item, key) => {
+                    switch (type) {
+                        case 'qty':
+                            result += payment_item.quantity
+                            break
+                    }
+                })
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        result = `Php ${me.totalCount(payment.total)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = '-'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        result = payment.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
+                }
+
+                return result
+            },
+            toggleAccordion (event, key) {
+                const me = this
+                const target = event.target
+                me.transactions.payments.data[key].open ^= true
+                if (me.transactions.payments.data[key].open) {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
+                } else {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
+                }
+            },
             toggledPaymentType (payment_type) {
                 const me = this
                 me.$router.push(`${me.$route.path}/payment-type/${payment_type.status}?tab_status=${me.tabStatus}&start_date=${me.form.start_date}&end_date=${me.form.end_date}&studio_id=${me.form.studio_id}`)
@@ -288,7 +498,7 @@
                                 me.res.income_breakdown_total = res.data.incomeBreakdownTotal
                             } else {
                                 if (me.slug == 'daily') {
-                                    console.log(res.data);
+                                    me.transactions = res.data
                                 } else {
                                     me.res.items = res.data.items
                                     me.res.item_total = res.data.total
@@ -329,7 +539,7 @@
                                 me.res.income_breakdown_total = res.data.incomeBreakdownTotal
                             } else {
                                 if (me.slug == 'daily') {
-                                    console.log(res.data);
+                                    me.transactions = res.data
                                 } else {
                                     me.res.items = res.data.items
                                     me.res.item_total = res.data.total
@@ -389,9 +599,7 @@
                         Authorization: `Bearer ${token}`
                     }
                 }).then(res => {
-                    setTimeout( () => {
-                        me.user = res.data.user
-                    }, 500)
+                    me.user = res.data.user
                 })
 
                 let formData = new FormData()
@@ -399,7 +607,7 @@
                 me.$axios.post(`api/${me.apiRoute}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            console.log(res.data);
+                            me.transactions = res.data
 
                             me.$axios.get('api/studios', {
                                 headers: {
