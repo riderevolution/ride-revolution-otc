@@ -11,9 +11,9 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="tabStatus != 'summary'">Print</a>
+                            <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="tabStatus != 'summary' && user.staff_details.role_id == 1">Print</a>
                             <download-csv
-                                v-if="tabStatus != 'summary'"
+                                v-if="tabStatus != 'summary' && user.staff_details.role_id == 1"
                                 class="action_btn alternate"
                                 :data="salesSummaryAttributes"
                                 :name="`${tabStatus}-summary-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
