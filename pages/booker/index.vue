@@ -435,6 +435,7 @@
                 findCustomer: true,
                 cancel: false,
                 hit: false,
+                apply_to_all: false,
                 schedule: '',
                 waitlists: [],
                 waitlistCount: 0,
@@ -690,6 +691,9 @@
                 if (me.$store.state.seat != '') {
                     let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData()
+                    if (me.apply_to_all) {
+                        formData.append('apply_to_all', 1)
+                    }
                     formData.append('scheduled_date_id', me.scheduledDateID)
                     formData.append('_method', 'PATCH')
                     me.loader(true)
@@ -717,6 +721,7 @@
                                             me.actionMessage = 'Seat has been Blocked.'
                                         }
                                         me.$store.state.promptBookerActionStatus = true
+                                        me.apply_to_all = false
                                         document.body.classList.add('no_scroll')
                                     }, 500)
                                 }

@@ -18,7 +18,7 @@
                 <transition name="slide"><span class="validation_errors" v-if="selectedMenu">Please select an action</span></transition>
             </ul>
             <div class="form_check default" v-if="seat.bookings && seat.bookings.length <= 0">
-                <input type="checkbox" id="apply_to_all_classes" name="apply_to_all_classes" class="action_check">
+                <input type="checkbox" id="apply_to_all_classes" name="apply_to_all_classes" class="action_check" @change="$parent.apply_to_all ^= true">
                 <label for="apply_to_all_classes">Apply to all Classes</label>
             </div>
             <div class="button_group">
