@@ -349,6 +349,10 @@
                             <p><b>US</b> - {{ value.customer_details.co_shoe_size }}</p>
                         </div>
                         <div class="wrapper">
+                            <label>Dumbbell</label>
+                            <p>{{ value.customer_details.dumbbells }}</p>
+                        </div>
+                        <div class="wrapper">
                             <label>Customer Type</label>
                             <p>{{ value.customer_details.customer_type.name }}</p>
                         </div>

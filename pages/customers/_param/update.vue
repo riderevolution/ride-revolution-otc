@@ -98,8 +98,8 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('co_shoe_size')">{{ properFormat(errors.first('co_shoe_size')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
-                                        <label for="co_dumbbells">Shoe Size <span>*</span></label>
-                                        <select class="default_select alternate" name="co_dumbbells" v-validate="'required'" v-model="res.customer_details.co_dumbbells">
+                                        <label for="co_dumbbells">Dumbbells <span>*</span></label>
+                                        <select class="default_select alternate" name="co_dumbbells" v-validate="'required'" v-model="res.customer_details.dumbbells">
                                             <option value="" selected disabled>Choose Dumbbell</option>
                                             <option :value="dumbbell" v-for="(dumbbell, index) in dumbbells">{{ dumbbell }}</option>
                                         </select>

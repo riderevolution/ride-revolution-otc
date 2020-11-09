@@ -57,11 +57,11 @@
                     </td>
                     <td>
                         <div v-if="data.bookings.length > 0 && data.bookings[0].is_guest">
-                            <span v-if="data.bookings[0].user">US - {{ data.bookings[0].user.customer_details.co_dumbbells }}</span>
+                            <span v-if="data.bookings[0].user">{{ data.bookings[0].user.customer_details.dumbbells }}</span>
                             <span v-else>N/A</span>
                         </div>
                         <div v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
-                            US - {{ data.bookings[0].user.customer_details.co_dumbbells }}
+                            US - {{ data.bookings[0].user.customer_details.dumbbells }}
                         </div>
                     </td>
                     <td>

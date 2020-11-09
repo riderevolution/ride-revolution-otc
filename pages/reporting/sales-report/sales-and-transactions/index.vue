@@ -47,6 +47,7 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
+                        <div :class="`status ${(tabStatus == 'daily') ? 'active' : ''}`" @click="toggleTab('daily', 'daily', 'reporting/sales/sales-and-transactions/sales-summary/daily')">Daily Transactions</div>
                         <div :class="`status ${(tabStatus == 'summary') ? 'active' : ''}`" @click="toggleTab('summary', 'sales-summary', 'reporting/sales/sales-and-transactions/sales-summary')">Sales Summary</div>
                         <div :class="`status ${(tabStatus == 'class-packages') ? 'active' : ''}`" @click="toggleTab('class-packages', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/class-packages')">Class Packages</div>
                         <div :class="`status ${(tabStatus == category.slug) ? 'active' : ''}`" v-for="(category, key) in categories" :key="key" @click="toggleTab(category.slug, 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/product-categories/${category.id}`)">{{ category.name }}</div>
@@ -198,7 +199,7 @@
                 access: true,
                 loaded: false,
                 rowCount: 0,
-                tabStatus: 'summary',
+                tabStatus: 'daily',
                 res: {
                     sales_breakdown: [],
                     sales_breakdown_total: [],
@@ -208,8 +209,8 @@
                     item_total: [],
                     item_payment_mode_total: []
                 },
-                slug: 'sales-summary',
-                apiRoute: 'reporting/sales/sales-and-transactions/sales-summary',
+                slug: 'daily',
+                apiRoute: 'reporting/sales/sales-and-transactions/sales-summary/daily',
                 sales_summary_values: [],
                 studios: [],
                 categories: [],
@@ -286,14 +287,18 @@
                                 me.res.income_breakdown = res.data.incomeBreakdown
                                 me.res.income_breakdown_total = res.data.incomeBreakdownTotal
                             } else {
-                                me.res.items = res.data.items
-                                me.res.item_total = res.data.total
-                                me.res.item_payment_mode_total = res.data.paymentModesTotal
+                                if (me.slug == 'daily') {
+                                    console.log(res.data);
+                                } else {
+                                    me.res.items = res.data.items
+                                    me.res.item_total = res.data.total
+                                    me.res.item_payment_mode_total = res.data.paymentModesTotal
 
-                                res.data.items.forEach((item, i) => {
-                                    me.sales_summary_values.push(item)
-                                })
-                                me.sales_summary_values.push(res.data.total)
+                                    res.data.items.forEach((item, i) => {
+                                        me.sales_summary_values.push(item)
+                                    })
+                                    me.sales_summary_values.push(res.data.total)
+                                }
                             }
                         }, 500)
                     }
@@ -323,14 +328,18 @@
                                 me.res.income_breakdown = res.data.incomeBreakdown
                                 me.res.income_breakdown_total = res.data.incomeBreakdownTotal
                             } else {
-                                me.res.items = res.data.items
-                                me.res.item_total = res.data.total
-                                me.res.item_payment_mode_total = res.data.paymentModesTotal
+                                if (me.slug == 'daily') {
+                                    console.log(res.data);
+                                } else {
+                                    me.res.items = res.data.items
+                                    me.res.item_total = res.data.total
+                                    me.res.item_payment_mode_total = res.data.paymentModesTotal
 
-                                res.data.items.forEach((item, i) => {
-                                    me.sales_summary_values.push(item)
-                                })
-                                me.sales_summary_values.push(res.data.total)
+                                    res.data.items.forEach((item, i) => {
+                                        me.sales_summary_values.push(item)
+                                    })
+                                    me.sales_summary_values.push(res.data.total)
+                                }
                             }
                             me.filtered = true
                         }, 500)
@@ -390,10 +399,7 @@
                 me.$axios.post(`api/${me.apiRoute}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res.sales_breakdown = res.data.salesBreakdown
-                            me.res.sales_breakdown_total = res.data.salesBreakdownTotal
-                            me.res.income_breakdown = res.data.incomeBreakdown
-                            me.res.income_breakdown_total = res.data.incomeBreakdownTotal
+                            console.log(res.data);
 
                             me.$axios.get('api/studios', {
                                 headers: {
