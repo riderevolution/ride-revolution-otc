@@ -5836,8 +5836,16 @@ input::placeholder
                                 transition: .3s ease-in-out
         .content_wrapper
             .class_accordion
+                &.highlighted
+                    .accordion_header
+                        color: $orange
+                        border-bottom: 1px solid $orange
+                        transition: .3s ease-in-out
                 &.toggled
                     .accordion_header
+                        color: $green
+                        border-bottom: 1px solid $green
+                        transition: .3s ease-in-out
                         &::before
                             transform: translateY(-50%) rotate(-180deg)
                             transition: .3s ease-in-out
@@ -5852,6 +5860,12 @@ input::placeholder
                     sf_pro_semibold(16px)
                     color: $black
                     cursor: pointer
+                    border-bottom: 1px solid $border
+                    transition: .3s ease-in-out
+                    &:hover
+                        color: $green
+                        border-bottom: 1px solid $green
+                        transition: .3s ease-in-out
                     &::before
                         content: url(/icons/custom-select-icon.svg)
                         position: absolute
@@ -5887,11 +5901,11 @@ input::placeholder
                                     color: $blue
                                     transition: .3s ease-in-out
                         &.highlighted
-                            border-left: 2px solid $violet
+                            border-left: 2px solid $orange
                             transition: .3s ease-in-out
                             .class_title
                                 span
-                                    color: $violet
+                                    color: $orange
                                     transition: .3s ease-in-out
                         .class_title
                             display: flex

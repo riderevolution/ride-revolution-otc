@@ -115,7 +115,7 @@
                                 </div>
                             </div>
                             <div class="content_wrapper">
-                                <div class="class_accordion" v-for="(result, key) in results" :key="key">
+                                <div :class="[ 'class_accordion', (result.highlighted) ? 'highlighted' : '' ]" v-for="(result, key) in populateDates" :key="key">
                                     <div class="accordion_header" @click.self="toggleClass($event, $moment(result.date).format('M'), $moment(result.date).format('D'), $moment(result.date).format('YYYY'))">{{ result.abbr }} | {{ result.date }}</div>
                                     <div class="accordion_content">
                                         <div :id="`class_${dkey}_${key}`" :class="[ 'class_content', (data.schedule.studio.online_class) ? 'online' : '', (data.highlighted) ? 'highlighted' : '' ]" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
@@ -451,6 +451,23 @@
             }
         },
         computed: {
+            populateDates () {
+                const me = this
+                let result = []
+                for (let i = 0, i_len = me.results.length; i < i_len; i++) {
+                    if (me.customer != '') {
+                        if (me.customer.bookings.length > 0) {
+                            for (let j = 0, j_len = me.customer.bookings.length; j < j_len; j++) {
+                                if (me.$moment(me.results[i].date).format('YYYY-MM-DD') == me.customer.bookings[j].scheduled_date.date) {
+                                    me.results[i].highlighted = true
+                                }
+                            }
+                        }
+                    }
+                    result.push(me.results[i])
+                }
+                return result
+            },
             populateCustomers () {
                 const me = this
                 let results = []
@@ -912,10 +929,10 @@
                     }
                 }, 10)
                 if (me.customer != '') {
-                    if (me.customer.scheduled_dates) {
+                    if (me.customer.bookings) {
                         for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
-                            for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
-                                if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
+                            for (let j = 0, j_len = me.customer.bookings.length; j < j_len; j++) {
+                                if (me.schedules[i].id == me.customer.bookings[j].scheduled_date_id) {
                                     me.schedules[i].highlighted = true
                                 }
                             }
@@ -1185,6 +1202,7 @@
                     me.current = currentDate
                     me.isPrev = false
                 }
+
                 setTimeout( () => {
                     me.loader(false)
                 }, 500)
@@ -1232,10 +1250,10 @@
                         if (res.data) {
                             me.schedules = res.data.schedules
                             if (me.customer != '') {
-                                if (me.customer.scheduled_dates) {
+                                if (me.customer.bookings) {
                                     for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
-                                        for (let j = 0, j_len = me.customer.scheduled_dates.length; j < j_len; j++) {
-                                            if (me.schedules[i].id == me.customer.scheduled_dates[j]) {
+                                        for (let j = 0, j_len = me.customer.bookings.length; j < j_len; j++) {
+                                            if (me.schedules[i].id == me.customer.bookings[j].scheduled_date_id) {
                                                 me.schedules[i].highlighted = true
                                             }
                                         }
