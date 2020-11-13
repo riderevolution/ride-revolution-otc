@@ -245,7 +245,7 @@
                                 <div class="table_action_edit link" @click="toggleForm(data.id)" v-if="data.status == 'pending'">Pay Now</div>
                             </div>
                         </td>
-                        <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : '-' }}</td>
+                        <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
                     </tr>
                     <tr>
                         <td class="pads" colspan="9">
