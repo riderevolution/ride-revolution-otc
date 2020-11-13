@@ -372,24 +372,20 @@
                 me.loader (true)
                 me.daily_transaction_values = []
                 let formData = new FormData(document.getElementById('filter'))
-                me.$axios.post(`api/reporting/sales/sales-and-transactions/sales-summary/daily`, formData).then(res => {
+                me.$axios.post(`api/reporting/sales/sales-and-transactions/sales-summary/daily?all=1`, formData).then(res => {
                     if (res.data) {
-                        setTimeout( () => {
-                            res.data.transactions.payments.forEach((parent, key) => {
-                                parent.payment_items.forEach((child, key) => {
-                                    child.parent = parent
-                                    me.daily_transaction_values.push(child)
-                                })
+                        res.data.payments.forEach((parent, key) => {
+                            parent.payment_items.forEach((child, key) => {
+                                child.parent = parent
+                                me.daily_transaction_values.push(child)
                             })
-                        }, 500)
+                        })
                     }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
                 }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                    }, 500)
+                    me.loader(false)
                     document.querySelector('.me').click()
                 })
             },
