@@ -148,7 +148,7 @@
                                             <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
                                         </div>
                                     </td>
-                                    <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (payment.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
+                                    <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
                                 </tr>
                                 <tr>
                                     <td class="pads" colspan="9">
