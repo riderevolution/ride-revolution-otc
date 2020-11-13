@@ -13,10 +13,20 @@
                         <div class="actions">
                             <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="tabStatus != 'summary' && user.staff_details.role_id == 1">Print</a>
                             <download-csv
-                                v-if="tabStatus != 'summary' && user.staff_details.role_id == 1"
+                                v-if="(tabStatus != 'summary' && tabStatus != 'daily') && user.staff_details.role_id == 1"
                                 class="action_btn alternate"
                                 :data="salesSummaryAttributes"
                                 :name="`${tabStatus}-summary-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
+                                Export
+                            </download-csv>
+                            <div class="action_btn alternate" @click="getDailyTransactions()" v-if="tabStatus == 'daily' && transactions.payments.data.length > 0">
+                                Export
+                            </div>
+                            <download-csv
+                                v-if="tabStatus == 'daily' && transactions.payments.data.length > 0"
+                                class="hidden me"
+                                :data="dailyTransactionAttributes"
+                                :name="`daily-transactions-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
                         </div>
@@ -48,12 +58,12 @@
                 <section id="content">
                     <div class="cms_table_toggler">
                         <div :class="`status ${(tabStatus == 'daily') ? 'active' : ''}`" @click="toggleTab('daily', 'daily', 'reporting/sales/sales-and-transactions/sales-summary/daily')">Daily Transactions</div>
-                        <div :class="`status ${(tabStatus == 'summary') ? 'active' : ''}`" @click="toggleTab('summary', 'sales-summary', 'reporting/sales/sales-and-transactions/sales-summary')">Sales Summary</div>
-                        <div :class="`status ${(tabStatus == 'class-packages') ? 'active' : ''}`" @click="toggleTab('class-packages', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/class-packages')">Class Packages</div>
-                        <div :class="`status ${(tabStatus == category.slug) ? 'active' : ''}`" v-for="(category, key) in categories" :key="key" @click="toggleTab(category.slug, 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/product-categories/${category.id}`)">{{ category.name }}</div>
-                        <div :class="`status ${(tabStatus == 'gift-cards') ? 'active' : ''}`" @click="toggleTab('gift-cards', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/gift-cards')">Gift Cards</div>
-                        <div :class="`status ${(tabStatus == 'promos') ? 'active' : ''}`" @click="toggleTab('promos', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/promos')">Promotions</div>
-                        <div :class="`status ${(tabStatus == 'store-credits') ? 'active' : ''}`" @click="toggleTab('store-credits', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/store-credits')">Store Credits</div>
+                        <div :class="`status ${(tabStatus == 'summary') ? 'active' : ''}`" @click="toggleTab('summary', 'sales-summary', 'reporting/sales/sales-and-transactions/sales-summary')" v-if="user.staff_details.role_id == 1">Sales Summary</div>
+                        <div :class="`status ${(tabStatus == 'class-packages') ? 'active' : ''}`" @click="toggleTab('class-packages', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/class-packages')" v-if="user.staff_details.role_id == 1">Class Packages</div>
+                        <div :class="`status ${(tabStatus == category.slug) ? 'active' : ''}`" v-for="(category, key) in categories" :key="key" @click="toggleTab(category.slug, 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/product-categories/${category.id}`)" v-if="user.staff_details.role_id == 1">{{ category.name }}</div>
+                        <div :class="`status ${(tabStatus == 'gift-cards') ? 'active' : ''}`" @click="toggleTab('gift-cards', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/gift-cards')" v-if="user.staff_details.role_id == 1">Gift Cards</div>
+                        <div :class="`status ${(tabStatus == 'promos') ? 'active' : ''}`" @click="toggleTab('promos', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/promos')" v-if="user.staff_details.role_id == 1">Promotions</div>
+                        <div :class="`status ${(tabStatus == 'store-credits') ? 'active' : ''}`" @click="toggleTab('store-credits', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/store-credits')" v-if="user.staff_details.role_id == 1">Store Credits</div>
                     </div>
                     <div v-if="slug == 'sales-summary'">
                         <table class="cms_table alt">
@@ -108,12 +118,6 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <!-- <div class="table_notepad">
-                            <h2 class="footer_title">Notepad</h2>
-                            <div class="notepad_text">
-                                <textarea name="notepad" rows="10"></textarea>
-                            </div>
-                        </div> -->
                     </div>
                     <div v-else-if="slug == 'daily'">
                         <table class="cms_table_accordion">
@@ -241,7 +245,6 @@
                                     <td class="green">{{ res.item_payment_mode_total.check }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paypal }}</td>
                                     <td class="green">{{ res.item_payment_mode_total.paymaya }}</td>
-                                    <!-- <td class="green">{{ res.item_payment_mode_total.recurly }}</td> -->
                                     <td class="green">{{ res.item_payment_mode_total.storeCredit }}</td>
                                 </tr>
                                 <tr v-for="(data, key) in res.items" :key="key" v-if="data.sum > 0">
@@ -258,7 +261,6 @@
                                     <td>{{ (data.paymentModes) ? data.paymentModes.check : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paypal : 0 }}</td>
                                     <td>{{ (data.paymentModes) ? data.paymentModes.paymaya : 0 }}</td>
-                                    <!-- <td>{{ (data.paymentModes) ? data.paymentModes.recurly : 0 }}</td> -->
                                     <td>{{ (data.paymentModes) ? data.paymentModes.storeCredit : 0 }}</td>
                                 </tr>
                             </tbody>
@@ -281,7 +283,7 @@
             Foot
         },
         data () {
-            const sales_summary_values = []
+            const sales_summary_values = [], daily_transaction_values = []
             return {
                 user: {
                     staff_details: {
@@ -307,6 +309,7 @@
                 slug: 'daily',
                 apiRoute: 'reporting/sales/sales-and-transactions/sales-summary/daily',
                 sales_summary_values: [],
+                daily_transaction_values: [],
                 studios: [],
                 categories: [],
                 form: {
@@ -317,6 +320,30 @@
             }
         },
         computed: {
+            dailyTransactionAttributes () {
+                const me = this
+                return [
+                    ...me.daily_transaction_values.map((value, key) => ({
+                        'Payment ID': value.parent.id,
+                        'Reference Number': me.getPaymentCode(value.parent),
+                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Studio': me.getPaymentStudio(value.parent),
+                        'Payment Status': value.parent.status,
+                        'Payment Method': me.replacer(value.parent.payment_method.method),
+                        'Quantity': value.quantity,
+                        'Price': `Php ${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Payment Item Id': value.id,
+                        'SKU ID': me.getPaymentItem(value, 'sku'),
+                        'Item': me.getPaymentItem(value, 'name'),
+                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                        'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
+                        'Email Address': value.parent.user.email,
+                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : '-' ,
+                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
+                        'Remarks': value.parent.remarks
+                    }))
+                ]
+            },
             salesSummaryAttributes () {
                 const me = this
                 let current_length = me.sales_summary_values.length - 1
@@ -334,13 +361,38 @@
                         'CQ': (key == current_length) ? me.res.item_payment_mode_total.check : (value.paymentModes) ? value.paymentModes.cash : 0,
                         'PP': (key == current_length) ? me.res.item_payment_mode_total.paypal : (value.paymentModes) ? value.paymentModes.cash : 0,
                         'PM': (key == current_length) ? me.res.item_payment_mode_total.paymaya : (value.paymentModes) ? value.paymentModes.cash : 0,
-                        // 'RC': (key == current_length) ? me.res.item_payment_mode_total.recurly : (value.paymentModes) ? value.paymentModes.cash : 0,
                         'SC': (key == current_length) ? me.res.item_payment_mode_total.storeCredit : (value.paymentModes) ? value.paymentModes.cash : 0
                     }))
                 ]
             }
         },
         methods: {
+            getDailyTransactions () {
+                const me = this
+                me.loader (true)
+                me.daily_transaction_values = []
+                let formData = new FormData(document.getElementById('filter'))
+                me.$axios.post(`api/reporting/sales/sales-and-transactions/sales-summary/daily`, formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            res.data.transactions.payments.forEach((parent, key) => {
+                                parent.payment_items.forEach((child, key) => {
+                                    child.parent = parent
+                                    me.daily_transaction_values.push(child)
+                                })
+                            })
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                    document.querySelector('.me').click()
+                })
+            },
             getPaymentItem (payment_item, type) {
                 const me = this
                 let result = ''
