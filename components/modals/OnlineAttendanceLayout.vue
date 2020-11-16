@@ -172,9 +172,13 @@
                 const me = this
                 let result = ''
                 let base_value = 0
-                if (data.user_package_count.payment_item.payment_method.method != 'comp') {
-                    base_value = me.totalCount(data.revenue)
-                    result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
+                if (data.status != 'cancelled') {
+                    if (data.user_package_count.payment_item.payment_method.method != 'comp') {
+                        base_value = me.totalCount(data.revenue)
+                        result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
+                    } else {
+                        result = 0
+                    }
                 } else {
                     result = 0
                 }
