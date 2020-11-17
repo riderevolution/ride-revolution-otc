@@ -146,6 +146,7 @@
                                     <td>
                                         <div class="table_actions">
                                             <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
+                                            <div class="action_status red ml" v-if="data.promo_code_used !== null">Discounted</div>
                                         </div>
                                     </td>
                                     <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
