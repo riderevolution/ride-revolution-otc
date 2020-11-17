@@ -452,14 +452,15 @@
                         result = me.totalItems(result)
                         break
                     case 'price':
+                        let temp_price = 0
                         payment.payment_items.forEach((payment_item, key) => {
                             if (payment.promo_code_used !== null) {
-                                result += payment_item.price_per_item
+                                temp_price += payment_item.price_per_item
                             } else {
-                                result += payment_item.total
+                                temp_price += payment_item.total
                             }
                         })
-                        result = `Php ${me.totalCount(payment.total)}`
+                        result = `Php ${me.totalCount(temp_price)}`
                         break
                     case 'employee':
                         if (payment.employee != null) {
