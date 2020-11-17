@@ -455,9 +455,9 @@
                         let temp_price = 0
                         payment.payment_items.forEach((payment_item, key) => {
                             if (payment.promo_code_used !== null) {
-                                temp_price += payment_item.price_per_item
-                            } else {
                                 temp_price += payment_item.total
+                            } else {
+                                temp_price += payment_item.price_per_item
                             }
                         })
                         result = `Php ${me.totalCount(temp_price)}`
