@@ -452,6 +452,13 @@
                         result = me.totalItems(result)
                         break
                     case 'price':
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                result += payment_item.price_per_item
+                            } else {
+                                result += payment_item.total
+                            }
+                        })
                         result = `Php ${me.totalCount(payment.total)}`
                         break
                     case 'employee':
@@ -566,6 +573,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                     me.rowCount = document.getElementsByTagName('th').length
                 })
@@ -608,6 +619,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                     me.rowCount = document.getElementsByTagName('th').length
                 })
@@ -681,6 +696,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                     me.rowCount = document.getElementsByTagName('th').length
                 })
