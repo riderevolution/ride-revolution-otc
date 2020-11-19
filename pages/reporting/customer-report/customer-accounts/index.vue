@@ -49,6 +49,8 @@
                                 <th class="stick">Customer</th>
                                 <th class="stick">Rewards</th>
                                 <th class="stick">Sign Up Date</th>
+                                <th class="stick">First Class</th>
+                                <th class="stick">Last Class</th>
                                 <th class="stick">Contact Number</th>
                                 <th class="stick">Email Address</th>
                                 <th class="stick">City</th>
@@ -69,9 +71,11 @@
                                 </td>
                                 <td>-</td>
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : '-' }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : '-' }}</td>
+                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : '-' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -119,9 +123,11 @@
                         'Customer': value.fullname,
                         'Rewards': '-',
                         'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'Contact Number': (value.customer_details != null) ? value.customer_details.co_contact_number : '-',
+                        'First Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-',
+                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[value.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-',
+                        'Contact Number': (value.customer_details.co_contact_number != null) ? value.customer_details.co_contact_number : '-',
                         'Email Address': value.email,
-                        'City': (value.customer_details != null) ? value.customer_details.pa_city : '-'
+                        'City': (value.customer_details.pa_city != null) ? value.customer_details.pa_city : '-'
                     }))
                 ]
             }
