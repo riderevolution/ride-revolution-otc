@@ -198,7 +198,11 @@
                 let result = 0
                 if (me.schedules.length > 0) {
                     me.schedules.forEach((schedule, index) => {
-                        result += schedule.bookings.length
+                        schedule.bookings.forEach((booking, index) => {
+                            if (booking.status != 'cancelled') {
+                                result += 1
+                            }
+                        })
                     })
                     hasSchedules = true
                 } else {
@@ -371,12 +375,23 @@
                                     <p>${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</p>
                                 </div>
                                 <div class="atd_right">
-                                    ${data.bookings.length}
+                                    ${me.getBookings(data.bookings)}
                                 </div>
                             </div>
                         `
                     }
                 })
+                return result
+            },
+            getBookings (bookings) {
+                const me = this
+                let result = 0
+                bookings.forEach((data, key) => {
+                    if (data.status != 'cancelled') {
+                        result += 1
+                    }
+                })
+
                 return result
             },
             getFirstDayofWeek (startDate, excess) {
