@@ -27,7 +27,7 @@
                         </div>
                     </div>
                     <div class="filter_wrapper">
-                        <form class="filter_flex" id="filter" method="post" @submit.prevent="submissionSuccess()">
+                        <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
