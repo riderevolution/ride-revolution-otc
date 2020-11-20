@@ -225,9 +225,9 @@
             toggleInnerReport (path) {
                 const me = this
                 if (me.form.studio_id != '') {
-                    me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                    window.open(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
                 } else {
-                    me.$router.push(`${path}?payment_status=${me.payment_status}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                    window.open(`${path}?payment_status=${me.payment_status}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
                 }
             },
             toggleTab (value) {

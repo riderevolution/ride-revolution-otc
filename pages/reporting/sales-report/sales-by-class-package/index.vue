@@ -204,7 +204,6 @@
                 me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1`, formData).then(res => {
                     if (res.data) {
                         res.data.result.forEach((item, key) => {
-                            console.log(item);
                             item.values.forEach((value, key) => {
                                 me.values.push(value)
                             })
@@ -241,23 +240,6 @@
                 } else {
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
                 }
-            },
-            toggleInnerReport (type, path, id) {
-                const me = this
-                // me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
-                me.$router.push(
-                    {
-                        path: `${path}`,
-                        query: {
-                            payment_status: me.payment_status,
-                            slug: type,
-                            id: id,
-                            start_date: me.form.start_date,
-                            end_date: me.form.end_date
-                        }
-                    }
-                )
-                // me.$router.push(`${path}?payment_status=${me.payment_status}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
             toggleTab (value) {
                 const me = this
