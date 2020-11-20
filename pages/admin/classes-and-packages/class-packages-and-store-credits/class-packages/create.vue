@@ -123,7 +123,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="form_wrapper">
+                        <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Subscription</h2>
                                 <div class="form_check toggler" @click="isRecurring ^= true">
@@ -139,7 +139,7 @@
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('plan_code')">{{ properFormat(errors.first('plan_code')) }}</span></transition>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Class Package Configuration</h2>
@@ -238,19 +238,11 @@
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('estimated_price_per_class')">{{ properFormat(errors.first('estimated_price_per_class')) }}</span></transition>
                                         </div>
                                     </div>
-                                    <div class="form_group flex" v-if="!isRecurring">
-                                        <label>Expire In <span>*</span></label>
-                                        <div class="form_flex_input">
-                                            <input type="text" name="expires_in" class="default_text number" placeholder="Enter expire in" autocomplete="off" v-model="form.expiryIn" v-validate="'required|numeric|max_value:99999|min_value:0'" @keyup="computeEstimatedPrice()">
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('expires_in')">{{ properFormat(errors.first('expires_in')) }}</span></transition>
-                                        </div>
-                                        <div class="form_flex_input">
-                                            <select class="default_select alternate" name="expiry_type" v-model="form.expiry_type" @change="computeEstimatedPrice()">
-                                                <option value="" disabled>Choose a Type</option>
-                                                <option value="day">Days</option>
-                                                <option value="month">Months</option>
-                                            </select>
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('expiry_type')">{{ properFormat(errors.first('expiry_type')) }}</span></transition>
+                                    <div class="form_group flex">
+                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer</label>
+                                        <div class="form_flex_input full">
+                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" autocomplete="off"v-validate="'numeric|max_value:99999'">
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ properFormat(errors.first('purchase_limit_per_customer')) }}</span></transition>
                                         </div>
                                     </div>
                                 </div>
@@ -270,11 +262,19 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form_group flex">
-                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer</label>
-                                        <div class="form_flex_input full">
-                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" autocomplete="off"v-validate="'numeric|max_value:99999'">
-                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ properFormat(errors.first('purchase_limit_per_customer')) }}</span></transition>
+                                    <div class="form_group flex" v-if="!isRecurring">
+                                        <label>Expire In <span>*</span></label>
+                                        <div class="form_flex_input">
+                                            <input type="text" name="expires_in" class="default_text number" placeholder="Enter expire in" autocomplete="off" v-model="form.expiryIn" v-validate="'required|numeric|max_value:99999|min_value:0'" @keyup="computeEstimatedPrice()">
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('expires_in')">{{ properFormat(errors.first('expires_in')) }}</span></transition>
+                                        </div>
+                                        <div class="form_flex_input">
+                                            <select class="default_select alternate" name="expiry_type" v-model="form.expiry_type" @change="computeEstimatedPrice()">
+                                                <option value="" disabled>Choose a Type</option>
+                                                <option value="day">Days</option>
+                                                <option value="month">Months</option>
+                                            </select>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('expiry_type')">{{ properFormat(errors.first('expiry_type')) }}</span></transition>
                                         </div>
                                     </div>
                                 </div>
