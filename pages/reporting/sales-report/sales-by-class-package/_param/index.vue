@@ -47,7 +47,7 @@
                             <tr>
                                 <th class="sticky">Date of Purchase</th>
                                 <th class="sticky">Reference Number</th>
-                                <th class="sticky">Full Name</th>
+                                <th class="sticky">Customer</th>
                                 <th class="sticky">Qty.</th>
                                 <th class="sticky">Payment</th>
                                 <th class="sticky">Comp Reason</th>

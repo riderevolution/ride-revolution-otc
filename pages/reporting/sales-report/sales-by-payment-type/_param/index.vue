@@ -43,10 +43,10 @@
                     <table class="cms_table alt">
                         <thead>
                             <tr>
-                                <th class="sticky">Date</th>
-                                <th class="sticky">Time</th>
-                                <th class="sticky">Order ID</th>
+                                <th class="sticky">Date of Purchase</th>
+                                <th class="sticky">Reference Number</th>
                                 <th class="sticky">Customer</th>
+                                <th class="sticky">Qty.</th>
                                 <th class="sticky">Status</th>
                                 <th class="sticky">Total</th>
                                 <th class="sticky">Employee</th>
@@ -55,8 +55,7 @@
                         </thead>
                         <tbody v-if="res.result.data.length > 0">
                             <tr v-for="(data, key) in res.result.data" :key="key">
-                                <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ $moment(data.updated_at).format('h:mm A') }}</td>
+                                <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY hh:mm A') }}</td>
                                 <td>{{ getPaymentCode(data) }}</td>
                                 <td>
                                     <div class="thumb">
@@ -70,6 +69,7 @@
                                         <div v-else>N/A</div>
                                     </div>
                                 </td>
+                                <td>{{ totalItems(data.payment_items.length) }}</td>
                                 <td :class="`${(data.status == 'paid') ? 'green' : 'red'}`">{{ (data.status == 'paid') ? 'Paid' : 'Pending' }}</td>
                                 <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
                                 <td>
