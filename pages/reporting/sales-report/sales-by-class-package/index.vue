@@ -111,7 +111,7 @@
                                             <tbody v-if="data.values.length > 0">
                                                 <tr v-for="(data, key) in data.values" :key="key">
                                                     <td>
-                                                        <a target="_blank" class="table_data_link" :href="`${$route.path}/${data.slug}?payment_status=${payment_status}&slug=class-package&id=${data.id}&start_date=${form.start_date}&end_date=${form.end_date}`">{{ data.name }}</a>
+                                                        <div class="table_data_link" @click="openWindowInside(data)">{{ data.name }}</div>
                                                     </td>
                                                     <td>{{ (data.sold) ? data.sold : 0 }}</td>
                                                     <td>{{ (data.returned) ? data.returned : 0 }}</td>
@@ -191,6 +191,10 @@
             }
         },
         methods: {
+            openWindowInside (data) {
+                const me = this
+                window.open(`${me.$route.path}/${data.slug}?payment_status=${me.payment_status}&slug=class-package&id=${data.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
+            },
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))

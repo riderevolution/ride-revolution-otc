@@ -46,6 +46,7 @@
                         <thead>
                             <tr>
                                 <th class="sticky">Date of Purchase</th>
+                                <th class="sticky">Reference Number</th>
                                 <th class="sticky">Full Name</th>
                                 <th class="sticky">Qty.</th>
                                 <th class="sticky">Payment</th>
@@ -57,7 +58,7 @@
                         </thead>
                         <tbody v-if="res.result.data.length > 0">
                             <tr>
-                                <td colspan="2"><b>{{ total.name }}</b></td>
+                                <td colspan="3"><b>{{ total.name }}</b></td>
                                 <td colspan="3"><b>{{ total.qty }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
@@ -65,6 +66,7 @@
                             </tr>
                             <tr v-for="(data, key) in res.result.data" :key="key" v-if="res.result.data.length > 0">
                                 <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY hh:mm A') }}</td>
+                                <td>{{ getPaymentCode(data.payment) }}</td>
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.payment.user.customer_details.images[0].path_resized" v-if="data.payment.user.customer_details.images[0].path != null" />
@@ -139,6 +141,7 @@
                     ...me.values.map(value => ({
                         'Class Package': me.package.name,
                         'Date of Purchase': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Reference Number': me.getPaymentCode(value.payment),
                         'Full Name': (value.payment != null) ? `${value.payment.user.fullname}` : '-',
                         'Qty': value.quantity,
                         'Payment': (value.payment) ? value.payment.payment_method.method : '-',
@@ -151,6 +154,23 @@
             }
         },
         methods: {
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        result = payment.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
+                }
+
+                return result
+            },
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
