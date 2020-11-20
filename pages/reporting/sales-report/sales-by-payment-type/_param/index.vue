@@ -57,7 +57,7 @@
                             <tr v-for="(data, key) in res.result.data" :key="key">
                                 <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY') }}</td>
                                 <td>{{ $moment(data.updated_at).format('h:mm A') }}</td>
-                                <td>{{ data.payment_code }}</td>
+                                <td>{{ getPaymentCode(data) }}</td>
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
@@ -149,6 +149,23 @@
             }
         },
         methods: {
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        result = payment.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
+                }
+
+                return result
+            },
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
