@@ -80,7 +80,7 @@
                                         N/A
                                     </div>
                                 </td>
-                                <td>{{ data.payment_method.remarks }}</td>
+                                <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : '-' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
