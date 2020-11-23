@@ -115,8 +115,8 @@
                                 </div>
                             </div>
                             <div class="content_wrapper">
-                                <div :class="[ 'class_accordion', (result.highlighted) ? 'highlighted' : '' ]" v-for="(result, key) in populateDates" :key="key">
-                                    <div class="accordion_header" @click.self="toggleClass($event, $moment(result.date).format('M'), $moment(result.date).format('D'), $moment(result.date).format('YYYY'))">{{ result.abbr }} | {{ result.date }}</div>
+                                <div :id="`sched_${key}`" :class="[ 'class_accordion', (result.highlighted) ? 'highlighted' : '', (result.toggled) ? 'toggled' : '' ]" v-for="(result, key) in populateDates" :key="key">
+                                    <div class="accordion_header" @click.self="toggleClass($event, $moment(result.date).format('M'), $moment(result.date).format('D'), $moment(result.date).format('YYYY'), result, key)">{{ result.abbr }} | {{ result.date }}</div>
                                     <div class="accordion_content">
                                         <div :id="`class_${dkey}_${key}`" :class="[ 'class_content', (data.schedule.studio.online_class) ? 'online' : '', (data.highlighted) ? 'highlighted' : '' ]" v-for="(data, dkey) in schedules" :key="dkey" @click="getBookings(data, dkey, key)">
                                             <div class="class_title">
@@ -772,6 +772,9 @@
                 for (let i = 0, i_len = me.schedules.length; i < i_len; i++) {
                     me.schedules[i].highlighted = false
                 }
+                for (let i = 0, i_len = me.results.length; i < i_len; i++) {
+                    me.results[i].highlighted = false
+                }
             },
             getBookings (data, sunique, unique) {
                 const me = this
@@ -1196,7 +1199,9 @@
                     me.results.push({
                         abbr: (me.$moment(`${me.currentYear}-${me.currentMonth}-${currentDate}`, 'YYYY-MM-D').format('M-D') == me.$moment().format('M-D')) ? 'Today' : me.$moment(`${me.currentYear}-${me.currentMonth}-${currentDate}`, 'YYYY-MM-D').format('ddd'),
                         date: me.$moment(`${me.currentYear}-${me.currentMonth}-${currentDate}`, 'YYYY-MM-D').format('MMMM D, YYYY'),
-                        value: currentDate
+                        value: currentDate,
+                        toggled: false,
+                        highlighted: false
                     })
                     currentDate++
                     me.current = currentDate
@@ -1209,24 +1214,33 @@
             },
             populateResults (data, type) {
                 const me = this
-                document.querySelectorAll('.content_wrapper .class_accordion').forEach((value, index) => {
-                    value.classList.remove('toggled')
-                    value.querySelector('.accordion_content').style.height = 0
-                })
+                for (let i = 0, len = me.results.length; i < len; i++) {
+                    me.results[i].highlighted = false
+                    me.results[i].toggled = false
+                    document.getElementById(`sched_${i}`).querySelector('.accordion_content').style.height = 0
+                }
+                // document.querySelectorAll('.content_wrapper .class_accordion').forEach((value, index) => {
+                //     value.classList.remove('toggled')
+                //     value.querySelector('.accordion_content').style.height = 0
+                // })
                 me.loader(true)
                 switch (type) {
                     case 'next':
                         me.results.push({
                             abbr: (me.$moment(`${me.currentYear}-${me.currentMonth}-${data}`, 'YYYY-MM-D').format('M-D') == me.$moment().format('M-D')) ? 'Today' : me.$moment(`${me.currentYear}-${me.currentMonth}-${data}`, 'YYYY-MM-D').format('ddd'),
                             date: me.$moment(`${me.currentYear}-${me.currentMonth}-${data}`, 'YYYY-MM-D').format('MMMM D, YYYY'),
-                            value: data
+                            value: data,
+                            toggled: false,
+                            highlighted: false
                         })
                         break
                     case 'prev':
                         me.results.unshift({
                             abbr: (me.$moment(`${me.currentYear}-${me.currentMonth}-${data}`, 'YYYY-MM-D').format('M-D') == me.$moment().format('M-D')) ? 'Today' : me.$moment(`${me.currentYear}-${me.currentMonth}-${data}`, 'YYYY-MM-D').format('ddd'),
                             date: me.$moment(`${me.currentYear}-${me.currentMonth}-${data}`, 'YYYY-MM-D').format('MMMM D, YYYY'),
-                            value: data
+                            value: data,
+                            toggled: false,
+                            highlighted: false
                         })
                         break
                 }
@@ -1234,17 +1248,25 @@
                     me.loader(false)
                 }, 500)
             },
-            async toggleClass (event, month, day, year) {
+            async toggleClass (event, month, day, year, data, unique) {
                 const me = this
                 const target = event.target
-                let accordions = document.querySelectorAll('.booker_classes .content_wrapper .class_accordion')
-                accordions.forEach((accordion, index) => {
-                    if (accordion !== target.parentNode) {
-                        accordion.classList.remove('toggled')
-                        accordion.querySelector('.accordion_content').style.height = 0
+
+                for (let i = 0, len = me.results.length; i < len; i++) {
+                    if (i != unique) {
+                        me.results[i].toggled = false
+                        document.getElementById(`sched_${i}`).querySelector('.accordion_content').style.height = 0
                     }
-                })
-                if (!target.parentNode.classList.contains('toggled')) {
+                }
+                //
+                // let accordions = document.querySelectorAll('.booker_classes .content_wrapper .class_accordion')
+                // accordions.forEach((accordion, index) => {
+                //     if (accordion !== target.parentNode) {
+                //         accordion.classList.remove('toggled')
+                //         accordion.querySelector('.accordion_content').style.height = 0
+                //     }
+                // })
+                if (!data.toggled) {
                     me.loader(true)
                     await me.$axios.get(`api/schedules?month=${month}&year=${year}&day=${day}&studio_id=${me.studioID}&for_booker=1`).then(res => {
                         if (res.data) {
@@ -1261,8 +1283,8 @@
                                 }
                             }
                             setTimeout( () => {
-                                target.nextElementSibling.style.height = `${target.nextElementSibling.scrollHeight}px`
-                                target.parentNode.classList.add('toggled')
+                                data.toggled = true
+                                document.getElementById(`sched_${unique}`).querySelector('.accordion_content').style.height = `${document.getElementById(`sched_${unique}`).querySelector('.accordion_content').scrollHeight}px`
                             }, 500)
                         }
                     }).catch(err => {
@@ -1273,8 +1295,8 @@
                         }, 500)
                     })
                 } else {
-                    target.nextElementSibling.style.height = 0
-                    target.parentNode.classList.remove('toggled')
+                    data.toggled = false
+                    document.getElementById(`sched_${unique}`).querySelector('.accordion_content').style.height = 0
                 }
             },
             fetchData (value) {
