@@ -4,12 +4,6 @@
         <div class="no_results" v-if="!hasFetchSeat">
             Please select a class first.
         </div>
-        <div class="no_results" v-if="hasFetchSeat && onlineClass">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit
-            <div class="cta">
-                <div class="action_btn alternate" @click="toggleOnlineAttendance()">Update Online Attendance</div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -68,7 +62,7 @@
             },
             fetchSeats (schedule_id, id) {
                 const me = this
-                let layout = `layout_${id}`
+                let layout = `layout_${id}`, temp_ctr = 0
                 me.seats = { left: { position: 'left', layout: layout, data: [] }, right: { position: 'right', layout: layout, data: [] }, bottom: { position: 'bottom', layout: layout, data: [] }, bottom_alt: { position: 'bottom_alt', layout: layout, data: [] }, bottom_alt_2: { position: 'bottom_alt_2', layout: layout, data: [] }, }
                 if (schedule_id != null) {
                     me.loader(true)
@@ -76,6 +70,9 @@
                         if (res.data) {
                             me.temp = res.data.seats
                             me.temp.forEach((seat , index) => {
+                                if (seat.bookings.length > 0) {
+                                    temp_ctr += 1
+                                }
                                 switch (seat.position) {
                                     case 'left':
                                         me.seats.left.data.push(seat)

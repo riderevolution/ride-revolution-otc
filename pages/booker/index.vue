@@ -152,68 +152,87 @@
                                 <div class="seat_controls">
                                     <div class="left_side">
                                         <div class="class_options">
-                                        <select :class="`default_select alternate ${(schedule != '') ? '' : 'disable_booker'} ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)" v-if="!studio.online_class">
-                                            <option value="" disabled selected>Class Options</option>
-                                            <option :value="classOption" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
-                                        </select>
-                                        <select :class="`default_select alternate ${(schedule != '') ? '' : 'disable_booker'} ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)" v-else>
-                                            <option value="" disabled selected>Class Options</option>
-                                            <option :value="classOption" v-for="(classOption, key) in classOnlineOptions" :key="key">{{ classOption }}</option>
-                                        </select>
-                                        <div class="class_info" v-show="!studio.online_class">
-                                            <div class="action_calendar_btn" id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
-                                            <div class="overlay">
-                                                <label>Customer Legend</label>
-                                                <div class="type_content">
-                                                    <div class="type" v-for="(data, key) in customerTypes" :key="key">
-                                                        <img :src="data.images[0].path" />
-                                                        <div class="type_title">{{ data.name }}</div>
+                                            <select :class="`default_select alternate ${(schedule != '') ? '' : 'disable_booker'} ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)" v-if="!studio.online_class">
+                                                <option value="" disabled selected>Class Options</option>
+                                                <option :value="classOption" v-for="(classOption, key) in classOptions" :key="key">{{ classOption }}</option>
+                                            </select>
+                                            <select :class="`default_select alternate ${(schedule != '') ? '' : 'disable_booker'} ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`" name="class_options" @change="getClassOptions($event)" v-else>
+                                                <option value="" disabled selected>Class Options</option>
+                                                <option :value="classOption" v-for="(classOption, key) in classOnlineOptions" :key="key">{{ classOption }}</option>
+                                            </select>
+                                            <div class="class_info" v-show="!studio.online_class">
+                                                <div class="action_calendar_btn" id="legend_toggler" @click="toggleLegends($event)" src="/icons/info-icon.svg">Legends</div>
+                                                    <div class="overlay">
+                                                        <label>Customer Legend</label>
+                                                        <div class="type_content">
+                                                            <div class="type" v-for="(data, key) in customerTypes" :key="key">
+                                                                <img :src="data.images[0].path" />
+                                                                <div class="type_title">{{ data.name }}</div>
+                                                            </div>
+                                                            <div class="type">
+                                                                <img src="/icons/first-timer-package-icon.png" />
+                                                                <div class="type_title">First Timer Package</div>
+                                                            </div>
+                                                            <div class="type">
+                                                                <img src="/icons/guest-icon.svg" />
+                                                                <div class="type_title">Guest</div>
+                                                            </div>
+                                                            <div class="type">
+                                                                <img src="/icons/pending-payment-icon.svg" />
+                                                                <div class="type_title">Pending Payment</div>
+                                                            </div>
+                                                            <!-- <div class="type">
+                                                            <img src="/icons/broken-bike-icon.svg" />
+                                                            <div class="type_title">Broken Bike</div>
+                                                        </div> -->
                                                     </div>
-                                                    <div class="type">
-                                                        <img src="/icons/first-timer-package-icon.png" />
-                                                        <div class="type_title">First Timer Package</div>
-                                                    </div>
-                                                    <div class="type">
-                                                        <img src="/icons/guest-icon.svg" />
-                                                        <div class="type_title">Guest</div>
-                                                    </div>
-                                                    <div class="type">
-                                                        <img src="/icons/pending-payment-icon.svg" />
-                                                        <div class="type_title">Pending Payment</div>
-                                                    </div>
-                                                    <!-- <div class="type">
-                                                    <img src="/icons/broken-bike-icon.svg" />
-                                                    <div class="type_title">Broken Bike</div>
-                                                </div> -->
+                                                </div>
                                             </div>
                                         </div>
+                                        <label class="booker_label" v-html="getInstructorsInSchedule(schedule)"></label>
+                                        <div :class="`controls ${(studio.online_class) ? 'nope' : '' }`">
+                                            <button id="zoom_in">Zoom in</button>
+                                            <button id="zoom_out" class="margin">Zoom out</button>
+                                            <button id="reset" class="margin">Reset</button>
+                                        </div>
+                                    </div>
+                                    <div :class="`right_side ${(studio.online_class) ? 'nope' : '' } ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
+                                        <button id="reload">Reload</button>
                                     </div>
                                 </div>
-                                <label class="booker_label" v-html="getInstructorsInSchedule(schedule)"></label>
-                                <div :class="`controls ${(studio.online_class) ? 'nope' : '' }`">
-                                    <button id="zoom_in">Zoom in</button>
-                                    <button id="zoom_out" class="margin">Zoom out</button>
-                                    <button id="reset" class="margin">Reset</button>
-                                </div>
-                            </div>
-                            <div :class="`right_side ${(studio.online_class) ? 'nope' : '' } ${($store.state.disableBookerUI) ? 'disable_booker' : ''}`">
-                                <button id="reload">Reload</button>
-                            </div>
-                            </div>
-                                <panZoom v-if="!studio.online_class" @init="panZoomInit" :options="{
-                                    bounds: true,
-                                    boundsPadding: 0.2,
-                                    minZoom: 0.25,
-                                    maxZoom: 1,
-                                    zoomDoubleClickSpeed: 1,
-                                    beforeWheel: panZoomBeforeWheel,
-                                    onDoubleClick: panZoomDoubleClick,
-                                    smoothScroll: false,
-                                    onTouch: panZoomTouch
-                                }">
-                                    <seat-plan ref="plan" :customer="customer" :onlineClass="(studio.online_class) ? true : false" />
-                                </panZoom>
 
+                                <!-- Studio Layout -->
+                                <div v-if="!studio.online_class">
+                                    <div class="canvass_top">
+                                        <div class="action_btn alternate" @click="getClasses()" v-if="has_seats">
+                                            Export
+                                        </div>
+                                    </div>
+                                    <download-csv
+                                        v-if="has_seats"
+                                        class="hidden me"
+                                        :data="studioAttendanceAttributes"
+                                        :name="`studio-attendance-${$moment(schedule.date).format('MM-DD-YY')}-${$moment(schedule.schedule.start_time, 'h:mm A').format('h-mm-A')}.csv`">
+                                        Export
+                                    </download-csv>
+
+                                    <panZoom @init="panZoomInit" :options="{
+                                        bounds: true,
+                                        boundsPadding: 0.2,
+                                        minZoom: 0.25,
+                                        maxZoom: 1,
+                                        zoomDoubleClickSpeed: 1,
+                                        beforeWheel: panZoomBeforeWheel,
+                                        onDoubleClick: panZoomDoubleClick,
+                                        smoothScroll: false,
+                                        onTouch: panZoomTouch,
+                                        transformOrigin: {x: 0.5, y: 0.5}
+                                        }">
+                                        <seat-plan ref="plan" :customer="customer" :onlineClass="(studio.online_class) ? true : false" />
+                                    </panZoom>
+                                </div>
+
+                                <!-- Online Attendance Layout -->
                                 <online-attendance-layout ref="online" v-else-if="studio.online_class" :schedule="schedule" :studio="studio" />
 
                                 <div class="seat_legends" v-if="!studio.online_class">
@@ -234,7 +253,7 @@
                                 <div :class="`booker_waitlist ${(studio.online_class) ? 'nope' : '' }`">
                                     <div class="footer_header">
                                         <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
-                                        <a href="javascript:void(0)" :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</a>
+                                        <div :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</div>
                                     </div>
                                     <table class="cms_waitlist">
                                         <thead>
@@ -249,8 +268,8 @@
                                                 <td>{{ waitlist.user.last_name }}</td>
                                                 <td>{{ waitlist.user.first_name }}</td>
                                                 <td class="action">
-                                                    <a href="javascript:void(0)" @click="prioritizeWaitlist(waitlist)" :class="`${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</a>
-                                                    <a href="javascript:void(0)" :class="`margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</a>
+                                                    <div @click="prioritizeWaitlist(waitlist)" :class="`link ${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</div>
+                                                    <div :class="`link margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -387,6 +406,7 @@
             BookerCancelClass
         },
         data () {
+            const values = []
             return {
                 name: 'Booker',
                 access: true,
@@ -395,9 +415,11 @@
                 assignType: 0,
                 brokenMessage: '',
                 inWaitlist: false,
+                has_seats: false,
                 past: false,
                 scheduledDateID: 0,
                 waitlistID: 0,
+                values: [],
                 studio: [],
                 transaction: [],
                 actionMessage: '',
@@ -451,6 +473,31 @@
             }
         },
         computed: {
+            studioAttendanceAttributes () {
+                const me = this
+                return [
+                    ...this.values.map(value => ({
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
+                        'Studio': me.studio.name,
+                        'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Booking ID': value.id,
+                        'Booking Status': value.status,
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Employee': (value.employee) ? value.employee.fullname : '-',
+                        'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
+                        'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
+                        'Start Time': me.schedule.schedule.start_time,
+                        'Instructor': me.getInstructorsInSchedule(me.schedule, 1),
+                        'Customer ID': me.getCustomerInfo(value, 'id'),
+                        'Full Name': me.getCustomerInfo(value, 'name'),
+                        'Customer Type': me.getCustomerInfo(value, 'type'),
+                        'Email Address': me.getCustomerInfo(value, 'email'),
+                        'Revenue': me.computeRevenue(value)
+                    }))
+                ]
+            },
             populateDates () {
                 const me = this
                 let result = []
@@ -476,12 +523,97 @@
             }
         },
         methods: {
-            getInstructorsInSchedule (data) {
+            getCustomerInfo (data, type) {
+                const me = this
+                let result = ''
+                switch (type) {
+                    case 'id':
+                        if (data.user != null) {
+                            result = data.user.id
+                        } else {
+                            result = '-'
+                        }
+                        break
+                    case 'name':
+                        if (data.user != null) {
+                            result = data.user.fullname
+                        } else {
+                            result = `${data.guest_first_name} ${data.guest_last_name}`
+                        }
+                        break
+                    case 'type':
+                        if (data.user != null) {
+                            result = data.customer_type
+                        } else {
+                            result = 'Guest'
+                        }
+                        break
+                    case 'email':
+                        if (data.user != null) {
+                            result = data.user.email
+                        } else {
+                            result = data.guest_email
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                switch (data.payment_item.payment_method.method) {
+                    case 'paypal':
+                        result = data.payment_item.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = data.payment_item.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = data.payment.payment_code
+                }
+
+                return result
+            },
+            computeRevenue (data) {
+                const me = this
+                let result = ''
+                let base_value = 0
+                if (data.status != 'cancelled') {
+                    if (data.user_package_count.payment_item.payment_method.method != 'comp') {
+                        base_value = me.totalCount(data.revenue)
+                        result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
+                    } else {
+                        result = 0
+                    }
+                } else {
+                    result = 0
+                }
+
+                return result
+            },
+            getClasses () {
+                const me = this
+                me.loader(true)
+                me.$axios.get(`api/studio-class-bookings?scheduled_date_id=${me.scheduledDateID}`).then(res => {
+                    if (res.data) {
+                        me.values = res.data.bookings
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    if (me.values.length > 0) {
+                        document.querySelector('.me').click()
+                    }
+                })
+            },
+            getInstructorsInSchedule (data, export_status = null) {
                 const me = this
                 let result = ''
                 if (data != '') {
-                    let ins_ctr = 0
-                    let instructor = []
+                    let ins_ctr = 0, instructor = []
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.substitute == 0) {
                             ins_ctr += 1
@@ -492,13 +624,18 @@
                     })
 
                     if (ins_ctr == 2) {
-                        result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        if (export_status != null) {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        } else {
+                            result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        }
                     } else {
-                        result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        if (export_status != null) {
+                            result = `${instructor.user.fullname}`
+                        } else {
+                            result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        }
                     }
-
-                } else {
-                    result = 'Please Select a Class'
                 }
 
                 return result
@@ -793,8 +930,9 @@
                             element.classList.add('active')
                         }
                     }
-                    setTimeout(() => {
+                    setTimeout( () => {
                         if (me.$refs.plan) {
+                            me.has_seats = true
                             me.$refs.plan.fetchSeats(data.id, me.studioID)
                             document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
                         }
@@ -1030,6 +1168,7 @@
             },
             panZoomInit (instance, id) {
                 const me = this
+                me.zoomCtr = 0.4
                 if (me.studio.online_class) {
                     instance.pause()
                 } else {
@@ -1050,6 +1189,7 @@
                     me.customZoom(instance, 'out')
                 })
                 document.getElementById('reset').addEventListener('click', function(e) {
+                    me.zoomCtr = 0.4
                     if (me.zoomCtr >= 1) {
                         me.zoomCtr = 0.4
                     }
@@ -1062,6 +1202,17 @@
                     document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${planWidth}, ${planHeight})`
                 })
                 document.getElementById('reload').addEventListener('click', function(e) {
+                    me.zoomCtr = 0.4
+                    if (me.zoomCtr >= 1) {
+                        me.zoomCtr = 0.4
+                    }
+                    if (me.zoomCtr <= 0.99999) {
+                        me.zoomCtr = 1.2
+                    }
+                    instance.getTransform().x = planWidth
+                    instance.getTransform().y = planHeight
+                    instance.getTransform().scale = 0.4
+                    document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${planWidth}, ${planHeight})`
                     if (me.$store.state.scheduleID != 0) {
                         setTimeout( () => {
                             me.getSeats()
@@ -1087,17 +1238,19 @@
                 switch (type) {
                     case 'in':
                         if (me.zoomCtr <= 0.99999) {
-                            me.zoomCtr = 1.2
+                            me.zoomCtr = 1
+                        } else {
+                            me.zoomCtr += 0.4
                         }
                         instance.smoothZoom((planWidth / 2) + me.zoomCtr, (planHeight / 2) + me.zoomCtr, me.zoomCtr)
-                        me.zoomCtr += 0.4
                         break
                     case 'out':
                         if (me.zoomCtr >= 1.0) {
-                            me.zoomCtr = 0.4
+                            me.zoomCtr = 0.8
+                        } else {
+                            me.zoomCtr -= 0.4
                         }
                         instance.smoothZoom((planWidth / 2) + me.zoomCtr, (planHeight / 2) + me.zoomCtr, me.zoomCtr)
-                        me.zoomCtr -= 0.4
                         break
                 }
             },

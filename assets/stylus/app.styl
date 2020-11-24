@@ -5976,6 +5976,9 @@ input::placeholder
             overflow: hidden
             margin-bottom: 20px
             background-color: $white
+            .canvass_top
+                padding: 20px
+                text-align: right
             .seat_controls
                 display: flex
                 flex-flow: row wrap
@@ -6717,7 +6720,8 @@ input::placeholder
                                 flex: 0 0 30%
                                 &.action
                                     flex: 1 0 20%
-                                    a
+                                    .link
+                                        cursor: pointer
                                         text-decoration: none
                                         sf_pro_medium(16px)
                                         color: $green
