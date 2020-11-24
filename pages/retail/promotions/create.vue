@@ -75,8 +75,8 @@
                                 </div>
                                 <div class="form_flex">
                                     <div class="form_group">
-                                        <label for="redemption_limit">Redemption Limit <span>*</span></label>
-                                        <input type="text" name="redemption_limit" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:100'">
+                                        <label for="redemption_limit">Redemption Limit</label>
+                                        <input type="text" name="redemption_limit" autocomplete="off" class="default_text" v-validate="'numeric|min_value:1|max_value:99999'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('redemption_limit')">{{ properFormat(errors.first('redemption_limit')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
