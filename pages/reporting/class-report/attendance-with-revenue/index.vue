@@ -89,7 +89,7 @@
                                 <th>Total Net Revenue</th>
                             </tr>
                         </thead>
-                        <tbody :class="`${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.scheduled_dates.data" v-if="res.scheduled_dates.data.length > 0">
+                        <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.scheduled_dates.data" v-if="res.scheduled_dates.data.length > 0">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment(data.date).format('MMMM DD, YYYY') }}</td>
                                 <td>{{ data.schedule.start_time }}</td>
@@ -118,7 +118,7 @@
                                             <tbody v-if="data.bookings.length > 0">
                                                 <tr v-for="(booking, key) in data.bookings" :key="key">
                                                     <td>{{ (booking.seat.position != 'Online') ? booking.seat.number : '-' }}</td>
-                                                    <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+                                                    <td>{{ getCustomerInfo(booking, 'name') }}</td>
                                                     <td>{{ replacer(booking.status).charAt(0).toUpperCase()}}{{ replacer(booking.status).slice(1) }}</td>
                                                     <td>{{ booking.class_package.name }}</td>
                                                     <td>Php {{ totalCount(booking.revenue) }}</td>
@@ -202,7 +202,7 @@
                         'Class Type': (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name,
                         'Instructor': me.getInstructorsInSchedule(value),
                         'Spot': (value.seat.position != 'Online') ? value.seat.number : '-',
-                        'Customer': `${value.user.first_name} ${value.user.last_name}`,
+                        'Customer': me.getCustomerInfo(value, 'name'),
                         'Status': value.status,
                         'Revenue': value.revenue
                     }))
@@ -210,6 +210,21 @@
             }
         },
         methods: {
+            getCustomerInfo (data, type) {
+                const me = this
+                let result = ''
+                switch (type) {
+                    case 'name':
+                        if (data.user != null) {
+                            result = data.user.fullname
+                        } else {
+                            result = `${data.guest_first_name} ${data.guest_last_name}`
+                        }
+                        break
+                }
+
+                return result
+            },
             getClasses () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
@@ -233,23 +248,33 @@
                     document.querySelector('.me').click()
                 })
             },
-            getInstructorsInSchedule (data) {
+            getInstructorsInSchedule (data, export_status = null) {
                 const me = this
                 let result = ''
                 if (data != '') {
-                    let ins_ctr = 0
+                    let ins_ctr = 0, instructor = []
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.substitute == 0) {
                             ins_ctr += 1
                         }
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
                     })
 
                     if (ins_ctr == 2) {
-                        result = `${data.schedule.instructor_schedules[0].user.first_name} ${data.schedule.instructor_schedules[0].user.last_name} + ${data.schedule.instructor_schedules[1].user.first_name} ${data.schedule.instructor_schedules[1].user.last_name}`
+                        if (export_status != null) {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        } else {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        }
                     } else {
-                        result = `${data.schedule.instructor_schedules[0].user.first_name} ${data.schedule.instructor_schedules[0].user.last_name}`
+                        if (export_status != null) {
+                            result = `${instructor.user.fullname}`
+                        } else {
+                            result = `${instructor.user.fullname}`
+                        }
                     }
-
                 }
 
                 return result
