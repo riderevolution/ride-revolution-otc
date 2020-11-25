@@ -487,7 +487,7 @@
             const me = this
             me.totalPrice = me.parser(me.value.for_later)
             me.takePayment(2)
-            me.form.id = me.randomString()
+            me.form.id = me.value.payment_code
         }
     }
 </script>

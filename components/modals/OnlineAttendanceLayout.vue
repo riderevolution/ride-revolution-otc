@@ -19,7 +19,7 @@
                         <download-csv
                             class="action_btn alternate"
                             :data="attributes"
-                            :name="`online-class-attendance-${$moment().format('MM-DD-YY-hh-mm')}.csv`" v-if="res.length > 0">
+                            :name="`online-class-attendance-${$moment(schedule.schedule.date).format('MM-DD-YY-hh-mm')}.csv`" v-if="res.length > 0">
                             Export
                         </download-csv>
                     </div>
@@ -128,7 +128,7 @@
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
-                        'Employee': (value.employee) ? value.employee.fullname : '-',
+                        'Employee': (value.employee) ? value.employee.fullname : 'No User',
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,

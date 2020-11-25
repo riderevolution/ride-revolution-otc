@@ -300,7 +300,7 @@
                                         </div>
                                     </div>
                                     <div class="info_right">
-                                        <div class="action_success_btn" @click="togglePending(data.id)">Pay Now</div>
+                                        <div class="action_success_btn" @click="togglePending(data)">Pay Now</div>
                                     </div>
                                 </div>
                             </div>
@@ -641,9 +641,10 @@
                         break
                 }
             },
-            togglePending (user_id) {
+            togglePending (data) {
                 const me = this
-                me.$store.state.pendingCustomerID = user_id
+                me.transaction = data.payments
+                me.$store.state.pendingCustomerID = data.id
                 me.$store.state.pendingTransactionsStatus = true
                 document.body.classList.add('no_scroll')
             },
@@ -815,6 +816,7 @@
                         })
 
                         me.pendingPayments = res.data.usersWithPendingPayments
+                        console.log(res.data.usersWithPendingPayments);
                     }
                 }).catch(err => {
                     me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
