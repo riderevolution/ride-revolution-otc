@@ -258,6 +258,7 @@
                                             <th>Category</th>
                                             <th>Qty</th>
                                             <th>Price</th>
+                                            <th>Remarks</th>
                                             <th v-if="data.status == 'paid'">Action</th>
                                         </tr>
                                     </thead>
@@ -271,6 +272,7 @@
                                                 <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
                                                 <p>PHP {{ totalCount(item.total * item.quantity) }}</p>
                                             </td>
+                                            <td>{{ (item.refund_remarks) ? item.refund_remarks : '-' }}</td>
                                             <td v-if="data.status == 'paid'">
                                                 <div class="table_actions" v-if="item.type != 'store-credit'">
                                                     <div class="table_action_cancel link" @click="toggleRefund(data, item)" v-if="checkRefund(data, item)">Refund</div>
@@ -981,12 +983,11 @@
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
                 }).then(() => {
+                    const elements = document.querySelectorAll('.cms_table_accordion .tbp')
+                    elements.forEach((element, index) => {
+                        element.querySelector('.accordion_table').style.height = 0
+                    })
                     setTimeout( () => {
-                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
-                        elements.forEach((element, index) => {
-                            element.classList.remove('toggled')
-                            element.querySelector('.accordion_table').style.height = 0
-                        })
                         me.loader(false)
                     }, 500)
                 })
