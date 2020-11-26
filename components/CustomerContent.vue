@@ -745,13 +745,13 @@
                 if (payment != null) {
                     switch (payment.payment_method.method) {
                         case 'paypal':
-                        result = payment.payment_method.paypal_transaction_id
-                        break
+                            result = payment.payment_method.paypal_transaction_id
+                            break
                         case 'paymaya':
-                        result = payment.payment_method.paymaya_transaction_id
-                        break
+                            result = payment.payment_method.paymaya_transaction_id
+                            break
                         default:
-                        result = payment.payment_code
+                            result = payment.payment_code
                     }
                 } else {
                     result = 'N/A'

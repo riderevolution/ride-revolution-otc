@@ -17,7 +17,8 @@
     export default {
         props: {
             value: {
-                default: 'cash'
+                type: Object/Array,
+                default: null
             },
             paymentItemId: {
                 default: 0
@@ -30,7 +31,8 @@
                     let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData
                     formData.append('payment_item_id', me.paymentItemId)
-                    formData.append('refund_type', me.value)
+                    formData.append('refund_type', me.value.selectedType)
+                    formData.append('refund_remarks', me.value.remarks)
                     me.loader(true)
                     me.$axios.post('api/extras/payments/refund', formData, {
                         headers: {

@@ -17,13 +17,19 @@
                 </li>
                 <transition name="slide"><span class="validation_errors" v-if="selectedMenu">Please select an action</span></transition>
             </ul>
+            <div class="form_main_group">
+                <div class="form_group">
+                    <label for="remarks">Remarks</label>
+                    <textarea name="remarks" rows="8" id="remarks" v-model="form.remarks" class="default_text unique area" placeholder="Enter remarks"></textarea>
+                </div>
+            </div>
             <div class="button_group">
                 <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
                 <div class="action_success_btn confirm margin alternate" @click="toggleProceed()">Proceed</div>
             </div>
         </div>
         <transition name="fade">
-            <refund-confirm :value="selectedType" :paymentItemId="paymentItemId" v-if="$store.state.refundConfirmStatus" />
+            <refund-confirm :value="form" :paymentItemId="paymentItemId" v-if="$store.state.refundConfirmStatus" />
         </transition>
     </div>
 </template>
@@ -46,7 +52,10 @@
             return {
                 selectedMenu: false,
                 selectedCount: 0,
-                selectedType: '',
+                form: {
+                    remarks: '',
+                    selectedType: ''
+                },
                 items: [
                     {
                         id: 0,
@@ -87,7 +96,7 @@
                 const me = this
                 me.selectedMenu = false
                 me.selectedCount += 1
-                me.selectedType = item.value
+                me.form.selectedType = item.value
                 me.items.forEach((element, index) => {
                     if (item.id == element.id) {
                         element.toggled = true
