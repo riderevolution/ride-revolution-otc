@@ -268,8 +268,8 @@
                                             <td>{{ (item.product_variant) ? item.product_variant.product.category.name : 'N/A' }}</td>
                                             <td>{{ item.quantity }}</td>
                                             <td class="price">
-                                                <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.price_per_item) }}</p>
-                                                <p>PHP {{ totalCount(item.total) }}</p>
+                                                <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
+                                                <p>PHP {{ totalCount(item.total * item.quantity) }}</p>
                                             </td>
                                             <td v-if="data.status == 'paid'">
                                                 <div class="table_actions" v-if="item.type != 'store-credit'">

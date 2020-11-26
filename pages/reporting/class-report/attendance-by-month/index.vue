@@ -282,7 +282,6 @@
                     res.data.schedules.forEach((item, key) => {
                         me.values.push(item)
                     })
-                    console.log(me.schedules);
                 })
 
                 /**
