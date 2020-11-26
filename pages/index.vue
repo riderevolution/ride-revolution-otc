@@ -142,7 +142,7 @@
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.fullname }}</nuxt-link>
+                                            <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                             <div class="violator label">{{
                                             getInstructorsInSchedule(data.bookings[0].scheduled_date) }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
@@ -169,7 +169,7 @@
                                         </div>
 
                                         <div class="info">
-                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.fullname }}</nuxt-link>
+                                            <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                             <div :class="`violator ${checkIdentifierClass(data.identifier)}`">
                                                 <svg id="icon_star" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
                                                     <g id="Star" transform="translate(20471 6893)">
@@ -202,7 +202,7 @@
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.fullname }}</nuxt-link>
+                                            <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                             <div class="violator blue"><img src="/icons/star-blue.svg" /><span>First Class</span></div>
                                             <div class="violator label">{{
                                             getInstructorsInSchedule(data.bookings[0].scheduled_date) }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
@@ -226,7 +226,7 @@
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.fullname }}</nuxt-link>
+                                            <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                             <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
                                             <div class="violator label">{{
                                             getInstructorsInSchedule(data.bookings[0].scheduled_date) }} ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
@@ -269,7 +269,7 @@
                                         </div>
                                     </div>
                                     <div class="info">
-                                        <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.fullname }}</nuxt-link>
+                                        <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -294,7 +294,7 @@
                                             </div>
                                         </div>
                                         <div class="info">
-                                            <nuxt-link :to="`/customers/${data.id}/packages`" class="name link">{{ data.fullname }}</nuxt-link>
+                                            <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                             <div class="violator pending">Pending: <b>Php {{ computePayment(data.payments) }}</b></div>
                                             <div class="violator label">Days Outstanding: {{ getDaysOutstanding(data.payments) }}</div>
                                         </div>
@@ -537,6 +537,10 @@
             }
         },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             getInstructorsImageInSchedule (data) {
                 const me = this
                 let result = ''
