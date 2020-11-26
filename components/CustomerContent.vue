@@ -742,15 +742,19 @@
                 const me = this
                 let result = ''
 
-                switch (payment.payment_method.method) {
-                    case 'paypal':
+                if (payment != null) {
+                    switch (payment.payment_method.method) {
+                        case 'paypal':
                         result = payment.payment_method.paypal_transaction_id
                         break
-                    case 'paymaya':
+                        case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
                         break
-                    default:
+                        default:
                         result = payment.payment_code
+                    }
+                } else {
+                    result = 'N/A'
                 }
 
                 return result
