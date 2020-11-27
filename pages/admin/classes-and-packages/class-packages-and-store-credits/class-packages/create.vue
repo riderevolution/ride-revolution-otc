@@ -513,10 +513,10 @@
                         let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
                         if (me.isRecurring) {
-                            formData.append('expires_in', 99999)
+                            formData.append('expires_in', 30)
                             formData.append('expiry_type', 'month')
                             formData.append('ao_activate_on_first_class_booked', 'No')
-                            formData.append('ao_expiry_if_not_activated', 99999)
+                            formData.append('ao_expiry_if_not_activated', 30)
                             formData.append('ao_expiry_if_not_activated_type', 'month')
                         }
                         me.loader(true)
