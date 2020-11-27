@@ -134,9 +134,8 @@
                             </div>
                             <div class="form_main_group" v-if="isRecurring">
                                 <div class="form_group">
-                                    <label for="plan_code">Plan Code <span>*</span></label>
-                                    <input type="text" name="plan_code" autocomplete="off" placeholder="Enter plan code" class="default_text" v-validate="'required'">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('plan_code')">{{ properFormat(errors.first('plan_code')) }}</span></transition>
+                                    <label for="plan_code">Plan Code </label>
+                                    <input type="text" name="plan_code" autocomplete="off" readonly placeholder="This field will be automatically generated" class="disabled efault_text">
                                 </div>
                             </div>
                         </div>
