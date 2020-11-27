@@ -135,7 +135,7 @@
                             <div class="form_main_group" v-if="isRecurring">
                                 <div class="form_group">
                                     <label for="plan_code">Plan Code</label>
-                                    <input type="text" name="plan_code" autocomplete="off" readonly placeholder="This field will be automatically generated" class="disabled efault_text" v-model="res.plan_code">
+                                    <input type="text" name="plan_code" autocomplete="off" readonly placeholder="This field will be automatically generated" class="disabled default_text" v-model="res.plan_code">
                                 </div>
                             </div>
                         </div>
