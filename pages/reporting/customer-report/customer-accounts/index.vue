@@ -135,8 +135,7 @@
                         'Billing Address': me.getCustomerDetails(value, 'billing'),
                         'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
                         'First Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-',
-                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[value.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-',
-                        'Account Status': me.getCustomerDetails(value, 'status')
+                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[value.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-'
                     }))
                 ]
             }
@@ -199,9 +198,6 @@
                         } else {
                             result = '-'
                         }
-                        break
-                    case 'status':
-                        result = (data.enabled) ? 'Active' : 'Deactivated'
                         break
                 }
 

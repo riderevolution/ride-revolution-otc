@@ -129,19 +129,90 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
+                        'Member ID': value.member_id,
                         'Customer': value.fullname,
-                        'Last Package Used': value.userPackageCounts[0].class_package.name,
-                        'Date Purchased': me.$moment(value.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY'),
-                        'Date Activated': (value.userPackageCounts[0].activation_date != 'NA') ? me.$moment(value.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : 'N/A',
-                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].updated_at).format('MMM DD, YYYY') : '-',
-                        'Contact Number': (value.customer_details.co_contact_number != null) ? value.customer_details.co_contact_number : '-',
+                        'Customer Type': value.customer_details.customer_type.name,
+                        'Gender': me.getCustomerDetails(value, 'gender'),
+                        'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
+                        'Contact Number': me.getCustomerDetails(value, 'contact_number'),
                         'Email Address': value.email,
-                        'City': (value.customer_details.pa_city != null) ? value.customer_details.pa_city : '-'
+                        'Weight': me.getCustomerDetails(value, 'weight'),
+                        'Shoe Size': me.getCustomerDetails(value, 'shoe_size'),
+                        'Dumbbell': me.getCustomerDetails(value, 'dumbbell'),
+                        'Personal Address': me.getCustomerDetails(value, 'personal'),
+                        'Billing Address': me.getCustomerDetails(value, 'billing'),
+                        'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Last Package Used': value.userPackageCounts[0].class_package.name,
+                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].updated_at).format('MMM DD, YYYY') : '-',
+                        'Date Purchased': me.$moment(value.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY'),
+                        'Date Activated': (value.userPackageCounts[0].activation_date != 'NA') ? me.$moment(value.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : 'N/A'
                     }))
                 ]
             }
         },
         methods: {
+            getCustomerDetails (data, type) {
+                const me = this
+                let result = ''
+
+                switch (type) {
+                    case 'gender':
+                        result = (data.customer_details.co_sex) ? (data.customer_details.co_sex == 'F' ? 'Female' : 'Male') : '-'
+                        break
+                    case 'contact_number':
+                        result = (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : '-'
+                        break
+                    case 'weight':
+                        result = (data.customer_details.co_weight) ? data.customer_details.co_weight : '-'
+                        break
+                    case 'shoe_size':
+                        result = (data.customer_details.co_shoe_size) ? data.customer_details.co_shoe_size : '-'
+                        break
+                    case 'dumbbell':
+                        result = (data.customer_details.dumbbell) ? data.customer_details.dumbbell : '-'
+                        break
+                    case 'personal':
+                        if (data.customer_details.pa_address) {
+                            result += data.customer_details.pa_address
+                            if (data.customer_details.pa_address_2) {
+                                result += `, ${data.customer_details.pa_address_2}`
+                            }
+                            if (data.customer_details.pa_zip_code) {
+                                result += `, ${data.customer_details.pa_zip_code}`
+                            }
+                            if (data.customer_details.personal_state) {
+                                result += `, ${data.customer_details.personal_state}`
+                            }
+                            if (data.customer_details.personal_country) {
+                                result += `, ${data.customer_details.personal_country}`
+                            }
+                        } else {
+                            result = '-'
+                        }
+                        break
+                    case 'billing':
+                        if (data.customer_details.ba_address) {
+                            result += data.customer_details.ba_address
+                            if (data.customer_details.ba_address_2) {
+                                result += `, ${data.customer_details.ba_address_2}`
+                            }
+                            if (data.customer_details.ba_zip_code) {
+                                result += `, ${data.customer_details.ba_zip_code}`
+                            }
+                            if (data.customer_details.billing_state) {
+                                result += `, ${data.customer_details.billing_state}`
+                            }
+                            if (data.customer_details.billing_country) {
+                                result += `, ${data.customer_details.billing_country}`
+                            }
+                        } else {
+                            result = '-'
+                        }
+                        break
+                }
+
+                return result
+            },
             getCustomers () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
@@ -195,7 +266,6 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data
-
                             me.$axios.get('api/packages/class-packages?enabled=1').then(res => {
                                 if (res.data) {
                                     me.class_packages = res.data.classPackages.data
