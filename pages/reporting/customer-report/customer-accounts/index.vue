@@ -47,7 +47,7 @@
                         <thead>
                             <tr>
                                 <th class="stick">Customer</th>
-                                <th class="stick">Rewards</th>
+                                <th class="stick">Member ID</th>
                                 <th class="stick">Sign Up Date</th>
                                 <th class="stick">First Class</th>
                                 <th class="stick">Last Class</th>
@@ -69,11 +69,11 @@
                                         <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
-                                <td>-</td>
+                                <td>{{ data.member_id }}</td>
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                                 <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
                                 <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
-                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : '-' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : '-' }}</td>
                                 <td>{{ data.email }}</td>
                                 <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : '-' }}</td>
                             </tr>
@@ -120,19 +120,93 @@
                 const me = this
                 return [
                     ...me.users.map((value, key) => ({
+                        'Member ID': value.member_id,
                         'Customer': value.fullname,
-                        'Rewards': '-',
+                        'Preferred Studio': value.preferred_studio.name,
+                        'Customer Type': value.customer_details.customer_type.name,
+                        'Gender': me.getCustomerDetails(value, 'gender'),
+                        'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
+                        'Contact Number': me.getCustomerDetails(value, 'contact_number'),
+                        'Email Address': value.email,
+                        'Weight': me.getCustomerDetails(value, 'weight'),
+                        'Shoe Size': me.getCustomerDetails(value, 'shoe_size'),
+                        'Dumbbell': me.getCustomerDetails(value, 'dumbbell'),
+                        'Personal Address': me.getCustomerDetails(value, 'personal'),
+                        'Billing Address': me.getCustomerDetails(value, 'billing'),
                         'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
                         'First Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-',
                         'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[value.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-',
-                        'Contact Number': (value.customer_details.co_contact_number != null) ? value.customer_details.co_contact_number : '-',
-                        'Email Address': value.email,
-                        'City': (value.customer_details.pa_city != null) ? value.customer_details.pa_city : '-'
+                        'Account Status': me.getCustomerDetails(value, 'status')
                     }))
                 ]
             }
         },
         methods: {
+            getCustomerDetails (data, type) {
+                const me = this
+                let result = ''
+
+                switch (type) {
+                    case 'gender':
+                        result = (data.customer_details.co_sex) ? (data.customer_details.co_sex == 'F' ? 'Female' : 'Male') : '-'
+                        break
+                    case 'contact_number':
+                        result = (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : '-'
+                        break
+                    case 'weight':
+                        result = (data.customer_details.co_weight) ? data.customer_details.co_weight : '-'
+                        break
+                    case 'shoe_size':
+                        result = (data.customer_details.co_shoe_size) ? data.customer_details.co_shoe_size : '-'
+                        break
+                    case 'dumbbell':
+                        result = (data.customer_details.dumbbell) ? data.customer_details.dumbbell : '-'
+                        break
+                    case 'personal':
+                        if (data.customer_details.pa_address) {
+                            result += data.customer_details.pa_address
+                            if (data.customer_details.pa_address_2) {
+                                result += `, ${data.customer_details.pa_address_2}`
+                            }
+                            if (data.customer_details.pa_zip_code) {
+                                result += `, ${data.customer_details.pa_zip_code}`
+                            }
+                            if (data.customer_details.personal_state) {
+                                result += `, ${data.customer_details.personal_state}`
+                            }
+                            if (data.customer_details.personal_country) {
+                                result += `, ${data.customer_details.personal_country}`
+                            }
+                        } else {
+                            result = '-'
+                        }
+                        break
+                    case 'billing':
+                        if (data.customer_details.ba_address) {
+                            result += data.customer_details.ba_address
+                            if (data.customer_details.ba_address_2) {
+                                result += `, ${data.customer_details.ba_address_2}`
+                            }
+                            if (data.customer_details.ba_zip_code) {
+                                result += `, ${data.customer_details.ba_zip_code}`
+                            }
+                            if (data.customer_details.billing_state) {
+                                result += `, ${data.customer_details.billing_state}`
+                            }
+                            if (data.customer_details.billing_country) {
+                                result += `, ${data.customer_details.billing_country}`
+                            }
+                        } else {
+                            result = '-'
+                        }
+                        break
+                    case 'status':
+                        result = (data.enabled) ? 'Active' : 'Deactivated'
+                        break
+                }
+
+                return result
+            },
             getCustomers () {
                 const me = this
                 let formData = new FormData()
