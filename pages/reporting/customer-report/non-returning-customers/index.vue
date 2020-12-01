@@ -53,6 +53,7 @@
                         <thead>
                             <tr>
                                 <th class="stick">Customer</th>
+                                <th class="stick">Member ID</th>
                                 <th class="stick">Last Package Used</th>
                                 <th class="stick">Date Purchased/Date Activated</th>
                                 <th class="stick">Last Class</th>
@@ -74,6 +75,7 @@
                                         <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
+                                <td>{{ data.member_id }}</td>
                                 <td>{{ data.userPackageCounts[0].class_package.name }}</td>
                                 <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment(data.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : '-' }}</td>
                                 <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMM DD, YYYY') : '-' }}</td>
