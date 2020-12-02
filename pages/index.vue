@@ -549,6 +549,8 @@
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.primary == 1) {
                             instructor = ins
+                        } else {
+                            instructor = ins
                         }
                     })
                     result = instructor.user.instructor_details.images[0].path
@@ -561,12 +563,14 @@
                 let result = ''
                 if (data != '') {
                     let ins_ctr = 0
-                    let instructor = []
+                    let instructor = null
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.substitute == 0) {
                             ins_ctr += 1
                         }
                         if (ins.primary == 1) {
+                            instructor = ins
+                        } else {
                             instructor = ins
                         }
                     })
@@ -574,11 +578,12 @@
                     if (ins_ctr == 2) {
                         result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
                     } else {
-                        result = `${instructor.user.fullname}`
+                        if (instructor != null) {
+                            result = `${instructor.user.fullname}`
+                        }
                     }
 
                 }
-
                 return result
             },
             toggleTargets () {
@@ -820,7 +825,6 @@
                         })
 
                         me.pendingPayments = res.data.usersWithPendingPayments
-                        console.log(res.data.usersWithPendingPayments);
                     }
                 }).catch(err => {
                     me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
