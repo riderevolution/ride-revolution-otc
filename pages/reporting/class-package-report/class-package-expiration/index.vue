@@ -81,8 +81,8 @@
                                 </td>
                                 <td>{{ data.class_package.name }}</td>
                                 <td>{{ (data.payment_item) ? $moment(data.payment_item.payment.updated_at, 'YYYY-MM-DD').format('MMMM DD, YYYY') : '-' }}</td>
-                                <td>{{ $moment(data.activation_date).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ $moment(data.expiryDate).format('MMMM DD, YYYY') }}</td>
+                                <td>{{ (data.activation_date != 'NA') ? $moment(data.activation_date).format('MMMM DD, YYYY') : 'N/A' }}</td>
+                                <td>{{ $moment((data.expiryDate != null) ? data.expiryDate : data.expiry_date_if_not_activated).format('MMMM DD, YYYY') }}</td>
                                 <td>{{ data.original_package_count }}</td>
                                 <td>{{ data.count }}</td>
                                 <td>Php {{ totalCount(data.class_package.package_price) }}</td>
