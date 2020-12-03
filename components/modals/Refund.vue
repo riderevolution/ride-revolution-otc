@@ -62,7 +62,7 @@
                         name: 'Store Credits',
                         value: 'store-credits',
                         toggled: false,
-                        excludedMethods: ['paypal', 'paymaya']
+                        excludedMethods: []
                     },
                     {
                         id: 1,
