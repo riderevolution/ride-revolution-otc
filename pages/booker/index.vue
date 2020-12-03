@@ -1150,7 +1150,6 @@
                 let id = me.$store.state.user.id
                 let formData = new FormData()
                 formData.append('_method', 'PATCH')
-                formData.append('user_id', id)
                 formData.append('scheduled_date_id', me.scheduledDateID)
                 formData.append('note', event.target.value)
                 me.$axios.post('api/extras/update-user-notepad', formData, {
