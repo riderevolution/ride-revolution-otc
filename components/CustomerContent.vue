@@ -270,7 +270,7 @@
                                             <td>{{ item.quantity }}</td>
                                             <td class="price">
                                                 <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
-                                                <p>PHP {{ totalCount(item.total * item.quantity) }}</p>
+                                                <p>PHP {{ totalCount((data.promo_code_used !== null) ? item.total : item.price_per_item * item.quantity) }}</p>
                                             </td>
                                             <td>{{ (item.refund_remarks) ? item.refund_remarks : '-' }}</td>
                                             <td v-if="data.status == 'paid'">
