@@ -97,7 +97,7 @@
                                 <td>{{ getInstructorsInSchedule(data) }}</td>
                                 <td>{{ data.bookings.length }}</td>
                                 <td>Php {{ totalCount(data.total_revenue) }}</td>
-                                <td>0</td>
+                                <td>Php {{ totalCount(data.total_discount) }}</td>
                                 <td>Php {{ totalCount(data.total_net_revenue) }}</td>
                             </tr>
                             <tr>
@@ -122,7 +122,7 @@
                                                     <td>{{ replacer(booking.status).charAt(0).toUpperCase()}}{{ replacer(booking.status).slice(1) }}</td>
                                                     <td>{{ booking.class_package.name }}</td>
                                                     <td>Php {{ computeRevenue(data, booking, 'revenue') }}</td>
-                                                    <td>Php 0</td>
+                                                    <td>Php {{ computeRevenue(data, booking, 'discount') }}</td>
                                                     <td>Php {{ computeRevenue(data, booking, 'net') }}</td>
                                                 </tr>
                                             </tbody>
@@ -215,6 +215,7 @@
                         'Customer Type': value.user.customer_details.customer_type.name,
                         'Email Address': value.user.email,
                         'Revenue': me.computeRevenue(value, value, 'revenue'),
+                        'Discount': me.computeRevenue(value, value, 'discount'),
                         'Net Revenue': me.computeRevenue(value, value, 'net')
                     }))
                 ]
@@ -227,10 +228,16 @@
                 let base_value = 0
                 if (booking.status != 'cancelled') {
                     if (booking.user_package_count.payment_item.payment_method.method != 'comp') {
-                        if (type == 'net') {
-                            base_value = me.totalCount(booking.revenue)
-                        } else {
-                            base_value = me.totalCount(booking.net_revenue)
+                        switch (type) {
+                            case 'net':
+                                base_value = me.totalCount(booking.revenue)
+                                break
+                            case 'revenue':
+                                base_value = me.totalCount(booking.net_revenue)
+                                break
+                            case 'discount':
+                                base_value = me.totalCount(booking.discount)
+                                break
                         }
                         result = me.totalCount(base_value * parseInt(data.schedule.class_credits))
                     } else {
