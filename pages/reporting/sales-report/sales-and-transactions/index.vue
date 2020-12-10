@@ -11,7 +11,10 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="tabStatus != 'summary' && user.staff_details.role_id == 1">Print</a>
+                            <a :href="`/prints/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="(tabStatus != 'summary' && tabStatus != 'daily') && user.staff_details.role_id == 1">Print</a>
+
+                            <a href="#" target="_blank" class="action_btn alternate" v-if="tabStatus == 'daily'">Print</a>
+
                             <download-csv
                                 v-if="(tabStatus != 'summary' && tabStatus != 'daily') && user.staff_details.role_id == 1"
                                 class="action_btn alternate"
@@ -131,6 +134,8 @@
                                     <th>Total Price</th>
                                     <th>Employee</th>
                                     <th>Status</th>
+                                    <th>Comp Reason</th>
+                                    <th>Note</th>
                                     <th>Remarks</th>
                                 </tr>
                             </thead>
@@ -149,6 +154,8 @@
                                             <div class="action_status red ml" v-if="data.promo_code_used !== null">Discounted</div>
                                         </div>
                                     </td>
+                                    <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : '-' }}</td>
+                                    <td>{{ (data.payment_method.note) ? data.payment_method.note : '-' }}</td>
                                     <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
                                 </tr>
                                 <tr>
@@ -173,8 +180,8 @@
                                                         <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
                                                         <td>{{ child.quantity }}</td>
                                                         <td class="price">
-                                                            <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item) }}</p>
-                                                            <p>PHP {{ totalCount(child.total) }}</p>
+                                                            <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item * child.quantity) }}</p>
+                                                            <p>PHP {{ totalCount((data.promo_code_used !== null) ? child.total : child.price_per_item * child.quantity) }}</p>
                                                         </td>
                                                         <td>
                                                             <div class="thumb">
@@ -204,7 +211,7 @@
                             </tbody>
                             <tbody class="no_results" v-if="transactions.payments.data.length == 0">
                                 <tr>
-                                    <td colspan="9">No Result(s) Found.</td>
+                                    <td colspan="11">No Result(s) Found.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -315,8 +322,8 @@
                 categories: [],
                 form: {
                     studio_id: 0,
-                    start_date: this.$moment().format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    start_date: this.$moment('11-24-2020').format('YYYY-MM-DD'),
+                    end_date: this.$moment('11-24-2020').format('YYYY-MM-DD')
                 }
             }
         },
@@ -456,9 +463,9 @@
                         let temp_price = 0
                         payment.payment_items.forEach((payment_item, key) => {
                             if (payment.promo_code_used !== null) {
-                                temp_price += payment_item.total
+                                temp_price += parseInt(payment_item.total)
                             } else {
-                                temp_price += payment_item.price_per_item
+                                temp_price += parseInt(payment_item.price_per_item)
                             }
                         })
                         result = `Php ${me.totalCount(temp_price)}`
