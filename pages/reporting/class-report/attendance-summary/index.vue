@@ -171,26 +171,111 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMM DD, YYYY'),
-                        'Total Rides': me.countValues(value, 'total_riders'),
-                        'Paying Riders': me.countValues(value, 'paying_riders'),
-                        'Comped Riders': me.countValues(value, 'comped_riders'),
-                        'First Timers': me.countValues(value, 'first_timers'),
-                        'No Shows': me.countValues(value, 'no_shows'),
-                        'Cancel': me.countValues(value, 'cancel'),
-                        'Waitlist': me.countValues(value, 'waitlist'),
-                        'Repeat': me.countValues(value, 'repeats'),
-                        'Avg Riders': me.totalPercentage('average', value),
-                        'Number Classes': me.totalItems(value.number_of_classes),
-                        'Avg Spots': (me.studio.online_class) ? 'Unlimited' : me.studio.capacity,
-                        'Capacity': me.totalPercentage('capacity', value),
-                        'Paying': me.totalPercentage('paying', value),
-                        'Total Revenue': me.countValues(value, 'revenue')
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
+                        'Studio': me.studio.name,
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Booking ID': value.id,
+                        'Booking Status': value.status,
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Employee': (value.employee) ? value.employee.fullname : 'No User',
+                        'Schedule Name': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
+                        'Schedule Date': me.$moment(value.date).format('MMMM DD, YYYY'),
+                        'Start Time': value.schedule.start_time,
+                        'Instructor': me.getInstructorsInSchedule(value, 1),
+                        'Customer ID': value.user.id,
+                        'Full Name': value.user.fullname,
+                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Email Address': value.user.email,
+                        'Revenue': me.computeRevenue(value, value),
                     }))
+                    // ...me.values.map((value, key) => ({
+                    //     'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMM DD, YYYY'),
+                    //     'Total Rides': me.countValues(value, 'total_riders'),
+                    //     'Paying Riders': me.countValues(value, 'paying_riders'),
+                    //     'Comped Riders': me.countValues(value, 'comped_riders'),
+                    //     'First Timers': me.countValues(value, 'first_timers'),
+                    //     'No Shows': me.countValues(value, 'no_shows'),
+                    //     'Cancel': me.countValues(value, 'cancel'),
+                    //     'Waitlist': me.countValues(value, 'waitlist'),
+                    //     'Repeat': me.countValues(value, 'repeats'),
+                    //     'Avg Riders': me.totalPercentage('average', value),
+                    //     'Number Classes': me.totalItems(value.number_of_classes),
+                    //     'Avg Spots': (me.studio.online_class) ? 'Unlimited' : me.studio.capacity,
+                    //     'Capacity': me.totalPercentage('capacity', value),
+                    //     'Paying': me.totalPercentage('paying', value),
+                    //     'Total Revenue': me.countValues(value, 'revenue')
+                    // }))
                 ]
             }
         },
         methods: {
+            computeRevenue (data, booking) {
+                const me = this
+                let result = ''
+                let base_value = 0
+                if (booking.status != 'cancelled') {
+                    if (booking.user_package_count.payment_item.payment_method.method != 'comp') {
+                        base_value = me.totalCount(booking.revenue)
+                        result = me.totalCount(base_value * parseInt(data.schedule.class_credits))
+                    } else {
+                        result = 0
+                    }
+                } else {
+                    result = 0
+                }
+
+                return result
+            },
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                switch (data.payment_item.payment_method.method) {
+                    case 'paypal':
+                        result = data.payment_item.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = data.payment_item.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = data.payment.payment_code
+                }
+
+                return result
+            },
+            getInstructorsInSchedule (data, export_status = null) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let ins_ctr = 0, instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
+                        }
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        if (export_status != null) {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        } else {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        }
+                    } else {
+                        if (export_status != null) {
+                            result = `${instructor.user.fullname}`
+                        } else {
+                            result = `${instructor.user.fullname}`
+                        }
+                    }
+                }
+
+                return result
+            },
             countValues (data, type) {
                 const me = this
                 let result = 0
@@ -228,14 +313,18 @@
             },
             getClasses () {
                 const me = this
-                me.values = []
                 let formData = new FormData(document.getElementById('filter'))
+                me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/attendance-summary?all=1`, formData).then(res => {
+                me.$axios.post(`api/reporting/classes/attendance-with-revenue?all=1`, formData).then(res => {
                     if (res.data) {
-                        console.log(res.data);
-                        res.data.schedules.forEach((item, index) => {
-                            me.values.push(item)
+
+                        res.data.scheduled_dates.forEach((item, index) => {
+                            item.bookings.forEach((child, index) => {
+                                child.schedule = item.schedule
+                                child.parent = false
+                                me.values.push(child)
+                            })
                         })
                     }
                 }).catch((err) => {
