@@ -172,6 +172,7 @@
                 return [
                     ...me.values.map((value, key) => ({
                         'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
                         'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
@@ -188,7 +189,8 @@
                         'Full Name': value.user.fullname,
                         'Customer Type': value.user.customer_details.customer_type.name,
                         'Email Address': value.user.email,
-                        'Revenue': me.computeRevenue(value, value),
+                        'Revenue': me.computeRevenue(value, value, 'revenue'),
+                        'Discount': me.computeRevenue(value, value, 'discount')
                     }))
                     // ...me.values.map((value, key) => ({
                     //     'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMM DD, YYYY'),
@@ -211,13 +213,23 @@
             }
         },
         methods: {
-            computeRevenue (data, booking) {
+            computeRevenue (data, booking, type) {
                 const me = this
                 let result = ''
                 let base_value = 0
                 if (booking.status != 'cancelled') {
                     if (booking.user_package_count.payment_item.payment_method.method != 'comp') {
-                        base_value = me.totalCount(booking.revenue)
+                        switch (type) {
+                            case 'net':
+                                base_value = me.totalCount(booking.revenue)
+                                break
+                            case 'revenue':
+                                base_value = me.totalCount(booking.net_revenue)
+                                break
+                            case 'discount':
+                                base_value = me.totalCount(booking.discount)
+                                break
+                        }
                         result = me.totalCount(base_value * parseInt(data.schedule.class_credits))
                     } else {
                         result = 0

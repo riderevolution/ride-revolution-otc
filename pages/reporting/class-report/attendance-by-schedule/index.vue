@@ -105,7 +105,6 @@
                                                     <th>Time</th>
                                                     <th>Class Type</th>
                                                     <th>Instructor</th>
-                                                    <th>Bookings</th>
                                                     <th>Riders</th>
                                                     <th>Revenue</th>
                                                     <th>Discount</th>
@@ -117,7 +116,6 @@
                                                     <td>{{ value.schedule.start_time }}</td>
                                                     <td>{{ (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name }}</td>
                                                     <td>{{ getInstructorsInSchedule(value) }}</td>
-                                                    <td>{{ totalItems(value.bookings.length) }}</td>
                                                     <td>{{ totalItems(value.riders) }}</td>
                                                     <td>Php {{ totalCount(value.revenue) }}</td>
                                                     <td>Php {{ totalCount(value.discount) }}</td>

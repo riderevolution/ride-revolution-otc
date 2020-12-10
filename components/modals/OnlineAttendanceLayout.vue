@@ -121,6 +121,7 @@
                 return [
                     ...me.values.map(value => ({
                         'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
                         'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
@@ -137,7 +138,8 @@
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
-                        'Revenue': me.computeRevenue(value)
+                        'Revenue': me.computeRevenue(value, 'revenue'),
+                        'Discount': me.computeRevenue(value, 'discount')
                     }))
                 ]
             },
@@ -168,13 +170,20 @@
 
                 return result
             },
-            computeRevenue (data) {
+            computeRevenue (data, type) {
                 const me = this
                 let result = ''
                 let base_value = 0
                 if (data.status != 'cancelled') {
                     if (data.user_package_count.payment_item.payment_method.method != 'comp') {
-                        base_value = me.totalCount(data.revenue)
+                        switch (type) {
+                            case 'revenue':
+                                base_value = me.totalCount(data.revenue)
+                                break
+                            case 'discount':
+                                base_value = me.totalCount(data.discount)
+                                break
+                        }
                         result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
                     } else {
                         result = 0

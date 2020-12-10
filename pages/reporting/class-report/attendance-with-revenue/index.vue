@@ -198,6 +198,7 @@
                 return [
                     ...me.values.map((value, key) => ({
                         'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
                         'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
@@ -230,10 +231,10 @@
                     if (booking.user_package_count.payment_item.payment_method.method != 'comp') {
                         switch (type) {
                             case 'net':
-                                base_value = me.totalCount(booking.revenue)
+                                base_value = me.totalCount(booking.net_revenue)
                                 break
                             case 'revenue':
-                                base_value = me.totalCount(booking.net_revenue)
+                                base_value = me.totalCount(booking.revenue)
                                 break
                             case 'discount':
                                 base_value = me.totalCount(booking.discount)
