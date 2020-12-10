@@ -193,32 +193,88 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Schedule ID': value.id,
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
-                        'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
-                        'Time': value.schedule.start_time,
-                        'Class Type': (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name,
-                        'Instructor': me.getInstructorsInSchedule(value),
-                        'Bookings': me.totalItems(value.bookings .length),
-                        'Riders': me.totalItems(value.riders),
-                        'Revenue': me.totalCount(value.revenue),
-                        'Discount': me.totalCount(value.discount),
-                        'Net Revenue': me.totalCount(value.net_revenue)
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Booking ID': value.id,
+                        'Booking Status': value.status,
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Employee': (value.employee) ? value.employee.fullname : 'No User',
+                        'Schedule Name': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
+                        'Schedule Date': me.$moment(value.date).format('MMMM DD, YYYY'),
+                        'Start Time': value.schedule.start_time,
+                        'Instructor': me.getInstructorsInSchedule(value, 1),
+                        'Customer ID': value.user.id,
+                        'Full Name': value.user.fullname,
+                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Email Address': value.user.email,
+                        'Revenue': me.computeRevenue(value, value, 'revenue'),
+                        'Discount': me.computeRevenue(value, value, 'discount'),
+                        'Net Revenue': me.computeRevenue(value, value, 'net')
                     }))
                 ]
             }
         },
         methods: {
+            computeRevenue (data, booking, type) {
+                const me = this
+                let result = ''
+                let base_value = 0
+                if (booking.status != 'cancelled') {
+                    if (booking.user_package_count.payment_item.payment_method.method != 'comp') {
+                        switch (type) {
+                            case 'net':
+                                base_value = me.totalCount(booking.net_revenue)
+                                break
+                            case 'revenue':
+                                base_value = me.totalCount(booking.revenue)
+                                break
+                            case 'discount':
+                                base_value = me.totalCount(booking.discount)
+                                break
+                        }
+                        result = me.totalCount(base_value * parseInt(data.schedule.class_credits))
+                    } else {
+                        result = 0
+                    }
+                } else {
+                    result = 0
+                }
+
+                return result
+            },
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                switch (data.payment_item.payment_method.method) {
+                    case 'paypal':
+                        result = data.payment_item.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = data.payment_item.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = data.payment.payment_code
+                }
+
+                return result
+            },
             getClasses () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/attendance-by-schedule?all=1`, formData).then(res => {
+                me.$axios.post(`api/reporting/classes/attendance-with-revenue?all=1`, formData).then(res => {
                     if (res.data) {
 
                         res.data.scheduled_dates.forEach((item, index) => {
-                            item.values.forEach((child, index) => {
+                            item.bookings.forEach((child, index) => {
+                                child.schedule = item.schedule
+                                child.parent = false
                                 me.values.push(child)
                             })
                         })
@@ -230,23 +286,33 @@
                     document.querySelector('.me').click()
                 })
             },
-            getInstructorsInSchedule (data) {
+            getInstructorsInSchedule (data, export_status = null) {
                 const me = this
                 let result = ''
                 if (data != '') {
-                    let ins_ctr = 0
+                    let ins_ctr = 0, instructor = []
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.substitute == 0) {
                             ins_ctr += 1
                         }
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
                     })
 
                     if (ins_ctr == 2) {
-                        result = `${data.schedule.instructor_schedules[0].user.first_name} ${data.schedule.instructor_schedules[0].user.last_name} + ${data.schedule.instructor_schedules[1].user.first_name} ${data.schedule.instructor_schedules[1].user.last_name}`
+                        if (export_status != null) {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        } else {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        }
                     } else {
-                        result = `${data.schedule.instructor_schedules[0].user.first_name} ${data.schedule.instructor_schedules[0].user.last_name}`
+                        if (export_status != null) {
+                            result = `${instructor.user.fullname}`
+                        } else {
+                            result = `${instructor.user.fullname}`
+                        }
                     }
-
                 }
 
                 return result
