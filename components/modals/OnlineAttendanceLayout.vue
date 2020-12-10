@@ -31,7 +31,7 @@
                                 <th>Customer</th>
                                 <th>Type</th>
                                 <th>Email Address</th>
-                                <th>Class Package</th>
+                                <th>Package Used</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -119,11 +119,11 @@
             attributes () {
                 const me = this
                 return [
-                    ...this.values.map(value => ({
+                    ...me.values.map(value => ({
                         'Reference Number': me.getPaymentCode(value.user_package_count),
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
-                        'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
                         'Booking ID': value.id,
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),

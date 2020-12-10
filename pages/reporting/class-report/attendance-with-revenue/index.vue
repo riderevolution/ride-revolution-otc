@@ -121,9 +121,9 @@
                                                     <td>{{ getCustomerInfo(booking, 'name') }}</td>
                                                     <td>{{ replacer(booking.status).charAt(0).toUpperCase()}}{{ replacer(booking.status).slice(1) }}</td>
                                                     <td>{{ booking.class_package.name }}</td>
-                                                    <td>Php {{ totalCount(booking.revenue) }}</td>
+                                                    <td>Php {{ computeRevenue(data, booking, 'revenue') }}</td>
                                                     <td>Php 0</td>
-                                                    <td>Php {{ totalCount(booking.net_revenue) }}</td>
+                                                    <td>Php {{ computeRevenue(data, booking, 'net') }}</td>
                                                 </tr>
                                             </tbody>
                                             <tbody class="no_results" v-else>
@@ -197,19 +197,68 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
-                        'Time': value.schedule.start_time,
-                        'Class Type': (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name,
-                        'Instructor': me.getInstructorsInSchedule(value),
-                        'Spot': (value.seat.position != 'Online') ? value.seat.number : '-',
-                        'Customer': me.getCustomerInfo(value, 'name'),
-                        'Status': value.status,
-                        'Revenue': value.revenue
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
+                        'Studio': me.studio.name,
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Booking ID': value.id,
+                        'Booking Status': value.status,
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Employee': (value.employee) ? value.employee.fullname : 'No User',
+                        'Schedule Name': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
+                        'Schedule Date': me.$moment(value.date).format('MMMM DD, YYYY'),
+                        'Start Time': value.schedule.start_time,
+                        'Instructor': me.getInstructorsInSchedule(value, 1),
+                        'Customer ID': value.user.id,
+                        'Full Name': value.user.fullname,
+                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Email Address': value.user.email,
+                        'Revenue': me.computeRevenue(value, value, 'revenue'),
+                        'Net Revenue': me.computeRevenue(value, value, 'net')
                     }))
                 ]
             }
         },
         methods: {
+            computeRevenue (data, booking, type) {
+                const me = this
+                let result = ''
+                let base_value = 0
+                if (booking.status != 'cancelled') {
+                    if (booking.user_package_count.payment_item.payment_method.method != 'comp') {
+                        if (type == 'net') {
+                            base_value = me.totalCount(booking.revenue)
+                        } else {
+                            base_value = me.totalCount(booking.net_revenue)
+                        }
+                        result = me.totalCount(base_value * parseInt(data.schedule.class_credits))
+                    } else {
+                        result = 0
+                    }
+                } else {
+                    result = 0
+                }
+
+                return result
+            },
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                switch (data.payment_item.payment_method.method) {
+                    case 'paypal':
+                        result = data.payment_item.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = data.payment_item.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = data.payment.payment_code
+                }
+
+                return result
+            },
             getCustomerInfo (data, type) {
                 const me = this
                 let result = ''
