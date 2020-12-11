@@ -3,6 +3,7 @@
         <div v-if="type == 'packages' && loaded">
             <div class="cms_table_toggler">
                 <div :class="`status ${(packageStatus == 'all') ? 'active' : ''}`" @click="togglePackages('all')">Owned</div>
+                <div :class="`status ${(packageStatus == 'subscribe') ? 'active' : ''}`" @click="togglePackages('subscribe')">Subscribe</div>
                 <div :class="`status ${(packageStatus == 'shared') ? 'active' : ''}`" @click="togglePackages('shared')">Shared</div>
                 <div :class="`status ${(packageStatus == 'frozen') ? 'active' : ''}`" @click="togglePackages('frozen')">Frozen</div>
                 <div :class="`status ${(packageStatus == 'expired') ? 'active' : ''}`" @click="togglePackages('expired')">Expired</div>
@@ -54,9 +55,9 @@
 
                                     <div v-if="data.class_package.por_allow_transferring_of_package && !data.frozen && data.sharedto_user_id == null" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
 
-                                    <div v-if="data.class_package.por_allow_sharing_of_package" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
+                                    <div v-if="data.class_package.por_allow_sharing_of_package && !data.class_package.recurring" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
 
-                                    <div v-if="data.class_package.por_allow_freezing_of_package" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
+                                    <div v-if="data.class_package.por_allow_freezing_of_package && !data.class_package.recurring" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
 
                                     <div v-if="data.class_package.recurring" class="option_link red" @click="togglePackageAction(data, 'recurring')">Cancel Package</div>
 
@@ -651,32 +652,59 @@
                 if (me.$route.params.slug == 'packages') {
                     let current = me.$moment()
                     if (me.packageStatus != 'expired') {
-                        me.res.user_package_counts.forEach((element, index) => {
-                            let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
-                            if (parseInt(expiry.diff(current)) > 0) {
-                                element.expired = false
-                                if (element.count > 0) {
-                                    me.packageCount++
-                                }
-                            } else {
-                                element.expired = true
-                            }
-                            result.push(element)
-                        })
-                    } else {
-                        me.res.user_package_counts.forEach((element, index) => {
-                            let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
-                            if (parseInt(expiry.diff(current)) <= 0) {
-                                element.expired = false
-                                me.packageCount++
-                            } else {
-                                if (element.count <= 0) {
-                                    me.packageCount++
-                                    element.expired = false
-                                    element.no_count = true
+                        if (me.packageStatus == 'subscribe') {
+                            me.res.user_package_counts.forEach((element, index) => {
+                                let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
+                                if (element.paypal_subscription_id) {
+                                    if (parseInt(expiry.diff(current)) > 0) {
+                                        element.expired = false
+                                        if (element.count > 0) {
+                                            me.packageCount++
+                                        }
+                                    } else {
+                                        element.expired = true
+                                    }
                                 } else {
                                     element.expired = true
                                 }
+                                result.push(element)
+                            })
+                        } else {
+                            me.res.user_package_counts.forEach((element, index) => {
+                                let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
+                                if (!element.paypal_subscription_id) {
+                                    if (parseInt(expiry.diff(current)) > 0) {
+                                        element.expired = false
+                                        if (element.count > 0) {
+                                            me.packageCount++
+                                        }
+                                    } else {
+                                        element.expired = true
+                                    }
+                                } else {
+                                    element.expired = true
+                                }
+                                result.push(element)
+                            })
+                        }
+                    } else {
+                        me.res.user_package_counts.forEach((element, index) => {
+                            let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
+                            if (!element.paypal_subscription_id) {
+                                if (parseInt(expiry.diff(current)) <= 0) {
+                                    element.expired = false
+                                    me.packageCount++
+                                } else {
+                                    if (element.count <= 0) {
+                                        me.packageCount++
+                                        element.expired = false
+                                        element.no_count = true
+                                    } else {
+                                        element.expired = true
+                                    }
+                                }
+                            } else {
+                                element.expired = true
                             }
                             result.push(element)
                         })
@@ -1208,7 +1236,16 @@
             togglePackages (status) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${(status != 'expired') ? status : 'all'}`).then(res => {
+
+                let url = ''
+
+                if (status == 'subscribe') {
+                    url = `api/customers/${me.$route.params.param}/${me.$route.params.slug}?subscription=1`
+                } else {
+                    url = `api/customers/${me.$route.params.param}/${me.$route.params.slug}?packageStatus=${(status != 'expired') ? status : 'all'}`
+                }
+
+                me.$axios.get(url).then(res => {
                     if (res.data) {
                         me.packageCount = 0
                         me.$parent.customer = res.data.customer
