@@ -50,6 +50,8 @@
                                 <th class="sticky">Status</th>
                                 <th class="sticky">Total</th>
                                 <th class="sticky">Employee</th>
+                                <th class="sticky" v-if="$route.params.param == 'comp'">Comp Reason</th>
+                                <th class="sticky" v-if="$route.params.param == 'comp'">Note</th>
                                 <th class="sticky">Remarks</th>
                             </tr>
                         </thead>
@@ -80,7 +82,9 @@
                                         N/A
                                     </div>
                                 </td>
-                                <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : '-' }}</td>
+                                <td v-if="$route.params.param == 'comp'">{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : '-' }}</td>
+                                <td v-if="$route.params.param == 'comp'">{{ (data.payment_method.note) ? data.payment_method.note : '-' }}</td>
+                                <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>

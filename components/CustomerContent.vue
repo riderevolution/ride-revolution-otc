@@ -226,6 +226,8 @@
                         <th>Total Price</th>
                         <th>Employee</th>
                         <th>Status</th>
+                        <th>Comp Reason</th>
+                        <th>Note</th>
                         <th>Remarks</th>
                     </tr>
                 </thead>
@@ -245,10 +247,12 @@
                                 <div class="table_action_edit link" @click="toggleForm(data.id)" v-if="data.status == 'pending'">Pay Now</div>
                             </div>
                         </td>
+                        <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : '-' }}</td>
+                        <td>{{ (data.payment_method.note) ? data.payment_method.note : '-' }}</td>
                         <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
                     </tr>
                     <tr>
-                        <td class="pads" colspan="9">
+                        <td class="pads" :colspan="rowCount">
                             <div class="accordion_table">
                                 <table class="cms_table">
                                     <thead>

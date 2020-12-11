@@ -4880,11 +4880,18 @@ input::placeholder
                                 align-items: center
                                 justify-content: space-between
                                 padding: 10px
+                                text-decoration: none
+                                &:hover
+                                    .atd_left
+                                        p
+                                            color: $green
+                                            transition: .3s ease-in-out
                                 .atd_left
                                     flex: 0 0 75%
                                     p
                                         sf_pro_regular(14px)
                                         color: $black
+                                        transition: .3s ease-in-out
                                 .atd_right
                                     sf_pro_bold(15px)
                                     color: $green

@@ -356,8 +356,29 @@
                     calendarTable.appendChild(tableRow)
                 }
                 setTimeout( () => {
+                    me.clickDates(0, endDate, excess)
                     me.loader(false)
                 }, 500)
+            },
+            clickDates (startNum, endNum, firstDayExcess) {
+                const me = this
+                let month = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('M')
+                let year = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('YYYY')
+                do {
+                    startNum++
+                    let classNode = (document.getElementById(`class_${startNum}`) != null) ? document.getElementById(`class_${startNum}`) : null
+
+                    if (classNode != null) {
+                        if (classNode.querySelectorAll('.attendance').length > 0) {
+                            classNode.querySelectorAll('.attendance').forEach((element, index) => {
+                                element.addEventListener('click', function(e) {
+                                    e.preventDefault()
+                                    me.$router.push(this.getAttribute('href'))
+                                })
+                            })
+                        }
+                    }
+                } while (startNum < endNum + firstDayExcess)
             },
             /**
              * Populate the Scheduler
@@ -368,7 +389,7 @@
                 me.schedules.forEach((data, index) => {
                     if (date == me.$moment(data.date).format('DD')) {
                         result += `
-                            <div class="attendance">
+                            <a href="/reporting/class-report/attendance-by-month/${data.bookings[0].scheduled_date_id}?studio_id=${me.form.studio_id}" class="attendance">
                                 <div class="atd_left">
                                     <p>${me.$moment(data.schedule.start_time, 'hh:mm A').format('h:mm A')}</p>
                                     <p>${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</p>
@@ -376,7 +397,7 @@
                                 <div class="atd_right">
                                     ${me.getBookings(data.bookings)}
                                 </div>
-                            </div>
+                            </a>
                         `
                     }
                 })
