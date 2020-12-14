@@ -12,9 +12,11 @@
                             <h2 class="header_subtitle">Attendance per time slot by month</h2>
                         </div>
                         <div class="actions">
+                            <div class="action_btn alternate" @click="getClasses()" v-if="schedules.length > 0">
+                                Export
+                            </div>
                             <download-csv
-                                v-if="schedules.length > 0"
-                                class="action_btn alternate"
+                                class="hidden me"
                                 :data="attendanceByMonthAttributes"
                                 :name="`attendance-by-month-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
@@ -136,23 +138,112 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMMM DD, YYYY'),
-                        'Start Time': me.$moment(value.schedule.start_time, 'hh:mm A').format('h:mm A'),
-                        'End Time': me.$moment(value.schedule.end_time, 'hh:mm A').format('h:mm A'),
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'No Promo Code Used',
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
-                        'Peak Type': value.schedule.peak_type,
-                        'Class Type': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
-                        'Class Credits': value.schedule.class_credits,
-                        'Class Length': value.schedule.class_length_formatted,
-                        'Instructor': me.getInstructorsInSchedule(value, 'primary'),
-                        'Substitute Instructor': me.getInstructorsInSchedule(value, 'substitute'),
-                        'Zoom Link': value.zoom_link,
-                        'No. of Bookings': value.bookings.length
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'No Package Used',
+                        'Booking ID': value.id,
+                        'Booking Status': value.status,
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Employee': (value.employee) ? value.employee.fullname : 'No User',
+                        'Schedule Name': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
+                        'Schedule Date': me.$moment(value.date).format('MMMM DD, YYYY'),
+                        'Start Time': value.schedule.start_time,
+                        'Instructor': me.getInstructorsInSchedule(value, 1),
+                        'Customer ID': value.user.id,
+                        'Full Name': value.user.fullname,
+                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Email Address': value.user.email,
+                        'Revenue': me.computeRevenue(value, value, 'revenue'),
+                        'Discount': me.computeRevenue(value, value, 'discount'),
+                        'Net Revenue': me.computeRevenue(value, value, 'net')
                     }))
                 ]
             }
         },
         methods: {
+            computeRevenue (data, booking, type) {
+                const me = this
+                let result = ''
+                let base_value = 0
+                if (booking.status != 'cancelled') {
+                    if (booking.user_package_count.payment_item.payment_method.method != 'comp') {
+                        switch (type) {
+                            case 'net':
+                                base_value = me.totalCount(booking.net_revenue)
+                                break
+                            case 'revenue':
+                                base_value = me.totalCount(booking.revenue)
+                                break
+                            case 'discount':
+                                base_value = me.totalCount(booking.discount)
+                                break
+                        }
+                        result = me.totalCount(base_value * parseInt(data.schedule.class_credits))
+                    } else {
+                        result = 0
+                    }
+                } else {
+                    result = 0
+                }
+
+                return result
+            },
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                switch (data.payment_item.payment_method.method) {
+                    case 'paypal':
+                        result = data.payment_item.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = data.payment_item.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = data.payment.payment_code
+                }
+
+                return result
+            },
+            getClasses () {
+                const me = this
+
+                let current_month = me.form.month.split(' '),
+                    current_date = `${current_month[0]} ${current_month[1]}`,
+                    formData = new FormData(),
+                    startDate = me.$moment(current_date, 'MMMM YYYY').format('YYYY-MM-01'),
+                    endDate = me.$moment(current_date, 'MMMM YYYY').format('YYYY-MM-') + me.$moment(current_date, 'MMMM YYYY').daysInMonth()
+
+                formData.append('studio_id', me.form.studio_id)
+                formData.append('class_type_id', me.form.class_type_id)
+                formData.append('instructor_id', me.form.instructor_id)
+                formData.append('start_date', startDate)
+                formData.append('end_date', endDate)
+
+
+                me.values = []
+                me.loader(true)
+                me.$axios.post(`api/reporting/classes/attendance-with-revenue?all=1`, formData).then(res => {
+                    if (res.data) {
+
+                        res.data.scheduled_dates.forEach((item, index) => {
+                            item.bookings.forEach((child, index) => {
+                                child.schedule = item.schedule
+                                child.parent = false
+                                me.values.push(child)
+                            })
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
             getInstructorsInSchedule (data, type) {
                 const me = this
                 let result = ''
@@ -187,7 +278,7 @@
                     }
 
                 } else {
-                    result = '- -'
+                    result = 'No Instructor'
                 }
 
                 return result
@@ -279,9 +370,6 @@
 
                 await me.$axios.post(`api/reporting/classes/attendance-by-month`, formData).then(res => {
                     me.schedules = res.data.schedules
-                    res.data.schedules.forEach((item, key) => {
-                        me.values.push(item)
-                    })
                 })
 
                 /**
