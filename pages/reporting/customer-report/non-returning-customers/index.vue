@@ -77,11 +77,11 @@
                                 </td>
                                 <td>{{ data.member_id }}</td>
                                 <td>{{ data.userPackageCounts[0].class_package.name }}</td>
-                                <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment(data.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : '-' }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMM DD, YYYY') : '-' }}</td>
-                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : '-' }}</td>
+                                <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment(data.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : 'Not Activated' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMM DD, YYYY') : 'No Class Yet' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : 'No Class Yet' }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : '-' }}</td>
+                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -121,7 +121,7 @@
                 class_packages: [],
                 form: {
                     class_package_id: '',
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
             }
@@ -145,7 +145,7 @@
                         'Billing Address': me.getCustomerDetails(value, 'billing'),
                         'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
                         'Last Package Used': value.userPackageCounts[0].class_package.name,
-                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].updated_at).format('MMM DD, YYYY') : '-',
+                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].updated_at).format('MMM DD, YYYY') : 'No Class Yet',
                         'Date Purchased': me.$moment(value.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY'),
                         'Date Activated': (value.userPackageCounts[0].activation_date != 'NA') ? me.$moment(value.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : 'N/A'
                     }))
@@ -159,19 +159,19 @@
 
                 switch (type) {
                     case 'gender':
-                        result = (data.customer_details.co_sex) ? (data.customer_details.co_sex == 'F' ? 'Female' : 'Male') : '-'
+                        result = (data.customer_details.co_sex) ? (data.customer_details.co_sex == 'F' ? 'Female' : 'Male') : 'N/A'
                         break
                     case 'contact_number':
-                        result = (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : '-'
+                        result = (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A'
                         break
                     case 'weight':
-                        result = (data.customer_details.co_weight) ? data.customer_details.co_weight : '-'
+                        result = (data.customer_details.co_weight) ? data.customer_details.co_weight : 'N/A'
                         break
                     case 'shoe_size':
-                        result = (data.customer_details.co_shoe_size) ? data.customer_details.co_shoe_size : '-'
+                        result = (data.customer_details.co_shoe_size) ? data.customer_details.co_shoe_size : 'N/A'
                         break
                     case 'dumbbell':
-                        result = (data.customer_details.dumbbell) ? data.customer_details.dumbbell : '-'
+                        result = (data.customer_details.dumbbell) ? data.customer_details.dumbbell : 'N/A'
                         break
                     case 'personal':
                         if (data.customer_details.pa_address) {
@@ -189,7 +189,7 @@
                                 result += `, ${data.customer_details.personal_country}`
                             }
                         } else {
-                            result = '-'
+                            result = 'N/A'
                         }
                         break
                     case 'billing':
@@ -208,7 +208,7 @@
                                 result += `, ${data.customer_details.billing_country}`
                             }
                         } else {
-                            result = '-'
+                            result = 'N/A'
                         }
                         break
                 }
