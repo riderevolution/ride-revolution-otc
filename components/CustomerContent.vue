@@ -216,7 +216,7 @@
             <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
         </div>
         <div v-if="type == 'transactions' && loaded">
-            <table class="cms_table_accordion tbp">
+            <table class="cms_table_accordion">
                 <thead>
                     <tr>
                         <th>Reference Number</th>
@@ -232,7 +232,7 @@
                         <th>Remarks</th>
                     </tr>
                 </thead>
-                <tbody :class="`${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
+                <tbody :class="`tbp ${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
                     <tr class="parent alt">
                         <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
                         <td>{{ formatTransactionDate(data, true) }}</td>
@@ -248,9 +248,9 @@
                                 <div class="table_action_edit link" @click="toggleForm(data.id)" v-if="data.status == 'pending'">Pay Now</div>
                             </div>
                         </td>
-                        <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : '-' }}</td>
-                        <td>{{ (data.payment_method.note) ? data.payment_method.note : '-' }}</td>
-                        <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
+                        <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : 'N/A' }}</td>
+                        <td>{{ (data.payment_method.note) ? data.payment_method.note : 'N/A' }}</td>
+                        <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : 'N/A' ) }}</td>
                     </tr>
                     <tr>
                         <td class="pads" :colspan="rowCount">
@@ -263,6 +263,7 @@
                                             <th>Category</th>
                                             <th>Qty</th>
                                             <th>Price</th>
+                                            <th>Refund Type</th>
                                             <th>Remarks</th>
                                             <th v-if="data.status == 'paid'">Action</th>
                                         </tr>
@@ -277,7 +278,8 @@
                                                 <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
                                                 <p>PHP {{ totalCount((data.promo_code_used !== null) ? item.total : item.price_per_item * item.quantity) }}</p>
                                             </td>
-                                            <td>{{ (item.refund_remarks) ? item.refund_remarks : '-' }}</td>
+                                            <td>{{ (item.refund_remarks) ? item.refund_remarks : 'N/A' }}</td>
+                                            <td class="alt_2">{{ (item.refund_type) ? replacer(item.refund_type) : 'N/A' }}</td>
                                             <td v-if="data.status == 'paid'">
                                                 <div class="table_actions" v-if="item.type != 'store-credit'">
                                                     <div class="table_action_cancel link" @click="toggleRefund(data, item)" v-if="checkRefund(data, item)">Refund</div>
