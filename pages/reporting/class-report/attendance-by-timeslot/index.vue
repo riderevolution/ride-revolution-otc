@@ -12,8 +12,11 @@
                             <h2 class="header_subtitle">Average attendance per time slot.</h2>
                         </div>
                         <div class="actions">
+                            <div class="action_btn alternate" @click="getClasses()" v-if="res">
+                                Export
+                            </div>
                             <download-csv
-                                class="action_btn alternate margin"
+                                class="hidden me"
                                 :data="attendanceByTimeslotAttributes"
                                 :name="`attendance-by-timeslot-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
@@ -127,16 +130,130 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Studio': me.getStudio(),
-                        'Class Type': me.getClassType(),
-                        'Day': value.day,
-                        'Timeslot': value.time,
-                        'Average': value.average
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
+                        'Studio': me.studio.name,
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Booking ID': value.id,
+                        'Booking Status': value.status,
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Employee': (value.employee) ? value.employee.fullname : 'No User',
+                        'Schedule Name': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
+                        'Schedule Date': me.$moment(value.date).format('MMMM DD, YYYY'),
+                        'Start Time': value.schedule.start_time,
+                        'Instructor': me.getInstructorsInSchedule(value, 1),
+                        'Customer ID': value.user.id,
+                        'Full Name': value.user.fullname,
+                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Email Address': value.user.email,
+                        'Revenue': me.computeRevenue(value, value, 'revenue'),
+                        'Discount': me.computeRevenue(value, value, 'discount'),
+                        'Net Revenue': me.computeRevenue(value, value, 'net')
                     }))
                 ]
             }
         },
         methods: {
+            getClasses () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+                me.values = []
+                me.loader(true)
+                me.$axios.post(`api/reporting/classes/attendance-with-revenue?all=1`, formData).then(res => {
+                    if (res.data) {
+
+                        res.data.scheduled_dates.forEach((item, index) => {
+                            item.bookings.forEach((child, index) => {
+                                child.schedule = item.schedule
+                                child.parent = false
+                                me.values.push(child)
+                            })
+                        })
+                    }
+                }).catch((err) => {
+
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector('.me').click()
+                })
+            },
+            computeRevenue (data, booking, type) {
+                const me = this
+                let result = ''
+                let base_value = 0
+                if (booking.status != 'cancelled') {
+                    if (booking.user_package_count.payment_item.payment_method.method != 'comp') {
+                        switch (type) {
+                            case 'net':
+                                base_value = me.totalCount(booking.net_revenue)
+                                break
+                            case 'revenue':
+                                base_value = me.totalCount(booking.revenue)
+                                break
+                            case 'discount':
+                                base_value = me.totalCount(booking.discount)
+                                break
+                        }
+                        result = me.totalCount(base_value * parseInt(data.schedule.class_credits))
+                    } else {
+                        result = 0
+                    }
+                } else {
+                    result = 0
+                }
+
+                return result
+            },
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                switch (data.payment_item.payment_method.method) {
+                    case 'paypal':
+                        result = data.payment_item.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = data.payment_item.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = data.payment.payment_code
+                }
+
+                return result
+            },
+            getInstructorsInSchedule (data, export_status = null) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let ins_ctr = 0, instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
+                        }
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        if (export_status != null) {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        } else {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        }
+                    } else {
+                        if (export_status != null) {
+                            result = `${instructor.user.fullname}`
+                        } else {
+                            result = `${instructor.user.fullname}`
+                        }
+                    }
+                }
+
+                return result
+            },
             getStudio () {
                 const me = this
                 let result = ''
@@ -201,12 +318,6 @@
                 me.$axios.post(`api/reporting/classes/attendance-by-timeslot`, formData).then(res => {
                     setTimeout( () => {
                         me.res = res.data
-                        Object.keys(res.data).forEach((key) => {
-                            res.data[key].forEach((child, ckey) => {
-                                child.day = key
-                                me.values.push(child)
-                            })
-                        })
                         me.loaded = true
                     }, 500)
                 }).catch(err => {
