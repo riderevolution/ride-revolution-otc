@@ -78,7 +78,7 @@
                                 <th class="stick">Customer</th>
                                 <th class="stick">No. of Rides</th>
                                 <th class="stick">Customer Type</th>
-                                <th class="stick">Rewards</th>
+                                <th class="stick">Preferred Studio</th>
                                 <th class="stick">Age</th>
                                 <th class="stick">Profession</th>
                                 <th class="stick">Gender</th>
@@ -101,7 +101,7 @@
                                 </td>
                                 <td>{{ data.numberOfRides }}</td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
-                                <td>-</td>
+                                <td>{{ data.preferred_studio[0].name }}</td>
                                 <td>{{ -($moment(data.customer_details.co_birthdate).diff($moment(), 'years')) }}</td>
                                 <td>{{ data.customer_details.profession }}</td>
                                 <td>{{ (data.customer_details.co_sex == 'male' || data.customer_details.co_sex == 'M') ? 'Male' : 'Female' }}</td>
@@ -152,7 +152,7 @@
                     class_type_id: '',
                     timeslot: '',
                     instructor_id: '',
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'week').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
             }
@@ -163,14 +163,22 @@
                 return [
                     ...me.values.map((value, key) => ({
                         'Rank': key + 1,
+                        'Member ID': value.member_id,
                         'Customer': value.fullname,
-                        'No. of Rides': value.numberOfRides,
+                        'Preferred Studio': value.preferred_studio[0].name,
                         'Customer Type': value.customer_details.customer_type.name,
-                        'Rewards': '-',
-                        'Age': -(me.$moment(value.customer_details.co_birthdate).diff(me.$moment(), 'years')),
-                        'Profession': value.customer_details.profession,
-                        'Gender': (value.customer_details.co_sex == 'male' || value.customer_details.co_sex == 'M') ? 'Male' : 'Female',
-                        'City': value.customer_details.pa_city
+                        'Gender': me.getCustomerDetails(value, 'gender'),
+                        'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
+                        'Contact Number': me.getCustomerDetails(value, 'contact_number'),
+                        'Email Address': value.email,
+                        'Weight': me.getCustomerDetails(value, 'weight'),
+                        'Shoe Size': me.getCustomerDetails(value, 'shoe_size'),
+                        'Dumbbell': me.getCustomerDetails(value, 'dumbbell'),
+                        'Personal Address': me.getCustomerDetails(value, 'personal'),
+                        'Billing Address': me.getCustomerDetails(value, 'billing'),
+                        'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'First Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-',
+                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[value.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-'
                     }))
                 ]
             }
@@ -231,6 +239,12 @@
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data
+
+                            me.res.topRiders.data.forEach((item, key) => {
+                                item.preferred_studio.sort((a, b) => {
+                                    return parseInt(a.count) + parseInt(b.count)
+                                })
+                            })
 
                             me.$axios.get('api/packages/class-types?enabled=1').then(res => {
                                 if (res.data) {

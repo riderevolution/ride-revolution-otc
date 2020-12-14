@@ -10,7 +10,7 @@
                     <th>Seat Number</th>
                     <th>Signed In</th>
                     <th>Full Name</th>
-                    <th>Class Package</th>
+                    <th>Package Used</th>
                     <th>Customer Type</th>
                     <th>Email Address</th>
                     <th>Contact/Emergency Contact Number</th>
@@ -37,7 +37,7 @@
                         {{ data.user.email }}
                     </td>
                     <td>
-                        {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : data.user.customer_details.ec_contact_number }}
+                        {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number ? data.user.customer_details.ec_contact_number : 'N/A') }}
                     </td>
                     <td>
                         {{ (data.user.customer_details.dumbbells != null) ? data.user.customer_details.dumbbells : 'N/A' }}

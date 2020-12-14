@@ -16,7 +16,7 @@
                     <th>Start Time</th>
                     <th>Booking ID</th>
                     <th>Booking Status</th>
-                    <th>Class Package</th>
+                    <th>Package Used</th>
                 </tr>
             </thead>
             <tbody class="no_shadow">

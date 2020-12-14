@@ -80,8 +80,8 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('redemption_limit')">{{ properFormat(errors.first('redemption_limit')) }}</span></transition>
                                     </div>
                                     <div class="form_group">
-                                        <label for="per_customer_limit">Per Customer Limit <span>*</span></label>
-                                        <input type="text" name="per_customer_limit" autocomplete="off" class="default_text" v-validate="'required|numeric|min_value:1|max_value:100'">
+                                        <label for="per_customer_limit">Per Customer Limit</label>
+                                        <input type="text" name="per_customer_limit" autocomplete="off" class="default_text" v-validate="'numeric|min_value:1|max_value:99999'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('per_customer_limit')">{{ properFormat(errors.first('per_customer_limit')) }}</span></transition>
                                     </div>
                                 </div>
