@@ -142,7 +142,7 @@
                             <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in transactions.payments.data" v-if="transactions.payments.data.length > 0">
                                 <tr class="parent">
                                     <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
-                                    <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY hh:mm A') }}</td>
+                                    <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
                                     <td>{{ getPaymentStudio(data) }}</td>
                                     <td>{{ getPaymentDetails(data, 'qty') }}</td>
                                     <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
@@ -154,12 +154,12 @@
                                             <div class="action_status red ml" v-if="data.promo_code_used !== null">Discounted</div>
                                         </div>
                                     </td>
-                                    <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : '-' }}</td>
-                                    <td>{{ (data.payment_method.note) ? data.payment_method.note : '-' }}</td>
-                                    <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
+                                    <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : 'N/A' }}</td>
+                                    <td>{{ (data.payment_method.note) ? data.payment_method.note : 'N/A' }}</td>
+                                    <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : 'N/A' ) }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="pads" colspan="9">
+                                    <td class="pads" colspan="11">
                                         <div class="accordion_table">
                                             <table class="cms_table alt">
                                                 <thead>
@@ -201,7 +201,7 @@
                                                 </tbody>
                                                 <tbody class="no_results" v-else>
                                                     <tr>
-                                                        <td colspan="11">No Result(s) Found.</td>
+                                                        <td colspan="7">No Result(s) Found.</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -322,8 +322,8 @@
                 categories: [],
                 form: {
                     studio_id: 0,
-                    start_date: this.$moment('11-24-2020').format('YYYY-MM-DD'),
-                    end_date: this.$moment('11-24-2020').format('YYYY-MM-DD')
+                    start_date: this.$moment().subtract(1, 'day').format('YYYY-MM-DD'),
+                    end_date: this.$moment().format('YYYY-MM-DD')
                 }
             }
         },
@@ -346,9 +346,11 @@
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
                         'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
                         'Email Address': value.parent.user.email,
-                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : '-' ,
+                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' ,
                         'Employee': me.getPaymentDetails(value.parent, 'employee'),
-                        'Remarks': value.parent.remarks
+                        'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
+                        'Note': (value.parent.note) ? value.parent.note : 'N/A',
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
                     }))
                 ]
             },
@@ -474,7 +476,7 @@
                         if (payment.employee != null) {
                             result = `${payment.employee.first_name} ${payment.employee.last_name}`
                         } else {
-                            result = '-'
+                            result = 'No User'
                         }
                         break
                 }

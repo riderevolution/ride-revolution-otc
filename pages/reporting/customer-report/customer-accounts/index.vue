@@ -49,6 +49,7 @@
                                 <th class="stick">Customer</th>
                                 <th class="stick">Member ID</th>
                                 <th class="stick">Sign Up Date</th>
+                                <th class="stick">Preferred Studio</th>
                                 <th class="stick">First Class</th>
                                 <th class="stick">Last Class</th>
                                 <th class="stick">Contact Number</th>
@@ -71,6 +72,7 @@
                                 </td>
                                 <td>{{ data.member_id }}</td>
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
+                                <td>{{ data.preferred_studio[0].name }}</td>
                                 <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
                                 <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
                                 <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
@@ -122,7 +124,7 @@
                     ...me.users.map((value, key) => ({
                         'Member ID': value.member_id,
                         'Customer': value.fullname,
-                        'Preferred Studio': value.preferred_studio.name,
+                        'Preferred Studio': value.preferred_studio[0].name,
                         'Customer Type': value.customer_details.customer_type.name,
                         'Gender': me.getCustomerDetails(value, 'gender'),
                         'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
