@@ -76,9 +76,9 @@
                                 </td>
                                 <td>{{ data.member_id }}</td>
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
-                                <td>{{ data.customer_details.pa_city }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
+                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -118,7 +118,7 @@
                 res: [],
                 values: [],
                 form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
                 totalRiders: 0,
