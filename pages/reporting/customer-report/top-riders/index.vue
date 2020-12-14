@@ -103,7 +103,7 @@
                                 <td>{{ data.customer_details.customer_type.name }}</td>
                                 <td>{{ data.preferred_studio[0].name }}</td>
                                 <td>{{ -($moment(data.customer_details.co_birthdate).diff($moment(), 'years')) }}</td>
-                                <td>{{ data.customer_details.profession }}</td>
+                                <td>{{ (data.customer_details.profession) ? data.customer_details.profession : '-' }}</td>
                                 <td>{{ (data.customer_details.co_sex == 'male' || data.customer_details.co_sex == 'M') ? 'Male' : 'Female' }}</td>
                                 <td>{{ data.customer_details.pa_city }}</td>
                             </tr>
@@ -184,6 +184,68 @@
             }
         },
         methods: {
+            getCustomerDetails (data, type) {
+                const me = this
+                let result = ''
+
+                switch (type) {
+                    case 'gender':
+                        result = (data.customer_details.co_sex) ? (data.customer_details.co_sex == 'F' ? 'Female' : 'Male') : '-'
+                        break
+                    case 'contact_number':
+                        result = (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : '-'
+                        break
+                    case 'weight':
+                        result = (data.customer_details.co_weight) ? data.customer_details.co_weight : '-'
+                        break
+                    case 'shoe_size':
+                        result = (data.customer_details.co_shoe_size) ? data.customer_details.co_shoe_size : '-'
+                        break
+                    case 'dumbbell':
+                        result = (data.customer_details.dumbbell) ? data.customer_details.dumbbell : '-'
+                        break
+                    case 'personal':
+                        if (data.customer_details.pa_address) {
+                            result += data.customer_details.pa_address
+                            if (data.customer_details.pa_address_2) {
+                                result += `, ${data.customer_details.pa_address_2}`
+                            }
+                            if (data.customer_details.pa_zip_code) {
+                                result += `, ${data.customer_details.pa_zip_code}`
+                            }
+                            if (data.customer_details.personal_state) {
+                                result += `, ${data.customer_details.personal_state}`
+                            }
+                            if (data.customer_details.personal_country) {
+                                result += `, ${data.customer_details.personal_country}`
+                            }
+                        } else {
+                            result = '-'
+                        }
+                        break
+                    case 'billing':
+                        if (data.customer_details.ba_address) {
+                            result += data.customer_details.ba_address
+                            if (data.customer_details.ba_address_2) {
+                                result += `, ${data.customer_details.ba_address_2}`
+                            }
+                            if (data.customer_details.ba_zip_code) {
+                                result += `, ${data.customer_details.ba_zip_code}`
+                            }
+                            if (data.customer_details.billing_state) {
+                                result += `, ${data.customer_details.billing_state}`
+                            }
+                            if (data.customer_details.billing_country) {
+                                result += `, ${data.customer_details.billing_country}`
+                            }
+                        } else {
+                            result = '-'
+                        }
+                        break
+                }
+
+                return result
+            },
             getCustomers () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
