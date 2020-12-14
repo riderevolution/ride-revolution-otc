@@ -60,7 +60,7 @@
                                 <td>-</td>
                                 <td>Php {{ totalCount(data.totalBroughtStoreCredits) }}</td>
                                 <td>Php {{ totalCount(data.store_credits.amount) }}</td>
-                                <td>Php {{ totalCount(data.store_credits.amount - data.totalBroughtStoreCredits) }}</td>
+                                <td>Php {{ -totalCount(data.store_credits.amount - data.totalBroughtStoreCredits) }}</td>
                                 <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : '-' }}</td>
                                 <td>{{ data.email }}</td>
                                 <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : '-' }}</td>
