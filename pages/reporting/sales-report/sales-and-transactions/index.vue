@@ -11,9 +11,9 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <a :href="`/prints/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="(tabStatus != 'summary' && tabStatus != 'daily') && user.staff_details.role_id == 1">Print</a>
+                            <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="(tabStatus != 'summary' && tabStatus != 'daily') && user.staff_details.role_id == 1">Print</a>
 
-                            <a href="#" target="_blank" class="action_btn alternate" v-if="tabStatus == 'daily'">Print</a>
+                            <a :href="`/print/reporting/sales/sales-and-transactions/daily-transactions?status=daily&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate" v-if="tabStatus == 'daily'">Print</a>
 
                             <download-csv
                                 v-if="(tabStatus != 'summary' && tabStatus != 'daily') && user.staff_details.role_id == 1"
@@ -139,7 +139,7 @@
                                     <th>Remarks</th>
                                 </tr>
                             </thead>
-                            <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in transactions.payments.data" v-if="transactions.payments.data.length > 0">
+                            <tbody :class="`tbp ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in transactions.payments.data" v-if="transactions.payments.data.length > 0">
                                 <tr class="parent">
                                     <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
                                     <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
@@ -191,11 +191,11 @@
                                                                         {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
                                                                     </div>
                                                                 </div>
-                                                                <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.first_name }} {{ data.user.last_name }}</div>
+                                                                <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : '-' }}
+                                                            {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : 'N/A' }}
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -215,6 +215,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <pagination :apiRoute="transactions.payments.path" :current="transactions.payments.current_page" :last="transactions.payments.last_page" v-if="transactions.payments.data.length > 0" />
                     </div>
                     <div v-else>
                         <table class="cms_table alt">
@@ -273,7 +274,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <pagination :apiRoute="transactions.payments.path" :current="transactions.payments.current_page" :last="transactions.payments.last_page" v-if="transactions.payments.data.length > 0" />
+                        <!-- <pagination :apiRoute="transactions.payments.path" :current="transactions.payments.current_page" :last="transactions.payments.last_page" v-if="transactions.payments.data.length > 0" /> -->
                     </div>
                 </section>
             </div>
@@ -286,9 +287,11 @@
 
 <script>
     import Foot from '../../../../components/Foot'
+    import Pagination from '~/components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const sales_summary_values = [], daily_transaction_values = []
@@ -299,6 +302,8 @@
                     }
                 },
                 name: 'Sales & Transactions',
+                filter: true,
+
                 filtered: false,
                 access: true,
                 loaded: false,
@@ -332,13 +337,13 @@
                 const me = this
                 return [
                     ...me.daily_transaction_values.map((value, key) => ({
+                        'Studio': me.getPaymentStudio(value.parent),
                         'Payment ID': value.parent.id,
                         'Reference Number': me.getPaymentCode(value.parent),
                         'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
-                        'Studio': me.getPaymentStudio(value.parent),
+                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
                         'Payment Status': value.parent.status,
                         'Payment Method': me.replacer(value.parent.payment_method.method),
-                        'Quantity': value.quantity,
                         'Price': `Php ${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
                         'Payment Item Id': value.id,
                         'SKU ID': me.getPaymentItem(value, 'sku'),
@@ -350,7 +355,9 @@
                         'Employee': me.getPaymentDetails(value.parent, 'employee'),
                         'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
                         'Note': (value.parent.note) ? value.parent.note : 'N/A',
-                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
+                        'Quantity': value.quantity,
+                        'Discount': `Php ${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
                     }))
                 ]
             },
@@ -377,6 +384,10 @@
             }
         },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             getDailyTransactions () {
                 const me = this
                 me.loader (true)
@@ -413,7 +424,7 @@
                             result = payment_item.product_variant.sku_id
                             break
                         case 'custom-gift-card':
-                            result = payment_item.gift_card.sku_id
+                            result = payment_item.gift_card.card_code
                             break
                         case 'physical-gift-card':
                             result = payment_item.gift_card.sku_id
@@ -584,7 +595,7 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
                         elements.forEach((element, index) => {
                             element.querySelector('.accordion_table').style.height = 0
                         })
@@ -630,7 +641,7 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
                         elements.forEach((element, index) => {
                             element.querySelector('.accordion_table').style.height = 0
                         })

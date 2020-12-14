@@ -130,8 +130,24 @@ table
         margin-bottom: 0
 
 .print_table
+    .inline
+        display: flex
+        flex-flow: row wrap
+        justify-content: space-between
+        margin-bottom: 20px
+    .logo
+        display: flex
+        flex-flow: row wrap
+        align-items: center
+        justify-content: center
+        .logo_title
+            neutra_text(16px)
+            line-height: 1.5
+            color: $black
+            text-transform: uppercase
+            letter-spacing: 2px
+            padding-left: 10px
     .text
-        margin: 0 0 20px
         h2
             neutra_text(26px)
             color: $black
@@ -152,6 +168,14 @@ table
                 td
                     .accordion_table
                         height: 100%
+    .signature
+        margin-top: 60px
+        text-align: center
+        sf_pro_medium(18px)
+        .label
+            display: inline-block
+            padding: 20px 10px 0
+            border-top: 2px solid $black
 
 .error_page
     &.alternate

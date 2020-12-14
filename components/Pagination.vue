@@ -77,7 +77,11 @@
                             if (me.$route.params.slug == 'transactions') {
                                 me.$parent.res = res.data.customer.payments
                             } else {
-                                me.$parent.res = res.data
+                                if (me.$parent.tabStatus == 'daily') {
+                                    me.$parent.transactions = res.data
+                                } else {
+                                    me.$parent.res = res.data
+                                }
                             }
                             if ((me.incrementPage + 3) <= me.last) {
                                 if (current == me.incrementPage) {
@@ -146,7 +150,11 @@
                         if (me.$route.params.slug == 'transactions') {
                             me.$parent.res = res.data.customer.payments
                         } else {
-                            me.$parent.res = res.data
+                            if (me.$parent.tabStatus == 'daily') {
+                                me.$parent.transactions = res.data
+                            } else {
+                                me.$parent.res = res.data
+                            }
                         }
                     }).catch(err => {
                         me.$store.state.errorList = err.response.data.errors
@@ -192,7 +200,11 @@
                             if (me.$route.params.slug == 'transactions') {
                                 me.$parent.res = res.data.customer.payments
                             } else {
-                                me.$parent.res = res.data
+                                if (me.$parent.tabStatus == 'daily') {
+                                    me.$parent.transactions = res.data
+                                } else {
+                                    me.$parent.res = res.data
+                                }
                             }
                             if (current == me.iteration) {
                                 me.iteration = me.iteration - 3
