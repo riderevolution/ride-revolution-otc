@@ -203,7 +203,7 @@
 
                             me.loaded = true
                             setTimeout( () => {
-                                // window.print()
+                                window.print()
                             }, 1000)
                         }, 500)
                     }
@@ -216,9 +216,9 @@
         mounted () {
 			const me = this
             me.initial()
-            // window.onafterprint = function(){
-            //     window.close()
-            // }
+            window.onafterprint = function(){
+                window.close()
+            }
 		}
     }
 </script>
