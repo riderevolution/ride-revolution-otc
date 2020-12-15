@@ -104,7 +104,7 @@
                                                     <th>Comp</th>
                                                     <th>Comp Value</th>
                                                     <th>Discount</th>
-                                                    <th>Discount</th>
+                                                    <th>Tax</th>
                                                     <th>Income</th>
                                                 </tr>
                                             </thead>
@@ -175,17 +175,27 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        // 'Studio': this.getStudio(),
-                        'Payment Status': me.payment_status,
-                        'Class Package': value.name,
-                        'Package Type': (value.package_type) ? value.package_type.name : '-' ,
-                        'Sold': (value.sold) ? value.sold : 0,
-                        'Returned': (value.returned) ? value.returned : 0,
-                        'Comp': (value.comp) ? value.comp : 0,
-                        'Comp Value': `Php ${(value.total_comp) ? value.total_comp : 0}`,
-                        'Discount': `Php ${(value.total_discount) ? value.total_discount : 0}`,
-                        'Taxes': `Php ${(value.total_tax) ? value.total_tax : 0}`,
-                        'Total Income': `Php ${(value.total_income) ? value.total_income : 0}`
+                        'Studio': me.getPaymentStudio(value.payment),
+                        'Customer': `${value.payment.user.first_name} ${value.payment.user.last_name}`,
+                        'Email Address': value.payment.user.email,
+                        'Contact Number': (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' ,
+                        'Payment ID': value.payment.id,
+                        'Reference Number': me.getPaymentCode(value.payment),
+                        'Transaction Date': me.$moment(value.payment.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Promo Code': (value.payment.promo_code_used != null) ? value.payment.promo_code_used : 'No Promo Code Used',
+                        'Payment Status': value.payment.status,
+                        'Payment Method': me.replacer(value.payment.payment_method.method),
+                        'Payment Item Id': value.id,
+                        'SKU ID': me.getPaymentItem(value, 'sku'),
+                        'Item': me.getPaymentItem(value, 'name'),
+                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                        'Quantity': value.quantity,
+                        'Discount': `${(value.payment.promo_code_used != null) ? value.payment.discount.discount : 0}`,
+                        'Price': `${(value.payment.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Employee': me.getPaymentDetails(value.payment, 'employee'),
+                        'Comp Reason': (value.payment.comp_reason) ? value.payment.comp_reason : 'N/A',
+                        'Note': (value.payment.note) ? value.payment.note : 'N/A',
+                        'Remarks': (value.payment.remarks) ? value.payment.remarks : 'N/A'
                     }))
                 ]
             }
@@ -201,14 +211,11 @@
                 me.values = []
 
                 me.loader(true)
-                me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1`, formData).then(res => {
+                me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1&export=1`, formData).then(res => {
                     if (res.data) {
-                        res.data.result.forEach((item, key) => {
-                            item.values.forEach((value, key) => {
-                                me.values.push(value)
-                            })
+                        res.data.payment_items.forEach((data, key) => {
+                            me.values.push(data)
                         })
-                        me.values.push(res.data.total)
                     }
                 }).catch((err) => {
 
@@ -217,20 +224,119 @@
                     document.querySelector('.me').click()
                 })
             },
-            // getStudio () {
-            //     const me = this
-            //     let result = ''
-            //     if (me.form.studio_id != '') {
-            //         me.studios.forEach((studio, index) => {
-            //             if (studio.id == me.form.studio_id) {
-            //                 result = studio.name
-            //             }
-            //         })
-            //     } else {
-            //         result = 'All Studios'
-            //     }
-            //     return result
-            // },
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.card_code
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                payment.payment_items.forEach((payment_item, key) => {
+                    switch (type) {
+                        case 'qty':
+                            result += payment_item.quantity
+                            break
+                    }
+                })
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        let temp_price = 0
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                temp_price += parseInt(payment_item.total)
+                            } else {
+                                temp_price += parseInt(payment_item.price_per_item)
+                            }
+                        })
+                        result = `Php ${me.totalCount(temp_price)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = 'No User'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        result = payment.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
+                }
+
+                return result
+            },
             toggleAccordion (event, key) {
                 const me = this
                 const target = event.target
@@ -288,7 +394,6 @@
                         setTimeout( () => {
                             me.res = res.data
                             me.total = res.data.total
-                            me.values.push(res.data.total)
 
                             // me.$axios.get('api/studios', {
                             //     headers: {
