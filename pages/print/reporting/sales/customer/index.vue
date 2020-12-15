@@ -16,13 +16,17 @@
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th class="sticky">Full Name</th>
-                    <th class="sticky">Type</th>
-                    <th class="sticky">Class Package Total</th>
-                    <th class="sticky">Merchandise Total</th>
-                    <th class="sticky">Email</th>
-                    <th class="sticky">Contact Number</th>
-                    <th class="sticky">City</th>
+                    <th>Full Name</th>
+                    <th>Type</th>
+                    <th>Email</th>
+                    <th>Contact Number</th>
+                    <th>City</th>
+                    <th>Class Package Total</th>
+                    <th>Gift Card Total</th>
+                    <th>Store Credits Total</th>
+                    <th>Merchandise Total</th>
+                    <th>Total Discount</th>
+                    <th>Total Income</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
@@ -31,11 +35,15 @@
                         <div class="table_data_link">{{ `${data.first_name} ${data.last_name}` }}</div>
                     </td>
                     <td>{{ data.customer_details.customer_type.name }}</td>
-                    <td>Php {{ totalCount(data.total_class_package) }}</td>
-                    <td>Php {{ totalCount(data.total_merchandise) }}</td>
                     <td>{{ data.email }}</td>
-                    <td>{{ (data.customer_details.co_contact_number) ? data.customer_details.co_contact_number : '-' }}</td>
-                    <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : '-' }}</td>
+                    <td>{{ (data.customer_details.co_contact_number) ? data.customer_details.co_contact_number : 'N/A' }}</td>
+                    <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : 'N/A' }}</td>
+                    <td>Php {{ totalCount(data.total_class_package) }}</td>
+                    <td>Php {{ totalCount(data.total_gift_card) }}</td>
+                    <td>Php {{ totalCount(data.total_store_credit) }}</td>
+                    <td>Php {{ totalCount(data.total_merchandise) }}</td>
+                    <td>Php {{ totalCount(data.total_discount) }}</td>
+                    <td>Php {{ totalCount(data.total_income) }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
