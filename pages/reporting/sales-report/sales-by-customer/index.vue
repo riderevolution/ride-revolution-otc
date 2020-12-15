@@ -66,11 +66,15 @@
                             <tr>
                                 <th class="sticky">Full Name</th>
                                 <th class="sticky">Type</th>
-                                <th class="sticky">Class Package Total</th>
-                                <th class="sticky">Merchandise Total</th>
                                 <th class="sticky">Email</th>
                                 <th class="sticky">Contact Number</th>
                                 <th class="sticky">City</th>
+                                <th class="sticky">Class Package Total</th>
+                                <th class="sticky">Gift Card Total</th>
+                                <th class="sticky">Store Credits Total</th>
+                                <th class="sticky">Merchandise Total</th>
+                                <th class="sticky">Total Discount</th>
+                                <th class="sticky">Total Income</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.result.data.length > 0">
@@ -87,11 +91,15 @@
                                     </div>
                                 </td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
-                                <td>Php {{ totalCount(data.total_class_package) }}</td>
-                                <td>Php {{ totalCount(data.total_merchandise) }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details.co_contact_number) ? data.customer_details.co_contact_number : '-' }}</td>
-                                <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : '-' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number) ? data.customer_details.co_contact_number : 'N/A' }}</td>
+                                <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : 'N/A' }}</td>
+                                <td>Php {{ totalCount(data.total_class_package) }}</td>
+                                <td>Php {{ totalCount(data.total_gift_card) }}</td>
+                                <td>Php {{ totalCount(data.total_store_credit) }}</td>
+                                <td>Php {{ totalCount(data.total_merchandise) }}</td>
+                                <td>Php {{ totalCount(data.total_discount) }}</td>
+                                <td>Php {{ totalCount(data.total_income) }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -143,18 +151,145 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Full Name': `${value.first_name} ${value.last_name}`,
-                        'Customer Type': value.customer_details.customer_type.name,
-                        'Class Package Total': `Php ${value.total_class_package}`,
-                        'Merchandise Total': `Php ${value.total_merchandise}`,
-                        'Email': value.email,
-                        'Contact Number': (value.customer_details.co_contact_number) ? value.customer_details.co_contact_number : '-',
-                        'City': (value.customer_details.pa_city) ? value.customer_details.pa_city : '-'
+                        'Studio': me.getPaymentStudio(value.parent),
+                        'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
+                        'Email Address': value.parent.user.email,
+                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' ,
+                        'Payment ID': value.parent.id,
+                        'Reference Number': me.getPaymentCode(value.parent),
+                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
+                        'Payment Status': value.parent.status,
+                        'Payment Method': me.replacer(value.parent.payment_method.method),
+                        'Payment Item Id': value.id,
+                        'SKU ID': me.getPaymentItem(value, 'sku'),
+                        'Item': me.getPaymentItem(value, 'name'),
+                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                        'Quantity': value.quantity,
+                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
+                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
+                        'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
+                        'Note': (value.parent.note) ? value.parent.note : 'N/A',
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
                     }))
                 ]
             }
         },
         methods: {
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.card_code
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                payment.payment_items.forEach((payment_item, key) => {
+                    switch (type) {
+                        case 'qty':
+                            result += payment_item.quantity
+                            break
+                    }
+                })
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        let temp_price = 0
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                temp_price += parseInt(payment_item.total)
+                            } else {
+                                temp_price += parseInt(payment_item.price_per_item)
+                            }
+                        })
+                        result = `Php ${me.totalCount(temp_price)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = 'No User'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        result = payment.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
+                }
+
+                return result
+            },
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
@@ -163,8 +298,13 @@
                 me.loader(true)
                 me.$axios.post(`api/reporting/sales/sales-by-customer?all=1`, formData).then(res => {
                     if (res.data) {
-                        res.data.result.forEach((item, key) => {
-                            me.values.push(item)
+                        res.data.result.forEach((data, key) => {
+                            data.payments.forEach((parent, key) => {
+                                parent.payment_items.forEach((child, key) => {
+                                    child.parent = parent
+                                    me.values.push(child)
+                                })
+                            })
                         })
                     }
                 }).catch((err) => {
