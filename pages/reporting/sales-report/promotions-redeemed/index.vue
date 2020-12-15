@@ -34,8 +34,9 @@
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
-                                    <option value="" selected>All Studios</option>
+                                    <option value="0" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                    <option value="os">Website/Online Sales</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
@@ -78,10 +79,17 @@
                         </thead>
                         <tbody v-if="res.result.data.length > 0">
                             <tr v-for="(data, key) in res.result.data" :key="key">
-                                <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
+                                <td>{{ $moment(data.created_at).format('MMM DD, YYYY hh:mm A') }}</td>
                                 <td>
-                                    <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</div>
-                                    <div v-else>N/A</div>
+                                    <div class="thumb">
+                                        <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
+                                    </div>
                                 </td>
                                 <td>{{ data.promo.name }}</td>
                                 <td>{{ data.promo.promo_code }}</td>
@@ -131,7 +139,7 @@
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
-                    studio_id: '',
+                    studio_id: 0,
                     promo_id: '0'
                 }
             }
@@ -141,20 +149,145 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': me.getStudio(),
-                        'Date Redeemed': me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'Full Name': (value.user != null) ? `${value.user.first_name} ${value.user.last_name}` : 'N/A',
-                        'Promo': value.promo.name,
-                        'Promo Code': value.promo.promo_code,
-                        'Discount': (value.promo.discount_type == 'percent') ? `${value.promo.discount_percent}%` : `Php ${value.promo.discount_flat_rate} off`,
-                        'Total Discount': me.totalCount(value.total_discount),
-                        'Remaining': value.remaining,
-                        'Status': (parseInt(me.$moment(value.promo.end_Date).diff(me.$moment())) < 0) ? 'Inactive' : 'Active'
+                        'Studio': me.getPaymentStudio(value.parent),
+                        'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
+                        'Email Address': value.parent.user.email,
+                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' ,
+                        'Payment ID': value.parent.id,
+                        'Reference Number': me.getPaymentCode(value.parent),
+                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
+                        'Payment Status': value.parent.status,
+                        'Payment Method': me.replacer(value.parent.payment_method.method),
+                        'Payment Item Id': value.id,
+                        'SKU ID': me.getPaymentItem(value, 'sku'),
+                        'Item': me.getPaymentItem(value, 'name'),
+                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                        'Quantity': value.quantity,
+                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
+                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
+                        'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
+                        'Note': (value.parent.note) ? value.parent.note : 'N/A',
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
                     }))
                 ]
             }
         },
         methods: {
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.card_code
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                payment.payment_items.forEach((payment_item, key) => {
+                    switch (type) {
+                        case 'qty':
+                            result += payment_item.quantity
+                            break
+                    }
+                })
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        let temp_price = 0
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                temp_price += parseInt(payment_item.total)
+                            } else {
+                                temp_price += parseInt(payment_item.price_per_item)
+                            }
+                        })
+                        result = `Php ${me.totalCount(temp_price)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = 'No User'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        result = payment.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
+                }
+
+                return result
+            },
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
@@ -162,8 +295,11 @@
                 me.loader(true)
                 me.$axios.post(`api/reporting/sales/promotions-redeemed?all=1`, formData).then(res => {
                     if (res.data) {
-                        res.data.result.forEach((item, key) => {
-                            me.values.push(item)
+                        res.data.result.forEach((parent, key) => {
+                            parent.payment_items.forEach((child, key) => {
+                                child.parent = parent
+                                me.values.push(child)
+                            })
                         })
                     }
                 }).catch((err) => {
