@@ -461,7 +461,7 @@
                             classNode.querySelectorAll('.attendance').forEach((element, index) => {
                                 element.addEventListener('click', function(e) {
                                     e.preventDefault()
-                                    me.$router.push(this.getAttribute('href'))
+                                    window.open(`${this.getAttribute('href')}`, '_blank')
                                 })
                             })
                         }

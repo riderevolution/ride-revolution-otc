@@ -171,7 +171,7 @@
             },
             toggleInnerReport (type, path, id) {
                 const me = this
-                me.$router.push(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                window.open(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
             },
             toggleTab (value) {
                 const me = this
