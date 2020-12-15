@@ -65,7 +65,7 @@
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res.result.data" :key="key" v-if="res.result.data.length > 0">
-                                <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY hh:mm A') }}</td>
+                                <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
                                 <td>{{ getPaymentCode(data.payment) }}</td>
                                 <td>
                                     <div class="thumb">
@@ -139,21 +139,128 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Class Package': me.package.name,
-                        'Date of Purchase': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                        'Studio': me.getPaymentStudio(value.payment),
+                        'Customer': `${value.payment.user.first_name} ${value.payment.user.last_name}`,
+                        'Email Address': value.payment.user.email,
+                        'Contact Number': (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' ,
+                        'Payment ID': value.payment.id,
                         'Reference Number': me.getPaymentCode(value.payment),
-                        'Full Name': (value.payment != null) ? `${value.payment.user.fullname}` : '-',
-                        'Qty': value.quantity,
-                        'Payment': (value.payment) ? value.payment.payment_method.method : '-',
-                        'Comp Reason': (value.payment) ? (value.payment.payment_method.method == 'comp' ? value.payment.payment_method.comp_reason : 'N/A') : '-',
-                        'Comp Value': `Php ${(value.total_comp) ? value.total_comp : 0}`,
-                        'Discount': `Php ${(value.total_discount) ? value.total_discount : 0}`,
-                        'Total Income': `Php ${(value.total_income) ? value.total_income : 0}`
+                        'Transaction Date': me.$moment(value.payment.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Promo Code': (value.payment.promo_code_used != null) ? value.payment.promo_code_used : 'No Promo Code Used',
+                        'Payment Status': value.payment.status,
+                        'Payment Method': me.replacer(value.payment.payment_method.method),
+                        'Payment Item Id': value.id,
+                        'SKU ID': me.getPaymentItem(value, 'sku'),
+                        'Item': me.getPaymentItem(value, 'name'),
+                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                        'Quantity': value.quantity,
+                        'Discount': `${(value.payment.promo_code_used != null) ? value.payment.discount.discount : 0}`,
+                        'Price': `${(value.payment.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Employee': me.getPaymentDetails(value.payment, 'employee'),
+                        'Comp Reason': (value.payment.comp_reason) ? value.payment.comp_reason : 'N/A',
+                        'Note': (value.payment.note) ? value.payment.note : 'N/A',
+                        'Remarks': (value.payment.remarks) ? value.payment.remarks : 'N/A'
                     }))
                 ]
             }
         },
         methods: {
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.card_code
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                payment.payment_items.forEach((payment_item, key) => {
+                    switch (type) {
+                        case 'qty':
+                            result += payment_item.quantity
+                            break
+                    }
+                })
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        let temp_price = 0
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                temp_price += parseInt(payment_item.total)
+                            } else {
+                                temp_price += parseInt(payment_item.price_per_item)
+                            }
+                        })
+                        result = `Php ${me.totalCount(temp_price)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = 'No User'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
             getPaymentCode (payment) {
                 const me = this
                 let result = ''
@@ -182,7 +289,6 @@
                         res.data.result.forEach((item, key) => {
                             me.values.push(item)
                         })
-                        me.values.push(res.data.total)
                     }
                 }).catch((err) => {
 
