@@ -1,14 +1,24 @@
 <template>
     <div class="print_table" v-if="loaded">
-        <div class="text">
-            <h2>Customer Retention</h2>
-            <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
+        <div class="inline">
+            <div class="logo">
+                <img src="/logo.png" width="65px" />
+                <div class="logo_title">
+                    Ride <br/>
+                    Revolution
+                </div>
+            </div>
+            <div class="text">
+                <h2>Customer Retention</h2>
+                <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
+            </div>
         </div>
         <table class="cms_table print">
             <thead>
                 <tr>
                     <th>Customer</th>
-                    <th>Sign Up</th>
+                    <th>Member ID</th>
+                    <th>Sign Up Date</th>
                     <th>First Class</th>
                     <th>Last Class</th>
                     <th>City</th>
@@ -19,10 +29,11 @@
                     <td>
                         <div class="table_data_link" >{{ data.fullname }}</div>
                     </td>
+                    <td>{{ data.member_id }}</td>
                     <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
-                    <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
-                    <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : '-' }}</td>
-                    <td>{{ data.customer_details.pa_city }}</td>
+                    <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
+                    <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
+                    <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
@@ -31,6 +42,9 @@
                 </tr>
             </tbody>
         </table>
+        <div class="signature">
+            <div class="label">SIGNATURE OVER PRINTED NAME</div>
+        </div>
     </div>
 </template>
 

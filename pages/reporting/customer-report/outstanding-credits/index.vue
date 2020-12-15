@@ -61,9 +61,9 @@
                                 <td>Php {{ totalCount(data.totalBroughtStoreCredits) }}</td>
                                 <td>Php {{ totalCount(data.store_credits.amount) }}</td>
                                 <td>Php {{ -totalCount(data.store_credits.amount - data.totalBroughtStoreCredits) }}</td>
-                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : '-' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : '-' }}</td>
+                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -110,7 +110,7 @@
                 return [
                     ...me.values.map((value, key) => ({
                         'Customer': value.fullname,
-                        'Rewards': '-',
+                        'Rewards': 'N/A',
                         'Store Credits Bought': me.totalCount(value.totalBroughtStoreCredits),
                         'Store Credits Remaining': me.totalCount(value.store_credits.amount),
                         'Spent': me.totalCount(value.totalBroughtStoreCredits - value.store_credits.amount),

@@ -1,18 +1,28 @@
 <template>
     <div class="print_table" v-if="loaded">
-        <div class="text">
-            <h2>Outstanding Store Credits</h2>
+        <div class="inline">
+            <div class="logo">
+                <img src="/logo.png" width="65px" />
+                <div class="logo_title">
+                    Ride <br/>
+                    Revolution
+                </div>
+            </div>
+            <div class="text">
+                <h2>Non Returning Customers</h2>
+            </div>
         </div>
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th class="stick">Customer</th>
-                    <th class="stick">Last Package Used</th>
-                    <th class="stick">Date Purchased/Date Activated</th>
-                    <th class="stick">Last Class</th>
-                    <th class="stick">Contact Number</th>
-                    <th class="stick">Email Address</th>
-                    <th class="stick">City</th>
+                    <th>Customer</th>
+                    <th>Member ID</th>
+                    <th>Last Package Used</th>
+                    <th>Date Purchased/Date Activated</th>
+                    <th>Last Class</th>
+                    <th>Contact Number</th>
+                    <th>Email Address</th>
+                    <th>City</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
@@ -20,12 +30,13 @@
                     <td>
                         <div class="table_data_link">{{ data.fullname }}</div>
                     </td>
+                    <td>{{ data.member_id }}</td>
                     <td>{{ data.userPackageCounts[0].class_package.name }}</td>
-                    <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment().format('MMMM DD, YYYY') : 'N/A' }}</td>
-                    <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMMM DD, YYYY') : 'N/A' }}</td>
-                    <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
+                    <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment(data.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : 'Not Activated' }}</td>
+                    <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMM DD, YYYY') : 'No Class Yet' }}</td>
+                    <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : 'No Class Yet' }}</td>
                     <td>{{ data.email }}</td>
-                    <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : 'N/A' }}</td>
+                    <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
@@ -34,6 +45,9 @@
                 </tr>
             </tbody>
         </table>
+        <div class="signature">
+            <div class="label">SIGNATURE OVER PRINTED NAME</div>
+        </div>
     </div>
 </template>
 

@@ -1,9 +1,18 @@
 <template>
     <div class="print_table" v-if="loaded">
-        <div class="text">
-            <h2>Outstanding Store Credits</h2>
+        <div class="inline">
+            <div class="logo">
+                <img src="/logo.png" width="65px" />
+                <div class="logo_title">
+                    Ride <br/>
+                    Revolution
+                </div>
+            </div>
+            <div class="text">
+                <h2>Outstanding Store Credits</h2>
+            </div>
+            <div class="total">Total Store Credits: Php {{ totalCount(total) }}</div>
         </div>
-        <div class="total">Total Store Credits: Php {{ totalCount(total) }}</div>
         <table class="cms_table print">
             <thead>
                 <tr>
@@ -20,23 +29,15 @@
             <tbody v-if="res.length > 0">
                 <tr v-for="(data, key) in res" :key="key">
                     <td>
-                        <div class="thumb">
-                            <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
-                            <div class="table_image_default" v-else>
-                                <div class="overlay">
-                                    {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
-                                </div>
-                            </div>
-                            <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
-                        </div>
+                        <div class="table_data_link">{{ data.fullname }}</div>
                     </td>
                     <td>Black</td>
                     <td>Php {{ totalCount(data.totalBroughtStoreCredits) }}</td>
                     <td>Php {{ totalCount(data.store_credits.amount) }}</td>
                     <td>Php {{ totalCount(data.totalBroughtStoreCredits - data.store_credits.amount) }}</td>
-                    <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : '-' }}</td>
+                    <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
                     <td>{{ data.email }}</td>
-                    <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : '-' }}</td>
+                    <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
@@ -45,6 +46,9 @@
                 </tr>
             </tbody>
         </table>
+        <div class="signature">
+            <div class="label">SIGNATURE OVER PRINTED NAME</div>
+        </div>
     </div>
 </template>
 

@@ -1,8 +1,17 @@
 <template>
     <div class="print_table" v-if="loaded">
-        <div class="text">
-            <h2>Sales by Payment Type - {{ studio.name }} ({{ $route.query.payment_status }})</h2>
-            <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
+        <div class="inline">
+            <div class="logo">
+                <img src="/logo.png" width="65px" />
+                <div class="logo_title">
+                    Ride <br/>
+                    Revolution
+                </div>
+            </div>
+            <div class="text">
+                <h2>Sales by Payment Type - {{ studio.name }} ({{ $route.query.payment_status }})</h2>
+                <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
+            </div>
         </div>
         <table class="cms_table print">
             <thead>
@@ -40,6 +49,9 @@
                 </tr>
             </tbody>
         </table>
+        <div class="signature">
+            <div class="label">SIGNATURE OVER PRINTED NAME</div>
+        </div>
     </div>
 </template>
 

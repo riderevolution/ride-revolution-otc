@@ -1,10 +1,19 @@
 <template>
     <div class="print_table" v-if="loaded">
-        <div class="text">
-            <h2>Promotions Redeemed - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ ($route.query.promo_id != 0) ? promo.name : 'All Promotions' }})</h2>
-            <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
+        <div class="inline">
+            <div class="logo">
+                <img src="/logo.png" width="65px" />
+                <div class="logo_title">
+                    Ride <br/>
+                    Revolution
+                </div>
+            </div>
+            <div class="text">
+                <h2>Promotions Redeemed - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ ($route.query.promo_id != 0) ? promo.name : 'All Promotions' }})</h2>
+                <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
+            </div>
+            <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
         </div>
-        <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
         <table class="cms_table print">
             <thead>
                 <tr>
@@ -39,6 +48,9 @@
                 </tr>
             </tbody>
         </table>
+        <div class="signature">
+            <div class="label">SIGNATURE OVER PRINTED NAME</div>
+        </div>
     </div>
 </template>
 

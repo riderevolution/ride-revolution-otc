@@ -1,8 +1,17 @@
 <template>
     <div class="print_table" v-if="loaded">
-        <div class="text">
-            <h2>Top Riders</h2>
-            <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
+        <div class="inline">
+            <div class="logo">
+                <img src="/logo.png" width="65px" />
+                <div class="logo_title">
+                    Ride <br/>
+                    Revolution
+                </div>
+            </div>
+            <div class="text">
+                <h2>Top Riders</h2>
+                <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
+            </div>
         </div>
         <table class="cms_table print">
             <thead>
@@ -28,7 +37,7 @@
                     <td>{{ data.customer_details.customer_type.name }}</td>
                     <td>-</td>
                     <td>{{ -($moment(data.customer_details.co_birthdate).diff($moment(), 'years')) }}</td>
-                    <td>{{ data.customer_details.profession }}</td>
+                    <td>{{ (data.customer_details.profession) ? data.customer_details.profession : 'N/A' }}</td>
                     <td>{{ (data.customer_details.co_sex == 'male' || data.customer_details.co_sex == 'M') ? 'Male' : 'Female' }}</td>
                     <td>{{ data.customer_details.pa_city }}</td>
                 </tr>
@@ -39,6 +48,9 @@
                 </tr>
             </tbody>
         </table>
+        <div class="signature">
+            <div class="label">SIGNATURE OVER PRINTED NAME</div>
+        </div>
     </div>
 </template>
 
