@@ -170,7 +170,7 @@
                                                         <th>Qty</th>
                                                         <th>Price</th>
                                                         <th>Customer</th>
-                                                        <th>Contact/Emergency Contact No.</th>
+                                                        <th>Contact/Emergency No.</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody v-if="data.payment_items.length > 0">
@@ -338,26 +338,26 @@
                 return [
                     ...me.daily_transaction_values.map((value, key) => ({
                         'Studio': me.getPaymentStudio(value.parent),
+                        'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
+                        'Email Address': value.parent.user.email,
+                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' ,
                         'Payment ID': value.parent.id,
                         'Reference Number': me.getPaymentCode(value.parent),
                         'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
                         'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
                         'Payment Status': value.parent.status,
                         'Payment Method': me.replacer(value.parent.payment_method.method),
-                        'Price': `Php ${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
                         'Payment Item Id': value.id,
                         'SKU ID': me.getPaymentItem(value, 'sku'),
                         'Item': me.getPaymentItem(value, 'name'),
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
-                        'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
-                        'Email Address': value.parent.user.email,
-                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' ,
+                        'Quantity': value.quantity,
+                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
+                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
                         'Employee': me.getPaymentDetails(value.parent, 'employee'),
                         'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
                         'Note': (value.parent.note) ? value.parent.note : 'N/A',
-                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
-                        'Quantity': value.quantity,
-                        'Discount': `Php ${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
                     }))
                 ]
             },

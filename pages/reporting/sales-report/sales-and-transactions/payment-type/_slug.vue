@@ -77,7 +77,7 @@
                                                     <th>Qty</th>
                                                     <th>Price</th>
                                                     <th>Customer</th>
-                                                    <th>Contact/Emergency Contact No.</th>
+                                                    <th>Contact/Emergency No.</th>
                                                 </tr>
                                             </thead>
                                             <tbody v-if="data.payment_items.length > 0">
@@ -87,8 +87,8 @@
                                                     <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
                                                     <td>{{ child.quantity }}</td>
                                                     <td class="price">
-                                                        <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item) }}</p>
-                                                        <p>PHP {{ totalCount(child.total) }}</p>
+                                                        <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item * child.quantity) }}</p>
+                                                        <p>PHP {{ totalCount((data.promo_code_used !== null) ? child.total : child.price_per_item * child.quantity) }}</p>
                                                     </td>
                                                     <td>
                                                         <div class="thumb">

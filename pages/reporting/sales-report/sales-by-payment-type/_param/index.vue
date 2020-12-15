@@ -40,56 +40,95 @@
                     </div>
                 </section>
                 <section id="content">
-                    <table class="cms_table alt">
+                    <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th class="sticky">Date of Purchase</th>
-                                <th class="sticky">Reference Number</th>
-                                <th class="sticky">Customer</th>
-                                <th class="sticky">Qty.</th>
-                                <th class="sticky">Status</th>
-                                <th class="sticky">Total</th>
-                                <th class="sticky">Employee</th>
-                                <th class="sticky" v-if="$route.params.param == 'comp'">Comp Reason</th>
-                                <th class="sticky" v-if="$route.params.param == 'comp'">Note</th>
-                                <th class="sticky">Remarks</th>
+                                <th>Reference Number</th>
+                                <th>Transaction Date</th>
+                                <th>Studio</th>
+                                <th>Total Qty.</th>
+                                <th>Payment Method</th>
+                                <th>Total Price</th>
+                                <th>Employee</th>
+                                <th>Status</th>
+                                <th>Comp Reason</th>
+                                <th>Note</th>
+                                <th>Remarks</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.result.data.length > 0">
-                            <tr v-for="(data, key) in res.result.data" :key="key">
-                                <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY hh:mm A') }}</td>
-                                <td>{{ getPaymentCode(data) }}</td>
+                        <tbody :class="`tbp ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.result.data" v-if="res.result.data.length > 0">
+                            <tr class="parent">
+                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
+                                <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
+                                <td>{{ getPaymentStudio(data) }}</td>
+                                <td>{{ getPaymentDetails(data, 'qty') }}</td>
+                                <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
+                                <td>{{ getPaymentDetails(data, 'price') }}</td>
+                                <td>{{ getPaymentDetails(data, 'employee') }}</td>
                                 <td>
-                                    <div class="thumb">
-                                        <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
-                                        <div class="table_image_default" v-else>
-                                            <div class="overlay">
-                                                {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
-                                            </div>
-                                        </div>
-                                        <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)" v-if="data.user != null">{{ data.user.fullname }}</div>
-                                        <div v-else>N/A</div>
+                                    <div class="table_actions">
+                                        <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
+                                        <div class="action_status red ml" v-if="data.promo_code_used !== null">Discounted</div>
                                     </div>
                                 </td>
-                                <td>{{ totalItems(data.payment_items.length) }}</td>
-                                <td :class="`${(data.status == 'paid') ? 'green' : 'red'}`">{{ (data.status == 'paid') ? 'Paid' : 'Pending' }}</td>
-                                <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
-                                <td>
-                                    <div v-if="data.employee != null">
-                                        {{ `${data.employee.first_name} ${data.employee.last_name}` }}
-                                    </div>
-                                    <div v-else>
-                                        N/A
+                                <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : 'N/A' }}</td>
+                                <td>{{ (data.payment_method.note) ? data.payment_method.note : 'N/A' }}</td>
+                                <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : 'N/A' ) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="pads" colspan="11">
+                                    <div class="accordion_table">
+                                        <table class="cms_table alt">
+                                            <thead>
+                                                <tr>
+                                                    <th>Reference Number</th>
+                                                    <th>Item</th>
+                                                    <th>Category</th>
+                                                    <th>Qty</th>
+                                                    <th>Price</th>
+                                                    <th>Customer</th>
+                                                    <th>Contact/Emergency No.</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody v-if="data.payment_items.length > 0">
+                                                <tr v-for="(child, key) in data.payment_items" :key="key">
+                                                    <td>{{ getPaymentCode(data) }}</td>
+                                                    <td>{{ getPaymentItem(child, 'name') }}</td>
+                                                    <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
+                                                    <td>{{ child.quantity }}</td>
+                                                    <td class="price">
+                                                        <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item * child.quantity) }}</p>
+                                                        <p>PHP {{ totalCount((data.promo_code_used !== null) ? child.total : child.price_per_item * child.quantity) }}</p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="thumb">
+                                                            <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                                            <div class="table_image_default" v-else>
+                                                                <div class="overlay">
+                                                                    {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : 'N/A' }}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody class="no_results" v-else>
+                                                <tr>
+                                                    <td colspan="7">No Result(s) Found.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </td>
-                                <td v-if="$route.params.param == 'comp'">{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : '-' }}</td>
-                                <td v-if="$route.params.param == 'comp'">{{ (data.payment_method.note) ? data.payment_method.note : '-' }}</td>
-                                <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : '-' ) }}</td>
                             </tr>
                         </tbody>
-                        <tbody class="no_results" v-else>
+                        <tbody class="no_results" v-if="res.result.data.length == 0">
                             <tr>
-                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                <td colspan="11">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -137,22 +176,128 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': me.studio.name,
-                        'Payment Type': me.$route.params.param,
-                        'Payment Status': me.payment_status,
-                        'Date': me.$moment(value.updated_at).format('MMMM DD, YYYY'),
-                        'Time': me.$moment(value.updated_at).format('h:mm A'),
-                        'Order ID': value.payment_code,
-                        'Customer': (value.user == null) ? 'N/A' : `${value.user.first_name} ${value.user.last_name}`,
-                        'Status': (value.status == 'paid') ? 'Paid' : 'Pending',
-                        'Total': value.total,
-                        'Employee': (value.employee != null) ? `${value.employee.first_name} ${value.employee.last_name}` : 'N/A',
-                        'Remarks': value.payment_method.remarks
+                        'Studio': me.getPaymentStudio(value.parent),
+                        'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
+                        'Email Address': value.parent.user.email,
+                        'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' ,
+                        'Payment ID': value.parent.id,
+                        'Reference Number': me.getPaymentCode(value.parent),
+                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
+                        'Payment Status': value.parent.status,
+                        'Payment Method': me.replacer(value.parent.payment_method.method),
+                        'Payment Item Id': value.id,
+                        'SKU ID': me.getPaymentItem(value, 'sku'),
+                        'Item': me.getPaymentItem(value, 'name'),
+                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                        'Quantity': value.quantity,
+                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
+                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
+                        'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
+                        'Note': (value.parent.note) ? value.parent.note : 'N/A',
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
                     }))
                 ]
             }
         },
         methods: {
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.card_code
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                payment.payment_items.forEach((payment_item, key) => {
+                    switch (type) {
+                        case 'qty':
+                            result += payment_item.quantity
+                            break
+                    }
+                })
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        let temp_price = 0
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                temp_price += parseInt(payment_item.total)
+                            } else {
+                                temp_price += parseInt(payment_item.price_per_item)
+                            }
+                        })
+                        result = `Php ${me.totalCount(temp_price)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = 'No User'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
             getPaymentCode (payment) {
                 const me = this
                 let result = ''
@@ -178,8 +323,11 @@
                 me.loader(true)
                 me.$axios.post(`api/reporting/sales/sales-by-payment-type/${me.$route.params.param}?all=1`, formData).then(res => {
                     if (res.data) {
-                        res.data.result.forEach((item, key) => {
-                            me.values.push(item)
+                        res.data.result.forEach((parent, key) => {
+                            parent.payment_items.forEach((child, key) => {
+                                child.parent = parent
+                                me.values.push(child)
+                            })
                         })
                     }
                 }).catch((err) => {
@@ -188,6 +336,16 @@
                     me.loader(false)
                     document.querySelector('.me').click()
                 })
+            },
+            toggleAccordion (event, key) {
+                const me = this
+                const target = event.target
+                me.res.result.data[key].open ^= true
+                if (me.res.result.data[key].open) {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
+                } else {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
+                }
             },
             openWindow (slug) {
                 const me = this
@@ -241,6 +399,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                         me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
                 })
