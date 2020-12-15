@@ -135,13 +135,19 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMMM DD, YYYY'),
-                        'Time': me.$moment(value.schedule.start_time, 'HH:mm A').format('h:mm A'),
-                        'Class Type': value.schedule.class_type.name,
-                        'Schedule Released': (value.schedule.enabled) ? 'Yes' : 'No',
                         'Studio': value.schedule.studio.name,
+                        'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMMM DD, YYYY'),
+                        'Start Time': me.$moment(value.schedule.start_time, 'HH:mm A').format('h:mm A'),
+                        'End Time': me.$moment(value.schedule.end_time, 'HH:mm A').format('h:mm A'),
+                        'Class Type': (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name,
+                        'Class Credits': value.schedule.class_credits,
+                        'Class Length': value.schedule.class_length_formatted,
+                        'Peak Type': value.schedule.peak_type,
+                        'Private Class': (!value.schedule.private_class) ? 'No' : 'Yes',
+                        'Schedule Released': (value.schedule.enabled) ? 'Yes' : 'No',
                         'Primary Instructor': `${value.primary.user.first_name } ${ value.primary.user.last_name}`,
                         'Substitute Instructor': `${value.substitute.user.first_name } ${ value.substitute.user.last_name}`,
+                        'Total Bookings': value.bookings.length,
                         'Remarks': value.substitute.remarks
                     }))
                 ]
@@ -155,7 +161,6 @@
                 me.loader(true)
                 me.$axios.post(`api/reporting/classes/summary-of-instructor-subbing-per-period?all=1`, formData).then(res => {
                     if (res.data) {
-
                         res.data.scheduledDates.forEach((item, index) => {
                             me.values.push(item)
                         })
