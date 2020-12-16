@@ -79,7 +79,7 @@
                                 <td>{{ data.userPackageCounts[0].class_package.name }}</td>
                                 <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment(data.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : 'Not Activated' }}</td>
                                 <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMM DD, YYYY') : 'No Class Yet' }}</td>
-                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : 'No Class Yet' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
                                 <td>{{ data.email }}</td>
                                 <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                             </tr>
