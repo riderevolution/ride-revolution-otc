@@ -175,7 +175,7 @@
                 payment_total: [],
                 studio_total: [],
                 form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'day').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     studio_id: 0
                 }
