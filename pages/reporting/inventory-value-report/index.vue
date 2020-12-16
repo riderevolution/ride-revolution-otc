@@ -95,40 +95,6 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="cms_table_toggler">
-                            <a :href="`/print/reporting/inventory-value-report?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
-                            <download-csv
-                                v-if="res.gift_cards.length > 0"
-                                class="action_btn alternate margin"
-                                :data="inventoryValueReportCardsAttributes"
-                                :name="`inventory-value-report-gift-cards-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
-                                Export
-                            </download-csv>
-                        </div>
-                        <table class="cms_table alt">
-                            <thead>
-                                <tr>
-                                    <th colspan="3" class="cms_table_title">Gift Cards</th>
-                                </tr>
-                                <tr>
-                                    <th>Card Code</th>
-                                    <th>Class Package</th>
-                                    <th>Price</th>
-                                </tr>
-                            </thead>
-                            <tbody v-if="res.gift_cards.length > 0">
-                                <tr v-for="(data, key) in res.gift_cards" :key="key">
-                                    <td>{{ data.card_code }}</td>
-                                    <td>{{ data.class_package.name }}</td>
-                                    <td>Php {{ totalCount(data.class_package.package_price) }}</td>
-                                </tr>
-                            </tbody>
-                            <tbody class="no_results" v-else>
-                                <tr>
-                                    <td colspan="3">No Result(s) Found.</td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                     <div v-else>
                         <table class="cms_table alt" v-if="tabStatus != 'gift-cards'">
