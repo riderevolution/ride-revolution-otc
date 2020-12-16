@@ -11,7 +11,7 @@
                             </div>
                             <h2 class="header_subtitle">Attendance per time slot by month</h2>
                         </div>
-                        <div class="actions">
+                        <!-- <div class="actions">
                             <div class="action_btn alternate" @click="getClasses()" v-if="schedules.length > 0">
                                 Export
                             </div>
@@ -21,7 +21,7 @@
                                 :name="`attendance-by-month-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">

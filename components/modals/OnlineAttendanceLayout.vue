@@ -129,7 +129,7 @@
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
-                        'Employee': (value.employee) ? value.employee.fullname : 'No User',
+                        'Username': (value.employee) ? value.employee.fullname : 'No Customer',
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,
@@ -138,8 +138,10 @@
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
-                        'Revenue': me.computeRevenue(value, 'revenue'),
-                        'Discount': me.computeRevenue(value, 'discount')
+                        'Gross Revenue': me.computeRevenue(value, 'revenue'),
+                        'Net Revenue': me.computeRevenue(value, 'revenue'),
+                        'Discount': me.computeRevenue(value, 'discount'),
+                        'Remarks': (value.user_package_count.payment.remarks) ? value.user_package_count.payment.remarks : 'N/A'
                     }))
                 ]
             },

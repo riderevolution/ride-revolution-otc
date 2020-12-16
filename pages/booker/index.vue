@@ -485,7 +485,7 @@
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
-                        'Employee': (value.employee) ? value.employee.fullname : '-',
+                        'Username': (value.employee) ? value.employee.fullname : 'No Customer',
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,
@@ -494,7 +494,10 @@
                         'Full Name': me.getCustomerInfo(value, 'name'),
                         'Customer Type': me.getCustomerInfo(value, 'type'),
                         'Email Address': me.getCustomerInfo(value, 'email'),
-                        'Revenue': me.computeRevenue(value)
+                        'Gross Revenue': me.computeRevenue(value, 'revenue'),
+                        'Net Revenue': me.computeRevenue(value, 'revenue'),
+                        'Discount': me.computeRevenue(value, 'discount'),
+                        'Remarks': (value.user_package_count.payment.remarks) ? value.user_package_count.payment.remarks : 'N/A'
                     }))
                 ]
             },
@@ -576,13 +579,20 @@
 
                 return result
             },
-            computeRevenue (data) {
+            computeRevenue (data, type) {
                 const me = this
                 let result = ''
                 let base_value = 0
                 if (data.status != 'cancelled') {
                     if (data.user_package_count.payment_item.payment_method.method != 'comp') {
-                        base_value = me.totalCount(data.revenue)
+                        switch (type) {
+                            case 'revenue':
+                                base_value = me.totalCount(data.revenue)
+                                break
+                            case 'discount':
+                                base_value = me.totalCount(data.discount)
+                                break
+                        }
                         result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
                     } else {
                         result = 0

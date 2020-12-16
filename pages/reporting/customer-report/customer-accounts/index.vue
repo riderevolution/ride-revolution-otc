@@ -72,7 +72,7 @@
                                 </td>
                                 <td>{{ data.member_id }}</td>
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ data.preferred_studio[0].name }}</td>
+                                <td>{{ (data.preferred_studio.length > 0) ? data.preferred_studio[0].name  : 'No Preferred' }}</td>
                                 <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
                                 <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
                                 <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>

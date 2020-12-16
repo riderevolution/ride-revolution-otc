@@ -203,7 +203,7 @@
                         'Quantity': value.quantity,
                         'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
                         'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
-                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
+                        'Username': me.getPaymentDetails(value.parent, 'employee'),
                         'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
                         'Note': (value.parent.note) ? value.parent.note : 'N/A',
                         'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
@@ -324,7 +324,7 @@
                         if (payment.employee != null) {
                             result = `${payment.employee.first_name} ${payment.employee.last_name}`
                         } else {
-                            result = 'No User'
+                            result = 'No Customer'
                         }
                         break
                 }

@@ -149,7 +149,7 @@
                     class_type_id: '',
                     class_package_id: '',
                     customer_type_id: '',
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 },
                 name: 'Attendance Summary',
