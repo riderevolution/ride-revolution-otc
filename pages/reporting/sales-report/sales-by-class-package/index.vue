@@ -176,9 +176,9 @@
                 return [
                     ...me.values.map(value => ({
                         'Studio': me.getPaymentStudio(value.payment),
-                        'Customer': `${value.payment.user.first_name} ${value.payment.user.last_name}`,
-                        'Email Address': value.payment.user.email,
-                        'Contact Number': (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' ,
+                        'Customer': (value.payment.user) ? value.payment.user.fullname : 'No Customer',
+                        'Email Address': (value.payment.user) ? value.payment.user.email : 'No Customer Email',
+                        'Contact Number': (value.payment.user) ? (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
                         'Payment ID': value.payment.id,
                         'Reference Number': me.getPaymentCode(value.payment),
                         'Transaction Date': me.$moment(value.payment.updated_at).format('MMMM DD, YYYY hh:mm A'),
