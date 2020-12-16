@@ -16,15 +16,15 @@
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th class="sticky">Product Name</th>
-                    <th class="sticky">Item Price</th>
-                    <th class="sticky">Sold</th>
-                    <th class="sticky">Comp Value</th>
-                    <th class="sticky">Discount</th>
-                    <th class="sticky">Taxes</th>
-                    <th class="sticky">Profit</th>
-                    <th class="sticky">Cost</th>
-                    <th class="sticky">Total Income</th>
+                    <th>Product Name</th>
+                    <th>Item Price</th>
+                    <th>Sold</th>
+                    <th>Comp Value</th>
+                    <th>Discount</th>
+                    <th>Taxes</th>
+                    <th>Profit</th>
+                    <th>Cost</th>
+                    <th>Total Income</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">

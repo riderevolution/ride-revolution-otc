@@ -16,12 +16,15 @@
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th class="sticky">Date of Purchase</th>
-                    <th class="sticky">Full Name</th>
-                    <th class="sticky">Qty.</th>
-                    <th class="sticky">Payment</th>
-                    <th class="sticky">Employee</th>
-                    <th class="sticky">Total</th>
+                    <th>Date of Purchase</th>
+                    <th>Full Name</th>
+                    <th>Qty.</th>
+                    <th>Payment</th>
+                    <th>Employee</th>
+                    <th>Total</th>
+                    <th>Comp Reason</th>
+                    <th>Note</th>
+                    <th>Remarks</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
@@ -32,12 +35,19 @@
                     <td><b>-</b></td>
                     <td><b>-</b></td>
                     <td><b>Php {{ totalCount(total.total_price) }}</b></td>
+                    <td><b>-</b></td>
+                    <td><b>-</b></td>
+                    <td><b>-</b></td>
                 </tr>
                 <tr v-for="(data, key) in res" :key="key">
                     <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                     <td>
-                        <nuxt-link class="table_data_link" :to="`/customers/${data.payment.user.id}/packages`" v-if="data.payment.user != null">{{ `${data.payment.user.first_name} ${data.payment.user.last_name}` }}</nuxt-link>
-                        <div v-else>N/A</div>
+                        <div class="thumb" v-if="data.payment.user != null">
+                            <div class="table_data_link">{{ data.payment.user.fullname }}</div>
+                        </div>
+                        <div v-else>
+                            No Customer
+                        </div>
                     </td>
                     <td>{{ data.quantity }}</td>
                     <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
@@ -46,10 +56,13 @@
                             {{ `${data.employee.first_name} ${data.employee.last_name}` }}
                         </div>
                         <div v-else>
-                            N/A
+                            No User
                         </div>
                     </td>
                     <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
+                    <td>{{ (data.payment.comp_reason) ? data.payment.comp_reason : 'N/A' }}</td>
+                    <td>{{ (data.payment.note) ? data.payment.note : 'N/A' }}</td>
+                    <td>{{ (data.payment.remarks) ? data.payment.remarks : 'N/A' }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
@@ -92,7 +105,6 @@
                 me.form.slug = me.$route.query.slug
                 me.form.id = me.$route.query.id
                 me.form.variant_id = me.$route.query.variant_id
-                me.loader(true)
                 let formData = new FormData()
                 formData.append('slug', me.form.slug)
                 formData.append('variant_id', me.form.variant_id)

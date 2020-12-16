@@ -13,7 +13,7 @@
                             <h2 class="header_subtitle">Income from {{ variant.variant }} ({{ variant.product.category.name }}).</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/products/${$route.params.param}/product/${$route.params.slug}?payment_status=${payment_status}&slug=${form.slug}&id=${form.id}&variant_id=${form.variant_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/products/${$route.params.param}/product/${$route.params.slug}?payment_status=${payment_status}&slug=${form.slug}&id=${form.id}&variant_id=${form.variant_id}&start_date=${form.start_date}&end_date=${form.end_date}&studio_id=${form.studio_id}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -49,6 +49,9 @@
                                 <th class="sticky">Payment</th>
                                 <th class="sticky">Employee</th>
                                 <th class="sticky">Total</th>
+                                <th class="sticky">Comp Reason</th>
+                                <th class="sticky">Note</th>
+                                <th class="sticky">Remarks</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.result.data.length > 0">
@@ -56,12 +59,25 @@
                                 <td colspan="2"><b>{{ total.name }}</b></td>
                                 <td colspan="3"><b>{{ total.qty }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_price) }}</b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             <tr v-for="(data, key) in res.result.data" :key="key">
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
                                 <td>
-                                    <nuxt-link class="table_data_link" :to="`/customers/${data.payment.user.id}/packages`" v-if="data.payment.user != null">{{ `${data.payment.user.fullname}` }}</nuxt-link>
-                                    <div v-else>- -</div>
+                                    <div class="thumb" v-if="data.payment.user != null">
+                                        <img :src="data.payment.user.customer_details.images[0].path_resized" v-if="data.payment.user.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.payment.user.first_name.charAt(0) }}{{ data.payment.user.last_name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.payment.user.id}/packages`)">{{ data.payment.user.fullname }}</div>
+                                    </div>
+                                    <div v-else>
+                                        No Customer
+                                    </div>
                                 </td>
                                 <td>{{ data.quantity }}</td>
                                 <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
@@ -70,10 +86,13 @@
                                         {{ `${data.payment.employee.first_name} ${data.payment.employee.last_name}` }}
                                     </div>
                                     <div v-else>
-                                        N/A
+                                        No User
                                     </div>
                                 </td>
                                 <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
+                                <td>{{ (data.payment.comp_reason) ? data.payment.comp_reason : 'N/A' }}</td>
+                                <td>{{ (data.payment.note) ? data.payment.note : 'N/A' }}</td>
+                                <td>{{ (data.payment.remarks) ? data.payment.remarks : 'N/A' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -93,10 +112,12 @@
 </template>
 
 <script>
-    import Foot from '../../../../../../components/Foot'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const values = []
@@ -126,15 +147,27 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': (me.form.studio_id != '') ? me.studio.name : 'All Studios',
-                        'Payment Status': me.payment_status,
-                        'Variant': me.variant.variant,
-                        'Date of Purchase': me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'Full Name': (value.payment.user != null) ? `${value.payment.user.fullname}` : '-',
-                        'Qty': value.quantity,
-                        'Payment': (value.payment) ? value.payment.payment_method.method : '-',
-                        'Employee': (value.payment.employee != null) ? `${value.payment.employee.first_name} ${value.payment.employee.last_name}` : 'N/A',
-                        'Total Income': `Php ${(value.total) ? me.totalCount(value.total) : 0}`
+                        'Studio': me.getPaymentStudio(value.payment),
+                        'Customer': (value.payment.user) ? value.payment.user.fullname : 'No Customer',
+                        'Email Address': (value.payment.user) ? value.payment.user.email : 'No Customer Email',
+                        'Contact Number': (value.payment.user) ? (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
+                        'Payment ID': value.payment.id,
+                        'Reference Number': me.getPaymentCode(value.payment),
+                        'Transaction Date': me.$moment(value.payment.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Promo Code': (value.payment.promo_code_used != null) ? value.payment.promo_code_used : 'No Promo Code Used',
+                        'Payment Status': value.payment.status,
+                        'Payment Method': me.replacer(value.payment.payment_method.method),
+                        'Payment Item Id': value.id,
+                        'SKU ID': me.getPaymentItem(value, 'sku'),
+                        'Item': me.getPaymentItem(value, 'name'),
+                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                        'Quantity': value.quantity,
+                        'Discount': `${(value.payment.promo_code_used != null) ? value.payment.discount.discount : 0}`,
+                        'Price': `${(value.payment.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Employee': me.getPaymentDetails(value.payment, 'employee'),
+                        'Comp Reason': (value.payment.comp_reason) ? value.payment.comp_reason : 'N/A',
+                        'Note': (value.payment.note) ? value.payment.note : 'N/A',
+                        'Remarks': (value.payment.remarks) ? value.payment.remarks : 'N/A'
                     }))
                 ]
             }
@@ -151,7 +184,6 @@
                         res.data.result.forEach((item, key) => {
                             me.values.push(item)
                         })
-                        me.values.push(res.data.total)
                     }
                 }).catch((err) => {
 
@@ -159,6 +191,119 @@
                     me.loader(false)
                     document.querySelector('.me').click()
                 })
+            },
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.card_code
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                payment.payment_items.forEach((payment_item, key) => {
+                    switch (type) {
+                        case 'qty':
+                            result += payment_item.quantity
+                            break
+                    }
+                })
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        let temp_price = 0
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                temp_price += parseInt(payment_item.total)
+                            } else {
+                                temp_price += parseInt(payment_item.price_per_item)
+                            }
+                        })
+                        result = `Php ${me.totalCount(temp_price)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = 'No User'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        result = payment.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
+                }
+
+                return result
             },
             backToSlug (path) {
                 const me = this
@@ -168,7 +313,6 @@
                 temp = temp.join('/')
                 me.$router.push(`${temp}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${me.form.slug}&id=${me.form.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
-
             fetchData (value) {
                 const me = this
                 me.loader(true)
