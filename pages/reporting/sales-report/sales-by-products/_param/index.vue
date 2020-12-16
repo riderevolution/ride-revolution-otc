@@ -15,7 +15,7 @@
                         <div class="actions">
                             <a :href="`/print/reporting/sales/products/${$route.params.param}?payment_status=${payment_status}&studio_id=${form.studio_id}&slug=${form.slug}&id=${form.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
-                            <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
+                            <!-- <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
                             </div>
                             <download-csv
@@ -24,7 +24,7 @@
                                 :data="productsParamAttributes"
                                 :name="`sales-by-products-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
-                            </download-csv>
+                            </download-csv> -->
 
                         </div>
                     </div>
