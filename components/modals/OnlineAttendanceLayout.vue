@@ -120,6 +120,7 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
+                        'Transaction Date': me.$moment(value.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Reference Number': me.getPaymentCode(value.user_package_count),
                         'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
@@ -129,7 +130,6 @@
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
-                        'Username': (value.employee) ? value.employee.fullname : 'No Customer',
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,
@@ -141,7 +141,10 @@
                         'Gross Revenue': me.computeRevenue(value, 'gross'),
                         'Discount': me.computeRevenue(value, 'discount'),
                         'Net Revenue': me.computeRevenue(value, 'net'),
-                        'Remarks': (value.user_package_count.payment.remarks) ? value.user_package_count.payment.remarks : 'N/A'
+                        'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
+                        'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
+                        'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
+                        'Username': (value.employee) ? value.employee.fullname : 'Customer'
                     }))
                 ]
             },
