@@ -138,9 +138,9 @@
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
-                        'Gross Revenue': me.computeRevenue(value, 'revenue'),
-                        'Net Revenue': me.computeRevenue(value, 'revenue'),
+                        'Gross Revenue': me.computeRevenue(value, 'gross'),
                         'Discount': me.computeRevenue(value, 'discount'),
+                        'Net Revenue': me.computeRevenue(value, 'net'),
                         'Remarks': (value.user_package_count.payment.remarks) ? value.user_package_count.payment.remarks : 'N/A'
                     }))
                 ]
@@ -179,8 +179,11 @@
                 if (data.status != 'cancelled') {
                     if (data.user_package_count.payment_item.payment_method.method != 'comp') {
                         switch (type) {
-                            case 'revenue':
-                                base_value = me.totalCount(data.revenue)
+                            case 'gross':
+                                base_value = me.totalCount(data.gross_revenue)
+                                break
+                            case 'net':
+                                base_value = me.totalCount(data.net_revenue)
                                 break
                             case 'discount':
                                 base_value = me.totalCount(data.discount)

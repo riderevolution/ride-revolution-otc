@@ -35,10 +35,10 @@
                         <thead>
                             <tr>
                                 <th class="stick">Customer</th>
-                                <th class="stick">Rewards</th>
-                                <th class="stick">Store Credits Bought</th>
-                                <th class="stick">Store Credits Remaining</th>
-                                <th class="stick">Spent</th>
+                                <th class="stick">Member ID</th>
+                                <th class="stick">Cumulative Store Credits</th>
+                                <th class="stick">Total Spent</th>
+                                <th class="stick">Remaining Store Credits</th>
                                 <th class="stick">Contact Number</th>
                                 <th class="stick">Email Address</th>
                                 <th class="stick">City</th>
@@ -57,11 +57,11 @@
                                         <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
-                                <td>-</td>
+                                <td>{{ data.member_id }}</td>
                                 <td>Php {{ totalCount(data.totalBroughtStoreCredits) }}</td>
                                 <td>Php {{ totalCount(data.store_credits.amount) }}</td>
                                 <td>Php {{ -totalCount(data.store_credits.amount - data.totalBroughtStoreCredits) }}</td>
-                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
                                 <td>{{ data.email }}</td>
                                 <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                             </tr>
@@ -83,8 +83,8 @@
 </template>
 
 <script>
-    import Foot from '../../../../components/Foot'
-    import Pagination from '../../../../components/Pagination'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
     export default {
         components: {
             Foot,

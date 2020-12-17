@@ -123,7 +123,7 @@
                 studio: [],
                 instructors: [],
                 form: {
-                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
+                    start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     studio_id: '',
                     instructor_id: ''
