@@ -10,34 +10,34 @@
             </div>
             <div class="text">
                 <h2>Outstanding Store Credits</h2>
+                <div class="total">Total Store Credits: Php {{ totalCount(total) }}</div>
             </div>
-            <div class="total">Total Store Credits: Php {{ totalCount(total) }}</div>
         </div>
         <table class="cms_table print">
             <thead>
                 <tr>
+                    <th>Member ID</th>
                     <th>Customer</th>
-                    <th>Rewards</th>
-                    <th>Store Credits Bought</th>
-                    <th>Store Credits Remaining</th>
-                    <th>Spent</th>
+                    <th>Customer Type</th>
+                    <th>Cumulative Store Credits</th>
+                    <th>Total Spent</th>
+                    <th>Remaining Store Credits</th>
                     <th>Contact Number</th>
                     <th>Email Address</th>
-                    <th>City</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
                 <tr v-for="(data, key) in res" :key="key">
+                    <td>{{ data.member_id }}</td>
                     <td>
                         <div class="table_data_link">{{ data.fullname }}</div>
                     </td>
-                    <td>Black</td>
-                    <td>Php {{ totalCount(data.totalBroughtStoreCredits) }}</td>
+                    <td>{{ data.customer_details.customer_type.name }}</td>
+                    <td>Php {{ totalCount(data.total_store_credits_bought) }}</td>
                     <td>Php {{ totalCount(data.store_credits.amount) }}</td>
-                    <td>Php {{ totalCount(data.totalBroughtStoreCredits - data.store_credits.amount) }}</td>
-                    <td>{{ (data.customer_details != null) ? data.customer_details.co_contact_number : 'N/A' }}</td>
+                    <td>Php {{ -totalCount(data.store_credits.amount - data.total_store_credits_bought) }}</td>
+                    <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
                     <td>{{ data.email }}</td>
-                    <td>{{ (data.customer_details != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
@@ -69,8 +69,8 @@
                 me.$axios.post('api/reporting/customers/outstanding-store-credits?all=1', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.total = res.data.totalStoreCredits
-                            me.res = res.data.result
+                            me.total = res.data.total_store_credits
+                            me.res = res.data.results
 
                             me.loaded = true
                             setTimeout( () => {

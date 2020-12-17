@@ -12,11 +12,11 @@
                         </div>
                         <div class="actions">
                             <a :href="`/print/reporting/customer/outstanding-credits`" target="_blank" class="action_btn alternate">Print</a>
-                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.result.data.length > 0">
+                            <div class="action_btn alternate" @click="getCustomers()" v-if="res.results.data.length > 0">
                                 Export
                             </div>
                             <download-csv
-                                v-if="res.result.data.length > 0"
+                                v-if="res.results.data.length > 0"
                                 class="hidden me"
                                 :data="outstadingCreditsAttributes"
                                 :name="`outstanding-credits-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
@@ -24,9 +24,18 @@
                             </download-csv>
                         </div>
                     </div>
-                    <div class="action_buttons alt">
-                        <div class="actions">
-                            <div class="total alt">Total Store Credits: Php {{ totalCount(total) }}</div>
+                    <div class="filter_wrapper">
+                        <form class="filter_flex" id="filter" @submit.prevent="fetchData()">
+                            <div class="form_group alternate">
+                                <label for="q">Find a Customer</label>
+                                <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" class="default_text search_alternate" v-model="form.query">
+                            </div>
+                            <button type="submit" name="button" class="action_btn alternate margin">Search</button>
+                        </form>
+                    </div>
+                    <div class="action_buttons">
+                        <div class="actions nmb">
+                            <div class="total">Total Store Credits: Php {{ totalCount(total) }}</div>
                         </div>
                     </div>
                 </section>
@@ -34,18 +43,19 @@
                     <table class="cms_table">
                         <thead>
                             <tr>
-                                <th class="stick">Customer</th>
                                 <th class="stick">Member ID</th>
+                                <th class="stick">Customer</th>
+                                <th class="stick">Customer Type</th>
                                 <th class="stick">Cumulative Store Credits</th>
                                 <th class="stick">Total Spent</th>
                                 <th class="stick">Remaining Store Credits</th>
                                 <th class="stick">Contact Number</th>
                                 <th class="stick">Email Address</th>
-                                <th class="stick">City</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.result.data.length > 0">
-                            <tr v-for="(data, key) in res.result.data" :key="key">
+                        <tbody v-if="res.results.data.length > 0">
+                            <tr v-for="(data, key) in res.results.data" :key="key">
+                                <td>{{ data.member_id }}</td>
                                 <td>
                                     <div class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
@@ -57,13 +67,12 @@
                                         <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
-                                <td>{{ data.member_id }}</td>
-                                <td>Php {{ totalCount(data.totalBroughtStoreCredits) }}</td>
+                                <td>{{ data.customer_details.customer_type.name }}</td>
+                                <td>Php {{ totalCount(data.total_store_credits_bought) }}</td>
                                 <td>Php {{ totalCount(data.store_credits.amount) }}</td>
-                                <td>Php {{ -totalCount(data.store_credits.amount - data.totalBroughtStoreCredits) }}</td>
+                                <td>Php {{ -totalCount(data.store_credits.amount - data.total_store_credits_bought) }}</td>
                                 <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -72,7 +81,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
+                    <pagination :apiRoute="res.results.path" :current="res.results.current_page" :last="res.results.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -101,7 +110,10 @@
                 status: 'all',
                 total: 0,
                 res: [],
-                values: []
+                values: [],
+                form: {
+                    query: ''
+                }
             }
         },
         computed: {
@@ -109,27 +121,72 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Customer': value.fullname,
-                        'Rewards': 'N/A',
-                        'Store Credits Bought': me.totalCount(value.totalBroughtStoreCredits),
-                        'Store Credits Remaining': me.totalCount(value.store_credits.amount),
-                        'Spent': me.totalCount(value.totalBroughtStoreCredits - value.store_credits.amount),
-                        'Contact Number': (value.customer_details != null) ? value.customer_details.co_contact_number : '-',
-                        'Email Address': value.email,
-                        'City': (value.customer_details != null) ? value.customer_details.pa_city : '-'
+                        'Transaction Date': me.$moment(value.payment.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Reference Number': me.getPaymentCode(value.payment),
+                        'Item': me.getPaymentLineItem(value.payment_item),
+                        'Quantity': value.payment_item.quantity,
+                        'Total': value.payment_item.total,
+                        'Status': value.payment.status,
+                        'Method': value.payment.payment_method.method,
+                        'Refunded': (value.payment_item.refunded) ? 'Yes' : 'No',
+                        'Refund Types': (value.payment_item.refund_types) ? value.payment_item.refund_types : 'N/A',
+                        'Refund Remarks': (value.payment_item.refund_remarks) ? value.payment_item.refund_remarks : 'N/A',
+                        'Studio': (value.payment.studio) ? value.payment.studio.name : 'Website/Online',
+                        'Customer': value.customer.fullname,
+                        'Member ID': value.customer.member_id,
+                        'Customer Type': value.customer.customer_details.customer_type.name,
+                        'Email Address': value.customer.email,
+                        'Contact Number': (value.customer.customer_details.co_contact_number != null) ? value.customer.customer_details.co_contact_number : (value.customer.customer_details.ec_contact_number) ? value.customer.customer_details.ec_contact_number : 'N/A',
+                        'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
+                        'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',
+                        'Remarks': (value.payment.payment_method.remarks) ? value.payment.payment_method.remarks : 'N/A',
+                        'Username': (value.payment.employee) ? value.payment.employee.fullname : 'No Employee'
                     }))
                 ]
             }
         },
         methods: {
+            getPaymentLineItem (payment_item) {
+                const me = this
+                let result = ''
+
+                if (payment_item.store_credit) {
+                    result = payment_item.store_credit.name
+                } else {
+                    result = payment_item.class_package.name
+                }
+
+                return result
+            },
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        result = payment.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
+                }
+
+                return result
+            },
             getCustomers () {
                 const me = this
-                let formData = new FormData(document.getElementById('filter'))
+                let formData = new FormData()
+                formData.append('q', me.form.query)
+                formData.append('all', 1)
+                formData.append('export', 1)
+
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/customers/outstanding-store-credits?all=1`, formData).then(res => {
+                me.$axios.post('api/reporting/customers/outstanding-store-credits', formData).then(res => {
                     if (res.data) {
-                        res.data.customers.forEach((item, key) => {
+                        res.data.results.forEach((item, key) => {
                             me.values.push(item)
                         })
                     }
@@ -148,10 +205,12 @@
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
+                formData.append('q', me.form.query)
+
                 me.$axios.post('api/reporting/customers/outstanding-store-credits', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.total = res.data.totalStoreCredits
+                            me.total = res.data.total_store_credits
                             me.res = res.data
 
                             me.loaded = true
