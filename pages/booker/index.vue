@@ -613,6 +613,7 @@
             getClasses () {
                 const me = this
                 me.loader(true)
+                me.values = []
                 me.$axios.get(`api/studio-class-bookings?scheduled_date_id=${me.scheduledDateID}&schedule_id=${me.schedule.schedule.id}`).then(res => {
                     if (res.data) {
                         me.values = res.data.bookings
