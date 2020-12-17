@@ -11,17 +11,9 @@
                             </div>
                             <h2 class="header_subtitle">Attendance per time slot by month</h2>
                         </div>
-                        <!-- <div class="actions">
-                            <div class="action_btn alternate" @click="getClasses()" v-if="schedules.length > 0">
-                                Export
-                            </div>
-                            <download-csv
-                                class="hidden me"
-                                :data="attendanceByMonthAttributes"
-                                :name="`attendance-by-month-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
-                                Export
-                            </download-csv>
-                        </div> -->
+                        <div class="actions">
+                            <a :href="`/print/reporting/class/attendance-by-month?studio_id=${form.studio_id}&month=${form.month}&class_type_id=${form.class_type_id}&instructor_id=${form.instructor_id}`" target="_blank" class="action_btn alternate">Print</a>
+                        </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
