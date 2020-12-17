@@ -108,8 +108,8 @@
                                 </div>
                             </transition>
                             <div class="form_group">
-                                <label for="note">Note</label>
-                                <input type="text" name="note" class="default_text" key="note">
+                                <label for="note">Note <span>*</span></label>
+                                <input type="text" name="note" class="default_text" key="note" v-validate="{ required: true }">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ properFormat(errors.first('checkout_form.note')) }}</span></transition>
                             </div>
                         </div>
