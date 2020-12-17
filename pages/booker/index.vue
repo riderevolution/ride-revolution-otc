@@ -476,28 +476,32 @@
             studioAttendanceAttributes () {
                 const me = this
                 return [
-                    ...this.values.map(value => ({
+                    ...me.values.map(value => ({
+                        'Transaction Date': me.$moment(value.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
-                        'Class Package': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
                         'Booking ID': value.id,
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
-                        'Username': (value.employee) ? value.employee.fullname : 'No Customer',
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,
                         'Instructor': me.getInstructorsInSchedule(me.schedule, 1),
-                        'Customer ID': me.getCustomerInfo(value, 'id'),
-                        'Full Name': me.getCustomerInfo(value, 'name'),
-                        'Customer Type': me.getCustomerInfo(value, 'type'),
-                        'Email Address': me.getCustomerInfo(value, 'email'),
-                        'Gross Revenue': me.computeRevenue(value, 'revenue'),
-                        'Net Revenue': me.computeRevenue(value, 'revenue'),
+                        'Customer ID': value.user.id,
+                        'Full Name': `${value.user.first_name} ${value.user.last_name}`,
+                        'Customer Type': value.customer_type,
+                        'Email Address': value.user.email,
+                        'Gross Revenue': me.computeRevenue(value, 'gross'),
                         'Discount': me.computeRevenue(value, 'discount'),
-                        'Remarks': (value.user_package_count.payment.remarks) ? value.user_package_count.payment.remarks : 'N/A'
+                        'Net Revenue': me.computeRevenue(value, 'net'),
+                        'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
+                        'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
+                        'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
+                        'Username': (value.employee) ? value.employee.fullname : 'Customer'
                     }))
                 ]
             },
@@ -586,8 +590,11 @@
                 if (data.status != 'cancelled') {
                     if (data.user_package_count.payment_item.payment_method.method != 'comp') {
                         switch (type) {
-                            case 'revenue':
-                                base_value = me.totalCount(data.revenue)
+                            case 'gross':
+                                base_value = me.totalCount(data.gross_revenue)
+                                break
+                            case 'net':
+                                base_value = me.totalCount(data.net_revenue)
                                 break
                             case 'discount':
                                 base_value = me.totalCount(data.discount)
