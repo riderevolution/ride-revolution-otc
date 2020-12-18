@@ -633,6 +633,9 @@ table
         background-color: $blue
         border: 1px solid $blue
         color: $white
+        &.no_margin
+            margin-left: 0
+            margin-top: 10px
         &:hover
             background-color: $light_blue
             border: 1px solid $light_blue
@@ -3661,6 +3664,8 @@ input::placeholder
         sf_pro_medium(18px)
         color: $black
         padding: 0 25px 0 40px
+        &.no_pad
+            padding: 0
     .cms_table_toggler
         margin-bottom: 0
 
@@ -5187,6 +5192,46 @@ input::placeholder
                 color: $green
                 padding: 20px
                 transition: .3s ease-in-out
+                .thumb
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    &.alt
+                        img
+                            width: 20px
+                            height: 20px
+                            border-radius: 0
+                            object-fit: contain
+                        .table_data_link
+                            text-decoration: none
+                            color: $black
+                            margin-left: 10px
+                    img
+                        width: 35px
+                        height: 35px
+                        border-radius: 50%
+                        object-fit: cover
+                        object-position: center
+                    .table_image_default
+                        position: relative
+                        text-transform: uppercase
+                        background-image: linear-gradient(137deg, $red, $orange)
+                        sf_pro_regular(14px)
+                        border-radius: 50%
+                        color: $white
+                        width: 35px
+                        height: 35px
+                        .overlay
+                            position: absolute
+                            top: 50%
+                            left: 0
+                            right: 0
+                            text-align: center
+                            transform: translateY(-50%)
+                    .table_data_link
+                        flex: 1 0 5%
+                        margin-left: 15px
+                        text-decoration: underline
                 &.capitalize
                     text-transform: capitalize
                 &.red
@@ -5271,6 +5316,9 @@ input::placeholder
                     opacity: 0
                     overflow: hidden
                     transition: .3s ease-in-out
+                    &.show
+                        height: auto
+                        opacity: 1
                     .cms_table
                         margin-bottom: 0
                         tbody

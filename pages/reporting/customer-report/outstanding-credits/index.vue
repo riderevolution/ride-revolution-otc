@@ -57,15 +57,15 @@
                             <tr v-for="(data, key) in res.results.data" :key="key">
                                 <td>{{ data.member_id }}</td>
                                 <td>
-                                    <div class="thumb">
+                                    <nuxt-link :to="`/reporting/customer-report/outstanding-credits/${data.id}`" class="thumb">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
                                         <div class="table_image_default" v-else>
                                             <div class="overlay">
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
-                                    </div>
+                                        <div class="table_data_link">{{ data.fullname }}</div>
+                                    </nuxt-link>
                                 </td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
                                 <td>Php {{ totalCount(data.total_store_credits_bought) }}</td>
