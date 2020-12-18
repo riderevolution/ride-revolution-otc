@@ -1040,7 +1040,7 @@
                                 })
                             }
                         })
-                        me.$axios.get('api/extras/class-packages-for-gift-cards?forWeb=1').then(res => {
+                        me.$axios.get('api/extras/class-packages-for-gift-cards').then(res => {
                             me.classPackages = res.data.classPackages
                         })
                         me.$axios.get('api/extras/gift-card-titles').then(res => {
