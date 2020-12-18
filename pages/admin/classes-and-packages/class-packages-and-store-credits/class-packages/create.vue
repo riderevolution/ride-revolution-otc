@@ -261,7 +261,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form_group flex" v-if="!isRecurring">
+                                    <div class="form_group flex">
                                         <label>Expire In <span>*</span></label>
                                         <div class="form_flex_input">
                                             <input type="text" name="expires_in" class="default_text number" placeholder="Enter expire in" autocomplete="off" v-model="form.expiryIn" v-validate="'required|numeric|max_value:99999|min_value:0'" @keyup="computeEstimatedPrice()">
