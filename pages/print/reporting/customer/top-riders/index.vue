@@ -20,11 +20,12 @@
                     <th>Customer</th>
                     <th>No. of Rides</th>
                     <th>Customer Type</th>
-                    <th>Rewards</th>
+                    <th>Preferred Studio</th>
+                    <th>Email Address</th>
+                    <th>Contact Number</th>
                     <th>Age</th>
                     <th>Profession</th>
                     <th>Gender</th>
-                    <th>City</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
@@ -35,11 +36,12 @@
                     </td>
                     <td>{{ data.numberOfRides }}</td>
                     <td>{{ data.customer_details.customer_type.name }}</td>
-                    <td>-</td>
+                    <td>{{ (data.preferred_studio.length > 0) ? data.preferred_studio[0].name : 'No Preferred Studio' }}</td>
+                    <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
+                    <td>{{ data.email }}</td>
                     <td>{{ -($moment(data.customer_details.co_birthdate).diff($moment(), 'years')) }}</td>
                     <td>{{ (data.customer_details.profession) ? data.customer_details.profession : 'N/A' }}</td>
                     <td>{{ (data.customer_details.co_sex == 'male' || data.customer_details.co_sex == 'M') ? 'Male' : 'Female' }}</td>
-                    <td>{{ data.customer_details.pa_city }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>

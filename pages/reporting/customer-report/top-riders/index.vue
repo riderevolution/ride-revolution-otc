@@ -79,33 +79,35 @@
                                 <th class="stick">No. of Rides</th>
                                 <th class="stick">Customer Type</th>
                                 <th class="stick">Preferred Studio</th>
+                                <th class="stick">Email Address</th>
+                                <th class="stick">Contact Number</th>
                                 <th class="stick">Age</th>
                                 <th class="stick">Profession</th>
                                 <th class="stick">Gender</th>
-                                <th class="stick">City</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.topRiders.data.length > 0">
                             <tr v-for="(data, key) in res.topRiders.data" :key="key">
-                                <td>{{ res.topRiders.from + key }}</td>
+                                <td>{{ key + 1 }}</td>
                                 <td>
-                                    <div class="thumb">
+                                    <div class="thumb" @click="openWindow(`/customers/${data.id}/packages`)">
                                         <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
                                         <div class="table_image_default" v-else>
                                             <div class="overlay">
                                                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
+                                        <div class="table_data_link">{{ data.fullname }}</div>
                                     </div>
                                 </td>
                                 <td>{{ data.numberOfRides }}</td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
-                                <td>{{ data.preferred_studio[0].name }}</td>
+                                <td>{{ (data.preferred_studio.length > 0) ? data.preferred_studio[0].name : 'No Preferred Studio' }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
+                                <td>{{ data.email }}</td>
                                 <td>{{ -($moment(data.customer_details.co_birthdate).diff($moment(), 'years')) }}</td>
                                 <td>{{ (data.customer_details.profession) ? data.customer_details.profession : 'N/A' }}</td>
                                 <td>{{ (data.customer_details.co_sex == 'male' || data.customer_details.co_sex == 'M') ? 'Male' : 'Female' }}</td>
-                                <td>{{ data.customer_details.pa_city }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -165,12 +167,13 @@
                         'Rank': key + 1,
                         'Member ID': value.member_id,
                         'Customer': value.fullname,
-                        'Preferred Studio': value.preferred_studio[0].name,
+                        'Number Of Rides': value.numberOfRides,
+                        'Preferred Studio': (value.preferred_studio.length > 0) ? value.preferred_studio[0].name : 'No Preferred Studio',
                         'Customer Type': value.customer_details.customer_type.name,
-                        'Gender': me.getCustomerDetails(value, 'gender'),
-                        'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
                         'Contact Number': me.getCustomerDetails(value, 'contact_number'),
                         'Email Address': value.email,
+                        'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
+                        'Gender': me.getCustomerDetails(value, 'gender'),
                         'Weight': me.getCustomerDetails(value, 'weight'),
                         'Shoe Size': me.getCustomerDetails(value, 'shoe_size'),
                         'Dumbbell': me.getCustomerDetails(value, 'dumbbell'),
