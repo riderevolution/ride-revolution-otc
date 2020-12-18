@@ -43,6 +43,13 @@
                                 </select>
                             </div>
                             <div class="form_group margin">
+                                <label for="day">By Day</label>
+                                <select class="default_select alternate" name="day" v-model="form.day">
+                                    <option value="" selected>All Days</option>
+                                    <option :value="day.value" v-for="(day, key) in days" :key="key">{{ day.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
                                 <label for="timeslot">By Time Slot</label>
                                 <select class="default_select alternate" name="timeslot" v-model="form.timeslot">
                                     <option value="" selected>All Timeslots</option>
@@ -79,6 +86,7 @@
                                 <th class="stick">No. of Rides</th>
                                 <th class="stick">Customer Type</th>
                                 <th class="stick">Preferred Studio</th>
+                                <th class="stick">Preferred Instructor</th>
                                 <th class="stick">Email Address</th>
                                 <th class="stick">Contact Number</th>
                                 <th class="stick">Age</th>
@@ -103,6 +111,7 @@
                                 <td>{{ data.numberOfRides }}</td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
                                 <td>{{ (data.preferred_studio.length > 0) ? data.preferred_studio[0].name : 'No Preferred Studio' }}</td>
+                                <td>{{ (data.preferred_instructor.length > 0) ? data.preferred_instructor[0].name : 'No Preferred Instructor' }}</td>
                                 <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
                                 <td>{{ data.email }}</td>
                                 <td>{{ -($moment(data.customer_details.co_birthdate).diff($moment(), 'years')) }}</td>
@@ -149,11 +158,42 @@
                 types: [],
                 class_types: [],
                 studios: [],
+                days: [
+                    {
+                        name: 'Monday',
+                        value: 'Mon'
+                    },
+                    {
+                        name: 'Tuesday',
+                        value: 'Tue'
+                    },
+                    {
+                        name: 'Wednesday',
+                        value: 'Wed'
+                    },
+                    {
+                        name: 'Thursday',
+                        value: 'Thu'
+                    },
+                    {
+                        name: 'Friday',
+                        value: 'Fri'
+                    },
+                    {
+                        name: 'Saturday',
+                        value: 'Sat'
+                    },
+                    {
+                        name: 'Sunday',
+                        value: 'Sun'
+                    }
+                ],
                 form: {
                     studio_id: '',
                     class_type_id: '',
                     timeslot: '',
                     instructor_id: '',
+                    day: '',
                     start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
                 }
@@ -169,6 +209,7 @@
                         'Customer': value.fullname,
                         'Number Of Rides': value.numberOfRides,
                         'Preferred Studio': (value.preferred_studio.length > 0) ? value.preferred_studio[0].name : 'No Preferred Studio',
+                        'Preferred Instructor': (value.preferred_instructor.length > 0) ? value.preferred_instructor[0].name : 'No Preferred Instructor',
                         'Customer Type': value.customer_details.customer_type.name,
                         'Contact Number': me.getCustomerDetails(value, 'contact_number'),
                         'Email Address': value.email,
@@ -252,10 +293,11 @@
             getCustomers () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                formData.append('all', 1)
                 me.values = []
 
                 me.loader(true)
-                me.$axios.post(`api/reporting/customers/top-riders?all=1`, formData).then(res => {
+                me.$axios.post('api/reporting/customers/top-riders', formData).then(res => {
                     if (res.data) {
                         res.data.topRiders.forEach((item, key) => {
                             me.values.push(item)
@@ -307,6 +349,9 @@
 
                             me.res.topRiders.data.forEach((item, key) => {
                                 item.preferred_studio.sort((a, b) => {
+                                    return parseInt(a.count) + parseInt(b.count)
+                                })
+                                item.preferred_instructor.sort((a, b) => {
                                     return parseInt(a.count) + parseInt(b.count)
                                 })
                             })
