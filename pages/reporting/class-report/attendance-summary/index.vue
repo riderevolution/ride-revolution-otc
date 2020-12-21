@@ -77,29 +77,29 @@
                     </div>
                 </section>
                 <section id="content">
-                    <table class="cms_table alt">
+                    <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th class="stick">Date</th>
-                                <th class="stick">Total Riders</th>
-                                <th class="stick">Paying Riders</th>
-                                <th class="stick">Comped Riders</th>
-                                <th class="stick">First Timers</th>
-                                <th class="stick">No Shows</th>
-                                <th class="stick">Cancel</th>
-                                <th class="stick">Waitlist</th>
-                                <th class="stick">Repeat</th>
-                                <th class="stick">Avg Riders</th>
-                                <th class="stick">Number Classes</th>
-                                <th class="stick">Avg Spots</th>
-                                <th class="stick">Capacity</th>
-                                <th class="stick">Paying</th>
-                                <th class="stick">Total Revenue</th>
+                                <th>Date</th>
+                                <th>Total Riders</th>
+                                <th>Paying Riders</th>
+                                <th>Comped Riders</th>
+                                <th>First Timers</th>
+                                <th>No Shows</th>
+                                <th>Cancel</th>
+                                <th>Waitlist</th>
+                                <th>Repeat</th>
+                                <th>Avg Riders</th>
+                                <th>Number Classes</th>
+                                <th>Avg Spots</th>
+                                <th>Capacity</th>
+                                <th>Paying</th>
+                                <th>Total Revenue</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.schedules.data.length > 0">
-                            <tr v-for="(data, key) in res.schedules.data" :key="key">
-                                <td>{{ $moment(data.date, 'YYYY-MM-DD').format('MMM DD, YYYY') }}</td>
+                        <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.schedules.data" v-if="res.schedules.data.length > 0">
+                            <tr class="parent">
+                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment(data.date, 'YYYY-MM-DD').format('MMM DD, YYYY') }}</td>
                                 <td>{{ countValues(data, 'total_riders') }}</td>
                                 <td>{{ countValues(data, 'paying_riders') }}</td>
                                 <td>{{ countValues(data, 'comped_riders') }}</td>
@@ -110,15 +110,66 @@
                                 <td>{{ countValues(data, 'total_riders') - (countValues(data, 'first_timers') + countValues(data, 'no_shows')) }}</td>
                                 <td>{{ totalPercentage('average', data) }}</td>
                                 <td>{{ totalItems(data.number_of_classes) }}</td>
-                                <td>{{ (studio.online_class) ? 'Unlimited' : studio.capacity }}</td>
+                                <td>{{ (studio.online_class) ? 'N/A' : studio.capacity }}</td>
                                 <td>{{ totalPercentage('capacity', data) }}</td>
                                 <td>{{ totalPercentage('paying', data) }}</td>
                                 <td>Php {{ totalCount(countValues(data, 'revenue')) }}</td>
                             </tr>
-                        </tbody>
-                        <tbody class="no_results" v-else>
                             <tr>
-                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                <td class="pads" colspan="15">
+                                    <div class="accordion_table">
+                                        <table class="cms_table alt">
+                                            <thead>
+                                                <tr>
+                                                    <th>Start Time</th>
+                                                    <th>Total Riders</th>
+                                                    <th>Paying Riders</th>
+                                                    <th>Comped Riders</th>
+                                                    <th>First Timers</th>
+                                                    <th>No Show</th>
+                                                    <th>Cancel</th>
+                                                    <th>Waitlist</th>
+                                                    <th>Repeat</th>
+                                                    <th>Avg Riders</th>
+                                                    <th>Number Of Classes</th>
+                                                    <th>Avg Spots</th>
+                                                    <th>Capacity</th>
+                                                    <th>Paying</th>
+                                                    <th>Total Revenue</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody v-if="data.classes.length > 0">
+                                                <tr v-for="(item, key) in data.classes" :key="key">
+                                                    <td>{{ item.start_time }}</td>
+                                                    <td>{{ countValues(item, 'total_riders') }}</td>
+                                                    <td>{{ countValues(item, 'paying_riders') }}</td>
+                                                    <td>{{ countValues(item, 'comped_riders') }}</td>
+                                                    <td>{{ countValues(item, 'first_timers') }}</td>
+                                                    <td>{{ countValues(item, 'no_shows') }}</td>
+                                                    <td>{{ countValues(item, 'cancel') }}</td>
+                                                    <td>{{ countValues(item, 'waitlist') }}</td>
+                                                    <td>{{ countValues(item, 'total_riders') - (countValues(item, 'first_timers') + countValues(item, 'no_shows')) }}</td>
+                                                    <td>{{ totalPercentage('average', item) }}</td>
+                                                    <td>{{ item.number_of_classes }}</td>
+                                                    <td>{{ (studio.online_class) ? 'N/A' : studio.capacity }}</td>
+                                                    <td>{{ totalPercentage('capacity', item) }}</td>
+                                                    <td>{{ totalPercentage('paying', item) }}</td>
+                                                    <td>Php {{ totalCount(countValues(item, 'revenue')) }}</td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody class="no_results" v-else>
+                                                <tr>
+                                                    <td colspan="15">No Result(s) Found.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-if="res.schedules.data.length == 0">
+                            <tr>
+                                <td colspan="15">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -192,23 +243,6 @@
                         'Revenue': me.computeRevenue(value, value, 'revenue'),
                         'Discount': me.computeRevenue(value, value, 'discount')
                     }))
-                    // ...me.values.map((value, key) => ({
-                    //     'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMM DD, YYYY'),
-                    //     'Total Rides': me.countValues(value, 'total_riders'),
-                    //     'Paying Riders': me.countValues(value, 'paying_riders'),
-                    //     'Comped Riders': me.countValues(value, 'comped_riders'),
-                    //     'First Timers': me.countValues(value, 'first_timers'),
-                    //     'No Shows': me.countValues(value, 'no_shows'),
-                    //     'Cancel': me.countValues(value, 'cancel'),
-                    //     'Waitlist': me.countValues(value, 'waitlist'),
-                    //     'Repeat': me.countValues(value, 'repeats'),
-                    //     'Avg Riders': me.totalPercentage('average', value),
-                    //     'Number Classes': me.totalItems(value.number_of_classes),
-                    //     'Avg Spots': (me.studio.online_class) ? 'Unlimited' : me.studio.capacity,
-                    //     'Capacity': me.totalPercentage('capacity', value),
-                    //     'Paying': me.totalPercentage('paying', value),
-                    //     'Total Revenue': me.countValues(value, 'revenue')
-                    // }))
                 ]
             }
         },
@@ -422,8 +456,22 @@
                     setTimeout( () => {
                         me.rowCount = document.getElementsByTagName('th').length
                         me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                 })
+            },
+            toggleAccordion (event, key) {
+                const me = this
+                const target = event.target
+                me.res.schedules.data[key].open ^= true
+                if (me.res.schedules.data[key].open) {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
+                } else {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
+                }
             },
             fetchData () {
                 const me = this
@@ -447,6 +495,10 @@
                     setTimeout( () => {
                         me.rowCount = document.getElementsByTagName('th').length
                         me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                     }, 500)
                 })
             },
