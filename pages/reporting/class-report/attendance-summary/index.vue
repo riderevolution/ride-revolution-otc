@@ -436,6 +436,7 @@
 
                 me.$axios.post(`api/reporting/classes/attendance-summary`, formData).then(res => {
                     setTimeout( () => {
+                        console.log(res.data);
                         me.res = res.data
                         me.loaded = true
                     }, 500)

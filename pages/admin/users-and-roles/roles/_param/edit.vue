@@ -203,6 +203,11 @@
                         checked: false
                     },
                     {
+                        name: 'Customer Payable',
+                        class: 'child',
+                        checked: false
+                    },
+                    {
                         name: 'Customer Retention',
                         class: 'child',
                         checked: false

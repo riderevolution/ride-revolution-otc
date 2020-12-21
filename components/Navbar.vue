@@ -145,6 +145,10 @@
                                         link: '/reporting/customer-report/outstanding-credits'
                                     },
                                     {
+                                        title: 'Customer Payable',
+                                        link: '/reporting/customer-report/customer-payable'
+                                    },
+                                    {
                                         title: 'Customer Retention',
                                         link: '/reporting/customer-report/customer-retention'
                                     },
