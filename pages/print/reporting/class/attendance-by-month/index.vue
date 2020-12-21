@@ -196,7 +196,7 @@
                 setTimeout( () => {
                     me.loader(false)
                     setTimeout( () => {
-                        // window.print()
+                        window.print()
                     }, 1000)
                 }, 500)
             },

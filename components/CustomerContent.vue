@@ -1079,7 +1079,7 @@
                             if (payment.promo_code_used !== null) {
                                 temp_price += parseInt(payment_item.total)
                             } else {
-                                temp_price += parseInt(payment_item.price_per_item)
+                                temp_price += parseInt(payment_item.total)
                             }
                         })
                         result = `Php ${me.totalCount(temp_price)}`
