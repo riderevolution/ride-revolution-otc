@@ -3,16 +3,16 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
-                    <nuxt-link to="/reporting/customer-report/outstanding-credits" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Outstanding Store Credits</span></nuxt-link>
+                    <nuxt-link to="/reporting/customer-report/customer-payable" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Customer Payable</span></nuxt-link>
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ customer.fullname }} Store Credits</h1>
+                                <h1>{{ customer.fullname }} Pending Amount</h1>
                             </div>
                             <div class="action_btn alternate no_margin" @click="openWindow(`/customers/${customer.id}/packages`)">View Customer</div>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/customer/outstanding-credits/${$route.params.slug}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/customer/customer-payable/${$route.params.slug}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.results.data.length > 0">
                                 Export
@@ -20,15 +20,15 @@
                             <download-csv
                                 v-if="res.results.data.length > 0"
                                 class="hidden me"
-                                :data="outstandingStoreCreditsSlugAttributes"
-                                :name="`outstanding-store-credits-${$route.params.slug}.csv`">
+                                :data="customerPayableSlugAttributes"
+                                :name="`customer-payable-${$route.params.slug}.csv`">
                                 Export
                             </download-csv>
                         </div>
                     </div>
                     <div class="action_buttons">
                         <div class="actions nmb">
-                            <div class="total no_pad">Total Store Credits: Php {{ totalCount(total) }}</div>
+                            <div class="total no_pad">Total Pending Amount: Php {{ totalCount(total) }}</div>
                         </div>
                     </div>
                 </section>
@@ -132,7 +132,7 @@
         data () {
             const values = []
             return {
-                name: 'Outstanding Credits',
+                name: 'Customer Payable',
                 access: true,
                 filter: true,
                 loaded: false,
@@ -144,7 +144,7 @@
             }
         },
         computed: {
-            outstandingStoreCreditsSlugAttributes () {
+            customerPayableSlugAttributes () {
                 const me = this
                 return [
                     ...me.values.map(value => ({
@@ -292,7 +292,7 @@
                 me.values = []
 
                 me.loader(true)
-                me.$axios.post(`api/reporting/customers/outstanding-store-credits/${me.$route.params.slug}`, formData).then(res => {
+                me.$axios.post(`api/reporting/customers/customer-payable/${me.$route.params.slug}`, formData).then(res => {
                     if (res.data) {
                         res.data.results.forEach((parent, key) => {
                             parent.payment_items.forEach((child, key) => {
@@ -317,12 +317,12 @@
                 me.loader(true)
                 let formData = new FormData()
 
-                me.$axios.post(`api/reporting/customers/outstanding-store-credits/${me.$route.params.slug}`, formData).then(res => {
+                me.$axios.post(`api/reporting/customers/customer-payable/${me.$route.params.slug}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data
                             me.customer = res.data.customer
-                            me.total = res.data.total_store_credits_bought
+                            me.total = res.data.total_pending_amount
                             me.loaded = true
                         }, 500)
                     }
