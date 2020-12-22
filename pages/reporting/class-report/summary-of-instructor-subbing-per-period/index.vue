@@ -70,6 +70,7 @@
                                 <th class="stick">Studio</th>
                                 <th class="stick">Primary Instructor</th>
                                 <th class="stick">Substitute Instructor</th>
+                                <th class="stick">Cancelled</th>
                                 <th class="stick">Remarks</th>
                             </tr>
                         </thead>
@@ -77,11 +78,12 @@
                             <tr v-for="(data, key) in res.scheduledDates.data" :key="key">
                                 <td>{{ $moment(data.date, 'YYYY-MM-DD').format('MMMM DD, YYYY') }}</td>
                                 <td>{{ $moment(data.schedule.start_time, 'HH:mm A').format('h:mm A') }}</td>
-                                <td>{{ data.schedule.class_type.name }}</td>
+                                <td>{{ (data.schedule.set_custom_name) ? data.schedule.custom_name : data.schedule.class_type.name }}</td>
                                 <td>{{ (data.schedule.enabled) ? 'Yes' : 'No' }}</td>
                                 <td>{{ data.schedule.studio.name }}</td>
                                 <td>{{ data.primary.user.first_name }} {{ data.primary.user.last_name }}</td>
                                 <td>{{ data.substitute.user.first_name }} {{ data.substitute.user.last_name }}</td>
+                                <td>{{ totalItems(data.cancelled) }}</td>
                                 <td>{{ data.substitute.remarks }}</td>
                             </tr>
                         </tbody>
@@ -123,7 +125,7 @@
                 studio: [],
                 instructors: [],
                 form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     studio_id: '',
                     instructor_id: ''
@@ -148,6 +150,7 @@
                         'Primary Instructor': `${value.primary.user.first_name } ${ value.primary.user.last_name}`,
                         'Substitute Instructor': `${value.substitute.user.first_name } ${ value.substitute.user.last_name}`,
                         'Total Bookings': value.bookings.length,
+                        'Total Cancelled': value.cancelled,
                         'Remarks': value.substitute.remarks
                     }))
                 ]
