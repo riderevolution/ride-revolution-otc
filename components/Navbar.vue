@@ -190,6 +190,10 @@
                                     {
                                         title: 'Instructor Attendance Summary',
                                         link: '/reporting/class-report/instructor-attendance-summary'
+                                    },
+                                    {
+                                        title: 'Attendance Export',
+                                        link: '/reporting/class-report/attendance-export'
                                     }
                                 ]
                             },

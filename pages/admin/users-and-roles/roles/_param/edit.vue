@@ -259,6 +259,11 @@
                         checked: false
                     },
                     {
+                        name: 'Attendance Export',
+                        class: 'child',
+                        checked: false
+                    },
+                    {
                         name: 'Class Package Report',
                         class: 'parent',
                         checked: false,
