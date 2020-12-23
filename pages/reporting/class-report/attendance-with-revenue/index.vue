@@ -84,7 +84,7 @@
                                 <th>Class Type</th>
                                 <th>Instructor</th>
                                 <th>Total Riders</th>
-                                <th>Total Revenue</th>
+                                <th>Total Gross Revenue</th>
                                 <th>Total Discount</th>
                                 <th>Total Net Revenue</th>
                             </tr>
@@ -110,7 +110,7 @@
                                                     <th>Customer</th>
                                                     <th>Status</th>
                                                     <th>Package Used</th>
-                                                    <th>Revenue</th>
+                                                    <th>Gross Revenue</th>
                                                     <th>Discount</th>
                                                     <th>Net Revenue</th>
                                                 </tr>
