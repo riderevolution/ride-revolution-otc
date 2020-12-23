@@ -81,7 +81,7 @@
                                     </thead>
                                     <tbody v-if="data.length > 0">
                                         <tr v-for="(timeslot, key) in data" :key="key">
-                                            <td class="name none">{{ timeslot.time }}</td>
+                                            <td><nuxt-link class="name" :to="`/reporting/class-report/attendance-by-timeslot/${timeslot.time}`">{{ timeslot.time }}</nuxt-link></td>
                                             <td>
                                                 {{ timeslot.average }}
                                             </td>
