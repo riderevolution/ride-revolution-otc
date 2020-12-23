@@ -291,16 +291,18 @@
                 let formData = new FormData(document.getElementById('filter'))
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/attendance-with-revenue?all=1`, formData).then(res => {
+                me.$axios.post(`api/reporting/classes/attendance-with-revenue?for_export=1`, formData).then(res => {
                     if (res.data) {
 
-                        res.data.scheduled_dates.forEach((item, index) => {
-                            item.bookings.forEach((child, index) => {
-                                child.schedule = item.schedule
-                                child.parent = false
-                                me.values.push(child)
-                            })
-                        })
+                        me.values = res.data.export_data
+
+                        // res.data.scheduled_dates.forEach((item, index) => {
+                        //     item.bookings.forEach((child, index) => {
+                        //         child.schedule = item.schedule
+                        //         child.parent = false
+                        //         me.values.push(child)
+                        //     })
+                        // })
                     }
                 }).catch((err) => {
 
