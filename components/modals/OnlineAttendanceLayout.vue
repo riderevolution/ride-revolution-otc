@@ -122,7 +122,7 @@
                     ...me.values.map(value => ({
                         'Reference Number': me.getPaymentCode(value.user_package_count),
                         'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
-                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
+                        'Payment Method': (value.user_package_count.has_payment_item) ? value.user_package_count.payment_item.payment_method.method : 'N/A',
                         'Studio': me.studio.name,
                         'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
                         'Booking ID': value.id,
@@ -157,15 +157,19 @@
                 const me = this
                 let result = ''
 
-                switch (data.payment_item.payment_method.method) {
-                    case 'paypal':
-                        result = data.payment_item.payment_method.paypal_transaction_id
-                        break
-                    case 'paymaya':
-                        result = data.payment_item.payment_method.paymaya_transaction_id
-                        break
-                    default:
-                        result = data.payment.payment_code
+                if (data.has_payment_item == true || data.has_payment_item == 'true') {
+                    switch (data.payment_item.payment_method.method) {
+                        case 'paypal':
+                            result = data.payment_item.payment_method.paypal_transaction_id
+                            break
+                        case 'paymaya':
+                            result = data.payment_item.payment_method.paymaya_transaction_id
+                            break
+                        default:
+                            result = data.payment.payment_code
+                    }
+                } else {
+                    result = ''
                 }
 
                 return result
@@ -175,16 +179,20 @@
                 let result = ''
                 let base_value = 0
                 if (data.status != 'cancelled') {
-                    if (data.user_package_count.payment_item.payment_method.method != 'comp') {
-                        switch (type) {
-                            case 'revenue':
-                                base_value = me.totalCount(data.revenue)
-                                break
-                            case 'discount':
-                                base_value = me.totalCount(data.discount)
-                                break
+                    if (data.user_package_count.has_payment_item) {
+                        if (data.user_package_count.payment_item.payment_method.method != 'comp') {
+                            switch (type) {
+                                case 'revenue':
+                                    base_value = me.totalCount(data.revenue)
+                                    break
+                                case 'discount':
+                                    base_value = me.totalCount(data.discount)
+                                    break
+                            }
+                            result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
+                        } else {
+                            result = 0
                         }
-                        result = me.totalCount(base_value * parseInt(me.schedule.schedule.class_credits))
                     } else {
                         result = 0
                     }
