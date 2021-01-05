@@ -56,6 +56,7 @@
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                             </div>
+                            <input type="hidden" name="type" v-model="tabStatus">
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
                     </div>
@@ -149,7 +150,9 @@
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
                         'Schedule Name': (value.scheduled_date.schedule.custom_name != null) ? value.scheduled_date.schedule.custom_name : value.scheduled_date.schedule.class_type.name,
-                        'Schedule Date': me.$moment(value.scheduled_date.schedule.date).format('MMMM DD, YYYY'),
+                        'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
+                        'Day': me.$moment(value.scheduled_date.date).format('dddd'),
+                        'Type': me.tabStatus,
                         'Start Time': value.scheduled_date.schedule.start_time,
                         'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,

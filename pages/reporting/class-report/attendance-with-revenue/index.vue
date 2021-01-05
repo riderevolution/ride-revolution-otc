@@ -207,7 +207,7 @@
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
                         'Schedule Name': (value.scheduled_date.schedule.custom_name != null) ? value.scheduled_date.schedule.custom_name : value.scheduled_date.schedule.class_type.name,
-                        'Schedule Date': me.$moment(value.scheduled_date.schedule.date).format('MMMM DD, YYYY'),
+                        'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
                         'Start Time': value.scheduled_date.schedule.start_time,
                         'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,

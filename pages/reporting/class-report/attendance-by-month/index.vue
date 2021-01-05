@@ -130,59 +130,34 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
+                        'Transaction Date': me.$moment(value.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Reference Number': me.getPaymentCode(value.user_package_count),
-                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'No Promo Code Used',
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
-                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'No Package Used',
-                        'Booking ID': value.id,
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
-                        'Employee': (value.employee) ? value.employee.fullname : 'No User',
-                        'Schedule Name': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
-                        'Schedule Date': me.$moment(value.date).format('MMMM DD, YYYY'),
-                        'Start Time': value.schedule.start_time,
-                        'Instructor': me.getInstructorsInSchedule(value, 1),
-                        'Customer ID': value.user.id,
-                        'Full Name': value.user.fullname,
-                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Schedule Name': (value.scheduled_date.schedule.custom_name != null) ? value.scheduled_date.schedule.custom_name : value.scheduled_date.schedule.class_type.name,
+                        'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
+                        'Start Time': value.scheduled_date.schedule.start_time,
+                        'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
+                        'Full Name': `${value.user.first_name} ${value.user.last_name}`,
+                        'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
-                        'Revenue': me.computeRevenue(value, value, 'revenue'),
-                        'Discount': me.computeRevenue(value, value, 'discount'),
-                        'Net Revenue': me.computeRevenue(value, value, 'net')
+                        'Gross Revenue': me.computeRevenue(value, 'gross'),
+                        'Discount': me.computeRevenue(value, 'discount'),
+                        'Net Revenue': me.computeRevenue(value, 'net'),
+                        'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
+                        'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
+                        'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
+                        'Username': (value.employee) ? value.employee.fullname : 'Customer'
                     }))
                 ]
             }
         },
         methods: {
-            computeRevenue (data, booking, type) {
-                const me = this
-                let result = ''
-                let base_value = 0
-                if (booking.status != 'cancelled') {
-                    if (booking.user_package_count.payment_item.payment_method.method != 'comp') {
-                        switch (type) {
-                            case 'net':
-                                base_value = me.totalCount(booking.net_revenue)
-                                break
-                            case 'revenue':
-                                base_value = me.totalCount(booking.revenue)
-                                break
-                            case 'discount':
-                                base_value = me.totalCount(booking.discount)
-                                break
-                        }
-                        result = me.totalCount(base_value * parseInt(data.schedule.class_credits))
-                    } else {
-                        result = 0
-                    }
-                } else {
-                    result = 0
-                }
-
-                return result
-            },
             getPaymentCode (data) {
                 const me = this
                 let result = ''
@@ -196,6 +171,64 @@
                         break
                     default:
                         result = data.payment.payment_code
+                }
+
+                return result
+            },
+            computeRevenue (data, type) {
+                const me = this
+                let result = ''
+                let base_value = 0
+                if (data.status != 'cancelled') {
+                    if (data.user_package_count.payment_item.payment_method.method != 'comp') {
+                        switch (type) {
+                            case 'revenue':
+                                base_value = me.totalCount(data.revenue)
+                                break
+                            case 'net':
+                                base_value = me.totalCount(data.net_revenue)
+                                break
+                            case 'discount':
+                                base_value = me.totalCount(data.discount)
+                                break
+                        }
+                        result = me.totalCount(base_value * parseInt(me.scheduled_date.schedule.class_credits))
+                    } else {
+                        result = 0
+                    }
+                } else {
+                    result = 0
+                }
+
+                return result
+            },
+            getInstructorsInSchedule (data, export_status = null) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let ins_ctr = 0, instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
+                        }
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        if (export_status != null) {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        } else {
+                            result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        }
+                    } else {
+                        if (export_status != null) {
+                            result = `${instructor.user.fullname}`
+                        } else {
+                            result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                        }
+                    }
                 }
 
                 return result
@@ -218,16 +251,10 @@
 
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/attendance-with-revenue?all=1`, formData).then(res => {
+                me.$axios.post(`api/reporting/classes/attendance-with-revenue?for_export=1`, formData).then(res => {
                     if (res.data) {
 
-                        res.data.scheduled_dates.forEach((item, index) => {
-                            item.bookings.forEach((child, index) => {
-                                child.schedule = item.schedule
-                                child.parent = false
-                                me.values.push(child)
-                            })
-                        })
+                        me.values = res.data.export_data
                     }
                 }).catch((err) => {
 
@@ -235,45 +262,6 @@
                     me.loader(false)
                     document.querySelector('.me').click()
                 })
-            },
-            getInstructorsInSchedule (data, type) {
-                const me = this
-                let result = ''
-                if (data != '') {
-                    let ins_ctr = 0
-                    let ins_sub_ctr = 0
-                    let instructor = []
-                    let sub_instructor = []
-                    data.schedule.instructor_schedules.forEach((ins, index) => {
-                        if (ins.substitute == 0) {
-                            ins_ctr += 1
-                        }
-                        if (type == 'substitute') {
-                            if (ins.substitute == 1) {
-                                ins_sub_ctr += 1
-                                sub_instructor = ins
-                            }
-                        }
-                        if (ins.primary == 1) {
-                            instructor = ins
-                        }
-                    })
-
-                    if (ins_ctr == 2) {
-                        result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
-                    } else {
-                        if (ins_sub_ctr > 0) {
-                            result = `${sub_instructor.user.fullname}`
-                        } else {
-                            result = `${instructor.user.fullname}`
-                        }
-                    }
-
-                } else {
-                    result = 'No Instructor'
-                }
-
-                return result
             },
             computeAvg () {
                 const me = this
