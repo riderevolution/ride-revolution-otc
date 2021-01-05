@@ -203,7 +203,6 @@
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
                         'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
-                        'Booking ID': value.id,
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
@@ -211,9 +210,8 @@
                         'Schedule Date': me.$moment(value.scheduled_date.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': value.scheduled_date.schedule.start_time,
                         'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
-                        'Customer ID': value.user.id,
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
-                        'Customer Type': value.user.customer_details.customer_type.name,
+                        'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
                         'Gross Revenue': me.computeRevenue(value, 'gross'),
                         'Discount': me.computeRevenue(value, 'discount'),
@@ -271,17 +269,47 @@
 
                 return result
             },
-            getCustomerInfo (data, type) {
+            getInstructorsInSchedule (data, export_status = null) {
                 const me = this
                 let result = ''
-                switch (type) {
-                    case 'name':
-                        if (data.user != null) {
-                            result = data.user.fullname
-                        } else {
-                            result = `${data.guest_first_name} ${data.guest_last_name}`
+                if (data != '') {
+                    let ins_ctr = 0, instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.substitute == 0) {
+                            ins_ctr += 1
                         }
-                        break
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+
+                    if (ins_ctr == 2) {
+                        if (export_status != null) {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        } else {
+                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                        }
+                    } else {
+                        if (export_status != null) {
+                            result = `${instructor.user.fullname}`
+                        } else {
+                            result = `${instructor.user.fullname}`
+                        }
+                    }
+                }
+
+                return result
+            },
+            getClassType () {
+                const me = this
+                let result = ''
+
+                if (me.form.class_type_id != '') {
+                    me.$axios.get(`api/packages/class-types/${me.form.class_type_id}`).then(res => {
+                        result = res.data.classType.name
+                    })
+                } else {
+                    result = 'All Class Type'
                 }
 
                 return result
