@@ -58,10 +58,14 @@
                         }, 500)
                     })
                 } else {
-                    if (me.$parent.value.enabled) {
-                        me.$parent.value.enabled = 0
+                    if (me.$parent.value) {
+                        if (me.$parent.value.enabled) {
+                            me.$parent.value.enabled = 0
+                        } else {
+                            me.$parent.value.enabled = 1
+                        }
                     } else {
-                        me.$parent.value.enabled = 1
+                        me.$parent.submissionSuccess()
                     }
                     me.$store.state.customerPromptStatus = false
                     document.body.classList.remove('no_scroll')

@@ -558,6 +558,7 @@
     import Refund from '../components/modals/Refund'
     import RecurringRefund from '../components/modals/RecurringRefund'
     import Pagination from '../components/Pagination'
+
     export default {
         components: {
             CustomerPrompt,
