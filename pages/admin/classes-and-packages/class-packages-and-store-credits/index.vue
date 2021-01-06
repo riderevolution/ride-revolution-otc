@@ -175,6 +175,20 @@
                 let apiRoute = ''
                 me.filter = true
                 let formData = new FormData(document.getElementById('filter'))
+                switch (me.package_status) {
+                    case 1:
+                        formData.append('type', 'regular')
+                        break
+                    case 2:
+                        formData.append('type', 'recurring')
+                        break
+                    case 3:
+                        formData.append('type', 'promo')
+                        break
+                    case 4:
+                        formData.append('type', 'store-credits')
+                        break
+                }
                 formData.append('enabled', me.status)
                 switch (packageStatus) {
                     case 1:
