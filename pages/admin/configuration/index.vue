@@ -72,11 +72,11 @@
                             imgSrc: '/icons/medical-history-icon.svg',
                             link: '/admin/configuration/medical-history'
                         },
-                        // {
-                        //     label: 'System Emails',
-                        //     imgSrc: '/icons/system-emails-icon.svg',
-                        //     link: '/admin/configuration/system-emails'
-                        // },
+                        {
+                            label: 'System Emails',
+                            imgSrc: '/icons/system-emails-icon.svg',
+                            link: '/admin/configuration/system-emails'
+                        },
                         // {
                         //     label: 'MailChimp',
                         //     imgSrc: '/icons/mailchimp-icon.svg',
