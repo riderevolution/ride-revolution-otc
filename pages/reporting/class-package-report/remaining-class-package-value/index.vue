@@ -19,7 +19,7 @@
                             </h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/class-package/remaining-package-value?start_date=${form.cut_off_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/class-package/remaining-package-value?cut_off_date=${form.cut_off_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getPackages()" v-if="res.classPackages.length > 0">
                                 Export
