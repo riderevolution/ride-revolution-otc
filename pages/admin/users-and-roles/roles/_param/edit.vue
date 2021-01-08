@@ -275,7 +275,7 @@
                         checked: false
                     },
                     {
-                        name: 'Class Package Expiration',
+                        name: 'Revenue From Class Package Expiration',
                         class: 'child',
                         checked: false
                     },

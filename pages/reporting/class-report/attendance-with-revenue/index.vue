@@ -252,6 +252,21 @@
 
                 return result
             },
+            getCustomerInfo (data, type) {
+                const me = this
+                let result = ''
+                switch (type) {
+                    case 'name':
+                        if (data.user != null) {
+                            result = data.user.fullname
+                        } else {
+                            result = `${data.guest_first_name} ${data.guest_last_name}`
+                        }
+                        break
+                }
+
+                return result
+            },
             getPaymentCode (data) {
                 const me = this
                 let result = ''

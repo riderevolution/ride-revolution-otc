@@ -207,8 +207,8 @@
                                         link: '/reporting/class-package-report/remaining-class-package-value'
                                     },
                                     {
-                                        title: 'Class Package Expiration',
-                                        link: '/reporting/class-package-report/class-package-expiration'
+                                        title: 'Revenue From Class Package Expiration',
+                                        link: '/reporting/class-package-report/revenue-from-class-package-expiration'
                                     },
                                     {
                                         title: 'Average Time to Utilize Packages',
