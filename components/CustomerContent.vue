@@ -872,10 +872,14 @@
                         case 'class-package':
                             if (item.refunded == 0) {
                                 if (item.user_package_count) {
-                                    if (item.user_package_count.count == item.user_package_count.original_package_count) {
-                                        return 'refundable'
-                                    } else {
+                                    if (item.class_package.recurring) {
                                         return 'expired'
+                                    } else {
+                                        if (item.user_package_count.count == item.user_package_count.original_package_count) {
+                                            return 'refundable'
+                                        } else {
+                                            return 'expired'
+                                        }
                                     }
                                 } else {
                                     return 'expired'
