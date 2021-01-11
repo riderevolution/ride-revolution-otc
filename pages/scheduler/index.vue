@@ -168,17 +168,18 @@
                     let instructor = []
                     let sub_instructor = []
                     data.schedule.instructor_schedules.forEach((ins, index) => {
-                        if (ins.substitute == 0) {
-                            ins_ctr += 1
-                        }
+
                         if (type == 'substitute') {
                             if (ins.substitute == 1) {
                                 ins_sub_ctr += 1
                                 sub_instructor = ins
                             }
-                        }
-                        if (ins.primary == 1) {
-                            instructor = ins
+                        } else {
+                            if (ins.substitute == 0) {
+                                ins_ctr += 1
+                            } else {
+                                instructor = ins
+                            }
                         }
                     })
 
