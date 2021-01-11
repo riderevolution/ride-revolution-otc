@@ -190,8 +190,9 @@
                             console.log('sub');
                             // result = `${sub_instructor.user.id}`
                         } else {
-                            console.log(instructor.id);
-                            console.log('primary');
+                            if (!instructor.user) {
+                                console.log(instructor);
+                            }
                             // result = `${instructor.user.fullname}`
                         }
                     }
