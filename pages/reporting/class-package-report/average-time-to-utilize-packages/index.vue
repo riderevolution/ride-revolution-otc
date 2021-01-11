@@ -46,16 +46,16 @@
                         <thead>
                             <tr>
                                 <th class="sticky">Class Package</th>
+                                <th class="sticky">Validity Period</th>
                                 <th class="sticky">Total Package Count</th>
-                                <th class="sticky">Total Sales Amount</th>
                                 <th class="sticky">Utilization Rate</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.packages.data.length > 0">
                             <tr v-for="(data, key) in res.packages.data" :key="key">
                                 <td>{{ data.name }}</td>
+                                <td>{{ data.expires_in }}</td>
                                 <td>{{ (data.class_count_unlimited == 1) ? 'Unlimited' : data.class_count }}</td>
-                                <td>Php {{ totalCount(data.totalSalesAmount) }}</td>
                                 <td>{{ data.utilizationRate }} Days</td>
                             </tr>
                         </tbody>
@@ -78,7 +78,7 @@
 <script>
     import Foot from '~/components/Foot'
     import Pagination from '~/components/Pagination'
-    
+
     export default {
         components: {
             Foot,
@@ -134,11 +134,34 @@
                     document.querySelector('.me').click()
                 })
             },
+            submissionSuccess () {
+                const me = this
+                let formData = new FormData(document.getElementById('filter'))
+
+                me.loader(true)
+                me.$axios.post('api/reporting/packages/average-time-to-utilize-packages', formData).then(res => {
+                    setTimeout( () => {
+                        me.res = res.data
+                        me.loaded = true
+                    }, 500)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    me.rowCount = document.getElementsByTagName('th').length
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
             fetchData () {
                 const me = this
                 let formData = new FormData()
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+
                 me.loader(true)
-                me.$axios.post(`api/reporting/packages/average-time-to-utilize-packages`, formData).then(res => {
+                me.$axios.post('api/reporting/packages/average-time-to-utilize-packages', formData).then(res => {
                     setTimeout( () => {
                         me.res = res.data
                         me.loaded = true
