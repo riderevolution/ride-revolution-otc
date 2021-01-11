@@ -187,9 +187,12 @@
                     } else {
                         if (ins_sub_ctr > 0) {
                             console.log(sub_instructor);
+                            console.log('sub');
                             // result = `${sub_instructor.user.id}`
                         } else {
-                            result = `${instructor.user.fullname}`
+                            console.log(instructor);
+                            console.log('primary');
+                            // result = `${instructor.user.fullname}`
                         }
                     }
 
