@@ -186,11 +186,11 @@
                         result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
                     } else {
                         if (ins_sub_ctr > 0) {
-                            console.log(sub_instructor.user);
+                            console.log(sub_instructor.id);
                             console.log('sub');
                             // result = `${sub_instructor.user.id}`
                         } else {
-                            console.log(instructor.user);
+                            console.log(instructor.id);
                             console.log('primary');
                             // result = `${instructor.user.fullname}`
                         }
