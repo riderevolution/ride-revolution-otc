@@ -178,22 +178,20 @@
                             if (ins.substitute == 0) {
                                 ins_ctr += 1
                             }
-                            instructor = ins
+                            if (ins.primary == 1) {
+                                instructor = ins
+                            }
                         }
                     })
 
                     if (ins_ctr == 2) {
                         result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
                     } else {
-                        if (ins_sub_ctr > 0) {
-                            console.log(sub_instructor.id);
-                            console.log('sub');
-                            // result = `${sub_instructor.user.id}`
-                        } else {
-                            if (!instructor.user) {
-                                console.log(instructor);
-                            }
-                            // result = `${instructor.user.fullname}`
+                        if (type == 'substitute' && ins_sub_ctr > 0) {
+                            result = `${sub_instructor.user.fullname}`
+                        }
+                        if (type == 'primary') {
+                            result = `${instructor.user.fullname}`
                         }
                     }
 
