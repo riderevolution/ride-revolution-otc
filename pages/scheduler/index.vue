@@ -178,9 +178,7 @@
                             if (ins.substitute == 0) {
                                 ins_ctr += 1
                             }
-                            if (ins.primary == 1) {
-                                instructor = ins
-                            }
+                            instructor = ins
                         }
                     })
 
