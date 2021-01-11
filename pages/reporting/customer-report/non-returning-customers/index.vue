@@ -267,13 +267,14 @@
                 me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
+                            console.log(res.data);
                             me.res = res.data
                             me.$axios.get('api/packages/class-packages?enabled=1').then(res => {
                                 if (res.data) {
                                     me.class_packages = res.data.classPackages.data
                                 }
                             })
-                            me.loaded = true
+                            // me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {

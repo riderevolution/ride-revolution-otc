@@ -186,7 +186,7 @@
                         result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
                     } else {
                         if (ins_sub_ctr > 0) {
-                            result = `${sub_instructor.user.fullname}`
+                            result = `${sub_instructor.user.id}`
                         } else {
                             result = `${instructor.user.fullname}`
                         }
