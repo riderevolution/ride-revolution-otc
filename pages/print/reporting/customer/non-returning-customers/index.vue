@@ -16,13 +16,14 @@
             <thead>
                 <tr>
                     <th>Customer</th>
-                    <th>Member ID</th>
                     <th>Last Package Used</th>
-                    <th>Date Purchased/Date Activated</th>
+                    <th>Purchase/Activation Date</th>
+                    <th>Status</th>
+                    <th>Completion/Expiration Date</th>
                     <th>Last Class</th>
-                    <th>Contact Number</th>
-                    <th>Email Address</th>
-                    <th>City</th>
+                    <th>Preferred Studio</th>
+                    <th>Preferred Instructor</th>
+                    <th>Total Rides</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
@@ -30,13 +31,14 @@
                     <td>
                         <div class="table_data_link">{{ data.fullname }}</div>
                     </td>
-                    <td>{{ data.member_id }}</td>
-                    <td>{{ data.userPackageCounts[0].class_package.name }}</td>
-                    <td>{{ $moment(data.userPackageCounts[0].last_avail_date).format('MMM DD, YYYY') }} / {{ (data.userPackageCounts[0].activation_date != 'NA') ? $moment(data.userPackageCounts[0].activation_date).format('MMM DD, YYYY') : 'Not Activated' }}</td>
-                    <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].updated_at).format('MMM DD, YYYY') : 'No Class Yet' }}</td>
-                    <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : 'No Class Yet' }}</td>
-                    <td>{{ data.email }}</td>
-                    <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
+                    <td>{{ data.latest_user_package_count.class_package.name }}</td>
+                    <td>{{ $moment(data.latest_user_package_count.created_at).format('MMM DD, YYYY') }} / {{ (data.latest_user_package_count.activation_date != 'NA') ? $moment(data.latest_user_package_count.activation_date).format('MMM DD, YYYY') : 'Not Activated' }}</td>
+                    <td class="alt_2">{{ replacer(data.latest_user_package_count.how_it_died) }}</td>
+                    <td>{{ getCustomerDetails(data, 'completion') }} / {{ getCustomerDetails(data, 'expired') }}</td>
+                    <td>{{ (data.latest_user_package_count.latest_booking) ? $moment(data.latest_user_package_count.latest_booking.scheduled_date.date).format('MMM DD, YYYY') : 'No Class Yet' }}</td>
+                    <td>{{ (data.preferred_studio) ? data.preferred_studio : 'No Preferred Studio' }}</td>
+                    <td>{{ (data.preferred_instructor) ? data.preferred_instructor : 'No Preferred Instructor' }}</td>
+                    <td>{{ totalItems(data.ridesCount) }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
@@ -62,15 +64,87 @@
             }
         },
         methods: {
+            getCustomerDetails (data, type) {
+                const me = this
+                let result = ''
+
+                switch (type) {
+                    case 'gender':
+                        result = (data.customer_details.co_sex) ? (data.customer_details.co_sex == 'F' ? 'Female' : 'Male') : 'N/A'
+                        break
+                    case 'contact_number':
+                        result = (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A'
+                        break
+                    case 'weight':
+                        result = (data.customer_details.co_weight) ? data.customer_details.co_weight : 'N/A'
+                        break
+                    case 'shoe_size':
+                        result = (data.customer_details.co_shoe_size) ? data.customer_details.co_shoe_size : 'N/A'
+                        break
+                    case 'dumbbell':
+                        result = (data.customer_details.dumbbell) ? data.customer_details.dumbbell : 'N/A'
+                        break
+                    case 'personal':
+                        if (data.customer_details.pa_address) {
+                            result += data.customer_details.pa_address
+                            if (data.customer_details.pa_address_2) {
+                                result += `, ${data.customer_details.pa_address_2}`
+                            }
+                            if (data.customer_details.pa_zip_code) {
+                                result += `, ${data.customer_details.pa_zip_code}`
+                            }
+                            if (data.customer_details.personal_state) {
+                                result += `, ${data.customer_details.personal_state}`
+                            }
+                            if (data.customer_details.personal_country) {
+                                result += `, ${data.customer_details.personal_country}`
+                            }
+                        } else {
+                            result = 'N/A'
+                        }
+                        break
+                    case 'billing':
+                        if (data.customer_details.ba_address) {
+                            result += data.customer_details.ba_address
+                            if (data.customer_details.ba_address_2) {
+                                result += `, ${data.customer_details.ba_address_2}`
+                            }
+                            if (data.customer_details.ba_zip_code) {
+                                result += `, ${data.customer_details.ba_zip_code}`
+                            }
+                            if (data.customer_details.billing_state) {
+                                result += `, ${data.customer_details.billing_state}`
+                            }
+                            if (data.customer_details.billing_country) {
+                                result += `, ${data.customer_details.billing_country}`
+                            }
+                        } else {
+                            result = 'N/A'
+                        }
+                        break
+                    case 'completion':
+                        result = me.$moment(data.latest_user_package_count.updated_at).format('MMM DD, YYYY')
+                        break
+                    case 'expired':
+                        if (data.latest_user_package_count.computed_expiration_date != null) {
+                            result = me.$moment(data.latest_user_package_count.computed_expiration_date, 'YYYY-MM-DD hh:mm:ss').format('MMM DD, YYYY')
+                        } else {
+                            result = me.$moment(data.latest_user_package_count.expiry_date_if_not_activated, 'YYYY-MM-DD hh:mm:ss').format('MMM DD, YYYY')
+                        }
+                        break
+                }
+
+                return result
+            },
             initial () {
                 const me = this
                 let formData = new FormData()
-                formData.append('start_date', me.$route.query.start_date)
-                formData.append('end_date', me.$route.query.end_date)
+                formData.append('date', me.$route.query.date)
                 if (me.$route.query.class_package_id.length > 0) {
                     formData.append('class_package_id', me.$route.query.class_package_id)
                 }
-                me.$axios.post('api/reporting/customers/non-returning-customers?all=1', formData).then(res => {
+                formData.append('all', 1)
+                me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.customers
