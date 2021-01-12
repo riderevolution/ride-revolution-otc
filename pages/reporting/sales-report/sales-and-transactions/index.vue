@@ -126,40 +126,54 @@
                         <table class="cms_table_accordion">
                             <thead>
                                 <tr>
-                                    <th>Reference Number</th>
+                                    <th>Customer</th>
+                                    <th>Qty.</th>
                                     <th>Transaction Date</th>
-                                    <th>Studio</th>
-                                    <th>Total Qty.</th>
-                                    <th>Payment Method</th>
-                                    <th>Total Price</th>
-                                    <th>Employee</th>
+                                    <th>Method</th>
+                                    <th>Gross Price</th>
+                                    <th>Discount Price</th>
+                                    <th>Net Price</th>
                                     <th>Status</th>
+                                    <th>Studio</th>
                                     <th>Comp Reason</th>
                                     <th>Note</th>
                                     <th>Remarks</th>
+                                    <th>Username</th>
                                 </tr>
                             </thead>
                             <tbody :class="`tbp ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in transactions.payments.data" v-if="transactions.payments.data.length > 0">
                                 <tr class="parent">
-                                    <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
-                                    <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
-                                    <td>{{ getPaymentStudio(data) }}</td>
+                                    <td class="toggler" @click.self="toggleAccordion($event, key)">
+                                        <div class="thumb">
+                                            <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                            <div class="table_image_default" v-else>
+                                                <div class="overlay">
+                                                    {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                                </div>
+                                            </div>
+                                            <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
+                                        </div>
+                                    </td>
                                     <td>{{ getPaymentDetails(data, 'qty') }}</td>
+                                    <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
                                     <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
-                                    <td>{{ getPaymentDetails(data, 'price') }}</td>
-                                    <td>{{ getPaymentDetails(data, 'employee') }}</td>
+                                    <td>Php {{ totalCount(data.gross) }}</td>
+                                    <td>Php {{ totalCount(data.discount) }}</td>
+                                    <td>Php {{ totalCount(data.net) }}</td>
                                     <td>
                                         <div class="table_actions">
                                             <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
                                             <div class="action_status red ml" v-if="data.promo_code_used !== null">Discounted</div>
                                         </div>
                                     </td>
+                                    <td>{{ getPaymentStudio(data) }}</td>
                                     <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : 'N/A' }}</td>
                                     <td>{{ (data.payment_method.note) ? data.payment_method.note : 'N/A' }}</td>
                                     <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : 'N/A' ) }}</td>
+                                    <td>{{ getPaymentDetails(data, 'employee') }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="pads" colspan="11">
+                                    <td class="pads" colspan="13">
                                         <div class="accordion_table">
                                             <table class="cms_table alt">
                                                 <thead>
@@ -167,10 +181,10 @@
                                                         <th>Reference Number</th>
                                                         <th>Item</th>
                                                         <th>Category</th>
-                                                        <th>Qty</th>
-                                                        <th>Price</th>
-                                                        <th>Customer</th>
-                                                        <th>Contact/Emergency No.</th>
+                                                        <th>Qty.</th>
+                                                        <th>Gross Price</th>
+                                                        <th>Discount Price</th>
+                                                        <th>Net Price</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody v-if="data.payment_items.length > 0">
@@ -180,28 +194,19 @@
                                                         <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
                                                         <td>{{ child.quantity }}</td>
                                                         <td class="price">
-                                                            <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item * child.quantity) }}</p>
-                                                            <p>PHP {{ totalCount((data.promo_code_used !== null) ? child.total : child.price_per_item * child.quantity) }}</p>
+                                                            <p>PHP {{ totalCount(child.gross) }}</p>
                                                         </td>
-                                                        <td>
-                                                            <div class="thumb">
-                                                                <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
-                                                                <div class="table_image_default" v-else>
-                                                                    <div class="overlay">
-                                                                        {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
-                                                                    </div>
-                                                                </div>
-                                                                <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
-                                                            </div>
+                                                        <td class="price">
+                                                            <p>PHP {{ totalCount(child.discount) }}</p>
                                                         </td>
-                                                        <td>
-                                                            {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : 'N/A' }}
+                                                        <td class="price">
+                                                            <p>PHP {{ totalCount(child.net) }}</p>
                                                         </td>
                                                     </tr>
                                                 </tbody>
                                                 <tbody class="no_results" v-else>
                                                     <tr>
-                                                        <td colspan="7">No Result(s) Found.</td>
+                                                        <td colspan="13">No Result(s) Found.</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -352,12 +357,13 @@
                         'Item': me.getPaymentItem(value, 'name'),
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
                         'Quantity': value.quantity,
-                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
-                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
-                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
+                        'Gross Price': value.gross,
+                        'Discount Price': value.discount,
+                        'Net Price': value.net,
                         'Comp Reason': (value.parent.payment_method.comp_reason) ? value.parent.payment_method.comp_reason : 'N/A',
                         'Note': (value.parent.payment_method.note) ? value.parent.payment_method.note : 'N/A',
-                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
+                        'Username': me.getPaymentDetails(value.parent, 'employee')
                     }))
                 ]
             },
@@ -688,6 +694,8 @@
                 })
 
                 let formData = new FormData()
+                formData.append('start_date',  me.form.start_date)
+                formData.append('end_date',  me.form.end_date)
                 formData.append('studio_id',  me.form.studio_id)
                 me.$axios.post(`api/${me.apiRoute}`, formData).then(res => {
                     if (res.data) {
