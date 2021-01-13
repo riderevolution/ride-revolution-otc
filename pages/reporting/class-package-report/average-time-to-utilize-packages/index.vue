@@ -28,13 +28,13 @@
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
-                                <label for="start_date">Start Date <span>*</span></label>
+                                <label for="start_date">Start Month <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'" :max-date="$moment().format('YYYY-MM-DD')"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
-                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" :max-date="$moment().format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" :max-date="$moment().add(1, 'month').format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
@@ -88,8 +88,8 @@
             const values = []
             return {
                 form: {
-                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD')
+                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    end_date: this.$moment().add(1, 'month').format('YYYY-MM-DD')
                 },
                 name: 'Average Time to Utilize Packages',
                 access: true,

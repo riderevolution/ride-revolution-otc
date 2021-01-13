@@ -61,11 +61,15 @@
                 <section id="content">
                     <div class="cms_table_toggler">
                         <div :class="`status ${(tabStatus == 'daily') ? 'active' : ''}`" @click="toggleTab('daily', 'daily', 'reporting/sales/sales-and-transactions/sales-summary/daily')">Daily Transactions</div>
+
                         <div :class="`status ${(tabStatus == 'summary') ? 'active' : ''}`" @click="toggleTab('summary', 'sales-summary', 'reporting/sales/sales-and-transactions/sales-summary')" v-if="user.staff_details.role_id == 1">Sales Summary</div>
+
                         <div :class="`status ${(tabStatus == 'class-packages') ? 'active' : ''}`" @click="toggleTab('class-packages', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/class-packages')" v-if="user.staff_details.role_id == 1">Class Packages</div>
+
                         <div :class="`status ${(tabStatus == category.slug) ? 'active' : ''}`" v-for="(category, key) in categories" :key="key" @click="toggleTab(category.slug, 'sales-summary-product', `reporting/sales/sales-and-transactions/sales-summary/product-categories/${category.id}`)" v-if="user.staff_details.role_id == 1">{{ category.name }}</div>
+
                         <div :class="`status ${(tabStatus == 'gift-cards') ? 'active' : ''}`" @click="toggleTab('gift-cards', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/gift-cards')" v-if="user.staff_details.role_id == 1">Gift Cards</div>
-                        <div :class="`status ${(tabStatus == 'promos') ? 'active' : ''}`" @click="toggleTab('promos', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/promos')" v-if="user.staff_details.role_id == 1">Promotions</div>
+
                         <div :class="`status ${(tabStatus == 'store-credits') ? 'active' : ''}`" @click="toggleTab('store-credits', 'sales-summary-product', 'reporting/sales/sales-and-transactions/sales-summary/store-credits')" v-if="user.staff_details.role_id == 1">Store Credits</div>
                     </div>
                     <div v-if="slug == 'sales-summary'">
@@ -112,7 +116,7 @@
                                     <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITYTotal) }}</td>
                                     <td class="green">Php {{ totalCount(res.income_breakdown_total.incomeBreakdownITDTotal) }}</td>
                                 </tr>
-                                <tr v-for="(data, key) in res.income_breakdown" :key="key">
+                                <tr :class="{ grayed : data.gray }" v-for="(data, key) in res.income_breakdown" :key="key">
                                     <td>
                                         <div class="table_data_link" @click="toggledPaymentType(data)">{{ data.name }}</div>
                                     </td>
@@ -216,7 +220,7 @@
                             </tbody>
                             <tbody class="no_results" v-if="transactions.payments.data.length == 0">
                                 <tr>
-                                    <td colspan="11">No Result(s) Found.</td>
+                                    <td colspan="13">No Result(s) Found.</td>
                                 </tr>
                             </tbody>
                         </table>

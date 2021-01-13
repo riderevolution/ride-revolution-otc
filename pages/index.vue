@@ -107,7 +107,7 @@
                                 <h2 class="footer_title">Notepad</h2>
                                 <div class="form_group">
                                     <label for="note_date">Date</label>
-                                    <v-ctk v-model="form.note_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'note_date'" :name="'note_date'" :label="'Select note date'" @input="getNotes($event)"></v-ctk>
+                                    <v-ctk v-model="form.note_date" :only-date="true" :no-button="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'note_date'" :name="'note_date'" :label="'Select note date'" @input="getNotes($event)"></v-ctk>
                                 </div>
                             </div>
                             <div class="notepad_text">
