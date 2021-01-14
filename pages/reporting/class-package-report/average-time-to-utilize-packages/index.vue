@@ -11,7 +11,7 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <a href="/print/reporting/class-package/average-time-to-utilize-packages" target="_blank" class="action_btn alternate">Print</a>
+                            <!-- <a href="/print/reporting/class-package/average-time-to-utilize-packages" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getPackages()" v-if="res.packages.data.length > 0">
                                 Export
@@ -22,7 +22,7 @@
                                 :data="averageTimeToUtilizePackagesAttributes"
                                 :name="`average-time-to-utilize-packages-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
-                            </download-csv>
+                            </download-csv> -->
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -47,6 +47,10 @@
                             <tr>
                                 <th class="sticky">Class Package</th>
                                 <th class="sticky">Validity Period</th>
+                                <th class="sticky">Avg Booking Per Week</th>
+                                <th class="sticky">Avg Booking Per Month</th>
+                                <th class="sticky">Avg Revenue Per Week</th>
+                                <th class="sticky">Avg Revenue Per Month</th>
                                 <th class="sticky">Total Package Count</th>
                                 <th class="sticky">Utilization Rate</th>
                             </tr>
@@ -55,6 +59,10 @@
                             <tr v-for="(data, key) in res.packages.data" :key="key">
                                 <td>{{ data.name }}</td>
                                 <td>{{ data.expires_in }}</td>
+                                <td>{{ data.averageBookings.weeklyAverageBookings }}</td>
+                                <td>{{ data.averageBookings.monthlyAverageBookings }}</td>
+                                <td>{{ data.averageRevenue.weeklyAverageRevenue }}</td>
+                                <td>{{ data.averageRevenue.monthlyAverageRevenue }}</td>
                                 <td>{{ (data.class_count_unlimited == 1) ? 'Unlimited' : data.class_count }}</td>
                                 <td>{{ data.utilizationRate }} Days</td>
                             </tr>

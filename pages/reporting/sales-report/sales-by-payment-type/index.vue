@@ -54,11 +54,6 @@
                     </div>
                 </section>
                 <section id="content">
-                    <div class="cms_table_toggler">
-                        <div :class="`status ${(payment_status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
-                        <div :class="`status ${(payment_status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
-                        <div :class="`status ${(payment_status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
-                    </div>
                     <table class="cms_table alt">
                         <thead>
                             <tr>
@@ -97,16 +92,6 @@
                             </tr>
                         </tbody>
                     </table>
-                    <!-- <div class="cms_table_toggler">
-                        <a :href="`/print/reporting/sales/payment-type/register-sales-summary?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
-                        <download-csv
-                            v-if="studio_res.length > 0"
-                            class="action_btn alternate"
-                            :data="registerSalesSummaryAttributes"
-                            :name="`register-sales-summary-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
-                            Export
-                        </download-csv>
-                    </div> -->
                     <table class="cms_table alt">
                         <thead>
                             <tr>
@@ -209,20 +194,7 @@
                         'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
                     }))
                 ]
-            },
-            // registerSalesSummaryAttributes () {
-            //     const me = this
-            //     return [
-            //         ...me.summary_values.map(value => ({
-            //             'Studio': value.name,
-            //             'Subtotal': `Php ${(value.subtotal) ? value.subtotal : 0}`,
-            //             'Tax': `Php ${(value.total_tax) ? value.total_tax : 0}`,
-            //             'Refund Subtotal': `Php ${(value.subtotal_refund) ? value.subtotal_refund : 0}`,
-            //             'Refund Tax': `Php ${(value.total_tax) ? value.total_tax : 0}`,
-            //             'Total': `Php ${(value.total_income) ? value.total_income : 0}`
-            //         }))
-            //     ]
-            // }
+            }
         },
         methods: {
             getDailyTransactions () {
@@ -230,7 +202,9 @@
                 me.loader (true)
                 me.values = []
                 let formData = new FormData(document.getElementById('filter'))
-                me.$axios.post(`api/reporting/sales/sales-and-transactions/sales-summary/daily?all=1`, formData).then(res => {
+                formData.append('all', 1)
+
+                me.$axios.post('api/reporting/sales/sales-and-transactions/sales-summary/daily', formData).then(res => {
                     if (res.data) {
                         res.data.payments.forEach((parent, key) => {
                             parent.payment_items.forEach((child, key) => {
@@ -395,7 +369,6 @@
                 me.summary_values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('payment_status', me.payment_status)
                 me.$axios.post('api/reporting/sales/sales-by-payment-type', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -421,14 +394,13 @@
                     }, 500)
                 })
             },
-            fetchData (value) {
+            fetchData () {
                 const me = this
                 me.loader(true)
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
-                formData.append('payment_status', value)
                 if (me.form.studio_id != '') {
                     formData.append('studio_id', me.form.studio_id)
                 }
@@ -487,11 +459,8 @@
                     let studio_id = me.$cookies.get('CSID')
                     me.form.studio_id = studio_id
                 }
-                if (me.$route.query.payment_status) {
-                    me.payment_status = me.$route.query.payment_status
-                }
 
-                me.fetchData(me.payment_status)
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

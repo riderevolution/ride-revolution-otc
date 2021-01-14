@@ -13,7 +13,7 @@
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
-                                <a :href="`/print/reporting/sales/products?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                                <a :href="`/print/reporting/sales/products?studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                                 <div class="action_btn alternate" @click="getSales()" v-if="res.length > 0">
                                     Export
@@ -53,12 +53,6 @@
                     </div>
                 </section>
                 <section id="content">
-                    <div class="cms_table_toggler">
-                        <div class="total">Total: {{ totalItems(total_count) }}</div>
-                        <div :class="`status ${(payment_status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
-                        <div :class="`status ${(payment_status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
-                        <div :class="`status ${(payment_status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
-                    </div>
                     <table class="cms_table alt">
                         <thead>
                             <tr>
@@ -113,7 +107,7 @@
 </template>
 
 <script>
-    import Foot from '../../../../components/Foot'
+    import Foot from '~/components/Foot'
     export default {
         components: {
             Foot
@@ -125,7 +119,6 @@
                 access: true,
                 loaded: false,
                 rowCount: 0,
-                payment_status: 'all',
                 studios: [],
                 values: [],
                 res: [],
@@ -320,20 +313,13 @@
             },
             toggleInnerReport (type, path, id) {
                 const me = this
-                window.open(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
-            },
-            toggleTab (value) {
-                const me = this
-                me.values = []
-                me.payment_status = value
-                me.fetchData(value)
+                window.open(`${path}?studio_id=${me.form.studio_id}&slug=${type}&id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
             },
             submitFilter () {
                 const me = this
                 me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('payment_status', me.payment_status)
                 me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -352,14 +338,13 @@
                     }, 500)
                 })
             },
-            fetchData (value) {
+            fetchData () {
                 const me = this
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.loader(true)
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
-                formData.append('payment_status', value)
                 if (me.form.studio_id != '') {
                     formData.append('studio_id', me.form.studio_id)
                 }
@@ -399,7 +384,7 @@
             if (me.access) {
                 let studio_id = me.$cookies.get('CSID')
                 me.form.studio_id = studio_id
-                me.fetchData('all')
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
