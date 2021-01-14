@@ -11,7 +11,7 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <!-- <a href="/print/reporting/class-package/average-time-to-utilize-packages" target="_blank" class="action_btn alternate">Print</a>
+                            <!-- <a href="/print/reporting/class-package/average-time-to-utilize-packages" target="_blank" class="action_btn alternate">Print</a> -->
 
                             <div class="action_btn alternate" @click="getPackages()" v-if="res.packages.data.length > 0">
                                 Export
@@ -22,7 +22,7 @@
                                 :data="averageTimeToUtilizePackagesAttributes"
                                 :name="`average-time-to-utilize-packages-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
-                            </download-csv> -->
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -59,10 +59,10 @@
                             <tr v-for="(data, key) in res.packages.data" :key="key">
                                 <td>{{ data.name }}</td>
                                 <td>{{ data.expires_in }}</td>
-                                <td>{{ data.averageBookings.weeklyAverageBookings }}</td>
-                                <td>{{ data.averageBookings.monthlyAverageBookings }}</td>
-                                <td>{{ data.averageRevenue.weeklyAverageRevenue }}</td>
-                                <td>{{ data.averageRevenue.monthlyAverageRevenue }}</td>
+                                <td>{{ totalItems(data.averageBookings.weeklyAverageBookings) }}</td>
+                                <td>{{ totalItems(data.averageBookings.monthlyAverageBookings) }}</td>
+                                <td>Php {{ totalCount(data.averageRevenue.weeklyAverageRevenue) }}</td>
+                                <td>Php {{ totalCount(data.averageRevenue.monthlyAverageRevenue) }}</td>
                                 <td>{{ (data.class_count_unlimited == 1) ? 'Unlimited' : data.class_count }}</td>
                                 <td>{{ data.utilizationRate }} Days</td>
                             </tr>
@@ -114,8 +114,12 @@
                 return [
                     ...me.values.map((value, key) => ({
                         'Class Package': value.name,
+                        'Validity Period': value.name,
+                        'Avg Booking Per Week': me.totalItems(value.weeklyAverageBookings),
+                        'Avg Booking Per Month': me.totalItems(value.monthlyAverageBookings),
+                        'Avg Revenue Per Week': `Php ${me.totalCount(value.weeklyAverageRevenue)}`,
+                        'Avg Revenue Per Month': `Php ${me.totalCount(value.monthlyAverageRevenue)}`,
                         'Total Package Count': (value.class_count_unlimited == 1) ? 'Unlimited' : value.class_count,
-                        'Total Sales Amount': `Php ${me.totalCount(value.totalSalesAmount)}`,
                         'Utilization Rate': value.utilizationRate
                     }))
                 ]
