@@ -7,13 +7,13 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ variant.variant }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ payment_status }})</h1>
+                                <h1>{{ variant.variant }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }}</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ variant.variant }} ({{ variant.product.category.name }}).</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/products/${$route.params.param}/product/${$route.params.slug}?payment_status=${payment_status}&slug=${form.slug}&id=${form.id}&variant_id=${form.variant_id}&start_date=${form.start_date}&end_date=${form.end_date}&studio_id=${form.studio_id}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/products/${$route.params.param}/product/${$route.params.slug}?slug=${form.slug}&id=${form.id}&variant_id=${form.variant_id}&start_date=${form.start_date}&end_date=${form.end_date}&studio_id=${form.studio_id}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -33,7 +33,6 @@
                         <form class="filter_flex" id="filter">
                             <input type="hidden" name="slug" :value="form.slug">
                             <input type="hidden" name="variant_id" :value="form.variant_id">
-                            <input type="hidden" name="payment_status" :value="payment_status">
                             <input type="hidden" name="start_date" :value="form.start_date">
                             <input type="hidden" name="end_date" :value="form.end_date">
                         </form>
@@ -47,18 +46,19 @@
                                 <th class="sticky">Full Name</th>
                                 <th class="sticky">Qty.</th>
                                 <th class="sticky">Payment</th>
-                                <th class="sticky">Employee</th>
                                 <th class="sticky">Total</th>
                                 <th class="sticky">Comp Reason</th>
                                 <th class="sticky">Note</th>
                                 <th class="sticky">Remarks</th>
+                                <th class="sticky">Employee</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.result.data.length > 0">
                             <tr>
                                 <td colspan="2"><b>{{ total.name }}</b></td>
-                                <td colspan="3"><b>{{ total.qty }}</b></td>
+                                <td colspan="2"><b>{{ total.qty }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_price) }}</b></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -81,18 +81,18 @@
                                 </td>
                                 <td>{{ data.quantity }}</td>
                                 <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
+                                <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
+                                <td>{{ (data.payment.comp_reason) ? data.payment.comp_reason : 'N/A' }}</td>
+                                <td>{{ (data.payment.note) ? data.payment.note : 'N/A' }}</td>
+                                <td>{{ (data.payment.remarks) ? data.payment.remarks : 'N/A' }}</td>
                                 <td>
                                     <div v-if="data.payment.employee != null">
                                         {{ `${data.payment.employee.first_name} ${data.payment.employee.last_name}` }}
                                     </div>
                                     <div v-else>
-                                        No User
+                                        Customer
                                     </div>
                                 </td>
-                                <td>Php {{ (data.total) ? totalCount(data.total) : 0 }}</td>
-                                <td>{{ (data.payment.comp_reason) ? data.payment.comp_reason : 'N/A' }}</td>
-                                <td>{{ (data.payment.note) ? data.payment.note : 'N/A' }}</td>
-                                <td>{{ (data.payment.remarks) ? data.payment.remarks : 'N/A' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -126,7 +126,6 @@
                 access: true,
                 loaded: false,
                 rowCount: 0,
-                payment_status: 'all',
                 res: [],
                 values: [],
                 studio: [],
@@ -311,9 +310,9 @@
                 temp.splice(temp.length - 1, 1)
                 temp.splice(temp.length - 1, 1)
                 temp = temp.join('/')
-                me.$router.push(`${temp}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&slug=${me.form.slug}&id=${me.form.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${temp}?studio_id=${me.form.studio_id}&slug=${me.form.slug}&id=${me.form.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
-            fetchData (value) {
+            fetchData () {
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
@@ -339,7 +338,6 @@
 
                 formData.append('slug', me.form.slug)
                 formData.append('variant_id', me.form.variant_id)
-                formData.append('payment_status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 formData.append('studio_id', me.form.studio_id)
@@ -375,12 +373,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-
-                if (me.$route.query.payment_status) {
-                    me.payment_status = me.$route.query.payment_status
-                }
-
-                me.fetchData(me.payment_status)
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

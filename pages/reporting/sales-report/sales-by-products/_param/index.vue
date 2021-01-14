@@ -7,13 +7,13 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ category.name }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ payment_status }})</h1>
+                                <h1>{{ category.name }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }}</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ category.name }}.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/products/${$route.params.param}?payment_status=${payment_status}&studio_id=${form.studio_id}&slug=${form.slug}&id=${form.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/products/${$route.params.param}?studio_id=${form.studio_id}&slug=${form.slug}&id=${form.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -32,7 +32,6 @@
                         <form class="filter_flex" id="filter">
                             <input type="hidden" name="slug" :value="form.slug">
                             <input type="hidden" name="id" :value="form.id">
-                            <input type="hidden" name="payment_status" :value="payment_status">
                             <input type="hidden" name="start_date" :value="form.start_date">
                             <input type="hidden" name="end_date" :value="form.end_date">
                             <input type="hidden" name="studio_id" :value="form.studio_id">
@@ -46,6 +45,7 @@
                                 <th class="sticky">Product Name</th>
                                 <th class="sticky">Item Price</th>
                                 <th class="sticky">Sold</th>
+                                <th class="sticky">Gross</th>
                                 <th class="sticky">Comp Value</th>
                                 <th class="sticky">Discount</th>
                                 <th class="sticky">Taxes</th>
@@ -58,6 +58,7 @@
                             <tr>
                                 <td colspan="2"><b>{{ total.name }}</b></td>
                                 <td><b>{{ total.sold }}</b></td>
+                                <td><b>Php {{ totalCount(total.gross) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
@@ -79,6 +80,7 @@
                                     </div>
                                 </td>
                                 <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                                <td>Php {{ (totalCount(data.gross)) ? totalCount(data.gross) : 0 }}</td>
                                 <td>Php {{ (totalCount(data.total_comp)) ? totalCount(data.total_comp) : 0 }}</td>
                                 <td>Php {{ (totalCount(data.total_discount)) ? totalCount(data.total_discount) : 0 }}</td>
                                 <td>Php {{ (totalCount(data.total_tax)) ? totalCount(data.total_tax) : 0 }}</td>
@@ -116,7 +118,6 @@
                 access: true,
                 loaded: false,
                 rowCount: 0,
-                payment_status: 'all',
                 res: [],
                 values: [],
                 studio: [],
@@ -299,9 +300,9 @@
             },
             toggleInnerReport (type, path, id) {
                 const me = this
-                me.$router.push(`${path}?payment_status=${me.payment_status}&slug=${type}&id=${me.form.id}&studio_id=${me.form.studio_id}&variant_id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                me.$router.push(`${path}?slug=${type}&id=${me.form.id}&studio_id=${me.form.studio_id}&variant_id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
             },
-            fetchData (value) {
+            fetchData () {
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
@@ -324,7 +325,6 @@
 
                 formData.append('slug', me.form.slug)
                 formData.append('id', me.form.id)
-                formData.append('payment_status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 formData.append('studio_id', me.form.studio_id)
@@ -360,12 +360,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-
-                if (me.$route.query.payment_status) {
-                    me.payment_status = me.$route.query.payment_status
-                }
-
-                me.fetchData(me.payment_status)
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

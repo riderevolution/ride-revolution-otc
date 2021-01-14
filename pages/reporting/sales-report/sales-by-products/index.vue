@@ -62,6 +62,7 @@
                                 <th class="sticky">Comp</th>
                                 <th class="sticky">Discount</th>
                                 <th class="sticky">Taxes</th>
+                                <th class="sticky">Gross</th>
                                 <th class="sticky">Comp Value</th>
                                 <th class="sticky">Profit</th>
                                 <th class="sticky">Cost</th>
@@ -76,6 +77,7 @@
                                 <td><b>{{ total.comp }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
+                                <td><b>Php {{ totalCount(total.gross) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                                 <td :class="`${(total.total_profit) ? (total.total_profit <= 0 ? 'red' : 'green') : ''}`"><b>Php {{ totalCount(total.total_profit) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_cost) }}</b></td>
@@ -90,6 +92,7 @@
                                 <td>{{ (data.comp) ? data.comp : 0 }}</td>
                                 <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
                                 <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
+                                <td>Php {{ (data.gross) ? totalCount(data.gross) : 0 }}</td>
                                 <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
                                 <td :class="`${(data.total_profit) ? (data.total_profit <= 0 ? 'red' : 'green') : ''}`">Php {{ (data.total_profit) ? totalCount(data.total_profit) : 0 }}</td>
                                 <td>Php {{ (data.total_cost) ? totalCount(data.total_cost) : 0 }}</td>
