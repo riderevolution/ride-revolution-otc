@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Income from class package sold.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package?payment_status=${payment_status}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package?start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -29,13 +29,6 @@
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
-                            <!-- <div class="form_group">
-                                <label for="studio_id">Studio</label>
-                                <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
-                                    <option value="" selected>All Studios</option>
-                                    <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
-                                </select>
-                            </div> -->
                             <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
@@ -52,87 +45,56 @@
                 </section>
                 <section id="content">
                     <div class="cms_table_toggler">
-                        <div :class="`status ${(payment_status == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
-                        <div :class="`status ${(payment_status == 'paid') ? 'active' : ''}`" @click="toggleTab('paid')">Paid</div>
-                        <div :class="`status ${(payment_status == 'pending') ? 'active' : ''}`" @click="toggleTab('pending')">Pending</div>
+                        <div :class="`status ${(tab == 'studio') ? 'active' : ''}`" @click="toggleStatus('studio')">Studio</div>
+                        <div :class="`status ${(tab == 'online') ? 'active' : ''}`" @click="toggleStatus('online')">Online</div>
                     </div>
-                    <table class="cms_table_accordion">
+                    <table class="cms_table alt">
                         <thead>
                             <tr>
-                                <th>Package Type</th>
-                                <th>Sold</th>
-                                <th>Returned</th>
-                                <th>Comp</th>
-                                <th>Comp Value</th>
-                                <th>Discount</th>
-                                <th>Taxes</th>
-                                <th>Total Income</th>
+                                <th class="sticky">Package</th>
+                                <th class="sticky">Sold</th>
+                                <th class="sticky">Returned</th>
+                                <th class="sticky">Comp</th>
+                                <th class="sticky">Gross</th>
+                                <th class="sticky">Comp Value</th>
+                                <th class="sticky">Discount</th>
+                                <th class="sticky">Taxes</th>
+                                <th class="sticky">Total Income</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="res.result.data.length > 0">
                             <tr class="parent bb">
                                 <td><b>{{ total.name }}</b></td>
                                 <td><b>{{ total.sold }}</b></td>
                                 <td><b>{{ total.returned }}</b></td>
                                 <td><b>{{ total.comp }}</b></td>
+                                <td><b>Php {{ totalCount(total.gross) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
-                        </tbody>
-                        <tbody :class="`${(data.open) ? 'toggled' : ''} tbp`" v-for="(data, key) in res.result.data">
-                            <tr class="parent">
-                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.parent.name }}</td>
-                                <td>{{ data.parent.sold }}</td>
-                                <td>{{ data.parent.returned }}</td>
-                                <td>{{ data.parent.comp }}</td>
-                                <td>Php {{ totalCount(data.parent.total_comp) }}</td>
-                                <td>Php {{ totalCount(data.parent.total_discount) }}</td>
-                                <td>Php {{ totalCount(data.parent.total_tax) }}</td>
-                                <td>Php {{ totalCount(data.parent.total_income) }}</td>
-                            </tr>
-                            <tr>
-                                <td class="pads" colspan="8">
-                                    <div class="accordion_table">
-                                        <table class="cms_table alt">
-                                            <thead>
-                                                <tr>
-                                                    <th>Package</th>
-                                                    <th>Sold</th>
-                                                    <th>Returned</th>
-                                                    <th>Comp</th>
-                                                    <th>Comp Value</th>
-                                                    <th>Discount</th>
-                                                    <th>Tax</th>
-                                                    <th>Income</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody v-if="data.values.length > 0">
-                                                <tr v-for="(data, key) in data.values" :key="key">
-                                                    <td>
-                                                        <div class="table_data_link" @click="openWindowInside(data)">{{ data.name }}</div>
-                                                    </td>
-                                                    <td>{{ (data.sold) ? data.sold : 0 }}</td>
-                                                    <td>{{ (data.returned) ? data.returned : 0 }}</td>
-                                                    <td>{{ (data.comp) ? data.comp : 0 }}</td>
-                                                    <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
-                                                    <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
-                                                    <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
-                                                    <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
-                                                </tr>
-                                            </tbody>
-                                            <tbody class="no_results" v-else>
-                                                <tr>
-                                                    <td colspan="8">No Result(s) Found.</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                            <tr v-for="(data, key) in res.result.data" :key="key">
+                                <td>
+                                    <div class="table_data_link" @click="openWindowInside(data)">{{ data.name }}</div>
                                 </td>
+                                <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                                <td>{{ (data.returned) ? data.returned : 0 }}</td>
+                                <td>{{ (data.comp) ? data.comp : 0 }}</td>
+                                <td>Php {{ (data.gross) ? totalCount(data.gross) : 0 }}</td>
+                                <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
+                                <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
+                                <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
+                                <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody class="no_results" v-else>
+                            <tr>
+                                <td colspan="9">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
+
                     <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
@@ -144,8 +106,8 @@
 </template>
 
 <script>
-    import Foot from '../../../../components/Foot'
-    import Pagination from '../../../../components/Pagination'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
     export default {
         components: {
             Foot,
@@ -158,15 +120,13 @@
                 access: true,
                 filter: true,
                 loaded: false,
-                payment_status: 'all',
-                // studios: [],
                 res: [],
                 values: [],
                 total: [],
+                tab: 'studio',
                 form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'day').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
-                    // studio_id: ''
                 }
             }
         },
@@ -203,7 +163,7 @@
         methods: {
             openWindowInside (data) {
                 const me = this
-                window.open(`${me.$route.path}/${data.slug}?payment_status=${me.payment_status}&slug=class-package&id=${data.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
+                window.open(`${me.$route.path}/${data.slug}?slug=class-package&id=${data.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
             },
             getSales () {
                 const me = this
@@ -337,28 +297,14 @@
 
                 return result
             },
-            toggleAccordion (event, key) {
+            toggleStatus (value) {
                 const me = this
-                const target = event.target
-                me.res.result.data[key].open ^= true
-                if (me.res.result.data[key].open) {
-                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
-                } else {
-                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
-                }
-            },
-            toggleTab (value) {
-                const me = this
-                me.values = []
-                me.payment_status = value
-                me.fetchData(value)
-            },
-            submitFilter () {
-                const me = this
-                me.values = []
-                me.loader(true)
+                me.tab = value
+
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('payment_status', me.payment_status)
+                formData.append('type', me.tab)
+
+                me.loader(true)
                 me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
@@ -373,37 +319,48 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
-                        elements.forEach((element, index) => {
-                            element.querySelector('.accordion_table').style.height = 0
-                        })
                     }, 500)
                 })
             },
-            fetchData (value) {
+            submitFilter () {
                 const me = this
+                me.values = []
                 me.loader(true)
-                let token = me.$cookies.get('70hokcotc3hhhn5')
-                let formData = new FormData()
-                // formData.append('studio_id', me.form.studio_id)
-                formData.append('start_date', me.form.start_date)
-                formData.append('end_date',  me.form.end_date)
-                formData.append('payment_status', value)
+                let formData = new FormData(document.getElementById('filter'))
+                formData.append('type', me.tab)
+
                 me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data
                             me.total = res.data.total
 
-                            // me.$axios.get('api/studios', {
-                            //     headers: {
-                            //         Authorization: `Bearer ${token}`
-                            //     }
-                            // }).then(res => {
-                            //     if (res.data) {
-                            //         me.studios = res.data.studios
-                            //     }
-                            // })
+                        }, 500)
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
+            fetchData () {
+                const me = this
+                me.loader(true)
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                let formData = new FormData()
+
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date',  me.form.end_date)
+                formData.append('type', me.tab)
+                
+                me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
+                    if (res.data) {
+                        setTimeout( () => {
+                            me.res = res.data
+                            me.total = res.data.total
 
                             me.loaded = true
                         }, 500)
@@ -414,10 +371,6 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
-                        elements.forEach((element, index) => {
-                            element.querySelector('.accordion_table').style.height = 0
-                        })
                     }, 500)
                 })
             }
@@ -426,8 +379,6 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                // let studio_id = me.$cookies.get('CSID')
-                // me.form.studio_id = studio_id
 
                 if (me.$route.query.start_date) {
                     me.form.start_date = me.$route.query.start_date
@@ -435,11 +386,8 @@
                 if (me.$route.query.end_date) {
                     me.form.end_date = me.$route.query.end_date
                 }
-                if (me.$route.query.payment_status) {
-                    me.payment_status = me.$route.query.payment_status
-                }
 
-                me.fetchData(me.payment_status)
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }

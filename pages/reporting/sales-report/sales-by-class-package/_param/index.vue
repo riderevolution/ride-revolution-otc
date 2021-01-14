@@ -3,18 +3,17 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
-                    <nuxt-link :to="`/reporting/sales-report/sales-by-class-package?payment_status=${payment_status}&start_date=${form.start_date}&end_date=${form.end_date}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Class Package</span></nuxt-link>
+                    <nuxt-link :to="`/reporting/sales-report/sales-by-class-package?start_date=${form.start_date}&end_date=${form.end_date}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Class Package</span></nuxt-link>
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ package.name }} - ({{ payment_status }})</h1>
+                                <h1>{{ package.name }}</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ package.name }}.</h2>
                         </div>
                         <div class="actions">
-                            <!-- <a :href="`/print/reporting/sales/class-package/${$route.params.param}?payment_status=${payment_status}&slug=class-package&id=${$route.query.id}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a> -->
-                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?payment_status=${payment_status}&slug=class-package&id=${$route.query.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?slug=class-package&id=${$route.query.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -34,7 +33,6 @@
                         <form class="filter_flex" id="filter">
                             <input type="hidden" name="slug" :value="form.slug">
                             <input type="hidden" name="id" :value="form.id">
-                            <input type="hidden" name="payment_status" :value="payment_status">
                             <input type="hidden" name="start_date" :value="form.start_date">
                             <input type="hidden" name="end_date" :value="form.end_date">
                             <!-- <input type="hidden" name="studio_id" :value="form.studio_id"> -->
@@ -119,7 +117,6 @@
                 filter: true,
                 loaded: false,
                 rowCount: 0,
-                payment_status: 'all',
                 studio: [],
                 res: [],
                 values: [],
@@ -301,7 +298,7 @@
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
             },
-            fetchData (value) {
+            fetchData () {
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
@@ -324,7 +321,6 @@
 
                 formData.append('slug', me.form.slug)
                 formData.append('id', me.form.id)
-                formData.append('payment_status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 // formData.append('studio_id', me.form.studio_id)
@@ -360,12 +356,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-
-                if (me.$route.query.payment_status) {
-                    me.payment_status = me.$route.query.payment_status
-                }
-
-                me.fetchData(me.payment_status)
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
