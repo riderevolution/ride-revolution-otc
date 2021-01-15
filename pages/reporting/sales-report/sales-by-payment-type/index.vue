@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Income for each payment type, except store credit.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/payment-type?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/payment-type?studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getDailyTransactions()" v-if="res.length > 0">
                                 Export
@@ -48,7 +48,6 @@
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
-                            <input type="hidden" name="payment_status" :value="payment_status">
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
                     </div>
@@ -59,36 +58,33 @@
                             <tr>
                                 <th>Payment</th>
                                 <th>Transaction Count</th>
-                                <th>Gross Receipts</th>
-                                <th>Gross Refunds</th>
-                                <th>Sales Tax</th>
-                                <th>Refund Tax</th>
-                                <th>Net of Receipts</th>
-                                <th>Net of Refunds</th>
+                                <th>Total Receipts</th>
+                                <th>Refunds</th>
+                                <th>Return</th>
+                                <th>VAT (12%)</th>
+                                <th>Net Receipts</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td><b>{{ payment_total.name }}</b></td>
                                 <td><b>{{ payment_total.transaction_count }}</b></td>
-                                <td><b>Php {{ totalCount(payment_total.gross_receipts) }}</b></td>
-                                <td><b>Php {{ totalCount(payment_total.gross_refunds) }}</b></td>
-                                <td><b>Php {{ totalCount(payment_total.sales_tax) }}</b></td>
-                                <td><b>Php {{ totalCount(payment_total.sales_tax) }}</b></td>
+                                <td><b>Php {{ totalCount(payment_total.total_receipts) }}</b></td>
+                                <td><b>Php {{ totalCount(payment_total.refunds) }}</b></td>
+                                <td><b>Php {{ totalCount(payment_total.return) }}</b></td>
+                                <td><b>Php {{ totalCount(payment_total.vat) }}</b></td>
                                 <td><b>Php {{ totalCount(payment_total.net_receipts) }}</b></td>
-                                <td><b>Php {{ totalCount(payment_total.net_refunds) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res" :key="key" :class="{ grayed: data.gray }">
                                 <td>
                                     <div class="table_data_link" @click="toggleInnerReport(`${$route.path}/${data.unique}`)">{{ data.name }}</div>
                                 </td>
                                 <td>{{ data.transaction_count }}</td>
-                                <td>Php {{ (data.gross_receipts) ? totalCount(data.gross_receipts) : 0 }}</td>
-                                <td>Php {{ (data.gross_refunds) ? totalCount(data.gross_refunds) : 0 }}</td>
-                                <td>Php {{ (data.sales_tax) ? totalCount(data.sales_tax) : 0 }}</td>
-                                <td>Php {{ (data.sales_tax) ? totalCount(data.sales_tax) : 0 }}</td>
+                                <td>Php {{ (data.total_receipts) ? totalCount(data.total_receipts) : 0 }}</td>
+                                <td>Php {{ (data.refunds) ? totalCount(data.refunds) : 0 }}</td>
+                                <td>Php {{ (data.return) ? totalCount(data.return) : 0 }}</td>
+                                <td>Php {{ (data.vat) ? totalCount(data.vat) : 0 }}</td>
                                 <td>Php {{ (data.net_receipts) ? totalCount(data.net_receipts) : 0 }}</td>
-                                <td>Php {{ (data.net_refunds) ? totalCount(data.net_refunds) : 0 }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -96,7 +92,7 @@
                         <thead>
                             <tr>
                                 <th colspan="3" class="cms_table_title">
-                                    <span>Register Sales Summary</span>
+                                    <span>Studio Sales Summary</span>
                                     <span class="date">{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                                 </th>
                             </tr>
@@ -151,7 +147,6 @@
                 access: true,
                 loaded: false,
                 rowCount: 0,
-                payment_status: 'all',
                 studios: [],
                 values: [],
                 summary_values: [],
@@ -160,7 +155,7 @@
                 payment_total: [],
                 studio_total: [],
                 form: {
-                    start_date: this.$moment().subtract(1, 'day').format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(30, 'days').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     studio_id: 0
                 }
@@ -351,17 +346,10 @@
             toggleInnerReport (path) {
                 const me = this
                 if (me.form.studio_id != '') {
-                    window.open(`${path}?payment_status=${me.payment_status}&studio_id=${me.form.studio_id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
+                    window.open(`${path}?studio_id=${me.form.studio_id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
                 } else {
-                    window.open(`${path}?payment_status=${me.payment_status}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
+                    window.open(`${path}?start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
                 }
-            },
-            toggleTab (value) {
-                const me = this
-                me.values = []
-                me.summary_values = []
-                me.payment_status = value
-                me.fetchData(value)
             },
             submitFilter () {
                 const me = this
