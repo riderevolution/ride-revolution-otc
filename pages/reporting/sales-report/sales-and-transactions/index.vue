@@ -150,7 +150,9 @@
                                             </div>
                                             <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
                                         </div>
-                                        No Customer
+                                        <div v-else>
+                                            No Customer
+                                        </div>
                                     </td>
                                     <td>{{ getPaymentDetails(data, 'qty') }}</td>
                                     <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>

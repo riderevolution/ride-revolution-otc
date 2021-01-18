@@ -3,23 +3,23 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
-                    <nuxt-link :to="`/reporting/sales-report/sales-by-payment-type?payment_status=${payment_status}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Payment Type</span></nuxt-link>
+                    <nuxt-link :to="`/reporting/sales-report/sales-by-payment-type?studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Payment Type</span></nuxt-link>
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ replacer($route.params.param) }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }} ({{ payment_status }})</h1>
+                                <h1>{{ replacer($route.params.param) }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }}</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">{{ totalItems(total) }} Transaction(s)</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/payment-type/${$route.params.param}?payment_status=${payment_status}&payment_method=${$route.params.param}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/payment-type/${$route.params.param}?payment_method=${$route.params.param}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
-                            <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
+                            <div class="action_btn alternate" @click="getSales()" v-if="res.payments.length > 0">
                                 Export
                             </div>
                             <download-csv
-                                v-if="res.result.data.length > 0"
+                                v-if="res.payments.length > 0"
                                 class="hidden me"
                                 :data="paymentTypeParamAttributes"
                                 :name="`sales-by-payment-type-${$route.params.slug}-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
@@ -31,7 +31,6 @@
 
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter">
-                            <input type="hidden" name="payment_status" :value="payment_status">
                             <input type="hidden" name="payment_method" :value="form.payment_method">
                             <input type="hidden" name="start_date" :value="form.start_date">
                             <input type="hidden" name="end_date" :value="form.end_date">
@@ -43,40 +42,57 @@
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th>Reference Number</th>
+                                <th>Customer</th>
+                                <th>Qty.</th>
                                 <th>Transaction Date</th>
-                                <th>Studio</th>
-                                <th>Total Qty.</th>
-                                <th>Payment Method</th>
-                                <th>Total Price</th>
-                                <th>Employee</th>
+                                <th>Method</th>
                                 <th>Status</th>
+                                <th>Gross Price</th>
+                                <th>Discount Price</th>
+                                <th>Net Price</th>
+                                <th>Studio</th>
                                 <th>Comp Reason</th>
                                 <th>Note</th>
                                 <th>Remarks</th>
+                                <th>Username</th>
                             </tr>
                         </thead>
-                        <tbody :class="`tbp ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.result.data" v-if="res.result.data.length > 0">
+                        <tbody :class="`tbp ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.payments.data" v-if="res.payments.data.length > 0">
                             <tr class="parent">
-                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
-                                <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
-                                <td>{{ getPaymentStudio(data) }}</td>
+                                <td class="toggler" @click.self="toggleAccordion($event, key)">
+                                    <div class="thumb" v-if="data.user">
+                                        <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
+                                    </div>
+                                    <div v-else>
+                                        No Customer
+                                    </div>
+                                </td>
                                 <td>{{ getPaymentDetails(data, 'qty') }}</td>
+                                <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
                                 <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
-                                <td>{{ getPaymentDetails(data, 'price') }}</td>
-                                <td>{{ getPaymentDetails(data, 'employee') }}</td>
                                 <td>
                                     <div class="table_actions">
                                         <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
                                         <div class="action_status red ml" v-if="data.promo_code_used !== null">Discounted</div>
                                     </div>
                                 </td>
+                                <td>Php {{ totalCount(data.gross) }}</td>
+                                <td>Php {{ totalCount(data.discount) }}</td>
+                                <td>Php {{ totalCount(data.net) }}</td>
+                                <td>{{ getPaymentStudio(data) }}</td>
                                 <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : 'N/A' }}</td>
                                 <td>{{ (data.payment_method.note) ? data.payment_method.note : 'N/A' }}</td>
                                 <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : 'N/A' ) }}</td>
+                                <td>{{ getPaymentDetails(data, 'employee') }}</td>
                             </tr>
                             <tr>
-                                <td class="pads" colspan="11">
+                                <td class="pads" colspan="13">
                                     <div class="accordion_table">
                                         <table class="cms_table alt">
                                             <thead>
@@ -84,10 +100,11 @@
                                                     <th>Reference Number</th>
                                                     <th>Item</th>
                                                     <th>Category</th>
-                                                    <th>Qty</th>
-                                                    <th>Price</th>
-                                                    <th>Customer</th>
-                                                    <th>Contact/Emergency No.</th>
+                                                    <th>Qty.</th>
+                                                    <th>Gross Price</th>
+                                                    <th>Discount Price</th>
+                                                    <th>Net Price</th>
+                                                    <th>Refunded</th>
                                                 </tr>
                                             </thead>
                                             <tbody v-if="data.payment_items.length > 0">
@@ -97,28 +114,20 @@
                                                     <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
                                                     <td>{{ child.quantity }}</td>
                                                     <td class="price">
-                                                        <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(child.price_per_item * child.quantity) }}</p>
-                                                        <p>PHP {{ totalCount((data.promo_code_used !== null) ? child.total : child.price_per_item * child.quantity) }}</p>
+                                                        <p>PHP {{ totalCount(child.gross) }}</p>
                                                     </td>
-                                                    <td>
-                                                        <div class="thumb">
-                                                            <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
-                                                            <div class="table_image_default" v-else>
-                                                                <div class="overlay">
-                                                                    {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
-                                                                </div>
-                                                            </div>
-                                                            <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
-                                                        </div>
+                                                    <td class="price">
+                                                        <p>PHP {{ totalCount(child.discount) }}</p>
                                                     </td>
-                                                    <td>
-                                                        {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number) ? data.user.customer_details.ec_contact_number : 'N/A' }}
+                                                    <td class="price">
+                                                        <p>PHP {{ totalCount(child.net) }}</p>
                                                     </td>
+                                                    <td>{{ (child.refunded) ? 'Yes' : 'No' }}</td>
                                                 </tr>
                                             </tbody>
                                             <tbody class="no_results" v-else>
                                                 <tr>
-                                                    <td colspan="7">No Result(s) Found.</td>
+                                                    <td colspan="13">No Result(s) Found.</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -126,13 +135,13 @@
                                 </td>
                             </tr>
                         </tbody>
-                        <tbody class="no_results" v-if="res.result.data.length == 0">
+                        <tbody class="no_results" v-if="res.payments.data.length == 0">
                             <tr>
-                                <td colspan="11">No Result(s) Found.</td>
+                                <td colspan="13">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
-                    <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
+                    <pagination :apiRoute="res.payments.path" :current="res.payments.current_page" :last="res.payments.last_page" />
                 </section>
             </div>
             <transition name="fade">
@@ -143,8 +152,9 @@
 </template>
 
 <script>
-    import Foot from '../../../../../components/Foot'
-    import Pagination from '../../../../../components/Pagination'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
+
     export default {
         components: {
             Foot,
@@ -158,7 +168,6 @@
                 filter: true,
                 loaded: false,
                 rowCount: 0,
-                payment_status: 'all',
                 res: [],
                 values: [],
                 total: [],
@@ -191,12 +200,14 @@
                         'Item': me.getPaymentItem(value, 'name'),
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
                         'Quantity': value.quantity,
-                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
-                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
-                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
-                        'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
-                        'Note': (value.parent.note) ? value.parent.note : 'N/A',
-                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
+                        'Gross Price': value.gross,
+                        'Discount Price': value.discount,
+                        'Net Price': value.net,
+                        'Refunded': (value.refunded) ? 'Yes' : 'No',
+                        'Comp Reason': (value.parent.payment_method.comp_reason) ? value.parent.payment_method.comp_reason : 'N/A',
+                        'Note': (value.parent.payment_method.note) ? value.parent.payment_method.note : 'N/A',
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
+                        'Username': me.getPaymentDetails(value.parent, 'employee')
                     }))
                 ]
             }
@@ -340,8 +351,8 @@
             toggleAccordion (event, key) {
                 const me = this
                 const target = event.target
-                me.res.result.data[key].open ^= true
-                if (me.res.result.data[key].open) {
+                me.res.payments.data[key].open ^= true
+                if (me.res.payments.data[key].open) {
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
                 } else {
                     target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
@@ -368,7 +379,6 @@
 
                 me.form.payment_method = me.$route.params.param
 
-                formData.append('payment_status', value)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 formData.append('payment_method', me.form.payment_method)
@@ -412,12 +422,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-
-                if (me.$route.query.payment_status) {
-                    me.payment_status = me.$route.query.payment_status
-                }
-
-                me.fetchData(me.payment_status)
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
