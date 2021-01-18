@@ -5067,6 +5067,56 @@ input::placeholder
                 sf_pro_regular(14px)
                 color: $black
                 padding: 10px 20px
+                .thumb
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: center
+                    &.alt
+                        img
+                            width: 20px
+                            height: 20px
+                            border-radius: 0
+                            object-fit: contain
+                        .table_data_link
+                            text-decoration: none
+                            color: $black
+                            margin-left: 10px
+                    img
+                        width: 35px
+                        height: 35px
+                        border-radius: 50%
+                        object-fit: cover
+                        object-position: center
+                    .table_image_default
+                        position: relative
+                        text-transform: uppercase
+                        background-image: linear-gradient(137deg, $red, $orange)
+                        sf_pro_regular(14px)
+                        border-radius: 50%
+                        color: $white
+                        width: 35px
+                        height: 35px
+                        .overlay
+                            position: absolute
+                            top: 50%
+                            left: 0
+                            right: 0
+                            text-align: center
+                            transform: translateY(-50%)
+                    .table_data_link
+                        flex: 1 0 5%
+                        margin-left: 15px
+                        text-decoration: underline
+                .table_data_link
+                    cursor: pointer
+                    sf_pro_regular(14px)
+                    color: $blue
+                    text-decoration: underline
+                    transition: .3s ease-in-out
+                    &:hover
+                        text-shadow: 0px 0px 15px rgba(0, 177, 255, 0.75)
+                    &.alternate
+                        text-transform: uppercase
                 .table_actions
                     display: flex
                     flex-flow: row wrap
@@ -5676,6 +5726,9 @@ input::placeholder
             justify-content: space-between
             padding: 15px 20px
             border-bottom: 1px solid $border
+            .header_count
+                sf_pro_bold(14px)
+                color: $black
             .header_title
                 sf_pro_bold(16px)
                 color: $black
@@ -5704,6 +5757,13 @@ input::placeholder
             align-items: center
             background-color: transparent
             border: 1px solid transparent
+            &.alternate
+                background-color: $light_blue
+                color: $blue
+                &:hover,
+                &:focus
+                    background-color: $blue
+                    color: $white
             svg
                 margin-right: 10px
                 .add
