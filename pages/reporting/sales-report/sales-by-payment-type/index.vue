@@ -111,7 +111,7 @@
                                 <td><b>Php {{ totalCount(studio_total.subtotal) }}</b></td>
                                 <td><b>Php {{ totalCount(studio_total.total_tax) }}</b></td>
                                 <td><b>Php {{ totalCount(studio_total.subtotal_refund) }}</b></td>
-                                <td><b>Php {{ totalCount(studio_total.total_tax) }}</b></td>
+                                <td><b>Php {{ totalCount(studio_total.refund_tax) }}</b></td>
                                 <td><b>Php {{ totalCount(studio_total.total_income) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in studio_res" :key="key">
@@ -119,7 +119,7 @@
                                 <td>Php {{ (data.subtotal) ? totalCount(data.subtotal) : 0 }}</td>
                                 <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
                                 <td>Php {{ (data.subtotal_refund) ? totalCount(data.subtotal_refund) : 0 }}</td>
-                                <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
+                                <td>Php {{ (data.refund_tax) ? totalCount(data.refund_tax) : 0 }}</td>
                                 <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
                             </tr>
                         </tbody>
