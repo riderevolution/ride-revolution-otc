@@ -19,36 +19,36 @@
                     <th>Full Name</th>
                     <th>Type</th>
                     <th>Email</th>
-                    <th>Contact Number</th>
-                    <th>City</th>
                     <th>Class Package Total</th>
                     <th>Gift Card Total</th>
                     <th>Store Credits Total</th>
                     <th>Merchandise Total</th>
+                    <th>Total Comp</th>
+                    <th>Total Gross</th>
                     <th>Total Discount</th>
-                    <th>Total Income</th>
+                    <th>Total Net</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
                 <tr v-for="(data, key) in res" :key="key">
                     <td>
-                        <div class="table_data_link">{{ `${data.first_name} ${data.last_name}` }}</div>
+                        <div class="table_data_link">{{ data.fullname }}</div>
                     </td>
                     <td>{{ data.customer_details.customer_type.name }}</td>
                     <td>{{ data.email }}</td>
-                    <td>{{ (data.customer_details.co_contact_number) ? data.customer_details.co_contact_number : 'N/A' }}</td>
-                    <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : 'N/A' }}</td>
                     <td>Php {{ totalCount(data.total_class_package) }}</td>
                     <td>Php {{ totalCount(data.total_gift_card) }}</td>
                     <td>Php {{ totalCount(data.total_store_credit) }}</td>
                     <td>Php {{ totalCount(data.total_merchandise) }}</td>
-                    <td>Php {{ totalCount(data.total_discount) }}</td>
+                    <td>Php {{ totalCount(data.total_comp) }}</td>
                     <td>Php {{ totalCount(data.total_income) }}</td>
+                    <td>Php {{ totalCount(data.total_discount) }}</td>
+                    <td>Php {{ totalCount(data.total_net) }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
                 <tr>
-                    <td colspan="7">No Result(s) Found.</td>
+                    <td colspan="11">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>

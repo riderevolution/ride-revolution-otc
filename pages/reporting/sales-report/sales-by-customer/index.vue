@@ -67,14 +67,14 @@
                                 <th class="sticky">Full Name</th>
                                 <th class="sticky">Type</th>
                                 <th class="sticky">Email</th>
-                                <th class="sticky">Contact Number</th>
-                                <th class="sticky">City</th>
                                 <th class="sticky">Class Package Total</th>
                                 <th class="sticky">Gift Card Total</th>
                                 <th class="sticky">Store Credits Total</th>
                                 <th class="sticky">Merchandise Total</th>
+                                <th class="sticky">Total Comp</th>
+                                <th class="sticky">Total Gross</th>
                                 <th class="sticky">Total Discount</th>
-                                <th class="sticky">Total Income</th>
+                                <th class="sticky">Total Net</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.result.data.length > 0">
@@ -92,14 +92,14 @@
                                 </td>
                                 <td>{{ data.customer_details.customer_type.name }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details.co_contact_number) ? data.customer_details.co_contact_number : 'N/A' }}</td>
-                                <td>{{ (data.customer_details.pa_city) ? data.customer_details.pa_city : 'N/A' }}</td>
                                 <td>Php {{ totalCount(data.total_class_package) }}</td>
                                 <td>Php {{ totalCount(data.total_gift_card) }}</td>
                                 <td>Php {{ totalCount(data.total_store_credit) }}</td>
                                 <td>Php {{ totalCount(data.total_merchandise) }}</td>
-                                <td>Php {{ totalCount(data.total_discount) }}</td>
+                                <td>Php {{ totalCount(data.total_comp) }}</td>
                                 <td>Php {{ totalCount(data.total_income) }}</td>
+                                <td>Php {{ totalCount(data.total_discount) }}</td>
+                                <td>Php {{ totalCount(data.total_net) }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -119,8 +119,9 @@
 </template>
 
 <script>
-    import Foot from '../../.././../components/Foot'
-    import Pagination from '../../.././../components/Pagination'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
+
     export default {
         components: {
             Foot,
@@ -139,7 +140,7 @@
                 values: [],
                 types: [],
                 form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     gender: '',
                     customer_type_id: ''
@@ -151,124 +152,49 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': me.getPaymentStudio(value.parent),
-                        'Customer': (value.parent.user) ? value.parent.user.fullname : 'No Customer',
-                        'Email Address': (value.parent.user) ? value.parent.user.email : 'No Customer Email',
-                        'Contact Number': (value.parent.user) ? (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
-                        'Payment ID': value.parent.id,
-                        'Reference Number': me.getPaymentCode(value.parent),
-                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
-                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
-                        'Payment Status': value.parent.status,
-                        'Payment Method': me.replacer(value.parent.payment_method.method),
-                        'Payment Item Id': value.id,
-                        'SKU ID': me.getPaymentItem(value, 'sku'),
-                        'Item': me.getPaymentItem(value, 'name'),
-                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
-                        'Quantity': value.quantity,
-                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
-                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
-                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
-                        'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
-                        'Note': (value.parent.note) ? value.parent.note : 'N/A',
-                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
+                        'Transaction Date': me.$moment(value.payment.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Reference Number': me.getPaymentCode(value.payment),
+                        'Item': me.getPaymentLineItem(value.payment_item),
+                        'Quantity': value.payment_item.quantity,
+                        'Total': value.payment_item.total,
+                        'Status': value.payment.status,
+                        'Method': value.payment.payment_method.method,
+                        'Studio': (value.payment.studio) ? value.payment.studio.name : 'Website/Online',
+                        'Customer': value.customer.fullname,
+                        'Member ID': value.customer.member_id,
+                        'Customer Type': value.customer.customer_details.customer_type.name,
+                        'Email Address': value.customer.email,
+                        'Contact Number': (value.customer.customer_details.co_contact_number != null) ? value.customer.customer_details.co_contact_number : (value.customer.customer_details.ec_contact_number) ? value.customer.customer_details.ec_contact_number : 'N/A',
+                        'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
+                        'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',
+                        'Remarks': (value.payment.payment_method.remarks) ? value.payment.payment_method.remarks : 'N/A',
+                        'Username': (value.payment.employee) ? value.payment.employee.fullname : 'No Employee'
                     }))
                 ]
             }
         },
         methods: {
-            getPaymentItem (payment_item, type) {
+            getPaymentLineItem (payment_item) {
                 const me = this
                 let result = ''
 
-                if (type == 'sku') {
-                    switch (payment_item.type) {
-                        case 'class-package':
-                        case 'promo-package':
-                            result = payment_item.class_package.sku_id
-                            break
-                        case 'product-variant':
-                            result = payment_item.product_variant.sku_id
-                            break
-                        case 'custom-gift-card':
-                            result = payment_item.gift_card.card_code
-                            break
-                        case 'physical-gift-card':
-                            result = payment_item.gift_card.sku_id
-                            break
-                        case 'store-credit':
-                            result = payment_item.store_credit.sku_id
-                            break
-                    }
-                } else {
-                    switch (payment_item.type) {
-                        case 'class-package':
-                        case 'promo-package':
-                            result = payment_item.class_package.name
-                            break
-                        case 'product-variant':
-                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
-                            break
-                        case 'custom-gift-card':
-                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
-                            break
-                        case 'physical-gift-card':
-                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
-                            break
-                        case 'store-credit':
-                            result = payment_item.store_credit.name
-                            break
-                    }
-                }
-
-                return result
-            },
-            getPaymentDetails (payment, type) {
-                const me = this
-                let result = 0
-
-                payment.payment_items.forEach((payment_item, key) => {
-                    switch (type) {
-                        case 'qty':
-                            result += payment_item.quantity
-                            break
-                    }
-                })
-
-                switch (type) {
-                    case 'qty':
-                        result = me.totalItems(result)
+                switch (payment_item.type) {
+                    case 'class-package':
+                    case 'promo-package':
+                        result = payment_item.class_package.name
                         break
-                    case 'price':
-                        let temp_price = 0
-                        payment.payment_items.forEach((payment_item, key) => {
-                            if (payment.promo_code_used !== null) {
-                                temp_price += parseInt(payment_item.total)
-                            } else {
-                                temp_price += parseInt(payment_item.price_per_item)
-                            }
-                        })
-                        result = `Php ${me.totalCount(temp_price)}`
+                    case 'product-variant':
+                        result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
                         break
-                    case 'employee':
-                        if (payment.employee != null) {
-                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
-                        } else {
-                            result = 'No User'
-                        }
+                    case 'custom-gift-card':
+                        result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
                         break
-                }
-
-                return result
-            },
-            getPaymentStudio (payment) {
-                const me = this
-                let result = ''
-
-                if (payment.studio != null) {
-                    result = payment.studio.name
-                } else {
-                    result = 'Website/Online'
+                    case 'physical-gift-card':
+                        result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                        break
+                    case 'store-credit':
+                        result = payment_item.store_credit.name
+                        break
                 }
 
                 return result
@@ -293,18 +219,14 @@
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                formData.append('export', 1)
                 me.values = []
 
                 me.loader(true)
-                me.$axios.post(`api/reporting/sales/sales-by-customer?all=1`, formData).then(res => {
+                me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
                     if (res.data) {
-                        res.data.result.forEach((data, key) => {
-                            data.payments.forEach((parent, key) => {
-                                parent.payment_items.forEach((child, key) => {
-                                    child.parent = parent
-                                    me.values.push(child)
-                                })
-                            })
+                        res.data.results.forEach((item, key) => {
+                            me.values.push(item)
                         })
                     }
                 }).catch((err) => {
@@ -342,8 +264,8 @@
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
-                formData.append('start_date', me.$moment().format('YYYY-MM-DD'))
-                formData.append('end_date', me.$moment().format('YYYY-MM-DD'))
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
                 me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
