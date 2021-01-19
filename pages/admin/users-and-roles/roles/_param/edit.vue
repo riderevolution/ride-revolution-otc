@@ -326,7 +326,7 @@
                         checked: false
                     },
                     {
-                        name: 'Gift Cards Redeemed',
+                        name: 'Gift Cards Report',
                         class: 'child',
                         checked: false
                     },

@@ -250,8 +250,8 @@
                                         link: '/reporting/sales-report/promotions-redeemed'
                                     },
                                     {
-                                        title: 'Gift Cards Redeemed',
-                                        link: '/reporting/sales-report/gift-cards-redeemed'
+                                        title: 'Gift Cards Report',
+                                        link: '/reporting/sales-report/gift-cards-report'
                                     },
                                     {
                                         title: 'Sales by Customer',
