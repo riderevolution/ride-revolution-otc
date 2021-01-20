@@ -116,8 +116,9 @@
 </template>
 
 <script>
-    import Foot from '../../.././../components/Foot'
-    import Pagination from '../../.././../components/Pagination'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
+
     export default {
         components: {
             Foot,
@@ -137,10 +138,10 @@
                 total_count: 0,
                 promos: [],
                 form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     studio_id: 0,
-                    promo_id: '0'
+                    promo_id: 0
                 }
             }
         },
@@ -341,8 +342,11 @@
                 me.loader(true)
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
-                formData.append('start_date', me.$moment().format('YYYY-MM-DD'))
-                formData.append('end_date', me.$moment().format('YYYY-MM-DD'))
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                formData.append('studio_id', me.form.studio_id)
+                formData.append('promo_id', me.form.promo_id)
+
                 me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {

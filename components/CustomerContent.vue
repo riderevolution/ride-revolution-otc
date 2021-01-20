@@ -219,7 +219,6 @@
             <table class="cms_table_accordion">
                 <thead>
                     <tr>
-                        <th>Reference Number</th>
                         <th>Transaction Date</th>
                         <th>Studio</th>
                         <th>Total Qty.</th>
@@ -234,25 +233,25 @@
                 </thead>
                 <tbody :class="`tbp ${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
                     <tr class="parent alt">
-                        <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
-                        <td>{{ formatTransactionDate(data, true) }}</td>
-                        <td>{{ getPaymentStudio(data) }}</td>
-                        <td>{{ getPaymentDetails(data, 'qty') }}</td>
-                        <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
-                        <td :class="`${(data.status == 'pending') ? 'red' : ''}`">{{ getPaymentDetails(data, 'price') }}</td>
-                        <td>{{ getPaymentDetails(data, 'employee') }}</td>
+                        <td class="toggler" @click.self="toggleAccordion($event, key)">>{{ getTransactionType(data, 'transaction_date') }}</td>
+                        <td>{{ getTransactionType(data, 'studio') }}</td>
+                        <td>{{ getTransactionType(data, 'quantity') }}</td>
+                        <td class="capitalize">{{ getTransactionType(data, 'method') }}</td>
+                        <td :class="`${(getTransactionType(data, 'status') == 'pending') ? 'red' : ''}`">{{ getTransactionType(data, 'price') }}</td>
+                        <td>{{ getTransactionType(data, 'employee') }}</td>
                         <td>
                             <div class="table_actions">
-                                <div :class="`action_status ${(data.status == 'paid') ? 'green' : 'red' }`">{{ data.status }}</div>
-                                <div class="action_status ml gray" v-if="data.refund_status != 'none'">{{ (data.refund_status == 'fully-refunded') ? 'Fully Refunded' : 'Partially Refunded' }}</div>
-                                <div class="table_action_edit link" @click="toggleForm(data.id)" v-if="data.status == 'pending'">Pay Now</div>
+                                <div :class="`action_status ${(getTransactionType(data, 'status') == 'paid') ? 'green' : 'red' }`">{{ getTransactionType(data, 'status') == 'paid' ? 'Paid' : 'Pending' }}}</div>
+                                <div class="action_status ml gray" v-if="getTransactionType(data, 'refund') != 'none'">{{ (getTransactionType(data, 'refund') == 'fully-refunded') ? 'Fully Refunded' : 'Partially Refunded' }}</div>
+                                <div class="table_action_edit link" @click="toggleForm(data.id)" v-if="getTransactionType(data, 'status') == 'pending'">Pay Now</div>
                             </div>
                         </td>
-                        <td>{{ (data.payment_method.comp_reason) ? data.payment_method.comp_reason : 'N/A' }}</td>
-                        <td>{{ (data.payment_method.note) ? data.payment_method.note : 'N/A' }}</td>
+                        <td>{{ getTransactionType(data, 'comp_reason') }}</td>
+                        <td>{{ getTransactionType(data, 'note') }}</td>
+                        <td>{{ getTransactionType(data, 'remarks') }}</td>
                         <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : 'N/A' ) }}</td>
                     </tr>
-                    <tr>
+                    <tr v-if="!data.is_recurrence">
                         <td class="pads" :colspan="rowCount">
                             <div class="accordion_table">
                                 <table class="cms_table">
@@ -720,6 +719,175 @@
             }
         },
         methods: {
+            getTransactionType (data, type) {
+                const me = this
+                let result = ''
+
+                if (data.is_recurrence) {
+                    switch (type) {
+                        case 'reference_number':
+                            result = data.transaction_id
+                            break
+                        case 'method':
+                            result = data.payment_item.payment_method.method
+                            break
+                        case 'transaction_date':
+                            result = me.$moment(data.updated_at).format('MMMM DD, YYYY hh:mm A')
+                            break
+                        case 'products':
+                            result = data.user_package_count.class_package.name
+                            break
+                        case 'quantity':
+                            result = data.payment_item.quantity
+                            break
+                        case 'price':
+                            result = me.totalCount(data.payment_item.payment.total)
+                            break
+                        case 'status':
+                            result = data.payment_item.payment.status
+                            break
+                        case 'studio':
+                            if (data.payment_item.payment.studio) {
+                                result = data.payment_item.payment.studio.name
+                            } else {
+                                result = 'Website/App'
+                            }
+                            break
+                        case 'refund':
+                            result = data.payment_item.payment.refund_status
+                            break
+                        case 'employee':
+                            if (data.payment_item.payment.employee) {
+                                result = data.payment_item.payment.employee.fullname
+                            } else {
+                                result = 'Customer'
+                            }
+                            break
+                        case 'comp_reason':
+                            if (data.payment_item.payment_method.comp_reason) {
+                                result = data.payment_item.payment_method.comp_reason
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'note':
+                            if (data.payment_item.payment_method.note) {
+                                result = data.payment_item.payment_method.note
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'remarks':
+                            if (data.payment_item.payment_method.remarks) {
+                                if (data.payment_item.payment.studio == null && data.payment_item.payment_method.method == 'cash') {
+                                    result = 'From Import'
+                                } else {
+                                    result = data.payment_item.payment_method.remarks
+                                }
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                    }
+                } else {
+                    switch (type) {
+                        case 'reference_number':
+                            switch (data.payment_method.method) {
+                                case 'paypal':
+                                    if (data.payment_method.paypal_transaction_id) {
+                                        result = data.payment_method.paypal_transaction_id
+                                    } else {
+                                        result = data.payment_code
+                                    }
+                                    break
+                                case 'paymaya':
+                                    result = data.payment_method.paymaya_transaction_id
+                                    break
+                                default:
+                                    result = data.payment_code
+                            }
+                            break
+                        case 'method':
+                            result = data.payment_method.method
+                            break
+                        case 'transaction_date':
+                            result = me.$moment(data.updated_at).format('MMMM DD, YYYY hh:mm A')
+                            break
+                        case 'products':
+                            switch (data.type) {
+                                case 'custom-gift-card':
+                                    result = `Digital Gift Card - ${data.gift_card.card_code}`
+                                    break
+                                case 'physical-gift-card':
+                                    result = `Physical Gift Card - ${data.gift_card.card_code}`
+                                    break
+                                case 'product-variant':
+                                    result = `${data.product_variant.product.name} ${data.product_variant.variant}`
+                                    break
+                                case 'class-package':
+                                case 'promo-package':
+                                    result = data.class_package.name
+                                    break
+                                case 'store-credit':
+                                    result = data.store_credit.name
+                                    break
+                            }
+                            break
+                        case 'quantity':
+                            result = data.quantity
+                            break
+                        case 'price':
+                            result = me.totalCount(data.total)
+                            break
+                        case 'status':
+                            result = data.status
+                            break
+                        case 'studio':
+                            if (data.studio) {
+                                result = data.studio.name
+                            } else {
+                                result = 'Website/App'
+                            }
+                            break
+                        case 'refund':
+                            result = data.refund_status
+                            break
+                        case 'employee':
+                            if (data.employee) {
+                                result = data.employee.fullname
+                            } else {
+                                result = 'Customer'
+                            }
+                            break
+                        case 'comp_reason':
+                            if (data.payment_method.comp_reason) {
+                                result = data.payment_method.comp_reason
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'note':
+                            if (data.payment_method.note) {
+                                result = data.payment_method.note
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'remarks':
+                            if (data.payment_method.remarks) {
+                                if (data.studio == null && data.payment_method.method == 'cash') {
+                                    result = 'From Import'
+                                } else {
+                                    result = data.payment_method.remarks
+                                }
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                    }
+                }
+                return result
+            },
             getPaymentItem (payment_item, type) {
                 const me = this
                 let result = ''
@@ -762,18 +930,6 @@
                             result = payment_item.store_credit.name
                             break
                     }
-                }
-
-                return result
-            },
-            getPaymentStudio (payment) {
-                const me = this
-                let result = ''
-
-                if (payment.studio != null) {
-                    result = payment.studio.name
-                } else {
-                    result = 'Website/Online'
                 }
 
                 return result
