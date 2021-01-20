@@ -64,44 +64,74 @@
                     <div class="cms_table_toggler">
                         <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
                     </div>
-                    <table class="cms_table alt">
+
+                    <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th class="sticky">Date Redeemed</th>
-                                <th class="sticky">Full Name</th>
-                                <th class="sticky">Promo</th>
-                                <th class="sticky">Promo Code</th>
-                                <th class="sticky">Discount</th>
-                                <th class="sticky">Total Discount</th>
-                                <th class="sticky">Remaining</th>
-                                <th class="sticky">Status</th>
+                                <th>Promo</th>
+                                <th>Promo Code</th>
+                                <th>Total Codes</th>
+                                <th>Total Discount</th>
+                                <th>Discount Type</th>
+                                <th>Discount Value</th>
+                                <th>Remaining</th>
                             </tr>
                         </thead>
-                        <tbody v-if="res.result.data.length > 0">
-                            <tr v-for="(data, key) in res.result.data" :key="key">
-                                <td>{{ $moment(data.created_at).format('MMM DD, YYYY hh:mm A') }}</td>
-                                <td>
-                                    <div class="thumb">
-                                        <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
-                                        <div class="table_image_default" v-else>
-                                            <div class="overlay">
-                                                {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
-                                            </div>
-                                        </div>
-                                        <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
+                        <tbody :class="`tbp ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.result.data" v-if="res.result.data.length > 0">
+                            <tr class="parent">
+                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.name }}</td>
+                                <td>{{ data.promo_code }}</td>
+                                <td>{{ data.total_codes }}</td>
+                                <td>Php {{ totalCount(data.total_discount) }}</td>
+                                <td class="alt_2 capitalize">{{ data.discount_type }}</td>
+                                <td>{{ (data.discount_type == 'percent') ? data.discount_percent : data.discount_flat_rate }}</td>
+                                <td>{{ totalItems(data.redemption_limit - data.total_codes) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="pads" colspan="13">
+                                    <div class="accordion_table">
+                                        <table class="cms_table alt">
+                                            <thead>
+                                                <tr>
+                                                    <th>Reference Number</th>
+                                                    <th>Item</th>
+                                                    <th>Category</th>
+                                                    <th>Qty.</th>
+                                                    <th>Gross Price</th>
+                                                    <th>Discount Price</th>
+                                                    <th>Net Price</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody v-if="data.payment_items.length > 0">
+                                                <tr v-for="(child, key) in data.payment_items" :key="key">
+                                                    <td>{{ getPaymentCode(child) }}</td>
+                                                    <td>{{ getPaymentItem(child, 'name') }}</td>
+                                                    <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
+                                                    <td>{{ child.quantity }}</td>
+                                                    <td class="price">
+                                                        <p>PHP {{ totalCount(child.gross) }}</p>
+                                                    </td>
+                                                    <td class="price">
+                                                        <p>PHP {{ totalCount(child.discount) }}</p>
+                                                    </td>
+                                                    <td class="price">
+                                                        <p>PHP {{ totalCount(child.net) }}</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody class="no_results" v-else>
+                                                <tr>
+                                                    <td colspan="13">No Result(s) Found.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </td>
-                                <td>{{ data.promo.name }}</td>
-                                <td>{{ data.promo.promo_code }}</td>
-                                <td>{{ (data.promo.discount_type == 'percent') ? `${data.promo.discount_percent}%` : `Php ${data.promo.discount_flat_rate} off` }}</td>
-                                <td>Php {{ totalCount(data.total_discount) }}</td>
-                                <td>{{ data.remaining }}</td>
-                                <td>{{ (parseInt($moment(data.promo.end_Date).diff($moment())) < 0) ? 'Inactive' : 'Active' }}</td>
                             </tr>
                         </tbody>
-                        <tbody class="no_results" v-else>
+                        <tbody class="no_results" v-if="res.result.data.length == 0">
                             <tr>
-                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                <td colspan="13">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -176,6 +206,16 @@
             }
         },
         methods: {
+            toggleAccordion (event, key) {
+                const me = this
+                const target = event.target
+                me.res.result.data[key].open ^= true
+                if (me.res.result.data[key].open) {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
+                } else {
+                    target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
+                }
+            },
             getPaymentItem (payment_item, type) {
                 const me = this
                 let result = ''
@@ -333,6 +373,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                         me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
                 })
@@ -378,6 +422,10 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        const elements = document.querySelectorAll('.cms_table_accordion .tbp')
+                        elements.forEach((element, index) => {
+                            element.querySelector('.accordion_table').style.height = 0
+                        })
                         me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
                 })
