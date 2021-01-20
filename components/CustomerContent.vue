@@ -231,7 +231,7 @@
                         <th>Remarks</th>
                     </tr>
                 </thead>
-                <tbody :class="`tbp ${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
+                <tbody :class="`tbp ${(data.open) ? 'toggled' : ''} ${(getTransactionType(data, 'status') == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
                     <tr class="parent alt">
                         <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getTransactionType(data, 'transaction_date') }}</td>
                         <td>{{ getTransactionType(data, 'studio') }}</td>
