@@ -249,7 +249,6 @@
                         <td>{{ getTransactionType(data, 'comp_reason') }}</td>
                         <td>{{ getTransactionType(data, 'note') }}</td>
                         <td>{{ getTransactionType(data, 'remarks') }}</td>
-                        <td>{{ (data.payment_method.remarks) ? data.payment_method.remarks : (data.studio == null && data.payment_method.method == 'cash' ? 'From Import' : 'N/A' ) }}</td>
                     </tr>
                     <tr v-if="!data.is_recurrence">
                         <td class="pads" :colspan="rowCount">
