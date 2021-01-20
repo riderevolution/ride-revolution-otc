@@ -8,7 +8,7 @@
                 <div :class="`status ${(packageStatus == 'frozen') ? 'active' : ''}`" @click="togglePackages('frozen')">Frozen</div>
                 <div :class="`status ${(packageStatus == 'expired') ? 'active' : ''}`" @click="togglePackages('expired')">Expired</div>
             </div>
-            <button type="button" class="hidden" id="packages" @click="togglePackages('all')"></button>
+            <button type="button" class="hidden" id="packages" @click="togglePackages(packageStatus)"></button>
             <div class="cms_table_package">
                 <div class="table_package" v-for="(data, key) in populatePackages" :key="key" v-if="packageCount > 0 && !data.expired">
                     <div class="package_title">
@@ -44,12 +44,12 @@
                             </div>
                             <div class="date margin">
                                 <p>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, false) : formatDate(data.expiry_date_if_not_activated, false) }}</p>
-                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')">Edit</a></label>
+                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')" v-if="!data.class_package.recurring">Edit</a></label>
                             </div>
                         </div>
                         <div class="package_action" v-if="packageStatus != 'expired'">
                             <div v-if="!data.frozen" class="action_success_btn" @click="getCurrentCustomer()">Book a Class</div>
-                            <div class="package_options" :class="{ no_margin: data.frozen }" v-if="(data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package)">
+                            <div class="package_options" :class="{ no_margin: data.frozen }" v-if="(data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package || data.subscription_status)">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
 
@@ -313,7 +313,6 @@
                                             <th>Price</th>
                                             <th>Refund Type</th>
                                             <th>Remarks</th>
-                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -327,16 +326,6 @@
                                             </td>
                                             <td class="alt_2">{{ (data.payment_item.refund_type) ? replacer(data.payment_item.refund_type) : 'N/A' }}</td>
                                             <td>{{ (data.payment_item.refund_remarks) ? data.payment_item.refund_remarks : 'N/A' }}</td>
-                                            <td>
-                                                <div class="table_actions">
-                                                    <div class="table_action_cancel link">Cancel</div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                    <tbody class="no_results" v-else>
-                                        <tr>
-                                            <td :colspan="rowCount">No Result(s) Found.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -583,7 +572,10 @@
             <refund :payment="payment" :paymentItemId="paymentItemId" v-if="$store.state.refundStatus" />
         </transition>
         <transition name="fade">
-            <recurring-refund v-if="recurring" />
+            <recurring-refund v-if="recurring" :user_package_count="recur.user_package_count" />
+        </transition>
+        <transition name="fade">
+            <recurring-cancel-success v-if="recurring_cancel" />
         </transition>
     </div>
 </template>
@@ -597,6 +589,7 @@
     import PackageEditExpiryPrompt from '../components/modals/PackageEditExpiryPrompt'
     import Refund from '../components/modals/Refund'
     import RecurringRefund from '../components/modals/RecurringRefund'
+    import RecurringCancelSuccess from '../components/modals/RecurringCancelSuccess'
     import Pagination from '../components/Pagination'
 
     export default {
@@ -609,6 +602,7 @@
             PackageEditExpiryPrompt,
             Refund,
             RecurringRefund,
+            RecurringCancelSuccess,
             Pagination
         },
         props: {
@@ -636,6 +630,11 @@
                 promptMessage: '',
                 isActivated: true,
                 recurring: false,
+                recurring_cancel: false,
+                recur: {
+                    user_package_count: null,
+                    type: 1
+                },
                 loaded: false,
                 violatorClass: '',
                 violator: {
@@ -1148,6 +1147,7 @@
                         document.body.classList.add('no_scroll')
                         break
                     case 'recurring':
+                        me.recur.user_package_count = data
                         me.recurring = true
                         break
                 }

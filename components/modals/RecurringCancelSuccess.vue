@@ -20,7 +20,7 @@
         methods: {
             toggleClose () {
                 const me = this
-                me.$store.state.refundSuccessStatus = false
+                me.$parent.recurring_cancel = false
                 document.body.classList.remove('no_scroll')
                 if (me.$route.params.slug == 'packages') {
                     document.getElementById('packages').click()

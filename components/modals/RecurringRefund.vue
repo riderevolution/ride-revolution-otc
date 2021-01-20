@@ -16,24 +16,15 @@
                 <div class="action_success_btn confirm margin alternate" @click="toggleProceed()">Proceed</div>
             </div>
         </div>
-        <transition name="fade">
-            <refund-confirm :value="form" :paymentItemId="paymentItemId" v-if="$store.state.refundConfirmStatus" />
-        </transition>
     </div>
 </template>
 
 <script>
-    import RecurringCancelSuccess from '~/components/modals/RecurringCancelSuccess'
     export default {
-        components: {
-            RecurringCancelSuccess
-        },
         props: {
-            payment: {
+            user_package_count: {
+                type: Object/Array,
                 default: null
-            },
-            paymentItemId: {
-                default: 0
             }
         },
         data () {
@@ -51,11 +42,32 @@
             },
             toggleProceed () {
                 const me = this
-                if (me.selectedCount > 0) {
-                    me.$store.state.refundConfirmStatus = true
-                } else {
-                    me.selectedMenu = true
-                }
+                let token = me.$cookies.get('70hokc3hhhn5')
+                me.loader(true)
+                let formData = new FormData()
+                formData.append('paypal_subscription_id', me.user_package_count.paypal_subscription_id)
+                formData.append('reason', me.form.reason)
+                me.$axios.post('api/paypal/cancel-subscription', formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
+                    if (res.data) {
+                        if (me.$route.params.slug == 'transactions') {
+                            document.getElementById('transactions').click()
+                        }
+                        me.$parent.recurring = false
+                        me.$parent.recurring_cancel = true
+                    }
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorOverlayStatus = true
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
             }
         }
     }
