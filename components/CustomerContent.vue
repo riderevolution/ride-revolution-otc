@@ -233,15 +233,15 @@
                 </thead>
                 <tbody :class="`tbp ${(data.open) ? 'toggled' : ''} ${(data.status == 'paid') ? 'alt' : ''}`" v-for="(data, key) in res.data" v-if="res.data.length > 0">
                     <tr class="parent alt">
-                        <td class="toggler" @click.self="toggleAccordion($event, key)">>{{ getTransactionType(data, 'transaction_date') }}</td>
+                        <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getTransactionType(data, 'transaction_date') }}</td>
                         <td>{{ getTransactionType(data, 'studio') }}</td>
                         <td>{{ getTransactionType(data, 'quantity') }}</td>
                         <td class="capitalize">{{ getTransactionType(data, 'method') }}</td>
-                        <td :class="`${(getTransactionType(data, 'status') == 'pending') ? 'red' : ''}`">{{ getTransactionType(data, 'price') }}</td>
+                        <td :class="`${(getTransactionType(data, 'status') == 'pending') ? 'red' : ''}`">Php {{ getTransactionType(data, 'price') }}</td>
                         <td>{{ getTransactionType(data, 'employee') }}</td>
                         <td>
                             <div class="table_actions">
-                                <div :class="`action_status ${(getTransactionType(data, 'status') == 'paid') ? 'green' : 'red' }`">{{ getTransactionType(data, 'status') == 'paid' ? 'Paid' : 'Pending' }}}</div>
+                                <div :class="`action_status ${(getTransactionType(data, 'status') == 'paid') ? 'green' : 'red' }`">{{ getTransactionType(data, 'status') == 'paid' ? 'Paid' : 'Pending' }}</div>
                                 <div class="action_status ml gray" v-if="getTransactionType(data, 'refund') != 'none'">{{ (getTransactionType(data, 'refund') == 'fully-refunded') ? 'Fully Refunded' : 'Partially Refunded' }}</div>
                                 <div class="table_action_edit link" @click="toggleForm(data.id)" v-if="getTransactionType(data, 'status') == 'pending'">Pay Now</div>
                             </div>
@@ -276,8 +276,8 @@
                                                 <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
                                                 <p>PHP {{ totalCount((data.promo_code_used !== null) ? item.total : item.price_per_item * item.quantity) }}</p>
                                             </td>
-                                            <td>{{ (item.refund_remarks) ? item.refund_remarks : 'N/A' }}</td>
                                             <td class="alt_2">{{ (item.refund_type) ? replacer(item.refund_type) : 'N/A' }}</td>
+                                            <td>{{ (item.refund_remarks) ? item.refund_remarks : 'N/A' }}</td>
                                             <td v-if="data.status == 'paid'">
                                                 <div class="table_actions" v-if="item.type != 'store-credit'">
                                                     <div class="table_action_cancel link" @click="toggleRefund(data, item)" v-if="checkRefund(data, item) != 'expired'">Refund</div>
@@ -288,6 +288,48 @@
                                                 </div>
                                                 <div class="table_actions" v-else>
                                                     <div class="table_action_cancel disabled link">Non-refundable</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody class="no_results" v-else>
+                                        <tr>
+                                            <td :colspan="rowCount">No Result(s) Found.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-else>
+                        <td class="pads" :colspan="rowCount">
+                            <div class="accordion_table">
+                                <table class="cms_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Reference Number</th>
+                                            <th>Item</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th>Refund Type</th>
+                                            <th>Remarks</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ getTransactionType(data, 'reference_number') }}</td>
+                                            <td>{{ getTransactionType(data, 'products') }}</td>
+                                            <td>{{ getTransactionType(data, 'quantity') }}</td>
+                                            <td class="price">
+                                                <p :class="`${(data.payment_item.payment.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.payment_item.payment.promo_code_used !== null">PHP {{ totalCount(data.payment_item.price_per_item * data.payment_item.quantity) }}</p>
+                                                <p>PHP {{ totalCount((data.payment_item.payment.promo_code_used !== null) ? data.total : data.payment_item.price_per_item * data.payment_item.quantity) }}</p>
+                                            </td>
+                                            <td class="alt_2">{{ (data.payment_item.refund_type) ? replacer(data.payment_item.refund_type) : 'N/A' }}</td>
+                                            <td>{{ (data.payment_item.refund_remarks) ? data.payment_item.refund_remarks : 'N/A' }}</td>
+                                            <td>
+                                                <div class="table_actions">
+                                                    <div class="table_action_cancel link">Cancel</div>
                                                 </div>
                                             </td>
                                         </tr>
