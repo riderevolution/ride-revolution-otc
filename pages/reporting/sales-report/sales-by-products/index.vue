@@ -36,6 +36,7 @@
                                 <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
                                     <option value="0" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
+                                    <option value="os">Website/Online Sales</option>
                                 </select>
                             </div>
                             <div class="form_group margin">
@@ -290,7 +291,11 @@
 
                 switch (payment.payment_method.method) {
                     case 'paypal':
-                        result = payment.payment_method.paypal_transaction_id
+                        if (payment.payment_method.paypal_transaction_id) {
+                            result = payment.payment_method.paypal_transaction_id
+                        } else {
+                            result = payment.payment_code
+                        }
                         break
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id

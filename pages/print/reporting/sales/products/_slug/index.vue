@@ -9,29 +9,30 @@
                 </div>
             </div>
             <div class="text">
-                <h2>{{ category.name }} - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ $route.query.payment_status }})</h2>
+                <h2>{{ category.name }} - {{ ($route.query.studio_id) ? ($route.query.studio_id == 'os') ? 'Online Sales' : ($route.query.studio_id != 0) ? studio.name : 'All Studios' : '' }}</h2>
                 <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
             </div>
         </div>
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th>Product Name</th>
-                    <th>Item Price</th>
-                    <th>Sold</th>
-                    <th>Comp Value</th>
-                    <th>Discount</th>
-                    <th>Taxes</th>
-                    <th>Profit</th>
-                    <th>Cost</th>
-                    <th>Total Income</th>
+                    <th class="sticky">Product Name</th>
+                    <th class="sticky">Item Price</th>
+                    <th class="sticky">Sold</th>
+                    <th class="sticky">Gross</th>
+                    <th class="sticky">Comp Value</th>
+                    <th class="sticky">Discount</th>
+                    <th class="sticky">Taxes</th>
+                    <th class="sticky">Profit</th>
+                    <th class="sticky">Cost</th>
+                    <th class="sticky">Total Income</th>
                 </tr>
             </thead>
             <tbody v-if="res.length > 0">
                 <tr>
-                    <td><b>{{ total.name }}</b></td>
-                    <td><b>-</b></td>
+                    <td colspan="2"><b>{{ total.name }}</b></td>
                     <td><b>{{ total.sold }}</b></td>
+                    <td><b>Php {{ totalCount(total.gross) }}</b></td>
                     <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                     <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                     <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
@@ -53,6 +54,7 @@
                         </div>
                     </td>
                     <td>{{ (data.sold) ? data.sold : 0 }}</td>
+                    <td>Php {{ (totalCount(data.gross)) ? totalCount(data.gross) : 0 }}</td>
                     <td>Php {{ (totalCount(data.total_comp)) ? totalCount(data.total_comp) : 0 }}</td>
                     <td>Php {{ (totalCount(data.total_discount)) ? totalCount(data.total_discount) : 0 }}</td>
                     <td>Php {{ (totalCount(data.total_tax)) ? totalCount(data.total_tax) : 0 }}</td>
@@ -63,7 +65,7 @@
             </tbody>
             <tbody class="no_results" v-else>
                 <tr>
-                    <td colspan="9">No Result(s) Found.</td>
+                    <td :colspan="rowCount">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>
@@ -109,14 +111,16 @@
                     me.form.studio_id = me.$route.query.studio_id
                     formData.append('studio_id', me.form.studio_id)
                 }
-                me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.slug}?all=1`, formData).then(res => {
+                formData.append('all', 1)
+
+                me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.slug}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data.result
                             me.total = res.data.total
                             me.category = res.data.category
 
-                            if (me.form.studio_id != '') {
+                            if (me.form.studio_id != 0) {
                                 me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })

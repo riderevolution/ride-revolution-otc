@@ -7,7 +7,7 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ variant.variant }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }}</h1>
+                                <h1>{{ variant.variant }} - {{ (form.studio_id == 'os') ? 'Online Sales' : (form.studio_id != 0) ? studio.name : 'All Studios' }}</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ variant.variant }} ({{ variant.product.category.name }}).</h2>

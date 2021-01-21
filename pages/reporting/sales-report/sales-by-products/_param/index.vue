@@ -7,7 +7,7 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>{{ category.name }} - {{ (form.studio_id != '') ? studio.name : 'All Studios' }}</h1>
+                                <h1>{{ category.name }} - {{ (form.studio_id == 'os') ? 'Online Sales' : (form.studio_id != 0) ? studio.name : 'All Studios' }}</h1>
                                 <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">Income from {{ category.name }}.</h2>
@@ -106,10 +106,12 @@
 </template>
 
 <script>
-    import Foot from '../../../../../components/Foot'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
     export default {
         components: {
-            Foot
+            Foot,
+            Pagination
         },
         data () {
             const values = []
@@ -137,27 +139,26 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
+                        'Reference Number': me.getPaymentCode(value.parent),
+                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Payment Status': value.parent.status,
+                        'Payment Method': me.replacer(value.parent.payment_method.method),
+                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
+                        'Quantity': value.quantity,
+                        'Gross Price': value.gross,
+                        'Discount Price': value.discount,
+                        'Net Price': value.net,
                         'Studio': me.getPaymentStudio(value.parent),
                         'Customer': (value.parent.user) ? value.parent.user.fullname : 'No Customer',
                         'Email Address': (value.parent.user) ? value.parent.user.email : 'No Customer Email',
                         'Contact Number': (value.parent.user) ? (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
-                        'Payment ID': value.parent.id,
-                        'Reference Number': me.getPaymentCode(value.parent),
-                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
-                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
-                        'Payment Status': value.parent.status,
-                        'Payment Method': me.replacer(value.parent.payment_method.method),
-                        'Payment Item Id': value.id,
                         'SKU ID': me.getPaymentItem(value, 'sku'),
                         'Item': me.getPaymentItem(value, 'name'),
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
-                        'Quantity': value.quantity,
-                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
-                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
-                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
-                        'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
-                        'Note': (value.parent.note) ? value.parent.note : 'N/A',
-                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
+                        'Comp Reason': (value.parent.payment_method.comp_reason) ? value.parent.payment_method.comp_reason : 'N/A',
+                        'Note': (value.parent.payment_method.note) ? value.parent.payment_method.note : 'N/A',
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
+                        'Username': me.getPaymentDetails(value.parent, 'employee')
                     }))
                 ]
             }
@@ -166,10 +167,12 @@
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                formData.append('export', 1)
+
                 me.values = []
 
                 me.loader(true)
-                me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}?all=1&export=1`, formData).then(res => {
+                me.$axios.post(`api/reporting/sales/sales-by-product/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         res.data.payments.forEach((parent, key) => {
                             parent.payment_items.forEach((child, key) => {
@@ -287,7 +290,11 @@
 
                 switch (payment.payment_method.method) {
                     case 'paypal':
-                        result = payment.payment_method.paypal_transaction_id
+                        if (payment.payment_method.paypal_transaction_id) {
+                            result = payment.payment_method.paypal_transaction_id
+                        } else {
+                            result = payment.payment_code
+                        }
                         break
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
