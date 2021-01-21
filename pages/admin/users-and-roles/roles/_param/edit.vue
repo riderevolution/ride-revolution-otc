@@ -336,6 +336,11 @@
                         checked: false
                     },
                     {
+                        name: 'Sales Export',
+                        class: 'child',
+                        checked: false
+                    },
+                    {
                         name: 'Inventory Value Report',
                         class: 'parent',
                         checked: false,

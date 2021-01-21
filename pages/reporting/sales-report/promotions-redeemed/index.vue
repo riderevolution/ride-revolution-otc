@@ -84,7 +84,7 @@
                                 <td>{{ data.total_codes }}</td>
                                 <td>Php {{ totalCount(data.total_discount) }}</td>
                                 <td class="alt_2 capitalize">{{ data.discount_type }}</td>
-                                <td>{{ (data.discount_type == 'percent') ? data.discount_percent : data.discount_flat_rate }}</td>
+                                <td>{{ (data.discount_type == 'percent') ? `${data.discount_percent}%` : `Php ${data.discount_flat_rate}` }}</td>
                                 <td>{{ totalItems(data.redemption_limit - data.total_codes) }}</td>
                             </tr>
                             <tr>
@@ -94,6 +94,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Reference Number</th>
+                                                    <th>Customer</th>
                                                     <th>Item</th>
                                                     <th>Category</th>
                                                     <th>Qty.</th>
@@ -105,6 +106,20 @@
                                             <tbody v-if="data.payment_items.length > 0">
                                                 <tr v-for="(child, key) in data.payment_items" :key="key">
                                                     <td>{{ getPaymentCode(child) }}</td>
+                                                    <td>
+                                                        <div class="thumb" v-if="data.user">
+                                                            <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                                            <div class="table_image_default" v-else>
+                                                                <div class="overlay">
+                                                                    {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
+                                                        </div>
+                                                        <div v-else>
+                                                            No Customer
+                                                        </div>
+                                                    </td>
                                                     <td>{{ getPaymentItem(child, 'name') }}</td>
                                                     <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
                                                     <td>{{ child.quantity }}</td>
@@ -332,22 +347,20 @@
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                formData.append('all', 1)
+
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/sales/promotions-redeemed?all=1`, formData).then(res => {
+                me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
                     if (res.data) {
-                        res.data.result.forEach((parent, key) => {
-                            parent.payment_items.forEach((child, key) => {
-                                child.parent = parent
-                                me.values.push(child)
-                            })
-                        })
+                        console.log(res.data);
+                        // me.values = res.data.results
                     }
                 }).catch((err) => {
 
                 }).then(() => {
                     me.loader(false)
-                    document.querySelector('.me').click()
+                    // document.querySelector('.me').click()
                 })
             },
             openWindow (slug) {

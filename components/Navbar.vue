@@ -256,6 +256,10 @@
                                     {
                                         title: 'Sales by Customer',
                                         link: '/reporting/sales-report/sales-by-customer'
+                                    },
+                                    {
+                                        title: 'Sales Export',
+                                        link: '/reporting/sales-report/sales-export'
                                     }
                                 ]
                             },
