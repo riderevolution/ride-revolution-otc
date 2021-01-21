@@ -12,39 +12,89 @@
                 <h2>Promotions Redeemed - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }} ({{ ($route.query.promo_id != 0) ? promo.name : 'All Promotions' }})</h2>
                 <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
             </div>
-            <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
         </div>
-        <table class="cms_table print">
+        <table class="cms_table_accordion">
             <thead>
                 <tr>
-                    <th class="sticky">Date Redeemed</th>
-                    <th class="sticky">Full Name</th>
-                    <th class="sticky">Promo</th>
-                    <th class="sticky">Promo Code</th>
-                    <th class="sticky">Discount</th>
-                    <th class="sticky">Total Discount</th>
-                    <th class="sticky">Remaining</th>
-                    <th class="sticky">Status</th>
+                    <th>Promo</th>
+                    <th>Promo Code</th>
+                    <th>Total Codes</th>
+                    <th>Total Discount</th>
+                    <th>Discount Type</th>
+                    <th>Discount Value</th>
+                    <th>Remaining</th>
                 </tr>
             </thead>
-            <tbody v-if="res.length > 0">
-                <tr v-for="(data, key) in res" :key="key">
-                    <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
-                    <td>
-                        <div class="table_data_link" v-if="data.user != null">{{ `${data.user.first_name} ${data.user.last_name}` }}</div>
-                        <div v-else>N/A</div>
-                    </td>
-                    <td>{{ data.promo.name }}</td>
-                    <td>{{ data.promo.promo_code }}</td>
-                    <td>{{ (data.promo.discount_type == 'percent') ? `${data.promo.discount_percent}%` : `Php ${data.promo.discount_flat_rate} off` }}</td>
+            <tbody v-for="(data, key) in res">
+                <tr class="parent">
+                    <td>{{ data.name }}</td>
+                    <td>{{ data.promo_code }}</td>
+                    <td>{{ data.total_codes }}</td>
                     <td>Php {{ totalCount(data.total_discount) }}</td>
-                    <td>{{ data.remaining }}</td>
-                    <td>{{ (parseInt($moment(data.promo.end_Date).diff($moment())) < 0) ? 'Inactive' : 'Active' }}</td>
+                    <td class="alt_2 capitalize">{{ data.discount_type }}</td>
+                    <td>{{ (data.discount_type == 'percent') ? `${data.discount_percent}%` : `Php ${data.discount_flat_rate}` }}</td>
+                    <td>{{ totalItems(data.redemption_limit - data.total_codes) }}</td>
+                </tr>
+                <tr>
+                    <td class="pads" colspan="13">
+                        <div class="accordion_table show">
+                            <table class="cms_table alt">
+                                <thead>
+                                    <tr>
+                                        <th>Reference Number</th>
+                                        <th>Customer</th>
+                                        <th>Item</th>
+                                        <th>Category</th>
+                                        <th>Qty.</th>
+                                        <th>Gross Price</th>
+                                        <th>Discount Price</th>
+                                        <th>Net Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-if="data.payment_items.length > 0">
+                                    <tr v-for="(child, key) in data.payment_items" :key="key">
+                                        <td>{{ getPaymentCode(child) }}</td>
+                                        <td>
+                                            <div class="thumb" v-if="data.user">
+                                                <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                                <div class="table_image_default" v-else>
+                                                    <div class="overlay">
+                                                        {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                                    </div>
+                                                </div>
+                                                <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
+                                            </div>
+                                            <div v-else>
+                                                No Customer
+                                            </div>
+                                        </td>
+                                        <td>{{ getPaymentItem(child, 'name') }}</td>
+                                        <td>{{ (child.product_variant) ? child.product_variant.product.category.name : 'N/A' }}</td>
+                                        <td>{{ child.quantity }}</td>
+                                        <td class="price">
+                                            <p>PHP {{ totalCount(child.gross) }}</p>
+                                        </td>
+                                        <td class="price">
+                                            <p>PHP {{ totalCount(child.discount) }}</p>
+                                        </td>
+                                        <td class="price">
+                                            <p>PHP {{ totalCount(child.net) }}</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tbody class="no_results" v-else>
+                                    <tr>
+                                        <td colspan="13">No Result(s) Found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
-            <tbody class="no_results" v-else>
+            <tbody class="no_results" v-if="res.length == 0">
                 <tr>
-                    <td colspan="8">No Result(s) Found.</td>
+                    <td colspan="13">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>
@@ -70,6 +120,73 @@
             }
         },
         methods: {
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.card_code
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentCode (payment) {
+                const me = this
+                let result = ''
+
+                switch (payment.payment_method.method) {
+                    case 'paypal':
+                        if (payment.payment_method.paypal_transaction_id) {
+                            result = payment.payment_method.paypal_transaction_id
+                        } else {
+                            result = payment.payment_code
+                        }
+                        break
+                    case 'paymaya':
+                        result = payment.payment_method.paymaya_transaction_id
+                        break
+                    default:
+                        result = payment.payment_code
+                }
+
+                return result
+            },
             initial () {
                 const me = this
                 let formData = new FormData()
@@ -84,13 +201,15 @@
                     formData.append('promo_id', me.$route.query.promo_id)
                 }
 
-                me.$axios.post('api/reporting/sales/promotions-redeemed?all=1', formData).then(res => {
+                formData.append('all', 1)
+
+                me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.total_count = res.data.grand_total
                             me.res = res.data.result
 
-                            if (me.form.studio_id != '') {
+                            if (me.form.studio_id != 0) {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })

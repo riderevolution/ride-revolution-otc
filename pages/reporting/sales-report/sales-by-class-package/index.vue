@@ -355,7 +355,7 @@
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date',  me.form.end_date)
                 formData.append('type', me.tab)
-                
+
                 me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {

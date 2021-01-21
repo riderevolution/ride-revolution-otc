@@ -64,7 +64,6 @@
                     <div class="cms_table_toggler">
                         <div class="total">Grand Total: Php {{ totalCount(total_count) }}</div>
                     </div>
-
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
@@ -195,27 +194,26 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': me.getPaymentStudio(value.parent),
-                        'Customer': (value.parent.user) ? value.parent.user.fullname : 'No Customer',
-                        'Email Address': (value.parent.user) ? value.parent.user.email : 'No Customer Email',
-                        'Contact Number': (value.parent.user) ? (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
-                        'Payment ID': value.parent.id,
-                        'Reference Number': me.getPaymentCode(value.parent),
-                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
-                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
-                        'Payment Status': value.parent.status,
-                        'Payment Method': me.replacer(value.parent.payment_method.method),
-                        'Payment Item Id': value.id,
-                        'SKU ID': me.getPaymentItem(value, 'sku'),
-                        'Item': me.getPaymentItem(value, 'name'),
-                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
-                        'Quantity': value.quantity,
-                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
-                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
-                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
-                        'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
-                        'Note': (value.parent.note) ? value.parent.note : 'N/A',
-                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
+                        'Reference Number': me.getPaymentCode(value.payment),
+                        'Transaction Date': me.$moment(value.payment.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Payment Status': value.payment.status,
+                        'Payment Method': me.replacer(value.payment.payment_method.method),
+                        'Promo Code': (value.payment.promo_code_used != null) ? value.payment.promo_code_used : 'No Promo Code Used',
+                        'Quantity': value.payment_item.quantity,
+                        'Gross Price': value.payment_item.gross,
+                        'Discount Price': value.payment_item.discount,
+                        'Net Price': value.payment_item.net,
+                        'Studio': (value.payment.studio) ? value.payment.studio.name : 'Website/Online',
+                        'Customer': (value.payment.user) ? value.payment.user.fullname : 'No Customer',
+                        'Email Address': (value.payment.user) ? value.payment.user.email : 'No Customer Email',
+                        'Contact Number': (value.payment.user) ? (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
+                        'SKU ID': me.getPaymentItem(value.payment_item, 'sku'),
+                        'Item': me.getPaymentItem(value.payment_item, 'name'),
+                        'Item Category': (value.payment_item.product_variant) ? value.payment_item.product_variant.product.category.name : 'N/A',
+                        'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
+                        'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',
+                        'Remarks': (value.payment.payment_method.remarks) ? value.payment.payment_method.remarks : 'N/A',
+                        'Username': (value.payment.employee) ? value.payment.employee.fullname : 'Customer'
                     }))
                 ]
             }
@@ -277,63 +275,17 @@
 
                 return result
             },
-            getPaymentDetails (payment, type) {
-                const me = this
-                let result = 0
-
-                payment.payment_items.forEach((payment_item, key) => {
-                    switch (type) {
-                        case 'qty':
-                            result += payment_item.quantity
-                            break
-                    }
-                })
-
-                switch (type) {
-                    case 'qty':
-                        result = me.totalItems(result)
-                        break
-                    case 'price':
-                        let temp_price = 0
-                        payment.payment_items.forEach((payment_item, key) => {
-                            if (payment.promo_code_used !== null) {
-                                temp_price += parseInt(payment_item.total)
-                            } else {
-                                temp_price += parseInt(payment_item.price_per_item)
-                            }
-                        })
-                        result = `Php ${me.totalCount(temp_price)}`
-                        break
-                    case 'employee':
-                        if (payment.employee != null) {
-                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
-                        } else {
-                            result = 'No User'
-                        }
-                        break
-                }
-
-                return result
-            },
-            getPaymentStudio (payment) {
-                const me = this
-                let result = ''
-
-                if (payment.studio != null) {
-                    result = payment.studio.name
-                } else {
-                    result = 'Website/Online'
-                }
-
-                return result
-            },
             getPaymentCode (payment) {
                 const me = this
                 let result = ''
 
                 switch (payment.payment_method.method) {
                     case 'paypal':
-                        result = payment.payment_method.paypal_transaction_id
+                        if (payment.payment_method.paypal_transaction_id) {
+                            result = payment.payment_method.paypal_transaction_id
+                        } else {
+                            result = payment.payment_code
+                        }
                         break
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
@@ -347,20 +299,19 @@
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('all', 1)
+                formData.append('export', 1)
 
                 me.values = []
                 me.loader(true)
                 me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
                     if (res.data) {
-                        console.log(res.data);
-                        // me.values = res.data.results
+                        me.values = res.data.result
                     }
                 }).catch((err) => {
 
                 }).then(() => {
                     me.loader(false)
-                    // document.querySelector('.me').click()
+                    document.querySelector('.me').click()
                 })
             },
             openWindow (slug) {
@@ -369,7 +320,6 @@
             },
             submitFilter () {
                 const me = this
-                me.values = []
                 me.loader(true)
                 let formData = new FormData(document.getElementById('filter'))
                 me.$axios.post('api/reporting/sales/promotions-redeemed', formData).then(res => {
