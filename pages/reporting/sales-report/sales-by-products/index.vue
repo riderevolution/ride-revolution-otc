@@ -128,7 +128,7 @@
                 total: [],
                 total_count: 0,
                 form: {
-                    start_date: this.$moment().subtract(1, 'day').format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     studio_id: 0
                 }
@@ -139,27 +139,26 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
+                        'Reference Number': me.getPaymentCode(value.parent),
+                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Payment Status': value.parent.status,
+                        'Payment Method': me.replacer(value.parent.payment_method.method),
+                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
+                        'Quantity': value.quantity,
+                        'Gross Price': value.gross,
+                        'Discount Price': value.discount,
+                        'Net Price': value.net,
                         'Studio': me.getPaymentStudio(value.parent),
                         'Customer': (value.parent.user) ? value.parent.user.fullname : 'No Customer',
                         'Email Address': (value.parent.user) ? value.parent.user.email : 'No Customer Email',
                         'Contact Number': (value.parent.user) ? (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
-                        'Payment ID': value.parent.id,
-                        'Reference Number': me.getPaymentCode(value.parent),
-                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
-                        'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
-                        'Payment Status': value.parent.status,
-                        'Payment Method': me.replacer(value.parent.payment_method.method),
-                        'Payment Item Id': value.id,
                         'SKU ID': me.getPaymentItem(value, 'sku'),
                         'Item': me.getPaymentItem(value, 'name'),
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
-                        'Quantity': value.quantity,
-                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
-                        'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
-                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
-                        'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
-                        'Note': (value.parent.note) ? value.parent.note : 'N/A',
-                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A'
+                        'Comp Reason': (value.parent.payment_method.comp_reason) ? value.parent.payment_method.comp_reason : 'N/A',
+                        'Note': (value.parent.payment_method.note) ? value.parent.payment_method.note : 'N/A',
+                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
+                        'Username': me.getPaymentDetails(value.parent, 'employee')
                     }))
                 ]
             },
@@ -170,7 +169,9 @@
                 me.loader (true)
                 me.values = []
                 let formData = new FormData(document.getElementById('filter'))
-                me.$axios.post(`api/reporting/sales/sales-by-product?export=1`, formData).then(res => {
+                formData.append('export', 1)
+
+                me.$axios.post('api/reporting/sales/sales-by-product', formData).then(res => {
                     if (res.data) {
                         res.data.payments.forEach((parent, key) => {
                             parent.payment_items.forEach((child, key) => {
