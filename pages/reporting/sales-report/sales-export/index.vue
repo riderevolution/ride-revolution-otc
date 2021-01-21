@@ -180,7 +180,7 @@
                         if (payment.employee != null) {
                             result = `${payment.employee.first_name} ${payment.employee.last_name}`
                         } else {
-                            result = 'No User'
+                            result = 'Customer'
                         }
                         break
                 }
@@ -205,7 +205,11 @@
 
                 switch (payment.payment_method.method) {
                     case 'paypal':
-                        result = payment.payment_method.paypal_transaction_id
+                        if (payment.payment_method.paypal_transaction_id) {
+                            result = payment.payment_method.paypal_transaction_id
+                        } else {
+                            result = payment.payment_code
+                        }
                         break
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
