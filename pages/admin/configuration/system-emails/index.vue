@@ -166,11 +166,11 @@
                         slug: 'attendance-cancelled',
                         searched: true
                     },
-                    {
-                        label: 'Complete Your Profile',
-                        slug: 'complete-your-profile',
-                        searched: true
-                    },
+                    // {
+                    //     label: 'Complete Your Profile',
+                    //     slug: 'complete-your-profile',
+                    //     searched: true
+                    // },
                     {
                         label: 'Bike Switched',
                         slug: 'bike-switched',
