@@ -12,6 +12,8 @@
                             <h2 class="header_subtitle">Revenue for each class schedule</h2>
                         </div>
                         <div class="actions">
+                            <a :href="`/print/reporting/class/attendance-summary?studio_id=${form.studio_id}&class_package_id=${form.class_package_id}&customer_type_id=${form.customer_type_id}&instructor_id=${form.instructor_id}&class_type_id=${form.class_type_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+
                             <div class="action_btn alternate" @click="getClasses()" v-if="res.scheduled_dates.data.length > 0">
                                 Export
                             </div>
@@ -332,9 +334,11 @@
             getClasses () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                formData.append('for_export', 1)
+
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/attendance-with-revenue?for_export=1`, formData).then(res => {
+                me.$axios.post('api/reporting/classes/attendance-with-revenue', formData).then(res => {
                     if (res.data) {
 
                         me.values = res.data.export_data
@@ -353,37 +357,6 @@
                     me.loader(false)
                     document.querySelector('.me').click()
                 })
-            },
-            getInstructorsInSchedule (data, export_status = null) {
-                const me = this
-                let result = ''
-                if (data != '') {
-                    let ins_ctr = 0, instructor = []
-                    data.schedule.instructor_schedules.forEach((ins, index) => {
-                        if (ins.substitute == 0) {
-                            ins_ctr += 1
-                        }
-                        if (ins.primary == 1) {
-                            instructor = ins
-                        }
-                    })
-
-                    if (ins_ctr == 2) {
-                        if (export_status != null) {
-                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
-                        } else {
-                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
-                        }
-                    } else {
-                        if (export_status != null) {
-                            result = `${instructor.user.fullname}`
-                        } else {
-                            result = `${instructor.user.fullname}`
-                        }
-                    }
-                }
-
-                return result
             },
             submissionSuccess () {
                 const me = this
@@ -422,7 +395,7 @@
                 formData.append('class_type_id', me.form.class_type_id)
                 formData.append('class_package_id', me.form.class_package_id)
                 formData.append('customer_type_id', me.form.customer_type_id)
-                me.$axios.post(`api/reporting/classes/attendance-with-revenue`, formData).then(res => {
+                me.$axios.post('api/reporting/classes/attendance-with-revenue', formData).then(res => {
                     setTimeout( () => {
 
                         res.data.scheduled_dates.data.forEach((item, index) => {
