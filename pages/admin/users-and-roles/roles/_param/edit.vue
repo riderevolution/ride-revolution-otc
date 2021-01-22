@@ -285,6 +285,11 @@
                         checked: false
                     },
                     {
+                        name: 'Earned Package Revenue',
+                        class: 'child',
+                        checked: false
+                    },
+                    {
                         name: 'Sales Report',
                         class: 'parent',
                         checked: false,
@@ -307,11 +312,6 @@
                     },
                     {
                         name: 'Sales by Products',
-                        class: 'child',
-                        checked: false
-                    },
-                    {
-                        name: 'Earned Package Revenue',
                         class: 'child',
                         checked: false
                     },

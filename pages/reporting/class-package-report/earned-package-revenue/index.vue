@@ -183,22 +183,23 @@
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                me.$axios.post('api/reporting/sales/earned-class-package-revenue', formData).then(res => {
+                me.$axios.post('api/reporting/packages/earned-class-package-revenue', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.revenues
-
-                            res.data.revenues.forEach((item, index) => {
-                                me.values.push(item)
-                                item.values.forEach((child, index) => {
-                                    child.packages = item.packages
-                                    child.expired = item.expired
-                                    me.values.push(child)
-                                })
-                            })
-
-                            me.form.total = me.totalCount(res.data.total)
-                            me.loaded = true
+                            console.log(res.data);
+                            // me.res = res.data.revenues
+                            //
+                            // res.data.revenues.forEach((item, index) => {
+                            //     me.values.push(item)
+                            //     item.values.forEach((child, index) => {
+                            //         child.packages = item.packages
+                            //         child.expired = item.expired
+                            //         me.values.push(child)
+                            //     })
+                            // })
+                            //
+                            // me.form.total = me.totalCount(res.data.total)
+                            // me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {

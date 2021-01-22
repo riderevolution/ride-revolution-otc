@@ -213,7 +213,11 @@
                                     {
                                         title: 'Average Time to Utilize Packages',
                                         link: '/reporting/class-package-report/average-time-to-utilize-packages'
-                                    }
+                                    },
+                                    {
+                                        title: 'Earned Package Revenue',
+                                        link: '/reporting/class-package-report/earned-package-revenue'
+                                    },
                                 ]
                             },
                             {
@@ -236,10 +240,6 @@
                                     {
                                         title: 'Sales by Products',
                                         link: '/reporting/sales-report/sales-by-products'
-                                    },
-                                    {
-                                        title: 'Earned Package Revenue',
-                                        link: '/reporting/sales-report/earned-package-revenue'
                                     },
                                     {
                                         title: 'Revenue Summary',

@@ -74,7 +74,7 @@
                                                 <tr v-for="(value, key) in data.values" :key="key">
                                                     <td>{{ value.package_type.name }}</td>
                                                     <td>{{ value.name }}</td>
-                                                    <td>Php {{ totalCount((data.not_activated) ? value.expired_revenue : value.expiration_revenue) }}</td>
+                                                    <td>Php {{ totalCount((data.not_activated) ? value.expiration_revenue : value.expired_revenue) }}</td>
                                                 </tr>
                                             </tbody>
                                             <tbody class="no_results" v-else>
@@ -167,7 +167,7 @@
                 formData.append('type', me.tab)
 
                 me.loader(true)
-                me.$axios.post('api/reporting/packages/class-package-expiratione', formData).then(res => {
+                me.$axios.post('api/reporting/packages/class-package-expiration', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data
@@ -194,7 +194,7 @@
                 formData.append('all', 1)
                 me.values = []
                 me.loader(true)
-                me.$axios.post('api/reporting/packages/class-package-expiratione', formData).then(res => {
+                me.$axios.post('api/reporting/packages/class-package-expiration', formData).then(res => {
                     if (res.data) {
 
                         res.data.classPackages.forEach((item, index) => {
