@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Income for each payment type</h2>
                         </div>
                         <div class="actions">
-                            <div class="action_buttons">
+                            <!-- <div class="action_buttons">
                                 <a :href="`/print/reporting/sales/earned-package-revenue?start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                                 <download-csv
                                     v-if="res.length > 0"
@@ -21,19 +21,19 @@
                                     :name="`earned-package-revenue-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                     Export
                                 </download-csv>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
-                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-button="true" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
-                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-button="true" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
@@ -47,14 +47,14 @@
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th>Revenue</th>
-                                <th>Subtotal Revenue</th>
+                                <th>Group</th>
+                                <th>Total Revenue</th>
                             </tr>
                         </thead>
                         <tbody :class="`${(data.open) ? 'toggled' : ''} tbp`" v-for="(data, key) in res" v-if="res.length > 0">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.name }}</td>
-                                <td>Php {{ computeSubTotal(data, key) }}</td>
+                                <td>Php {{ totalCount(data.total) }}</td>
                             </tr>
                             <tr>
                                 <td class="pads" colspan="8">
@@ -62,17 +62,17 @@
                                         <table class="cms_table">
                                             <thead>
                                                 <tr>
-                                                    <th>{{ (data.packages) ? 'Package' : 'Branch' }}</th>
+                                                    <th>{{ (data.type) ? 'Package' : 'Studio' }}</th>
                                                     <th>Total</th>
                                                 </tr>
                                             </thead>
                                             <tbody v-if="data.values.length > 0">
                                                 <tr v-for="(value, key) in data.values" :key="key">
-                                                    <td v-if="!data.packages">{{ value.name }}</td>
-                                                    <td v-else>
+                                                    <td>{{ value.name }}</td>
+                                                    <!-- <td v-else>
                                                         <div class="table_data_link" @click="toggleInnerReport(`${$route.path}/${convertToSlug(value.name)}`, data, value)">{{ value.name }}</div>
-                                                    </td>
-                                                    <td>Php {{ totalCount((data.expired) ? value.expiredRevenue : value.revenue) }}</td>
+                                                    </td> -->
+                                                    <td>Php {{ getRevenue(data, value) }}</td>
                                                 </tr>
                                             </tbody>
                                             <tbody class="no_results" v-else>
@@ -101,7 +101,7 @@
 </template>
 
 <script>
-    import Foot from '../../.././../components/Foot'
+    import Foot from '~/components/Foot'
     export default {
         components: {
             Foot
@@ -135,26 +135,32 @@
             }
         },
         methods: {
-            toggleInnerReport (path, parent, child) {
+            getRevenue (parent, child) {
                 const me = this
-                me.$router.push(`${path}?id=${child.id}&type=${parent.type}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                let result = 0
+
+                if (parent.type) {
+                    switch (parent.type) {
+                        case 'regular':
+                            result += child.regular_revenue
+                            break
+                        case 'unli':
+                            result += child.unlimited_revenue
+                            break
+                        case 'expired':
+                            result += child.expired_revenue
+                            break
+                    }
+                } else {
+                    result += child.revenue
+                }
+
+                return me.totalCount(result)
             },
-            computeValuesSubTotal (value, unique) {
-                const me = this
-                let total = 0
-                me.values[unique].values.forEach((value, index) => {
-                    total += parseFloat((me.values[unique].expired) ? value.expiredRevenue : value.revenue)
-                })
-                return me.totalCount(total)
-            },
-            computeSubTotal (value, unique) {
-                const me = this
-                let total = 0
-                me.res[unique].values.forEach((value, index) => {
-                    total += parseFloat((me.res[unique].expired) ? value.expiredRevenue : value.revenue)
-                })
-                return me.totalCount(total)
-            },
+            // toggleInnerReport (path, parent, child) {
+            //     const me = this
+            //     me.$router.push(`${path}?id=${child.id}&type=${parent.type}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+            // },
             submissionSuccess () {
                 const me = this
                 me.values = []
@@ -183,23 +189,14 @@
                 let formData = new FormData()
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
+
                 me.$axios.post('api/reporting/packages/earned-class-package-revenue', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            console.log(res.data);
-                            // me.res = res.data.revenues
-                            //
-                            // res.data.revenues.forEach((item, index) => {
-                            //     me.values.push(item)
-                            //     item.values.forEach((child, index) => {
-                            //         child.packages = item.packages
-                            //         child.expired = item.expired
-                            //         me.values.push(child)
-                            //     })
-                            // })
-                            //
-                            // me.form.total = me.totalCount(res.data.total)
-                            // me.loaded = true
+                            me.res = res.data.groupings
+
+                            me.form.total = me.totalCount(res.data.total)
+                            me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {
