@@ -103,7 +103,8 @@
 </template>
 
 <script>
-    import Foot from '../../.././../components/Foot'
+    import Foot from '~/components/Foot'
+
     export default {
         components: {
             Foot
@@ -112,7 +113,7 @@
             const values = []
             return {
                 form: {
-                    start_date: this.$moment().format('YYYY-MM-DD'),
+                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     total: 0
                 },
@@ -171,19 +172,22 @@
                 me.$axios.post('api/reporting/sales/revenue-summary', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            me.res = res.data.summary_revenues
+                            console.time();
+                            console.log(res.data);
+                            console.timeEnd();
+                            // me.res = res.data.summary_revenues
 
-                            res.data.summary_revenues.forEach((item, index) => {
-                                item.parent = true
-                                me.values.push(item)
-                                item.groups.forEach((child, index) => {
-                                    child.parent = false
-                                    me.values.push(child)
-                                })
-                            })
+                            // res.data.summary_revenues.forEach((item, index) => {
+                            //     item.parent = true
+                            //     me.values.push(item)
+                            //     item.groups.forEach((child, index) => {
+                            //         child.parent = false
+                            //         me.values.push(child)
+                            //     })
+                            // })
 
-                            me.form.total = me.totalCount(res.data.grand_total)
-                            me.loaded = true
+                            // me.form.total = me.totalCount(res.data.grand_total)
+                            // me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {
