@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">This report classifies gift cards and store credits as income. It excludes tax and refunds.</h2>
                         </div>
                         <div class="actions">
-                            <div class="action_buttons">
+                            <!-- <div class="action_buttons">
                                 <a :href="`/print/reporting/sales/revenue-summary?start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
                                 <download-csv
                                     v-if="res.length > 0"
@@ -21,19 +21,19 @@
                                     :name="`revenue-summary-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                     Export
                                 </download-csv>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
                             <div class="form_group">
                                 <label for="start_date">Start Date <span>*</span></label>
-                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-button="true" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
-                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-button="true" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
@@ -47,11 +47,11 @@
                     <table class="cms_table_accordion">
                         <thead>
                             <tr>
-                                <th>Revenue</th>
-                                <th>Subtotal Revenue</th>
+                                <th>Group</th>
+                                <th>Total Revenue</th>
                             </tr>
                         </thead>
-                        <tbody :class="`${(data.open) ? 'toggled' : ''} tbp`" v-for="(data, key) in res" v-if="res.length > 0">
+                        <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="res.length > 0">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.name }}</td>
                                 <td>Php {{ totalCount(data.total) }}</td>
@@ -59,27 +59,22 @@
                             <tr>
                                 <td class="pads" colspan="8">
                                     <div class="accordion_table">
-                                        <table class="cms_table">
+                                        <table class="cms_table alt">
                                             <thead>
                                                 <tr>
-                                                    <th>Type</th>
-                                                    <th>Total</th>
+                                                    <th>Name</th>
+                                                    <th>Revenue</th>
                                                 </tr>
                                             </thead>
-                                            <tbody v-if="data.groups.length > 0">
-                                                <tr :class="{ grayed: value.grayed }" v-for="(value, key) in data.groups" :key="key">
-                                                    <td class="sign">
-                                                        {{ value.name }}
-                                                        <div class="circle add" v-if="value.negative != undefined && !value.negative"></div>
-                                                        <div class="circle sub" v-else-if="value.negative != undefined && value.negative"></div>
-                                                        <div class="circle sub" v-else-if="value.time != undefined && value.time"></div>
-                                                    </td>
-                                                    <td>Php {{ totalCount(value.total) }}</td>
+                                            <tbody v-if="data.values.length > 0">
+                                                <tr v-for="(value, key) in data.values" :key="key">
+                                                    <td>{{ getName(data, value)  }}</td>
+                                                    <td>Php {{ totalCount(value.revenue) }}</td>
                                                 </tr>
                                             </tbody>
                                             <tbody class="no_results" v-else>
                                                 <tr>
-                                                    <td colspan="2">No Result(s) Found.</td>
+                                                    <td colspan="7">No Result(s) Found.</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -87,9 +82,9 @@
                                 </td>
                             </tr>
                         </tbody>
-                        <tbody class="no_results" v-else>
+                        <tbody class="no_results" v-if="res.length == 0">
                             <tr>
-                                <td colspan="2">No Result(s) Found.</td>
+                                <td colspan="8">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -124,23 +119,37 @@
                 loaded: false,
             }
         },
-        computed: {
-            revenueSummaryAttributes () {
-                const me = this
-                return [
-                    ...me.values.map((value, key) => ({
-                        'Revenue': value.name,
-                        'Subtotal Revenue': `Php ${me.totalCount(value.total)}`,
-                        'Type': (value.parent) ? '-' : value.name,
-                        'Total': (value.parent) ? '-' : `Php ${me.totalCount(value.total)}`
-                    }))
-                ]
-            }
-        },
+        // computed: {
+        //     revenueSummaryAttributes () {
+        //         const me = this
+        //         return [
+        //             ...me.values.map((value, key) => ({
+        //                 'Revenue': value.name,
+        //                 'Subtotal Revenue': `Php ${me.totalCount(value.total)}`,
+        //                 'Type': (value.parent) ? '-' : value.name,
+        //                 'Total': (value.parent) ? '-' : `Php ${me.totalCount(value.total)}`
+        //             }))
+        //         ]
+        //     }
+        // },
         methods: {
-            toggleInnerReport (path, id) {
+            getName (parent, child) {
                 const me = this
-                me.$router.push(`${path}?id=${id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`)
+                let result = ''
+
+                switch (parent.type) {
+                    case 'class_package':
+                        result = child.name
+                        break
+                    case 'variant':
+                        result = child.variant
+                        break
+                    case 'gift_card':
+                        result = `${child.card_code}- ${child.class_package.name}`
+                        break
+                }
+
+                return result
             },
             submissionSuccess () {
                 const me = this
@@ -172,22 +181,10 @@
                 me.$axios.post('api/reporting/sales/revenue-summary', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            console.time();
-                            console.log(res.data);
-                            console.timeEnd();
-                            // me.res = res.data.summary_revenues
+                            me.res = res.data.groups
 
-                            // res.data.summary_revenues.forEach((item, index) => {
-                            //     item.parent = true
-                            //     me.values.push(item)
-                            //     item.groups.forEach((child, index) => {
-                            //         child.parent = false
-                            //         me.values.push(child)
-                            //     })
-                            // })
-
-                            // me.form.total = me.totalCount(res.data.grand_total)
-                            // me.loaded = true
+                            me.form.total = me.totalCount(res.data.total)
+                            me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {
