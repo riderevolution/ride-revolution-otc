@@ -63,7 +63,7 @@
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res.result.data" :key="key" v-if="res.result.data.length > 0">
-                                <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
+                                <td>{{ $moment(data.created_at).format('MMM DD, YYYY hh:mm A') }}</td>
                                 <td>{{ getPaymentCode(data.payment) }}</td>
                                 <td>
                                     <div class="thumb">
@@ -142,7 +142,7 @@
                         'Contact Number': (value.payment.user) ? (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
                         'Payment ID': value.payment.id,
                         'Reference Number': me.getPaymentCode(value.payment),
-                        'Transaction Date': me.$moment(value.payment.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Transaction Date': me.$moment(value.payment.created_at).format('MMMM DD, YYYY hh:mm A'),
                         'Promo Code': (value.payment.promo_code_used != null) ? value.payment.promo_code_used : 'No Promo Code Used',
                         'Payment Status': value.payment.status,
                         'Payment Method': me.replacer(value.payment.payment_method.method),
