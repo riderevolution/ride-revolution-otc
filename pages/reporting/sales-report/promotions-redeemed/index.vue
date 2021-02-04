@@ -195,7 +195,7 @@
                 return [
                     ...me.values.map(value => ({
                         'Reference Number': me.getPaymentCode(value.payment),
-                        'Transaction Date': me.$moment(value.payment.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Transaction Date': me.$moment(value.payment.created_at).format('MMMM DD, YYYY hh:mm A'),
                         'Payment Status': value.payment.status,
                         'Payment Method': me.replacer(value.payment.payment_method.method),
                         'Promo Code': (value.payment.promo_code_used != null) ? value.payment.promo_code_used : 'No Promo Code Used',

@@ -74,7 +74,7 @@
                                     </div>
                                 </td>
                                 <td>{{ getPaymentDetails(data, 'qty') }}</td>
-                                <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
+                                <td>{{ $moment(data.created_at).format('MMM DD, YYYY hh:mm A') }}</td>
                                 <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
                                 <td>
                                     <div class="table_actions">

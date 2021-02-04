@@ -172,7 +172,7 @@
                         'Contact Number': (value.parent.user) ? (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
                         'Payment ID': value.parent.id,
                         'Reference Number': me.getPaymentCode(value.parent),
-                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Transaction Date': me.$moment(value.parent.created_at).format('MMMM DD, YYYY hh:mm A'),
                         'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
                         'Payment Status': value.parent.status,
                         'Payment Method': me.replacer(value.parent.payment_method.method),

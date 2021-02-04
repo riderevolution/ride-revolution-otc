@@ -52,7 +52,7 @@
                         <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.payments.data" v-if="res.payments.data.length > 0">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ getPaymentCode(data) }}</td>
-                                <td>{{ $moment(data.updated_at).format('MMMM DD, YYYY hh:mm A') }}</td>
+                                <td>{{ $moment(data.created_at).format('MMMM DD, YYYY hh:mm A') }}</td>
                                 <td>{{ getPaymentStudio(data) }}</td>
                                 <td>{{ getPaymentDetails(data, 'qty') }}</td>
                                 <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
@@ -166,7 +166,7 @@
                     ...me.values.map((value, key) => ({
                         'Payment ID': value.parent.id,
                         'Reference Number': me.getPaymentCode(value.parent),
-                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Transaction Date': me.$moment(value.parent.created_at).format('MMMM DD, YYYY hh:mm A'),
                         'Studio': me.getPaymentStudio(value.parent),
                         'Payment Status': value.parent.status,
                         'Payment Method': me.replacer(value.parent.payment_method.method),

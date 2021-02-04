@@ -155,7 +155,7 @@
                                         </div>
                                     </td>
                                     <td>{{ getPaymentDetails(data, 'qty') }}</td>
-                                    <td>{{ $moment(data.updated_at).format('MMM DD, YYYY hh:mm A') }}</td>
+                                    <td>{{ $moment(data.created_at).format('MMM DD, YYYY hh:mm A') }}</td>
                                     <td class="capitalize">{{ replacer(data.payment_method.method) }}</td>
                                     <td>
                                         <div class="table_actions">
@@ -284,7 +284,7 @@
                 return [
                     ...me.daily_transaction_values.map((value, key) => ({
                         'Reference Number': me.getPaymentCode(value.parent),
-                        'Transaction Date': me.$moment(value.parent.updated_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Transaction Date': me.$moment(value.parent.created_at).format('MMMM DD, YYYY hh:mm A'),
                         'Payment Status': value.parent.status,
                         'Payment Method': me.replacer(value.parent.payment_method.method),
                         'Promo Code': (value.parent.promo_code_used != null) ? value.parent.promo_code_used : 'No Promo Code Used',
