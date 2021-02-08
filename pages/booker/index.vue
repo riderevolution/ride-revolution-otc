@@ -130,7 +130,8 @@
                                                     {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.enrolled}` }}
                                                 </div>
                                             </div>
-                                            <div class="class_text">{{ data.schedule.instructor_schedules[0].user.first_name }} {{ data.schedule.instructor_schedules[0].user.last_name }}</div>
+                                            <!-- <div class="class_text">{{ data.schedule.instructor_schedules[0].user.first_name }} {{ data.schedule.instructor_schedules[0].user.last_name }}</div> -->
+                                            <div class="class_text">{{ getInstructorsInSchedule(data) }}</div>
                                             <div class="class_text alternate">
                                                 <span>Signed-in: {{ data.signedIn }}</span>
                                                 <span>Available: {{ (data.schedule.studio.online_class) ? 'Unlimited' : data.availableSeatsCount }}</span>
