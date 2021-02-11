@@ -186,8 +186,11 @@
                     if (data.user_package_count.has_payment_item) {
                         if (data.user_package_count.payment_item.payment_method.method != 'comp') {
                             switch (type) {
-                                case 'revenue':
-                                    base_value = me.totalCount(data.revenue)
+                                case 'gross':
+                                    base_value = me.totalCount(data.gross_revenue)
+                                    break
+                                case 'net':
+                                    base_value = me.totalCount(data.net_revenue)
                                     break
                                 case 'discount':
                                     base_value = me.totalCount(data.discount)
