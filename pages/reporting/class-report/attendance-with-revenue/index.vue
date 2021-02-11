@@ -237,7 +237,7 @@
                             case 'net':
                                 base_value = me.totalCount(data.net_revenue)
                                 break
-                            case 'revenue':
+                            case 'gross':
                                 base_value = me.totalCount(data.gross_revenue)
                                 break
                             case 'discount':
