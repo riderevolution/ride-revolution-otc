@@ -82,9 +82,9 @@
                                 <td>{{ (data.schedule.enabled) ? 'Yes' : 'No' }}</td>
                                 <td>{{ data.schedule.studio.name }}</td>
                                 <td>{{ data.primary.user.first_name }} {{ data.primary.user.last_name }}</td>
-                                <td>{{ data.substitute.user.first_name }} {{ data.substitute.user.last_name }}</td>
+                                <td>{{ (data.substitute) ? `${data.substitute.user.first_name} ${data.substitute.user.last_name}` : 'No Substitute' }}</td>
                                 <td>{{ totalItems(data.cancelled) }}</td>
-                                <td>{{ data.substitute.remarks }}</td>
+                                <td>{{ (data.substitute) ? data.substitute.remarks : 'No Remarks' }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -148,10 +148,10 @@
                         'Private Class': (!value.schedule.private_class) ? 'No' : 'Yes',
                         'Schedule Released': (value.schedule.enabled) ? 'Yes' : 'No',
                         'Primary Instructor': `${value.primary.user.first_name } ${ value.primary.user.last_name}`,
-                        'Substitute Instructor': `${value.substitute.user.first_name } ${ value.substitute.user.last_name}`,
+                        'Substitute Instructor': (value.substitute) ? `${value.substitute.user.first_name } ${ value.substitute.user.last_name}` : 'No Substitute',
                         'Total Bookings': value.bookings.length,
                         'Total Cancelled': value.cancelled,
-                        'Remarks': value.substitute.remarks
+                        'Remarks': (value.substitutev) ? value.substitute.remarks : 'No Remarks'
                     }))
                 ]
             }

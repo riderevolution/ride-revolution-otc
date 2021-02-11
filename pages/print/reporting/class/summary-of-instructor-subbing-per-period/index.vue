@@ -24,6 +24,7 @@
                     <th>Studio</th>
                     <th>Primary Instructor</th>
                     <th>Substitute Instructor</th>
+                    <th>Cancelled</th>
                     <th>Remarks</th>
                 </tr>
             </thead>
@@ -35,8 +36,9 @@
                     <td>{{ (data.schedule.enabled) ? 'Yes' : 'No' }}</td>
                     <td>{{ data.schedule.studio.name }}</td>
                     <td>{{ data.primary.user.first_name }} {{ data.primary.user.last_name }}</td>
-                    <td>{{ data.substitute.user.first_name }} {{ data.substitute.user.last_name }}</td>
-                    <td>{{ data.substitute.remarks }}</td>
+                    <td>{{ (data.substitute) ? `${data.substitute.user.first_name} ${data.substitute.user.last_name}` : 'No Substitute' }}</td>
+                    <td>{{ totalItems(data.cancelled) }}</td>
+                    <td>{{ (data.substitute) ? data.substitute.remarks : 'No Remarks' }}</td>
                 </tr>
             </tbody>
             <tbody class="no_results" v-else>
