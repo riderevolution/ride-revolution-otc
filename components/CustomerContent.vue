@@ -262,6 +262,7 @@
                                             <th>Qty</th>
                                             <th>Price</th>
                                             <th>Refund Type</th>
+                                            <th>Refunder</th>
                                             <th>Remarks</th>
                                             <th v-if="data.status == 'paid'">Action</th>
                                         </tr>
@@ -277,6 +278,7 @@
                                                 <p>PHP {{ totalCount((data.promo_code_used !== null) ? item.total : item.price_per_item * item.quantity) }}</p>
                                             </td>
                                             <td class="alt_2">{{ (item.refund_type) ? replacer(item.refund_type) : 'N/A' }}</td>
+                                            <td>{{ (item.refunder) ? item.refunder.fullname : 'N/A' }}</td>
                                             <td>{{ (item.refund_remarks) ? item.refund_remarks : 'N/A' }}</td>
                                             <td v-if="data.status == 'paid'">
                                                 <div class="table_actions" v-if="item.type != 'store-credit'">
@@ -874,7 +876,9 @@
                             }
                             break
                         case 'quantity':
-                            result = data.quantity
+                            data.payment_items.forEach((item, key) => {
+                                result += item.quantity
+                            })
                             break
                         case 'price':
                             result = me.totalCount(data.total)
