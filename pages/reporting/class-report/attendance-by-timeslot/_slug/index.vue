@@ -28,6 +28,7 @@
                             <input type="hidden" name="start_date" v-model="form.start_date">
                             <input type="hidden" name="end_date" v-model="form.end_date">
                             <input type="hidden" name="type" v-model="form.type">
+                            <input type="hidden" name="day" v-model="form.day">
                             <input type="hidden" name="class_type_id" v-model="form.class_type_id">
                             <input type="hidden" name="instructor_id" v-model="form.instructor_id">
                             <input type="hidden" name="studio_id" v-model="form.studio_id">
@@ -64,7 +65,7 @@
                         </tbody>
                         <tbody class="no_results" v-else>
                             <tr>
-                                <td :colspan="rowCount">No Result(s) Found.</td>
+                                <td colspan="9">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -102,6 +103,7 @@
                 classTypes: [],
                 form: {
                     type: 'weekdays',
+                    day: '',
                     instructor_id: '',
                     studio_id: '',
                     class_type_id: '',
@@ -290,6 +292,10 @@
                 if (me.$route.query.end_date) {
                     me.form.end_date = me.$route.query.end_date
                     formData.append('end_date', me.$route.query.end_date)
+                }
+                if (me.$route.query.day) {
+                    me.form.day = me.$route.query.day
+                    formData.append('day', me.$route.query.day)
                 }
 
                 me.$axios.post(`api/reporting/classes/attendance-by-timeslot/${me.$route.params.slug}`, formData).then(res => {

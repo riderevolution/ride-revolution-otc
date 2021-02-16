@@ -73,9 +73,9 @@
                         <div :class="`status ${(tabStatus == 'weekends') ? 'active' : ''}`" @click="toggleTab('weekends')">Weekends</div>
                     </div>
                     <div class="cms_five_row">
-                        <div class="column" v-for="(data, key) in res" :key="key">
+                        <div class="column" v-for="(data, parent_key) in res" :key="parent_key">
                             <div class="column_header">
-                                <div class="day">{{ key }}</div>
+                                <div class="day">{{ parent_key }}</div>
                                 <div class="avg">Avg. {{ computeTotalAvg(data) }}</div>
                             </div>
                             <div class="column_content">
@@ -88,7 +88,7 @@
                                     </thead>
                                     <tbody v-if="data.length > 0">
                                         <tr v-for="(timeslot, key) in data" :key="key">
-                                            <td><div class="name pointer" @click="routePush(timeslot)">{{ timeslot.time }}</div></td>
+                                            <td><div class="name pointer" @click="routePush(timeslot, parent_key)">{{ timeslot.time }}</div></td>
                                             <td>
                                                 {{ timeslot.average }}
                                             </td>
@@ -177,9 +177,9 @@
             }
         },
         methods: {
-            routePush (data) {
+            routePush (data, parent_key) {
                 const me = this
-                window.open(`${me.$route.path}/${data.time}?start_date=${me.form.start_date}&end_date=${me.form.end_date}&class_type_id=${me.form.class_type_id}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}&type=${me.tabStatus}`, '_blank')
+                window.open(`${me.$route.path}/${data.time}?start_date=${me.form.start_date}&end_date=${me.form.end_date}&class_type_id=${me.form.class_type_id}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}&type=${me.tabStatus}&day=${parent_key.toLowerCase()}`, '_blank')
             },
             getClasses () {
                 const me = this
