@@ -119,9 +119,14 @@
                     }
                 })
             },
-            async fetchData (id) {
+            async fetchData () {
                 const me = this
-                me.$axios.get(`api/staff/${id}`).then(res => {
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                me.$axios.get(`api/user`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     me.res = res.data.user
                 })
             }
@@ -129,7 +134,7 @@
         async mounted () {
             const me = this
             setTimeout( () => {
-                me.fetchData(me.$store.state.user.id)
+                me.fetchData()
             }, 250)
         }
     }
