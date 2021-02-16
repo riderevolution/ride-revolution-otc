@@ -329,6 +329,7 @@
                 let formData = new FormData()
                 formData.append('studio_id', me.form.studio_id)
                 formData.append('class_type_id', me.form.class_type_id)
+                formData.append('instructor_id', me.form.instructor_id)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
                 formData.append('no_show', (me.form.booking_status) ? 1 : 0)
