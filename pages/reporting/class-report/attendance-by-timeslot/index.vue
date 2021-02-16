@@ -56,6 +56,12 @@
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ errors.first('end_date') | properFormat }}</span></transition>
                             </div>
+                            <div class="form_group margin">
+                                <div class="form_check alternate">
+                                    <input type="checkbox" id="no_show" name="booking_status" class="action_check" v-model="form.booking_status">
+                                    <label for="no_show">No Show</label>
+                                </div>
+                            </div>
                             <input type="hidden" name="type" v-model="tabStatus">
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
@@ -127,6 +133,7 @@
                 studio: [],
                 classTypes: [],
                 form: {
+                    booking_status: false,
                     instructor_id: '',
                     studio_id: '',
                     class_type_id: '',
@@ -324,6 +331,7 @@
                 formData.append('class_type_id', me.form.class_type_id)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
+                formData.append('no_show', (me.form.booking_status) ? 1 : 0)
                 formData.append('type', type)
 
                 me.$axios.post(`api/reporting/classes/attendance-by-timeslot`, formData).then(res => {
