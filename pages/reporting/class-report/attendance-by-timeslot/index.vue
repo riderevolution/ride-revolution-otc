@@ -59,7 +59,7 @@
                             <div class="form_group margin">
                                 <div class="form_check alternate">
                                     <input type="checkbox" id="no_show" name="booking_status" class="action_check" v-model="form.booking_status">
-                                    <label for="no_show">No Show</label>
+                                    <label for="no_show">Remove No Show?</label>
                                 </div>
                             </div>
                             <input type="hidden" name="type" v-model="tabStatus">
