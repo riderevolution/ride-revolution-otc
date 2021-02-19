@@ -184,6 +184,7 @@
             getClasses () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
+                formData.append('no_show', (me.form.booking_status) ? 1 : 0)
                 me.values = []
                 me.loader(true)
                 me.$axios.post(`api/reporting/classes/attendance-with-revenue?for_export=1`, formData).then(res => {
