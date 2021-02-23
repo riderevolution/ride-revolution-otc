@@ -155,7 +155,7 @@
                     ...me.users.map((value, key) => ({
                         'Member ID': value.member_id,
                         'Customer': value.fullname,
-                        'Preferred Studio': value.preferred_studio[0].name,
+                        'Preferred Studio': (value.preferred_studio.length > 0) ? value.preferred_studio[0].name : 'No Preferred Studio',
                         'Customer Type': value.customer_details.customer_type.name,
                         'Gender': me.getCustomerDetails(value, 'gender'),
                         'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
