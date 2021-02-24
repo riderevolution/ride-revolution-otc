@@ -33,6 +33,9 @@
                     if (me.$refs.plan) {
                         me.$parent.$refs.plan.message = ''
                     }
+                    if (me.$parent.name == 'Scheduler') {
+                        me.$router.push('/scheduler')
+                    }
                 }, 10)
             }
         }
