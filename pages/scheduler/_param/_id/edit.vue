@@ -209,7 +209,7 @@
                                     <label for="enabled">Activate</label>
                                 </div>
                                 <div class="button_group">
-                                    <nuxt-link :to="`/${lastRoute}`" class="action_cancel_btn">Cancel</nuxt-link>
+                                    <div class="action_cancel_btn margin" @click="cancelClass()">Delete</div>
                                     <button type="submit" name="submit" class="action_btn alternate margin">Save</button>
                                 </div>
                             </div>
@@ -221,18 +221,28 @@
             <transition name="fade">
                 <Prompt v-if="$store.state.promptStatus" :hasCancel="true" :message="'Still repeat this schedule?'" />
             </transition>
+            <transition name="fade">
+                <booker-cancel-class v-if="cancel" :scheduled_date_id="scheduledDateID" />
+            </transition>
+            <transition name="fade">
+                <prompt-booker-action v-if="$store.state.promptBookerActionStatus" :message="actionMessage" />
+            </transition>
         </div>
     </transition>
 </template>
 
 <script>
-    import ImageHandlerContainer from '../../../../components/ImageHandlerContainer'
-    import Foot from '../../../../components/Foot'
-    import Prompt from '../../../../components/modals/Prompt'
+    import ImageHandlerContainer from '~/components/ImageHandlerContainer'
+    import Foot from '~/components/Foot'
+    import Prompt from '~/components/modals/Prompt'
+    import PromptBookerAction from '~/components/modals/PromptBookerAction'
+    import BookerCancelClass from '~/components/modals/BookerCancelClass'
     export default {
         components: {
             ImageHandlerContainer,
             Foot,
+            PromptBookerAction,
+            BookerCancelClass,
             Prompt
         },
         data () {
@@ -242,7 +252,10 @@
                 name: 'Scheduler',
                 access: true,
                 loaded: false,
+                cancel: false,
                 lastRoute: '',
+                scheduledDateID: '',
+                actionMessage: '',
                 studio: [],
                 classTypes: [],
                 packageTypes: [],
@@ -284,6 +297,10 @@
             }
         },
         methods: {
+            cancelClass () {
+                const me = this
+                me.cancel = true
+            },
             addCount () {
                 const me = this
                 let data
@@ -496,6 +513,7 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        me.loaded = true
                     }, 500)
                 })
             },
@@ -532,6 +550,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
+                me.scheduledDateID = me.$route.query.i
                 me.fetchTypes()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

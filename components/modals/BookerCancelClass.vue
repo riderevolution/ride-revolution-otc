@@ -17,7 +17,7 @@
     export default {
         props: {
             scheduled_date_id: {
-                type: Number,
+                type: String,
                 default: null
             }
         },
@@ -50,7 +50,9 @@
                                 value.querySelector('.accordion_content').style.height = 0
                             })
                             if (me.$parent.studio.online_class) {
-                                document.getElementById('online').click()
+                                if (document.getElementById('online')) {
+                                    document.getElementById('online').click()
+                                }
                             } else {
                                 setTimeout(() => {
                                     if (me.$parent.$refs.plan) {
