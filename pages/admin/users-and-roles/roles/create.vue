@@ -193,6 +193,11 @@
                         checked: false
                     },
                     {
+                        name: 'Customer Sign Ups',
+                        class: 'child',
+                        checked: false
+                    },
+                    {
                         name: 'Non Returning Customers',
                         class: 'child',
                         checked: false
