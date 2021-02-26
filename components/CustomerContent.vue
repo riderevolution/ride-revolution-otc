@@ -876,6 +876,7 @@
                             }
                             break
                         case 'quantity':
+                            result = 0
                             data.payment_items.forEach((item, key) => {
                                 result += item.quantity
                             })
