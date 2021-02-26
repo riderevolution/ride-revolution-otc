@@ -6,7 +6,7 @@
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
-                                <h1>Customer Accounts</h1>
+                                <h1>Customer Sign Ups</h1>
                                 <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">{{ getSubtitle() }}</h2>
@@ -18,15 +18,14 @@
                             <download-csv
                                 v-if="res.customers.data.length > 0"
                                 class="hidden me"
-                                :data="customerAccountsAttributes"
-                                :name="`customer-accounts-${$moment(form.start_date).format('MM-DD-YY-hh-mm')}.csv`">
+                                :data="customerSignUpsAttributes"
+                                :name="`customer-sign-ups-${$moment(form.start_date).format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
                             </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess()">
-                            <input type="hidden" name="status" v-model="type">
                             <div class="form_group alternate">
                                 <label for="q">Find a Customer</label>
                                 <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" class="default_text search_alternate" v-model="form.query">
@@ -46,26 +45,17 @@
                     </div>
                 </section>
                 <section id="content">
-                    <div class="cms_table_toggler">
-                        <div class="total">Total: {{ totalItems(total) }}</div>
-                        <div :class="`status ${(type == 'all') ? 'active' : ''}`" @click="toggleTab('all')">All</div>
-                        <div :class="`status ${(type == 'active') ? 'active' : ''}`" @click="toggleTab('active')">Active</div>
-                        <div :class="`status ${(type == 'inactive') ? 'active' : ''}`" @click="toggleTab('inactive')">Inactive</div>
-                        <div :class="`status ${(type == 'unused') ? 'active' : ''}`" @click="toggleTab('unused')">Unused</div>
-                        <div :class="`status ${(type == 'deactivated') ? 'active' : ''}`" @click="toggleTab('deactivated')">Deactivated</div>
-                    </div>
                     <table class="cms_table">
                         <thead>
                             <tr>
                                 <th class="stick">Customer</th>
                                 <th class="stick">Member ID</th>
                                 <th class="stick">Sign Up Date</th>
-                                <th class="stick">Preferred Studio</th>
-                                <th class="stick">First Class</th>
-                                <th class="stick">Last Class</th>
+                                <th class="stick">First Purchase Date</th>
+                                <th class="stick">First Package</th>
+                                <th class="stick">Current Active Package</th>
                                 <th class="stick">Contact Number</th>
                                 <th class="stick">Email Address</th>
-                                <th class="stick">City</th>
                                 <th class="stick">Action</th>
                             </tr>
                         </thead>
@@ -84,12 +74,11 @@
                                 </td>
                                 <td>{{ data.member_id }}</td>
                                 <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
-                                <td>{{ (data.preferred_studio.length > 0) ? data.preferred_studio[0].name  : 'No Preferred' }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
-                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
+                                <td>{{ (data.payment.id) ? $moment(data.payment.created_at).format('MMMM DD, YYYY') : data.payment }}</td>
+                                <td>{{ (data.package.id) ? data.package.class_package.name : data.package }}</td>
+                                <td>{{ checkActivePackages(data.user_package_counts) }}</td>
                                 <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
                                 <td>{{ data.email }}</td>
-                                <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                                 <td>
                                     <div class="table_actions">
                                         <a class="table_action_cancel" @click.self="customerStatus(data, 'deactivate')" href="javascript:void(0)" v-if="data.enabled">Deactivate</a>
@@ -131,12 +120,11 @@
         data () {
             const values = []
             return {
-                name: 'Customer Accounts',
+                name: 'Customer Sign Ups',
                 access: true,
                 loaded: false,
                 filter: true,
                 rowCount: 0,
-                type: 'all',
                 promptMessage: '',
                 res: [],
                 users: [],
@@ -151,13 +139,12 @@
             }
         },
         computed: {
-            customerAccountsAttributes () {
+            customerSignUpsAttributes () {
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
                         'Member ID': value.member_id,
                         'Customer': value.fullname,
-                        'Preferred Studio': (value.preferred_studio.length > 0) ? value.preferred_studio[0].name : 'No Preferred Studio',
                         'Customer Type': value.customer_details.customer_type.name,
                         'Gender': me.getCustomerDetails(value, 'gender'),
                         'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
@@ -169,13 +156,37 @@
                         'Personal Address': me.getCustomerDetails(value, 'personal'),
                         'Billing Address': me.getCustomerDetails(value, 'billing'),
                         'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
-                        'First Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet',
-                        'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[value.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet'
+                        'First Purchase Date': (value.payment.id) ? me.$moment(value.payment.created_at).format('MMMM DD, YYYY') : value.payment,
+                        'First Package': (value.package.id) ? value.package.class_package.name : value.package,
+                        'Current Active Package': me.checkActivePackages(value.user_package_counts)
                     }))
                 ]
             }
         },
         methods: {
+            checkActivePackages (user_package_counts) {
+                const me = this
+                let result = '',
+                    current = me.$moment(),
+                    ctr = 0
+
+                user_package_counts.forEach((element, index) => {
+                    let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
+                    if (parseInt(expiry.diff(current)) > 0) {
+                        ctr += 1
+                    }
+                })
+
+                if (ctr == 0) {
+                    result = 'No Active Package'
+                } else if (ctr > 0 && ctr <= 1) {
+                    result = user_package_counts[0].class_package.name
+                } else {
+                    result = 'Multiple'
+                }
+
+                return result
+            },
             customerStatus (data, type) {
                 const me = this
                 if (data.enabled) {
@@ -199,7 +210,7 @@
                 setTimeout( () => {
                     let formData = new FormData(document.getElementById('filter'))
 
-                    me.$axios.post('api/reporting/customers/customer-accounts', formData).then(res => {
+                    me.$axios.post('api/reporting/customers/customer-sign-ups', formData).then(res => {
                         if (res.data) {
                             setTimeout( () => {
                                 me.res = res.data
@@ -302,7 +313,7 @@
                 me.values = []
                 me.loader(true)
 
-                me.$axios.post('api/reporting/customers/customer-accounts?all=1', formData).then(res => {
+                me.$axios.post('api/reporting/customers/customer-sign-ups?all=1', formData).then(res => {
                     if (res.data) {
 
                         res.data.customers.forEach((item, key) => {
@@ -320,45 +331,16 @@
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
             },
-            toggleTab (value) {
-                const me = this
-                me.type = value
-                me.loader(true)
-                setTimeout( () => {
-                    let formData = new FormData(document.getElementById('filter'))
-
-                    me.$axios.post('api/reporting/customers/customer-accounts', formData).then(res => {
-                        if (res.data) {
-                            setTimeout( () => {
-                                me.res = res.data
-                                me.total = res.data.count
-                                if (!me.loaded) {
-                                    me.loaded = true
-                                }
-                            }, 500)
-                        }
-                    }).catch(err => {
-                        me.$store.state.errorList = err.response.data.errors
-                        me.$store.state.errorStatus = true
-                    }).then(() => {
-                        setTimeout( () => {
-                            me.rowCount = document.getElementsByTagName('th').length
-                            me.loader(false)
-                        }, 500)
-                    })
-                }, 10)
-            },
             fetchData () {
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
 
-                formData.append('status', me.type)
                 formData.append('q', me.form.query)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
 
-                me.$axios.post('api/reporting/customers/customer-accounts', formData).then(res => {
+                me.$axios.post('api/reporting/customers/customer-sign-ups', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data
