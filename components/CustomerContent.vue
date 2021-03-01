@@ -154,7 +154,7 @@
         </div>
         <div v-if="type == 'class-history' && loaded">
             <div class="actions">
-                <div class="total">Total: {{ res.classHistory.length }}</div>
+                <div class="total">Total: {{ res.classHistory.total }}</div>
                 <div class="cms_table_toggler">
                     <div :class="`status ${(classesHistoryStatus == 'all') ? 'active' : ''}`" @click="toggleClassesHistory('all')">All</div>
                     <div :class="`status ${(classesHistoryStatus == 'completed') ? 'active' : ''}`" @click="toggleClassesHistory('completed')">Completed</div>
@@ -177,8 +177,8 @@
                         <th>Username</th>
                     </tr>
                 </thead>
-                <tbody v-if="value.classHistory.length > 0">
-                    <tr v-for="(data, key) in res.classHistory" :key="key">
+                <tbody v-if="value.classHistory.data.length > 0">
+                    <tr v-for="(data, key) in res.classHistory.data" :key="key">
                         <td>{{ formatClassDate(`${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`, true) }}</td>
                         <td>{{ (data.scheduled_date.schedule.studio.online_class) ? '-' : data.seat.number }}</td>
                         <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
@@ -215,7 +215,7 @@
                     </tr>
                 </tbody>
             </table>
-            <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
+            <pagination :apiRoute="`${res.classHistory.path}?classHistoryStatus=${classesHistoryStatus}&paginate=1`" :current="res.classHistory.current_page" :last="res.classHistory.last_page" />
         </div>
         <div v-if="type == 'transactions' && loaded">
             <table class="cms_table_accordion">
@@ -1020,7 +1020,11 @@
                             instructor = ins
                         }
                     })
-                    result = instructor.user.instructor_details.images[0].path
+                    if (instructor) {
+                        if (instructor.user) {
+                            result = instructor.user.instructor_details.images[0].path
+                        }
+                    }
                 }
 
                 return result
@@ -1036,7 +1040,9 @@
                                 instructor = ins
                             }
                         })
-                        result = `${instructor.user.fullname}`
+                        if (instructor.length > 0) {
+                            result = `${instructor.user.fullname}`
+                        }
                     }
                 } else {
                     if (data != '') {
@@ -1046,7 +1052,9 @@
                                 instructor = ins
                             }
                         })
-                        result = `${instructor.user.id}`
+                        if (instructor.length > 0) {
+                            result = `${instructor.user.id}`
+                        }
                     }
                 }
                 return result
@@ -1483,10 +1491,10 @@
             toggleClassesHistory (status) {
                 const me = this
                 me.loader(true)
-                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?classHistoryStatus=${status}`).then(res => {
+                me.$axios.get(`api/customers/${me.$route.params.param}/${me.$route.params.slug}?classHistoryStatus=${status}&paginate=1`).then(res => {
                     if (res.data) {
                         me.res = res.data.customer
-                        me.res.classHistory.sort(function(a,b){
+                        me.res.classHistory.data.sort(function(a,b){
                             return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
                         })
                     }
@@ -1519,8 +1527,8 @@
                 me.res = me.value.payments
             } else {
                 me.res = me.value
-                if (me.res.classHistory) {
-                    me.res.classHistory.sort(function(a,b){
+                if (me.res.classHistory.data) {
+                    me.res.classHistory.data.sort(function(a,b){
                         return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
                     })
                 }
