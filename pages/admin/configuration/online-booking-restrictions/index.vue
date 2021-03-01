@@ -20,14 +20,14 @@
                                         <label>Allowed time to book before class starts: <span>*</span></label>
                                         <div class="form_flex_input">
                                             <input type="text" name="booking_hours" class="default_text number" autocomplete="off" v-model="form.booking.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'">
-                                            <div class="placeholder">hours</div>
+                                            <div class="placeholder alt">hours</div>
                                             <!-- <div class="up" @click="addCount('booking', 'hour')"></div>
                                             <div class="down" @click="subtractCount('booking', 'hour')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_hours')">{{ properFormat(errors.first('booking_hours')) }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <input type="text" name="booking_minutes" class="default_text number" autocomplete="off" v-model="form.booking.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                                            <div class="placeholder">mins.</div>
+                                            <div class="placeholder alt">mins.</div>
                                             <!-- <div class="up" @click="addCount('booking', 'mins')"></div>
                                             <div class="down" @click="subtractCount('booking', 'mins')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_minutes')">{{ properFormat(errors.first('booking_minutes')) }}</span></transition>
@@ -37,17 +37,36 @@
                                         <label>Allowed time to cancel before class starts: <span>*</span></label>
                                         <div class="form_flex_input">
                                             <input type="text" name="cancel_hours" class="default_text number" autocomplete="off" v-model="form.cancel.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'">
-                                            <div class="placeholder">hours</div>
+                                            <div class="placeholder alt">hours</div>
                                             <!-- <div class="up" @click="addCount('cancel', 'hour')"></div>
                                             <div class="down" @click="subtractCount('cancel', 'hour')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_hours')">{{ properFormat(errors.first('cancel_hours')) }}</span></transition>
                                         </div>
                                         <div class="form_flex_input">
                                             <input type="text" name="cancel_minutes" class="default_text number" autocomplete="off" v-model="form.cancel.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
-                                            <div class="placeholder">mins.</div>
+                                            <div class="placeholder alt">mins.</div>
                                             <!-- <div class="up" @click="addCount('cancel', 'mins')"></div>
                                             <div class="down" @click="subtractCount('cancel', 'mins')"></div> -->
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_minutes')">{{ properFormat(errors.first('cancel_minutes')) }}</span></transition>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form_flex">
+                                    <div class="form_group flex">
+                                        <label>Time before customer is marked no show after class starts: <span>*</span></label>
+                                        <div class="form_flex_input">
+                                            <input type="text" name="no_show_hours" class="default_text number" autocomplete="off" v-model="form.noShow.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'">
+                                            <div class="placeholder alt">hours</div>
+                                            <!-- <div class="up" @click="addCount('noShow', 'hour')"></div>
+                                            <div class="down" @click="subtractCount('noShow', 'hour')"></div> -->
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('no_show_hours')">{{ properFormat(errors.first('no_show_hours')) }}</span></transition>
+                                        </div>
+                                        <div class="form_flex_input">
+                                            <input type="text" name="no_show_minutes" class="default_text number" autocomplete="off" v-model="form.noShow.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'">
+                                            <div class="placeholder alt">mins.</div>
+                                            <!-- <div class="up" @click="addCount('noShow', 'mins')"></div>
+                                            <div class="down" @click="subtractCount('noShow', 'mins')"></div> -->
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('no_show_minutes')">{{ properFormat(errors.first('no_show_minutes')) }}</span></transition>
                                         </div>
                                     </div>
                                 </div>
@@ -89,7 +108,11 @@
                     cancel: {
                         hour: '-',
                         mins: '-'
-                    }
+                    },
+                    noShow: {
+                        hour: '-',
+                        mins: '-'
+                    },
                 }
             }
         },
@@ -102,6 +125,7 @@
                         let formData = new FormData(document.getElementById('default_form'))
                         formData.append('allowed_time_booking', `${(me.form.booking.hour * 3600) + (me.form.booking.mins * 60) + (0 * 1)}+${me.form.booking.hour}:${me.form.booking.mins}`)
                         formData.append('allowed_time_cancel', `${(me.form.cancel.hour * 3600) + (me.form.cancel.mins * 60) + (0 * 1)}+${me.form.cancel.hour}:${me.form.cancel.mins}`)
+                        formData.append('allowed_time_no_show', `${(me.form.noShow.hour * 3600) + (me.form.noShow.mins * 60) + (0 * 1)}+${me.form.noShow.hour}:${me.form.noShow.mins}`)
                         me.loader(true)
                         formData.append('_method', 'PATCH')
                         me.$axios.post('api/booking-restrictions/2', formData, {
@@ -143,6 +167,10 @@
                                 data != 0 && (me.form.cancel.hour = 0)
                                 data < 24 && (me.form.cancel.hour = (data += 1))
                                 break
+                            case 'noShow':
+                                data != 0 && (me.form.noShow.hour = 0)
+                                data < 24 && (me.form.noShow.hour = (data += 1))
+                                break
                         }
                         break
                     case 'mins':
@@ -154,6 +182,10 @@
                             case 'cancel':
                                 data != 0 && (me.form.cancel.mins = 0)
                                 data < 60 && (me.form.cancel.mins = (data += 1))
+                                break
+                            case 'noShow':
+                                data != 0 && (me.form.noShow.mins = 0)
+                                data < 60 && (me.form.noShow.mins = (data += 1))
                                 break
                         }
                         break
@@ -170,6 +202,9 @@
                             case 'cancel':
                                 data > 0 && (me.form.cancel.hour = (data -= 1))
                                 break
+                            case 'noShow':
+                                data > 0 && (me.form.noShow.hour = (data -= 1))
+                                break
                         }
                         break
                     case 'mins':
@@ -179,6 +214,9 @@
                                 break
                             case 'cancel':
                                 data > 0 && (me.form.cancel.mins = (data -= 1))
+                                break
+                            case 'noShow':
+                                data > 0 && (me.form.noShow.mins = (data -= 1))
                                 break
                         }
                         break
@@ -195,6 +233,9 @@
                             case 'cancel':
                                 me.validateAdd(parseInt(me.form.cancel.hour), value, type)
                                 break
+                            case 'noShow':
+                                me.validateAdd(parseInt(me.form.noShow.hour), value, type)
+                                break
                         }
                         break
                     case 'mins':
@@ -204,6 +245,9 @@
                                 break
                             case 'cancel':
                                 me.validateAdd(parseInt(me.form.cancel.mins), value, type)
+                                break
+                            case 'noShow':
+                                me.validateAdd(parseInt(me.form.noShow.mins), value, type)
                                 break
                         }
                         break
@@ -220,6 +264,9 @@
                             case 'cancel':
                                 me.validateSubtract(parseInt(me.form.cancel.hour), value, type)
                                 break
+                            case 'noShow':
+                                me.validateSubtract(parseInt(me.form.noShow.hour), value, type)
+                                break
                         }
                         break
                     case 'mins':
@@ -229,6 +276,9 @@
                                 break
                             case 'cancel':
                                 me.validateSubtract(parseInt(me.form.cancel.mins), value, type)
+                                break
+                            case 'noShow':
+                                me.validateSubtract(parseInt(me.form.noShow.mins), value, type)
                                 break
                         }
                         break
@@ -248,6 +298,11 @@
 
                             me.form.cancel.hour = res.data.booking_restriction.allowed_time_cancel.split('+')[1].split(':')[0]
                             me.form.cancel.mins = res.data.booking_restriction.allowed_time_cancel.split('+')[1].split(':')[1]
+
+                            if (res.data.booking_restriction.allowed_time_no_show) {
+                                me.form.noShow.hour = res.data.booking_restriction.allowed_time_no_show.split('+')[1].split(':')[0]
+                                me.form.noShow.mins = res.data.booking_restriction.allowed_time_no_show.split('+')[1].split(':')[1]
+                            }
 
                             me.loaded = true
                         }, 500)
