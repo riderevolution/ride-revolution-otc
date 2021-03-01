@@ -62,6 +62,15 @@
                 const me = this
                 if (current != last) {
                     me.loader(true)
+
+                    let url = ''
+
+                    if (me.$route.params.slug == 'class-history') {
+                        url = `${me.apiRoute}&page=${current + 1}`
+                    } else {
+                        url = `${me.apiRoute}?page=${current + 1}`
+                    }
+
                     if (me.$parent.filter) {
                         let formData = ''
                         if (document.getElementById('filter')) {
@@ -73,14 +82,19 @@
                             formData.append('enabled', me.$parent.status)
                         }
                         me.loader(true)
-                        me.$axios.post(`${me.apiRoute}?page=${current + 1}`, formData).then(res => {
+
+                        me.$axios.post(url, formData).then(res => {
                             if (me.$route.params.slug == 'transactions') {
                                 me.$parent.res = res.data.customer.payments
                             } else {
                                 if (me.$parent.tabStatus == 'daily') {
                                     me.$parent.transactions = res.data
                                 } else {
-                                    me.$parent.res = res.data
+                                    if (me.$route.params.slug == 'class-history') {
+                                        me.$parent.res = res.data.customer
+                                    } else {
+                                        me.$parent.res = res.data
+                                    }
                                 }
                             }
                             if ((me.incrementPage + 3) <= me.last) {
@@ -98,11 +112,15 @@
                             }, 500)
                         })
                     } else {
-                        me.$axios.get(`${me.apiRoute}?page=${current + 1}`).then(res => {
+                        me.$axios.get(url).then(res => {
                             if (me.$route.params.slug == 'transactions') {
                                 me.$parent.res = res.data.customer.payments
                             } else {
-                                me.$parent.res = res.data
+                                if (me.$route.params.slug == 'class-history') {
+                                    me.$parent.res = res.data.customer
+                                } else {
+                                    me.$parent.res = res.data
+                                }
                             }
                             if ((me.incrementPage + 3) <= me.last) {
                                 if (current == me.incrementPage) {
@@ -135,6 +153,15 @@
                         }
                     }
                 }
+
+                let url = ''
+
+                if (me.$route.params.slug == 'class-history') {
+                    url = `${me.apiRoute}&page=${count}`
+                } else {
+                    url = `${me.apiRoute}?page=${count}`
+                }
+
                 if (me.$parent.filter) {
                     let formData = ''
                     if (document.getElementById('filter')) {
@@ -146,14 +173,19 @@
                         formData.append('enabled', me.$parent.status)
                     }
                     me.loader(true)
-                    me.$axios.post(`${me.apiRoute}?page=${count}`, formData).then(res => {
+
+                    me.$axios.post(url, formData).then(res => {
                         if (me.$route.params.slug == 'transactions') {
                             me.$parent.res = res.data.customer.payments
                         } else {
                             if (me.$parent.tabStatus == 'daily') {
                                 me.$parent.transactions = res.data
                             } else {
-                                me.$parent.res = res.data
+                                if (me.$route.params.slug == 'class-history') {
+                                    me.$parent.res = res.data.customer
+                                } else {
+                                    me.$parent.res = res.data
+                                }
                             }
                         }
                     }).catch(err => {
@@ -165,11 +197,15 @@
                         }, 500)
                     })
                 } else {
-                    me.$axios.get(`${me.apiRoute}?page=${count}`).then(res => {
+                    me.$axios.get(url).then(res => {
                         if (me.$route.params.slug == 'transactions') {
                             me.$parent.res = res.data.customer.payments
                         } else {
-                            me.$parent.res = res.data
+                            if (me.$route.params.slug == 'class-history') {
+                                me.$parent.res = res.data.customer
+                            } else {
+                                me.$parent.res = res.data
+                            }
                         }
                     }).catch(err => {
                         me.$store.state.errorList = err.response.data.errors
@@ -184,6 +220,15 @@
             prevPage (current, last) {
                 const me = this
                 if (current != 1) {
+
+                    let url = ''
+
+                    if (me.$route.params.slug == 'class-history') {
+                        url = `${me.apiRoute}&page=${current - 1}`
+                    } else {
+                        url = `${me.apiRoute}?page=${current - 1}`
+                    }
+
                     me.loader(true)
                     if (me.$parent.filter) {
                         let formData = ''
@@ -196,14 +241,18 @@
                             formData.append('enabled', me.$parent.status)
                         }
                         me.loader(true)
-                        me.$axios.post(`${me.apiRoute}?page=${current - 1}`, formData).then(res => {
+                        me.$axios.post(url, formData).then(res => {
                             if (me.$route.params.slug == 'transactions') {
                                 me.$parent.res = res.data.customer.payments
                             } else {
                                 if (me.$parent.tabStatus == 'daily') {
                                     me.$parent.transactions = res.data
                                 } else {
-                                    me.$parent.res = res.data
+                                    if (me.$route.params.slug == 'class-history') {
+                                        me.$parent.res = res.data.customer
+                                    } else {
+                                        me.$parent.res = res.data
+                                    }
                                 }
                             }
                             if (current == me.iteration) {
@@ -219,11 +268,15 @@
                             }, 500)
                         })
                     } else {
-                        me.$axios.get(`${me.apiRoute}?page=${current - 1}`).then(res => {
+                        me.$axios.get(url).then(res => {
                             if (me.$route.params.slug == 'transactions') {
                                 me.$parent.res = res.data.customer.payments
                             } else {
-                                me.$parent.res = res.data
+                                if (me.$route.params.slug == 'class-history') {
+                                    me.$parent.res = res.data.customer
+                                } else {
+                                    me.$parent.res = res.data
+                                }
                             }
                             if (current == me.iteration) {
                                 me.iteration = me.iteration - 3
