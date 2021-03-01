@@ -2127,6 +2127,10 @@ input::placeholder
     outline: none
     pointer-events: none
     resize: none
+    &.edit
+        border: 1px solid #ccc
+        padding: 5px
+        pointer-events: auto
 
 .default_text
     width: 100%
@@ -4267,6 +4271,29 @@ input::placeholder
                     height: 25px
                     border-radius: 50%
                 .table_actions
+                    position: relative
+                    .validation_errors
+                        position: absolute
+                        top: calc(100% + 5px)
+                        background-color: $red
+                        color: $white
+                        sf_pro_medium(14px)
+                        z-index: 1
+                        padding: 5px 10px
+                        border-radius: 5px
+                        user-select: none
+                        left: 0
+                        &::before
+                            content: ""
+                            position: absolute
+                            bottom: calc(100% - 1px)
+                            width: 0
+                            height: 0
+                            border-left: 7px solid transparent
+                            border-right: 7px solid transparent
+                            border-bottom: 7px solid $red
+                            left: 17px
+                            z-index: 1
                     &.full
                         a,
                         .link

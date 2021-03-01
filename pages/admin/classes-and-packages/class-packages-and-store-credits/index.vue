@@ -20,11 +20,11 @@
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submissionSuccess(package_status)">
-                            <div class="form_group alternate" v-if="package_status == 1">
+                            <div class="form_group alternate" v-if="package_status == 1 || package_status == 5">
                                 <label for="q">Find a package</label>
                                 <input type="text" name="q" placeholder="Search for a class packages" autocomplete="off" class="default_text search_alternate">
                             </div>
-                            <div class="form_group margin" v-if="package_status == 1">
+                            <div class="form_group margin" v-if="package_status == 1 || package_status == 5">
                                 <label for="package_type_id">Package Type</label>
                                 <select class="default_select alternate" name="package_type_id">
                                     <option value="" selected>All Package Types</option>
@@ -42,6 +42,7 @@
                 <section id="content">
                     <div class="cms_table_toggler">
                         <div class="total">Total: {{ totalItems((res.classPackages) ? res.classPackages.total : res.storeCredits.total) }}</div>
+                        <div :class="`status ${(package_status == 5) ? 'active' : ''}`" @click="togglePackages(5)">Featured</div>
                         <div :class="`status ${(package_status == 1) ? 'active' : ''}`" @click="togglePackages(1)">Regular</div>
                         <div :class="`status ${(package_status == 2) ? 'active' : ''}`" @click="togglePackages(2)">Recurring</div>
                         <div :class="`status ${(package_status == 3) ? 'active' : ''}`" @click="togglePackages(3)">Promo</div>
@@ -56,6 +57,8 @@
                                 <th class="stick">Price</th>
                                 <th class="stick" v-if="package_status == 2">Discounted Price</th>
                                 <th class="stick">Estimated Price Per Class</th>
+                                <th class="stick" v-if="package_status == 5">Type</th>
+                                <th class="stick" v-if="package_status == 5">Sequence</th>
                                 <th class="stick">Action</th>
                             </tr>
                         </thead>
@@ -72,6 +75,14 @@
                                 <td>PHP {{ totalCount(data.package_price) }}</td>
                                 <td v-if="package_status == 2">PHP {{ totalCount(data.discounted_price) }}</td>
                                 <td>PHP {{ totalCount(data.estimated_price_per_class) }}</td>
+                                <td class="green">{{ getClassPackageClassification(data) }}</td>
+                                <td v-if="package_status == 5">
+                                    <div class="table_actions" :data-vv-scope="`sequence_form_${key}`">
+                                        <input class="textbox edit" :id="`sequence_${key}`" :name="`sequence_form_${key}.sequence`" :data-vv-name="`sequence_form_${key}.sequence`" v-model="data.sequence" v-validate="{ required: true, numeric: true }" />
+                                        <div class="table_action_success link" @click="updateSequence(data)">Save</div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(`sequence_form_${key}.sequence`)">{{ properFormat(errors.first(`sequence_form_${key}.sequence`)) }}</span></transition>
+                                    </div>
+                                </td>
                                 <td width="20%">
                                     <div class="table_actions">
                                         <nuxt-link class="table_action_edit" :to="`${$route.path}/class-packages/${data.id}/edit`">Edit</nuxt-link>
@@ -130,9 +141,9 @@
 </template>
 
 <script>
-    import Foot from '../../../../components/Foot'
-    import Pagination from '../../../../components/Pagination'
-    import ConfirmStatus from '../../../../components/modals/ConfirmStatus'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
+    import ConfirmStatus from '~/components/modals/ConfirmStatus'
     export default {
         components: {
             Foot,
@@ -148,12 +159,51 @@
                 lastRoute: '',
                 rowCount: 0,
                 status: 1,
-                package_status: 1,
+                package_status: 5,
                 res: [],
                 types: []
             }
         },
         methods: {
+            updateSequence (data) {
+                const me = this
+                let form_data = new FormData()
+                form_data.append('class_package_id', data.id)
+                form_data.append('sequence', data.sequence)
+
+                me.loader(true)
+
+                me.$axios.post('api/packages/class-packages/update-sequence', form_data).then(res => {
+                    me.fetchData(1, 5)
+                }).catch(err => {
+                    me.$store.state.errorList = err.response.data.errors
+                    me.$store.state.errorStatus = true
+                }).then(() => {
+                    me.rowCount = document.getElementsByTagName('th').length
+                    setTimeout( () => {
+                        me.loader(false)
+                    }, 500)
+                })
+            },
+            getClassPackageClassification (data) {
+                const me = this
+                let result = ''
+                if (data.is_promo) {
+                    result = 'Promo'
+                } else if (data.recurring) {
+                    result = 'Recurring'
+                } else if (data.package_type) {
+                    if (data.package_type.studio_access.length > 0) {
+                        result = 'Online'
+                    } else {
+                        result = 'Regular'
+                    }
+                } else {
+                    result = 'Regular'
+                }
+
+                return result
+            },
             codeClipboard (data, key) {
                 const me = this
                 let element = document.getElementById(`sku_id_${key}`)
@@ -187,6 +237,9 @@
                         break
                     case 4:
                         formData.append('type', 'store-credits')
+                        break
+                    case 5:
+                        formData.append('type', 'featured')
                         break
                 }
                 formData.append('enabled', me.status)
@@ -250,6 +303,9 @@
                     case 4:
                         apiRoute = `api/packages/store-credits?enabled=${value}`
                         break
+                    case 5:
+                        apiRoute = `api/packages/class-packages?enabled=${value}&featured=1`
+                        break
                 }
                 me.loader(true)
                 me.$axios.get(apiRoute).then(res => {
@@ -276,7 +332,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.fetchData(1, 1)
+                me.fetchData(1, 5)
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
