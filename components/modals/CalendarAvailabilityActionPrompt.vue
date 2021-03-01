@@ -17,7 +17,7 @@
                     <div class="form_flex">
                         <div class="form_group">
                             <label for="repetition">Repetition</label>
-                            <select :class="`default_select alternate ${(form.hasRepeat) ? '' : 'disabled'}`" v-validate="'required'" name="repetition" v-model="form.repetition">
+                            <select :class="`default_select alternate ${(form.hasRepeat) ? '' : 'disabled'}`" v-validate="{ required: (form.hasRepeat) ? true : false }" name="repetition" v-model="form.repetition">
                                 <option value="" selected disabled>Choose a Repetition</option>
                                 <option value="every-day">Every Day</option>
                                 <option value="every-week">Every Week</option>
@@ -27,7 +27,7 @@
                         </div>
                         <div class="form_group">
                             <label for="end_date">End Date</label>
-                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :class="`${(form.hasRepeat) ? '' : 'disabled'}`" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :min-date="$moment(targetDate, 'YYYY-MM-D').format('YYYY-MM-DD')" :label="'Select end date'" v-validate="`${(form.repetition != '') ? 'required' : '' }`"></v-ctk>
+                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-button="true" :no-label="true" :class="`${(form.hasRepeat) ? '' : 'disabled'}`" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :min-date="$moment(targetDate, 'YYYY-MM-D').format('YYYY-MM-DD')" :label="'Select end date'" v-validate="`${(form.repetition != '') ? 'required' : '' }`"></v-ctk>
                             <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                         </div>
                     </div>

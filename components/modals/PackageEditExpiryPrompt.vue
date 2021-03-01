@@ -7,7 +7,7 @@
                 <div class="form_close" @click="toggleClose()"></div>
                 <div class="modal_main_group">
                     <div class="form_group">
-                        <v-ctk v-model="form.date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'date'" :name="'date'" :label="'Select extension date'" v-validate="'required'"></v-ctk>
+                        <v-ctk v-model="form.date" :only-date="true" :no-button="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'date'" :name="'date'" :label="'Select extension date'" v-validate="'required'"></v-ctk>
                         <transition name="slide"><span class="validation_errors" v-if="errors.has('date')">{{ properFormat(errors.first('date')) }}</span></transition>
                     </div>
                     <div class="form_footer_wrapper">

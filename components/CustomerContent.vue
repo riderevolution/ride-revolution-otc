@@ -174,6 +174,7 @@
                         <th>Status</th>
                         <th>Reference Number</th>
                         <th>Series ID</th>
+                        <th>Username</th>
                     </tr>
                 </thead>
                 <tbody v-if="value.classHistory.length > 0">
@@ -205,6 +206,7 @@
                             <p>{{ data.class_package.name }}</p>
                             <p class="id">{{ data.class_package.sku_id }}</p>
                         </td>
+                        <td>{{ (data.employee) ? data.employee.fullname : 'Customer' }}</td>
                     </tr>
                 </tbody>
                 <tbody class="no_results" v-else>

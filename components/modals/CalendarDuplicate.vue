@@ -9,7 +9,7 @@
                     <div class="modal_main_group" v-if="type == 'day'">
                         <div class="form_flex check">
                             <div class="form_group check">
-                                <v-ctk v-model="form.target_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'target_date'" :name="'target_date'" :label="'Select target date'" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.target_date" :only-date="true" :no-button="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'target_date'" :name="'target_date'" :label="'Select target date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('target_date')">{{ properFormat(errors.first('target_date')) }}</span></transition>
                             </div>
                             <div class="form_group flex check">

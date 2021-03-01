@@ -9,46 +9,53 @@
                 </div>
             </div>
             <div class="text">
-                <h2>Sales by Class Package - ({{ $route.query.payment_status }})</h2>
+                <h2>Sales by Class Package</h2>
                 <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
             </div>
         </div>
         <table class="cms_table print">
             <thead>
                 <tr>
-                    <th>Class Package</th>
-                    <th>Package Type</th>
+                    <th>Package</th>
                     <th>Sold</th>
                     <th>Returned</th>
                     <th>Comp</th>
+                    <th>Gross</th>
                     <th>Comp Value</th>
                     <th>Discount</th>
                     <th>Taxes</th>
                     <th>Total Income</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
+            <tbody v-if="res.length > 0">
+                <tr class="parent bb">
                     <td><b>{{ total.name }}</b></td>
-                    <td><b>-</b></td>
                     <td><b>{{ total.sold }}</b></td>
                     <td><b>{{ total.returned }}</b></td>
                     <td><b>{{ total.comp }}</b></td>
+                    <td><b>Php {{ totalCount(total.gross) }}</b></td>
                     <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                     <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
                     <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
                     <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                 </tr>
                 <tr v-for="(data, key) in res" :key="key">
-                    <td>{{ data.name }}</td>
-                    <td>{{ data.package_type.name }}</td>
+                    <td>
+                        <div class="table_data_link">{{ data.name }}</div>
+                    </td>
                     <td>{{ (data.sold) ? data.sold : 0 }}</td>
                     <td>{{ (data.returned) ? data.returned : 0 }}</td>
                     <td>{{ (data.comp) ? data.comp : 0 }}</td>
+                    <td>Php {{ (data.gross) ? totalCount(data.gross) : 0 }}</td>
                     <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
                     <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
                     <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
                     <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
+                </tr>
+            </tbody>
+            <tbody class="no_results" v-else>
+                <tr>
+                    <td colspan="9">No Result(s) Found.</td>
                 </tr>
             </tbody>
         </table>
@@ -79,27 +86,13 @@
 
                 formData.append('start_date', me.$route.query.start_date)
                 formData.append('end_date',  me.$route.query.end_date)
-                formData.append('payment_status', me.$route.query.payment_status)
-                // if (me.$route.query.studio_id) {
-                //     me.form.studio = me.$route.query.studio_id
-                //     formData.append('studio_id', me.$route.query.studio_id)
-                // }
+                formData.append('type', me.$route.query.type)
 
                 me.$axios.post('api/reporting/sales/sales-by-class-package?all=1', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
-                            res.data.result.forEach((item, key) => {
-                                item.values.forEach((value, key) => {
-                                    me.res.push(value)
-                                })
-                            })
+                            me.res = res.data.result
                             me.total = res.data.total
-                            //
-                            // if (me.form.studio_id != '') {
-                            //     me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
-                            //         me.studio = res.data.studio
-                            //     })
-                            // }
 
                             me.loaded = true
                             setTimeout( () => {

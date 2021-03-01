@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Income from class package sold.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package?start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/class-package?start_date=${form.start_date}&end_date=${form.end_date}&type=${tab}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -39,6 +39,7 @@
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
+                            <input type="hidden" name="type" v-model="tab">
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
                     </div>
@@ -167,22 +168,24 @@
             },
             getSales () {
                 const me = this
-                let formData = new FormData(document.getElementById('filter'))
                 me.values = []
+                setTimeout( () => {
+                    let formData = new FormData(document.getElementById('filter'))
 
-                me.loader(true)
-                me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1&export=1`, formData).then(res => {
-                    if (res.data) {
-                        res.data.payment_items.forEach((data, key) => {
-                            me.values.push(data)
-                        })
-                    }
-                }).catch((err) => {
+                    me.loader(true)
+                    me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1&export=1`, formData).then(res => {
+                        if (res.data) {
+                            res.data.payment_items.forEach((data, key) => {
+                                me.values.push(data)
+                            })
+                        }
+                    }).catch((err) => {
 
-                }).then(() => {
-                    me.loader(false)
-                    document.querySelector('.me').click()
-                })
+                    }).then(() => {
+                        me.loader(false)
+                        document.querySelector('.me').click()
+                    })
+                }, 10)
             },
             getPaymentItem (payment_item, type) {
                 const me = this
@@ -234,13 +237,11 @@
                 const me = this
                 let result = 0
 
-                payment.payment_items.forEach((payment_item, key) => {
-                    switch (type) {
-                        case 'qty':
-                            result += payment_item.quantity
-                            break
-                    }
-                })
+                if (type == 'qty') {
+                    payment.payment_items.forEach((payment_item, key) => {
+                        result += payment_item.quantity
+                    })
+                }
 
                 switch (type) {
                     case 'qty':
@@ -261,7 +262,7 @@
                         if (payment.employee != null) {
                             result = `${payment.employee.first_name} ${payment.employee.last_name}`
                         } else {
-                            result = 'No User'
+                            result = 'Customer'
                         }
                         break
                 }
@@ -301,50 +302,52 @@
                 const me = this
                 me.tab = value
 
-                let formData = new FormData(document.getElementById('filter'))
-                formData.append('type', me.tab)
+                setTimeout( () => {
+                    let formData = new FormData(document.getElementById('filter'))
+                    me.loader(true)
+                    me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
+                        if (res.data) {
+                            setTimeout( () => {
+                                me.res = res.data
+                                me.total = res.data.total
 
-                me.loader(true)
-                me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
-                    if (res.data) {
+                            }, 500)
+                        }
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data
+                        me.$store.state.errorStatus = true
+                    }).then(() => {
                         setTimeout( () => {
-                            me.res = res.data
-                            me.total = res.data.total
-
+                            me.loader(false)
                         }, 500)
-                    }
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                    }, 500)
-                })
+                    })
+                }, 10)
             },
             submitFilter () {
                 const me = this
                 me.values = []
                 me.loader(true)
-                let formData = new FormData(document.getElementById('filter'))
-                formData.append('type', me.tab)
 
-                me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
-                    if (res.data) {
+                setTimeout( () => {
+                    let formData = new FormData(document.getElementById('filter'))
+
+                    me.$axios.post('api/reporting/sales/sales-by-class-package', formData).then(res => {
+                        if (res.data) {
+                            setTimeout( () => {
+                                me.res = res.data
+                                me.total = res.data.total
+
+                            }, 500)
+                        }
+                    }).catch(err => {
+                        me.$store.state.errorList = err.response.data
+                        me.$store.state.errorStatus = true
+                    }).then(() => {
                         setTimeout( () => {
-                            me.res = res.data
-                            me.total = res.data.total
-
+                            me.loader(false)
                         }, 500)
-                    }
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.loader(false)
-                    }, 500)
-                })
+                    })
+                }, 10)
             },
             fetchData () {
                 const me = this

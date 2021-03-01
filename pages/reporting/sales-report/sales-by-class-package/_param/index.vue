@@ -35,7 +35,6 @@
                             <input type="hidden" name="id" :value="form.id">
                             <input type="hidden" name="start_date" :value="form.start_date">
                             <input type="hidden" name="end_date" :value="form.end_date">
-                            <!-- <input type="hidden" name="studio_id" :value="form.studio_id"> -->
                         </form>
                     </div>
                 </section>
@@ -126,7 +125,6 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     slug: '',
-                    studio_id: '',
                     id: 0
                 }
             }
@@ -212,13 +210,11 @@
                 const me = this
                 let result = 0
 
-                payment.payment_items.forEach((payment_item, key) => {
-                    switch (type) {
-                        case 'qty':
-                            result += payment_item.quantity
-                            break
-                    }
-                })
+                if (type == 'qty') {
+                    payment.payment_items.forEach((payment_item, key) => {
+                        result += payment_item.quantity
+                    })
+                }
 
                 switch (type) {
                     case 'qty':
@@ -239,7 +235,7 @@
                         if (payment.employee != null) {
                             result = `${payment.employee.first_name} ${payment.employee.last_name}`
                         } else {
-                            result = 'No User'
+                            result = 'Customer'
                         }
                         break
                 }
@@ -315,15 +311,11 @@
                 if (me.$route.query.id) {
                     me.form.id = me.$route.query.id
                 }
-                // if (me.$route.query.studio_id) {
-                //     me.form.studio_id = me.$route.query.studio_id
-                // }
 
                 formData.append('slug', me.form.slug)
                 formData.append('id', me.form.id)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                // formData.append('studio_id', me.form.studio_id)
 
                 me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
@@ -331,12 +323,6 @@
                             me.res = res.data
                             me.total = res.data.total
                             me.package = res.data.package
-
-                            // if (me.form.studio_id != '') {
-                            //     me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
-                            //         me.studio = res.data.studio
-                            //     })
-                            // }
 
                             me.loaded = true
                         }, 500)

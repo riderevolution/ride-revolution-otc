@@ -56,7 +56,7 @@
                         <div class="form_flex">
                             <div class="button_group">
                                 <div class="action_cancel_btn" @click="toggleClose()">Cancel</div>
-                                <button type="submit" name="submit" class="action_success_btn margin alternate">Proceed</button>
+                                <button type="submit" name="submit" :class="[ 'action_success_btn margin alternate', (customer != '') ? '' : 'disabled' ]">Proceed</button>
                             </div>
                         </div>
                     </div>
