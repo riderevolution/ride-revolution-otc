@@ -372,6 +372,7 @@
                                 setTimeout( () => {
                                     if (res.data) {
                                         me.notify('Content has been Updated')
+                                        me.$cookies.set('scheduler', `${me.$moment(parseInt(me.$route.params.param)).format('YYYY')}-${me.$moment(parseInt(me.$route.params.param)).format('M')}`)
                                     } else {
                                         me.$store.state.errorList.push('Sorry, Something went wrong')
                                         me.$store.state.errorStatus = true

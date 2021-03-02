@@ -1527,7 +1527,7 @@
                 me.res = me.value.payments
             } else {
                 me.res = me.value
-                if (me.res.classHistory.data) {
+                if (me.res.classHistory && me.res.classHistory.data) {
                     me.res.classHistory.data.sort(function(a,b){
                         return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
                     })

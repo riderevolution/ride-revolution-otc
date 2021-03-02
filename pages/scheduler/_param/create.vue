@@ -334,6 +334,7 @@
                             setTimeout( () => {
                                 if (res.data) {
                                     me.notify('Content has been Added')
+                                    me.$cookies.set('scheduler', `${me.$moment(parseInt(me.$route.params.param)).format('YYYY')}-${me.$moment(parseInt(me.$route.params.param)).format('M')}`)
                                     me.$router.push(`/${me.lastRoute}`)
                                 }
                             }, 500)
