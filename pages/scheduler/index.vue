@@ -205,7 +205,7 @@
             },
             generatePrevCalendar () {
                 const me = this
-                me.currentMonth = me.currentMonth - 1
+                me.currentMonth = parseInt(me.currentMonth) - 1
                 if (me.currentMonth == 0) {
                     me.currentMonth = 12
                     me.currentYear = me.currentYear - 1
@@ -214,7 +214,7 @@
             },
             generateNextCalendar () {
                 const me = this
-                me.currentMonth = me.currentMonth + 1
+                me.currentMonth = parseInt(me.currentMonth) + 1
                 if (me.currentMonth == 13) {
                     me.currentMonth = 1
                     me.currentYear = me.currentYear + 1
@@ -228,6 +228,7 @@
                 const me = this
                 me.loader(true)
                 me.clearTableRows()
+
                 me.currentDate = me.$moment().date()
                 me.monthName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('MMMM')
                 me.yearName = me.$moment(`${year}-${month}`, 'YYYY-MM').format('YYYY')
@@ -682,7 +683,10 @@
             },
             fetchData () {
                 const me = this
-                let studio_id = me.$cookies.get('CSID')
+                let studio_id = me.$cookies.get('CSID'),
+                    year = '',
+                    month = ''
+
                 me.$axios.get('api/studios?enabled=1').then(res => {
                     me.studios = res.data.studios
                 })
@@ -690,7 +694,19 @@
                     me.instructors = res.data.instructors.data
                 })
                 me.form.studio_id = studio_id
-                me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
+
+                if (me.$cookies.get('scheduler')) {
+                    let scheduler = me.$cookies.get('scheduler')
+                    scheduler = scheduler.split('-')
+                    year = scheduler[0]
+                    month = scheduler[1]
+                    me.$cookies.remove('scheduler')
+                } else {
+                    year = me.$moment().year()
+                    month = me.$moment().month() + 1
+                }
+
+                me.generateCalendar(me.currentYear = year, me.currentMonth = month, 0, 0)
             },
             getStudio (event) {
                 const me = this
