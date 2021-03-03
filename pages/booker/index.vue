@@ -329,6 +329,9 @@
                 <booker-menu-prompt v-if="$store.state.bookerMenuPromptStatus" />
             </transition>
             <transition name="fade">
+                <booker-change-status v-if="change_status" />
+            </transition>
+            <transition name="fade">
                 <booker-cancel-class v-if="cancel" :scheduled_date_id="scheduledDateID" />
             </transition>
             <transition name="fade">
@@ -355,30 +358,31 @@
 </template>
 
 <script>
-    import Foot from '../../components/Foot'
-    import SeatPlan from '../../components/SeatPlan'
-    import Prompt from '../../components/modals/Prompt'
-    import PromptBrokenBike from '../../components/modals/PromptBrokenBike'
-    import PromptBooker from '../../components/modals/PromptBooker'
-    import PromptBookerAction from '../../components/modals/PromptBookerAction'
-    import PromptSignOut from '../../components/modals/PromptSignOut'
-    import PromptSwitchSeat from '../../components/modals/PromptSwitchSeat'
-    import PromptCancel from '../../components/modals/PromptCancel'
-    import PromptWaitlist from '../../components/modals/PromptWaitlist'
-    import CustomerPackage from '../../components/modals/CustomerPackage'
-    import Assign from '../../components/modals/Assign'
-    import RemoveAssign from '../../components/modals/RemoveAssign'
-    import PendingTransactions from '../../components/modals/PendingTransactions'
-    import CustomerPendingQuickSale from '../../components/modals/CustomerPendingQuickSale'
-    import AttendanceLayout from '../../components/modals/AttendanceLayout'
-    import PackageLayout from '../../components/modals/PackageLayout'
-    import OnlineAttendanceLayout from '../../components/modals/OnlineAttendanceLayout'
-    import OnlineAttendanceCustomer from '../../components/modals/OnlineAttendanceCustomer'
-    import OnlineAttendancePrompt from '../../components/modals/OnlineAttendancePrompt'
-    import RedeemGiftCard from '../../components/modals/RedeemGiftCard'
-    import RedeemGiftCardSuccess from '../../components/modals/RedeemGiftCardSuccess'
-    import BookerMenuPrompt from '../../components/modals/BookerMenuPrompt'
-    import BookerCancelClass from '../../components/modals/BookerCancelClass'
+    import Foot from '~/components/Foot'
+    import SeatPlan from '~/components/SeatPlan'
+    import Prompt from '~/components/modals/Prompt'
+    import PromptBrokenBike from '~/components/modals/PromptBrokenBike'
+    import PromptBooker from '~/components/modals/PromptBooker'
+    import PromptBookerAction from '~/components/modals/PromptBookerAction'
+    import PromptSignOut from '~/components/modals/PromptSignOut'
+    import PromptSwitchSeat from '~/components/modals/PromptSwitchSeat'
+    import PromptCancel from '~/components/modals/PromptCancel'
+    import PromptWaitlist from '~/components/modals/PromptWaitlist'
+    import CustomerPackage from '~/components/modals/CustomerPackage'
+    import Assign from '~/components/modals/Assign'
+    import RemoveAssign from '~/components/modals/RemoveAssign'
+    import PendingTransactions from '~/components/modals/PendingTransactions'
+    import CustomerPendingQuickSale from '~/components/modals/CustomerPendingQuickSale'
+    import AttendanceLayout from '~/components/modals/AttendanceLayout'
+    import PackageLayout from '~/components/modals/PackageLayout'
+    import OnlineAttendanceLayout from '~/components/modals/OnlineAttendanceLayout'
+    import OnlineAttendanceCustomer from '~/components/modals/OnlineAttendanceCustomer'
+    import OnlineAttendancePrompt from '~/components/modals/OnlineAttendancePrompt'
+    import RedeemGiftCard from '~/components/modals/RedeemGiftCard'
+    import RedeemGiftCardSuccess from '~/components/modals/RedeemGiftCardSuccess'
+    import BookerMenuPrompt from '~/components/modals/BookerMenuPrompt'
+    import BookerChangeStatus from '~/components/modals/BookerChangeStatus'
+    import BookerCancelClass from '~/components/modals/BookerCancelClass'
     export default {
         components: {
             Foot,
@@ -404,6 +408,7 @@
             RedeemGiftCard,
             RedeemGiftCardSuccess,
             BookerMenuPrompt,
+            BookerChangeStatus,
             BookerCancelClass
         },
         data () {
@@ -412,6 +417,7 @@
                 name: 'Booker',
                 access: true,
                 loaded: false,
+                change_status: false,
                 hide_class: false,
                 assignType: 0,
                 brokenMessage: '',
