@@ -118,6 +118,7 @@
         methods: {
             getCurrentCustomer (seat) {
                 const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.loader(true)
                 for (let i = 0, i_len = me.$parent.$parent.$parent.results.length; i < i_len; i++) {
                     me.$parent.$parent.$parent.results[i].highlighted = false
@@ -125,7 +126,11 @@
                 for (let i = 0, i_len = me.$parent.$parent.$parent.schedules.length; i < i_len; i++) {
                     me.$parent.$parent.$parent.schedules[i].highlighted = false
                 }
-                me.$axios.get(`api/customers/${seat.bookings[0].user.id}?booking=${(me.$parent.$parent.$parent.studio.online_class) ? 'online' : 'studio'}`).then(res => {
+                me.$axios.get(`api/customers/${seat.bookings[0].user.id}?booking=${(me.$parent.$parent.$parent.studio.online_class) ? 'online' : 'studio'}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.$parent.$parent.$parent.customer = res.data.user
@@ -210,7 +215,6 @@
                 me.$store.state.bookingID = (seat.bookings.length > 0) ? seat.bookings[0].id : 0
                 me.$store.state.userPackageCountId = (seat.bookings.length > 0) ? seat.bookings[0].user_package_count_id : 0
                 me.$store.state.seat = seat
-                console.log(me.$store.state.seat);
                 switch (status) {
                     case 'open':
                         if (me.$parent.hasCustomer && me.customer.id !== undefined) {
@@ -274,6 +278,9 @@
                             me.$store.state.bookerMenuPromptStatus = true
                             document.body.classList.add('no_scroll')
                         }
+                        break
+                    case 'no-show':
+                        me.$parent.$parent.$parent.change_status = true
                         break
                 }
             },
