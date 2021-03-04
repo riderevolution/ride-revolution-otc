@@ -75,7 +75,7 @@
                                 <td>PHP {{ totalCount(data.package_price) }}</td>
                                 <td v-if="package_status == 2">PHP {{ totalCount(data.discounted_price) }}</td>
                                 <td>PHP {{ totalCount(data.estimated_price_per_class) }}</td>
-                                <td class="green">{{ getClassPackageClassification(data) }}</td>
+                                <td class="green" v-if="package_status == 5">{{ getClassPackageClassification(data) }}</td>
                                 <td v-if="package_status == 5">
                                     <div class="table_actions" :data-vv-scope="`sequence_form_${key}`">
                                         <input class="textbox edit" :id="`sequence_${key}`" :name="`sequence_form_${key}.sequence`" :data-vv-name="`sequence_form_${key}.sequence`" v-model="data.sequence" v-validate="{ required: true, numeric: true }" />
