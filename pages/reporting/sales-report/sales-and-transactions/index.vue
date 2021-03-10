@@ -13,13 +13,13 @@
                         <div class="actions">
                             <!-- <a :href="`/print/${apiRoute}?status=${tabStatus}&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&filtered=${filtered}`" target="_blank" class="action_btn alternate" v-if="(tabStatus != 'summary' && tabStatus != 'daily') && user.staff_details.role_id == 1">Print</a> -->
 
-                            <a :href="`/print/reporting/sales/sales-and-transactions/daily-transactions?status=daily&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate" v-if="tabStatus != 'sales-summary'">Print</a>
+                            <a :href="`/print/reporting/sales/sales-and-transactions/daily-transactions?status=daily&studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate" v-if="tabStatus != 'summary'">Print</a>
 
-                            <div class="action_btn alternate" @click="getDailyTransactions()" v-if="tabStatus != 'sales-summary' && transactions.payments.data.length > 0">
+                            <div class="action_btn alternate" @click="getDailyTransactions()" v-if="tabStatus != 'summary' && transactions.payments.data.length > 0">
                                 Export
                             </div>
                             <download-csv
-                                v-if="tabStatus != 'sales-summary' && transactions.payments.data.length > 0"
+                                v-if="tabStatus != 'summary' && transactions.payments.data.length > 0"
                                 class="hidden me"
                                 :data="dailyTransactionAttributes"
                                 :name="`daily-transactions-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
