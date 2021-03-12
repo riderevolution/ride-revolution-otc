@@ -13,7 +13,7 @@
             <div class="seat_details" v-if="seat.status == 'signed-in' || seat.status == 'reserved'">
                 <div class="seat_name">{{ seat.number }} - {{ seat.bookings[0].user.first_name }} {{ seat.bookings[0].user.last_name }}</div>
                 <div class="seat_violator">{{ seat.status.charAt(0).toUpperCase() }}{{ seat.status.slice(1) }}</div>
-                <div class="flex alt margin">
+                <div :class="[ 'flex alt', (seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.has_first_timer) ? 'margin' : '' ]">
                     <div class="info_image" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
                         <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
                     </div>
@@ -34,7 +34,10 @@
             <div class="seat_details" v-if="seat.status == 'reserved-guest'">
                 <div class="seat_name">{{ seat.number }} - {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.first_name : seat.bookings[0].guest_first_name }} {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.last_name : seat.bookings[0].guest_last_name }}</div>
                 <div class="seat_violator">{{ seat.status.charAt(0).toUpperCase() }}{{ seat.status.slice(1) }}</div>
-                <div class="flex alt margin" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
+
+                <div class="seat_name alt margin">Booked By - <b>{{ seat.bookings[0].original_booker.fullname }}</b></div>
+
+                <div :class="['flex alt', (seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.has_first_timer || seat.bookings[0].is_guest == 1) ? 'margin' : '']" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
                     <div class="info_image">
                         <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
                     </div>
