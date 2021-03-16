@@ -92,7 +92,7 @@
                         </div>
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
-                                <h2 class="form_title">Targets</h2>
+                                <h2 class="form_title">Dashboard Targets</h2>
                             </div>
                             <div class="form_main_group">
                                 <div class="form_flex">
