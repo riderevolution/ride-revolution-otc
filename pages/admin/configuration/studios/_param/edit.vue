@@ -70,12 +70,34 @@
                         </div>
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
-                                <h2 class="form_title">Targets</h2>
+                                <h2 class="form_title">Auto Publish Class</h2>
                             </div>
                             <div class="form_main_group">
                                 <div class="form_flex">
                                     <div class="form_group">
-                                        <label for="total_attendance">Total Attendace <span>*</span></label>
+                                        <label for="publish_day">Publish Day <span>*</span></label>
+                                        <select class="default_select alternate" v-validate="{ required: true }" name="publish_day" v-model="form.publish_day">
+                                            <option value="" selected disabled>Choose a day</option>
+                                            <option :value="data" v-for="(data, key) in days" :key="key">{{ data }}</option>
+                                        </select>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('publish_day')">{{ properFormat(errors.first('publish_day')) }}</span></transition>
+                                    </div>
+                                    <div class="form_group">
+                                        <label for="publish_time">Publish Time <span>*</span></label>
+                                        <v-ctk v-model="form.publish_time" :only-time="true" :format="'hh:mm'" :formatted="'hh:mm'" :no-label="true" :color="'#33b09d'" id="publish_time" name="publish_time" :label="'Select start time'" v-validate="'required'"></v-ctk>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('publish_time')">{{ properFormat(errors.first('publish_time')) }}</span></transition>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form_wrapper">
+                            <div class="form_header_wrapper">
+                                <h2 class="form_title">Dashboard Targets</h2>
+                            </div>
+                            <div class="form_main_group">
+                                <div class="form_flex">
+                                    <div class="form_group">
+                                        <label for="total_attendance">Total Attendance <span>*</span></label>
                                         <input type="text" name="total_attendance" placeholder="Enter total attendance" v-model="res.target_total_attendance" autocomplete="off" class="default_text" v-validate="'required|numeric|min:1|max:99999'">
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('total_attendance')">{{ properFormat(errors.first('total_attendance')) }}</span></transition>
                                     </div>
@@ -120,7 +142,7 @@
 </template>
 
 <script>
-    import Foot from '../../../../../components/Foot'
+    import Foot from '~/components/Foot'
     export default {
         components: {
             Foot
@@ -131,23 +153,13 @@
                 access: true,
                 loaded: false,
                 onlineClass: false,
-                backUpHTML: `<div class="form_wrapper"> <div class="form_header_wrapper"> <h2 class="form_title">Booking Restrictions</h2> </div> <div class="form_main_group"> <div class="form_flex"> <div class="form_group flex"> <label>Allowed time to book before class starts:<span>*</span></label> <div class="form_flex_input"> <input type="text" name="booking_hours" class="default_text number" autocomplete="off" v-model="form.booking.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'"> <div class="placeholder">hours</div> <div class="up" @click="addCount('booking', 'hour')"></div> <div class="down" @click="subtractCount('booking', 'hour')"></div> <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_hours')">{{ properFormat(errors.first('booking_hours')) }}</span></transition> </div> <div class="form_flex_input"> <input type="text" name="booking_minutes" class="default_text number" autocomplete="off" v-model="form.booking.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'"> <div class="placeholder">mins.</div> <div class="up" @click="addCount('booking', 'mins')"></div> <div class="down" @click="subtractCount('booking', 'mins')"></div> <transition name="slide"><span class="validation_errors" v-if="errors.has('booking_minutes')">{{ properFormat(errors.first('booking_minutes')) }}</span></transition> </div> </div> <div class="form_group flex"> <label>Allowed time to cancel before class starts:<span>*</span></label> <div class="form_flex_input"> <input type="text" name="cancel_hours" class="default_text number" autocomplete="off" v-model="form.cancel.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'"> <div class="placeholder">hours</div> <div class="up" @click="addCount('cancel', 'hour')"></div> <div class="down" @click="subtractCount('cancel', 'hour')"></div> <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_hours')">{{ properFormat(errors.first('cancel_hours')) }}</span></transition> </div> <div class="form_flex_input"> <input type="text" name="cancel_minutes" class="default_text number" autocomplete="off" v-model="form.cancel.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'"> <div class="placeholder">mins.</div> <div class="up" @click="addCount('cancel', 'mins')"></div> <div class="down" @click="subtractCount('cancel', 'mins')"></div> <transition name="slide"><span class="validation_errors" v-if="errors.has('cancel_minutes')">{{ properFormat(errors.first('cancel_minutes')) }}</span></transition> </div> </div> </div> <div class="form_flex"> <div class="form_group flex"> <label>Time before customer is marked no show after class starts:<span>*</span></label> <div class="form_flex_input"> <input type="text" name="no_show_hours" class="default_text number" autocomplete="off" v-model="form.noShow.hour" maxlength="2" v-validate="'required|numeric|max_value:24|min_value:0'"> <div class="placeholder">hours</div> <div class="up" @click="addCount('noShow', 'hour')"></div> <div class="down" @click="subtractCount('noShow', 'hour')"></div> <transition name="slide"><span class="validation_errors" v-if="errors.has('no_show_hours')">{{ properFormat(errors.first('no_show_hours')) }}</span></transition> </div> <div class="form_flex_input"> <input type="text" name="no_show_minutes" class="default_text number" autocomplete="off" v-model="form.noShow.mins" maxlength="2" v-validate="'required|numeric|max_value:60|min_value:0'"> <div class="placeholder">mins.</div> <div class="up" @click="addCount('noShow', 'mins')"></div> <div class="down" @click="subtractCount('noShow', 'mins')"></div> <transition name="slide"><span class="validation_errors" v-if="errors.has('no_show_minutes')">{{ properFormat(errors.first('no_show_minutes')) }}</span></transition> </div> </div> </div> </div> </div>`,
                 res: [],
                 lastRoute: '',
                 prevRoute: '',
+                days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                 form: {
-                    booking: {
-                        hour: '-',
-                        mins: '-'
-                    },
-                    cancel: {
-                        hour: '-',
-                        mins: '-'
-                    },
-                    noShow: {
-                        hour: '-',
-                        mins: '-'
-                    },
+                    publish_day: '',
+                    publish_time: ''
                 }
             }
         },
@@ -158,6 +170,9 @@
                     if (valid) {
                         let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
+                        formData.append('schedule_publish_day', me.form.publish_day)
+                        formData.append('schedule_publish_time', me.form.publish_time)
+
                         formData.append('_method', 'PATCH')
                         me.loader(true)
                         me.$axios.post(`api/studios/${me.$route.params.param}`, formData, {
@@ -166,21 +181,14 @@
                             }
                         }).then(res => {
                             setTimeout( () => {
-                                if (res.data) {
-                                    me.notify('Content has been Updated')
-                                } else {
-                                    me.$store.state.errorList.push('Sorry, Something went wrong')
-                                    me.$store.state.errorStatus = true
-                                }
+                                me.notify('Content has been Updated')
+                                me.$router.push(`/admin/${me.prevRoute}/${me.lastRoute}`)
                             }, 500)
                         }).catch(err => {
                             me.$store.state.errorList = err.response.data.errors
                             me.$store.state.errorStatus = true
                         }).then(() => {
                             setTimeout( () => {
-                                if (!me.$store.state.errorStatus) {
-                                    me.$router.push(`/admin/${me.prevRoute}/${me.lastRoute}`)
-                                }
                                 me.loader(false)
                             }, 500)
                         })
@@ -198,6 +206,8 @@
             if (me.access) {
                 me.$axios.get(`api/studios/${me.$route.params.param}`).then(res => {
                     me.res = res.data.studio
+                    me.form.publish_day = me.res.schedule_publish_day
+                    me.form.publish_time = me.res.schedule_publish_time
                     me.onlineClass = (me.res.online_class == 1) ? true : false
                     me.loaded = true
                 })
