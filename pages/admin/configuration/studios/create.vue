@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form_wrapper">
+                        <!-- <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Auto Publish Class</h2>
                             </div>
@@ -89,7 +89,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Dashboard Targets</h2>
@@ -170,8 +170,8 @@
                         let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
 
-                        formData.append('schedule_publish_day', me.form.publish_day)
-                        formData.append('schedule_publish_time', me.form.publish_time)
+                        // formData.append('schedule_publish_day', me.form.publish_day)
+                        // formData.append('schedule_publish_time', me.form.publish_time)
 
                         me.loader(true)
                         me.$axios.post('api/studios', formData, {
