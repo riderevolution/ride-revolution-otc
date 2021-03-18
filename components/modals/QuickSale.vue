@@ -147,6 +147,10 @@
                                 <input type="radio" id="cash" value="cash" name="payment_method" class="action_radio" @change="checkPayment('cash')">
                                 <label for="cash">Cash</label>
                             </div>
+                            <div class="form_radio">
+                                <input type="radio" id="conversion" value="conversion" name="payment_method" class="action_radio" @change="checkPayment('conversion')">
+                                <label for="conversion">Conversion</label>
+                            </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 0 || form.paymentType == 2">
                             <div class="form_group">
@@ -234,6 +238,13 @@
                                 <label for="reference_number">Reference Number <span>*</span></label>
                                 <input type="text" name="reference_number" class="default_text" v-validate="'required'" key="reference_number">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.reference_number')">{{ properFormat(errors.first('checkout_form.reference_number')) }}</span></transition>
+                            </div>
+                        </div>
+                        <div class="form_main_group" v-else-if="form.paymentType == 6">
+                            <div class="form_group">
+                                <label for="note">Note <span>*</span></label>
+                                <input type="text" name="note" class="default_text" key="note" v-validate="{ required: true }">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ properFormat(errors.first('checkout_form.note')) }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group">
@@ -672,6 +683,9 @@
                         break
                     case 'gcash':
                         me.form.paymentType = 5
+                        break
+                    case 'conversion':
+                        me.form.paymentType = 6
                         break
                 }
                 me.cardType = ''
