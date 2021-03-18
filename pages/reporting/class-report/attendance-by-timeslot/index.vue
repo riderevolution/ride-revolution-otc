@@ -368,8 +368,8 @@
                         })
                     }
                 })
-                me.$axios.get(`api/instructors?enabled=1`).then(res => {
-                    me.instructors = res.data.instructors.data
+                me.$axios.get(`api/instructors?enabled=1&all=1`).then(res => {
+                    me.instructors = res.data.instructors
                 })
                 me.$axios.get(`api/packages/class-types?enabled=1&get=1`).then(res => {
                     me.classTypes = res.data.classTypes

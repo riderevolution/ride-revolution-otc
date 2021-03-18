@@ -27,6 +27,13 @@
                                 </select>
                             </div>
                             <div class="form_group margin">
+                                <label for="instructor_id">Instructor</label>
+                                <select class="default_select alternate" name="instructor_id" v-model="form.instructor_id">
+                                    <option value="" selected>All Instructors</option>
+                                    <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
@@ -64,11 +71,13 @@
                 loaded: false,
                 values: [],
                 studios: [],
+                instructors: [],
                 studio: [],
                 form: {
                     start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
-                    studio_id: ''
+                    studio_id: '',
+                    instructor_id: ''
                 }
             }
         },
@@ -228,9 +237,15 @@
                         me.$axios.get(`api/studios/${studio_id}`).then(res => {
                             me.studio = res.data.studio
                         })
-                        me.loaded = true
                     }
                 })
+                me.$axios.get(`api/instructors?enabled=1&all=1`).then(res => {
+                    me.instructors = res.data.instructors
+                })
+
+                setTimeout( () => {
+                    me.loaded = true
+                }, 500)
             }
         },
         async mounted () {
