@@ -38,10 +38,10 @@
                                 <input type="radio" id="cash" value="cash" name="payment_method" class="action_radio" @change="checkPayment('cash')">
                                 <label for="cash">Cash</label>
                             </div>
-                            <!-- <div class="form_radio">
+                            <div class="form_radio">
                                 <input type="radio" id="conversion" value="conversion" name="payment_method" class="action_radio" @change="checkPayment('conversion')">
                                 <label for="conversion">Conversion</label>
-                            </div> -->
+                            </div>
                             <div class="form_radio" v-if="hasStoreCredits">
                                 <input type="radio" id="store_credits" value="store-credits" name="payment_method" class="action_radio" @change="checkPayment('store-credits')">
                                 <label for="store_credits">Store Credits</label>
