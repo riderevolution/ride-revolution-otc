@@ -152,9 +152,9 @@
                         'Discount': `${(value.payment.promo_code_used != null) ? value.payment.discount.discount : 0}`,
                         'Price': `${(value.payment.promo_code_used != null) ? value.total : value.price_per_item}`,
                         'Employee': me.getPaymentDetails(value.payment, 'employee'),
-                        'Comp Reason': (value.payment.comp_reason) ? value.payment.comp_reason : 'N/A',
-                        'Note': (value.payment.note) ? value.payment.note : 'N/A',
-                        'Remarks': (value.payment.remarks) ? value.payment.remarks : 'N/A'
+                        'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
+                        'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',
+                        'Remarks': (value.payment.payment_method.remarks) ? value.payment.payment_method.remarks : 'N/A'
                     }))
                 ]
             }
