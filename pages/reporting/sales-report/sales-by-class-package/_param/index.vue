@@ -150,7 +150,7 @@
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
                         'Quantity': value.quantity,
                         'Discount': `${(value.payment.promo_code_used != null) ? value.payment.discount.discount : 0}`,
-                        'Price': `${(value.payment.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Price': `${(value.payment.promo_code_used != null) ? value.total : (value.class_package.is_promo) ? value.total : value.price_per_item }`,
                         'Employee': me.getPaymentDetails(value.payment, 'employee'),
                         'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
                         'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',
