@@ -277,7 +277,7 @@
                                             <td>{{ item.quantity }}</td>
                                             <td class="price">
                                                 <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
-                                                <p>PHP {{ totalCount((data.promo_code_used !== null) ? item.total : item.price_per_item * item.quantity) }}</p>
+                                                <p>PHP {{ totalCount((data.promo_code_used !== null) ? item.discounted_pricef : item.price_per_item * item.quantity) }}</p>
                                             </td>
                                             <td class="alt_2">{{ (item.refund_type) ? replacer(item.refund_type) : 'N/A' }}</td>
                                             <td>{{ (item.refunder) ? item.refunder.fullname : 'N/A' }}</td>
