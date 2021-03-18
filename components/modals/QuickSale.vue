@@ -147,10 +147,10 @@
                                 <input type="radio" id="cash" value="cash" name="payment_method" class="action_radio" @change="checkPayment('cash')">
                                 <label for="cash">Cash</label>
                             </div>
-                            <div class="form_radio">
+                            <!-- <div class="form_radio">
                                 <input type="radio" id="conversion" value="conversion" name="payment_method" class="action_radio" @change="checkPayment('conversion')">
                                 <label for="conversion">Conversion</label>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 0 || form.paymentType == 2">
                             <div class="form_group">
