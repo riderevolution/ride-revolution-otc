@@ -705,7 +705,7 @@
                             me.res.user_package_counts.forEach((element, index) => {
                                 let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
                                 if (element.paypal_subscription_id) {
-                                    if (parseInt(expiry.diff(current)) > 0) {
+                                    if (parseInt(expiry.diff(current)) > 0 && element.count > 0) {
                                         element.expired = false
                                         if (element.count > 0) {
                                             me.packageCount++
@@ -722,7 +722,7 @@
                             me.res.user_package_counts.forEach((element, index) => {
                                 let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
                                 if (!element.paypal_subscription_id) {
-                                    if (parseInt(expiry.diff(current)) > 0) {
+                                    if (parseInt(expiry.diff(current)) > 0 && element.count > 0) {
                                         element.expired = false
                                         if (element.count > 0) {
                                             me.packageCount++
