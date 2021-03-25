@@ -91,7 +91,7 @@
                                     me.$parent.transactions = res.data
                                 } else {
                                     if (me.$route.params.slug == 'class-history') {
-                                        me.$parent.res = res.data.customer
+                                        me.$parent.getHistoryFromPaginate(res.data.customer)
                                     } else {
                                         me.$parent.res = res.data
                                     }
@@ -249,7 +249,7 @@
                                     me.$parent.transactions = res.data
                                 } else {
                                     if (me.$route.params.slug == 'class-history') {
-                                        me.$parent.res = res.data.customer
+                                        me.$parent.getHistoryFromPaginate(res.data.customer)
                                     } else {
                                         me.$parent.res = res.data
                                     }
