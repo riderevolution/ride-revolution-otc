@@ -1488,6 +1488,13 @@
                     }, 500)
                 })
             },
+            getHistoryFromPaginate (data) {
+                const me = this
+                me.res = data
+                me.res.classHistory.data.sort(function(a,b){
+                    return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
+                })
+            },
             toggleClassesHistory (status) {
                 const me = this
                 me.loader(true)
