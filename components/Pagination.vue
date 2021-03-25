@@ -91,7 +91,7 @@
                                     me.$parent.transactions = res.data
                                 } else {
                                     if (me.$route.params.slug == 'class-history') {
-                                        me.$parent.res = res.data.customer
+                                        me.$parent.getHistoryFromPaginate(res.data.customer)
                                     } else {
                                         me.$parent.res = res.data
                                     }
@@ -117,10 +117,7 @@
                                 me.$parent.res = res.data.customer.payments
                             } else {
                                 if (me.$route.params.slug == 'class-history') {
-                                    me.$parent.res = res.data.customer
-                                    me.$parent.res.classHistory.data.sort(function(a,b){
-                                        return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
-                                    })
+                                    me.$parent.getHistoryFromPaginate(res.data.customer)
                                 } else {
                                     me.$parent.res = res.data
                                 }
@@ -185,10 +182,7 @@
                                 me.$parent.transactions = res.data
                             } else {
                                 if (me.$route.params.slug == 'class-history') {
-                                    me.$parent.res = res.data.customer
-                                    me.$parent.res.classHistory.data.sort(function(a,b){
-                                        return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
-                                    })
+                                    me.$parent.getHistoryFromPaginate(res.data.customer)
                                 } else {
                                     me.$parent.res = res.data
                                 }
@@ -208,7 +202,7 @@
                             me.$parent.res = res.data.customer.payments
                         } else {
                             if (me.$route.params.slug == 'class-history') {
-                                me.$parent.res = res.data.customer
+                                me.$parent.getHistoryFromPaginate(res.data.customer)
                             } else {
                                 me.$parent.res = res.data
                             }
@@ -255,7 +249,7 @@
                                     me.$parent.transactions = res.data
                                 } else {
                                     if (me.$route.params.slug == 'class-history') {
-                                        me.$parent.res = res.data.customer
+                                        me.$parent.getHistoryFromPaginate(res.data.customer)
                                     } else {
                                         me.$parent.res = res.data
                                     }
@@ -279,10 +273,7 @@
                                 me.$parent.res = res.data.customer.payments
                             } else {
                                 if (me.$route.params.slug == 'class-history') {
-                                    me.$parent.res = res.data.customer
-                                    me.$parent.res.classHistory.data.sort(function(a,b){
-                                        return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
-                                    })
+                                    me.$parent.getHistoryFromPaginate(res.data.customer)
                                 } else {
                                     me.$parent.res = res.data
                                 }
