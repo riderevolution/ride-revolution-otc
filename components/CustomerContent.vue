@@ -1490,12 +1490,10 @@
             },
             getHistoryFromPaginate (data) {
                 const me = this
-                console.log(data.classHistory.data);
                 data.classHistory.data.sort(function(a,b){
                     return new Date(`${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`) - new Date(`${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`);
                 })
                 me.res = data
-                console.log(me.res.classHistory.data);
             },
             toggleClassesHistory (status) {
                 const me = this
