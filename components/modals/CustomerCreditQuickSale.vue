@@ -130,33 +130,33 @@
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 3">
                             <div class="form_group">
-                                <label for="comp_reason">Comp Reason<span>*</span></label>
-                                <select class="default_select alternate" name="comp_reason" key="comp_reason" v-validate="'required'" v-model="form.comp">
+                                <label for="comp_reason">Comp Reason <span>*</span></label>
+                                <select class="default_select alternate" name="comp_reason" v-validate="'required'" key="comp_reason" v-model="form.comp">
                                     <option value="" selected disabled>Select a Reason</option>
-                                    <option value="Gift">Gift</option>
-                                    <option value="Cross deal">Cross deal</option>
-                                    <option value="Prize">Prize</option>
-                                    <option value="Redemption">Redemption</option>
-                                    <option value="Conversion">Conversion</option>
-                                    <option value="Internal team">Internal team</option>
-                                    <option value="Shareholder">Shareholder</option>
-                                    <option value="Complaint">Complaint</option>
-                                    <option value="Special deal">Special deal</option>
+                                    <option value="Bike Purchase">Bike Purchase</option>
+                                    <option value="Bike Rental">Bike Rental</option>
+                                    <option value="Ride Along">Ride Along</option>
+                                    <option value="Customer Complaint">Customer Complaint</option>
+                                    <option value="Special Deal (Promo)">Special Deal (Promo)</option>
+                                    <option value="Prize (Event/Campaign)">Prize (Event/Campaign)</option>
+                                    <option value="X Deal">X Deal</option>
+                                    <option value="RR Team">RR Team</option>
+                                    <option value="RR Investor/Shareholder">RR Investor/Shareholder</option>
                                     <option value="Other">Other</option>
                                 </select>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.comp_reason')">{{ properFormat(errors.first('checkout_form.comp_reason')) }}</span></transition>
                             </div>
                             <transition name="fade">
-                                <div class="form_group" v-if="form.comp == 'Other'">
-                                    <label for="indicate_reason">Indicate Reason <span>*</span></label>
+                                <div class="form_group" v-if="reasonType">
+                                    <label for="indicate_reason">Details Required <span>*</span></label>
                                     <input type="text" name="indicate_reason" class="default_text" v-validate="'required'" key="indicate_reason">
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.indicate_reason')">{{ properFormat(errors.first('checkout_form.indicate_reason')) }}</span></transition>
                                 </div>
                             </transition>
                             <div class="form_group">
-                                <label for="note">Note <span>*</span></label>
-                                <input type="text" name="note" class="default_text" key="note" v-validate="{ required: true }">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ properFormat(errors.first('checkout_form.note')) }}</span></transition>
+                                <label for="remarks">Notes/Remarks <span>*</span></label>
+                                <textarea name="remarks" rows="8" id="remarks" class="default_text" key="remarks" placeholder="Enter remarks" v-validate="{ required: true }"></textarea>
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.remarks')">{{ properFormat(errors.first('checkout_form.remarks')) }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 4">
@@ -184,7 +184,7 @@
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ properFormat(errors.first('checkout_form.note')) }}</span></transition>
                             </div>
                         </div>
-                        <div class="form_main_group">
+                        <div class="form_main_group" v-if="form.paymentType != 3">
                             <div class="form_group">
                                 <label for="remarks">Remarks</label>
                                 <textarea name="remarks" rows="8" id="remarks" class="default_text" placeholder="Enter remarks"></textarea>
@@ -322,6 +322,24 @@
             }
         },
         computed: {
+            reasonType () {
+                const me = this
+                let result = false
+
+                switch (me.form.comp) {
+                    case 'Customer Complaint':
+                    case 'Special Deal (Promo)':
+                    case 'Prize (Event/Campaign)':
+                    case 'X Deal':
+                    case 'Other':
+                        result = true
+                        break
+                    default:
+                        result = false
+                }
+
+                return result
+            },
             showBreakDown () {
                 const me = this
                 let result = []
