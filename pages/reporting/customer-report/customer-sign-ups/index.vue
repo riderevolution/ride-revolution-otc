@@ -54,6 +54,8 @@
                                 <th class="stick">First Purchase Date</th>
                                 <th class="stick">First Package</th>
                                 <th class="stick">Current Active Package</th>
+                                <th class="stick">First Class Date</th>
+                                <th class="stick">First Class Type</th>
                                 <th class="stick">Contact Number</th>
                                 <th class="stick">Email Address</th>
                                 <th class="stick">Action</th>
@@ -77,6 +79,8 @@
                                 <td>{{ (data.payment.id) ? $moment(data.payment.created_at).format('MMMM DD, YYYY') : data.payment }}</td>
                                 <td>{{ (data.package.id) ? data.package.class_package.name : data.package }}</td>
                                 <td>{{ checkActivePackages(data.user_package_counts) }}</td>
+                                <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? data.bookings[0].scheduled_date.scheduled.class_type.name : 'No Class Type' }}</td>
                                 <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
                                 <td>{{ data.email }}</td>
                                 <td>
