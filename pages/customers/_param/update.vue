@@ -404,7 +404,7 @@
                         }).then(res => {
                             setTimeout( () => {
                                 if (res.data) {
-                                    me.notify('Instructor has been Updated')
+                                    me.notify('Customer has been Updated')
                                     me.$router.push(`/customers/${me.lastRoute}/details`)
                                 }
                             }, 500)
