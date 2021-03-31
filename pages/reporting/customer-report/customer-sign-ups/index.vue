@@ -80,7 +80,7 @@
                                 <td>{{ (data.package.id) ? data.package.class_package.name : data.package }}</td>
                                 <td>{{ checkActivePackages(data.user_package_counts) }}</td>
                                 <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
-                                <td>{{ (data.bookings.length > 0) ? data.bookings[0].scheduled_date.scheduled.class_type.name : 'No Class Type' }}</td>
+                                <td>{{ (data.bookings.length > 0) ? data.bookings[0].scheduled_date.schedule.class_type.name : 'No Class Type' }}</td>
                                 <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
                                 <td>{{ data.email }}</td>
                                 <td>
@@ -162,7 +162,9 @@
                         'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
                         'First Purchase Date': (value.payment.id) ? me.$moment(value.payment.created_at).format('MMMM DD, YYYY') : value.payment,
                         'First Package': (value.package.id) ? value.package.class_package.name : value.package,
-                        'Current Active Package': me.checkActivePackages(value.user_package_counts)
+                        'Current Active Package': me.checkActivePackages(value.user_package_counts),
+                        'First Class Date': (value.bookings.length > 0) ? $moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet',
+                        'First Class Type': (value.bookings.length > 0) ? value.bookings[0].scheduled_date.schedule.class_type.name : 'No Class Type'
                     }))
                 ]
             }
