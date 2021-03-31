@@ -84,7 +84,7 @@
                                     </div>
                                     <div class="form_group">
                                         <label for="publish_time">Publish Time <span>*</span></label>
-                                        <v-ctk v-model="form.publish_time" :only-time="true" :format="'hh:mm'" :formatted="'hh:mm'" :no-label="true" :color="'#33b09d'" id="publish_time" name="publish_time" :label="'Select start time'" v-validate="'required'"></v-ctk>
+                                        <v-ctk v-model="form.publish_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" id="publish_time" name="publish_time" :label="'Select start time'" v-validate="'required'"></v-ctk>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('publish_time')">{{ properFormat(errors.first('publish_time')) }}</span></transition>
                                     </div>
                                 </div>
@@ -171,8 +171,8 @@
                         let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
 
-                        // formData.append('schedule_publish_day', me.form.publish_day)
-                        // formData.append('schedule_publish_time', me.form.publish_time)
+                        formData.append('schedule_publish_day', me.form.publish_day)
+                        formData.append('schedule_publish_time', me.form.publish_time)
 
                         formData.append('_method', 'PATCH')
                         me.loader(true)
@@ -208,7 +208,7 @@
                 me.$axios.get(`api/studios/${me.$route.params.param}`).then(res => {
                     me.res = res.data.studio
                     me.form.publish_day = me.res.schedule_publish_day
-                    me.form.publish_time = me.res.schedule_publish_time
+                    me.form.publish_time = me.$moment(me.res.schedule_publish_time).format('hh:mm A')
                     me.onlineClass = (me.res.online_class == 1) ? true : false
                     me.loaded = true
                 })
