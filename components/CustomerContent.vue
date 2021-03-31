@@ -884,7 +884,11 @@
                             })
                             break
                         case 'price':
-                            result = me.totalCount(data.total)
+                            if (data.discountedTotal != 0) {
+                                result = me.totalCount(data.discountedTotal)
+                            } else {
+                                result = me.totalCount(data.total)
+                            }
                             break
                         case 'status':
                             result = data.status
