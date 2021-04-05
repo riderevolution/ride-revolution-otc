@@ -4274,6 +4274,23 @@ input::placeholder
                     border-radius: 50%
                 .table_actions
                     position: relative
+                    .action_status
+                        sf_pro_semibold(12px)
+                        text-transform: uppercase
+                        padding: 5px 7px
+                        border-radius: 4px
+                        letter-spacing: 0.4px
+                        &.green
+                            background-color: $light_green
+                            color: $green
+                        &.red
+                            background-color: $light_red
+                            color: $red
+                        &.gray
+                            background-color: $border_alt
+                            color: $black
+                        &.ml
+                            margin-left: 10px
                     .validation_errors
                         position: absolute
                         top: calc(100% + 5px)

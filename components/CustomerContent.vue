@@ -203,7 +203,7 @@
                         <td class="alt">
                             <div class="table_actions">
                                 <span>{{ checkStatus(data) }}</span>
-                                <div class="action_status green" v-if="data.is_guest">GUEST</div>
+                                <div class="action_status ml green" v-if="data.is_guest">GUEST</div>
                             </div>
                         </td>
                         <td>{{ getPaymentCode(data.user_package_count.payment) }}</td>
