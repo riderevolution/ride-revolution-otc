@@ -158,6 +158,7 @@
                 <div class="cms_table_toggler">
                     <div :class="`status ${(classesHistoryStatus == 'all') ? 'active' : ''}`" @click="toggleClassesHistory('all')">All</div>
                     <div :class="`status ${(classesHistoryStatus == 'completed') ? 'active' : ''}`" @click="toggleClassesHistory('completed')">Completed</div>
+                    <div :class="`status ${(classesHistoryStatus == 'guest') ? 'active' : ''}`" @click="toggleClassesHistory('guest')">Guest</div>
                     <div :class="`status ${(classesHistoryStatus == 'no-show') ? 'active' : ''}`" @click="toggleClassesHistory('no-show')">No Show</div>
                     <div :class="`status ${(classesHistoryStatus == 'cancelled') ? 'active' : ''}`" @click="toggleClassesHistory('cancelled')">Cancelled</div>
                 </div>
