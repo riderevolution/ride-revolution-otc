@@ -200,7 +200,12 @@
                             </div>
                             <p v-else>N/A</p>
                         </td>
-                        <td class="alt">{{ checkStatus(data) }}</td>
+                        <td class="alt">
+                            <div class="table_actions">
+                                <span>{{ checkStatus(data) }}</span>
+                                <div class="action_status green" v-if="data.is_guest">GUEST</div>
+                            </div>
+                        </td>
                         <td>{{ getPaymentCode(data.user_package_count.payment) }}</td>
                         <td>
                             <p>{{ data.class_package.name }}</p>
@@ -1044,7 +1049,7 @@
                                 instructor = ins
                             }
                         })
-                        if (instructor.length > 0) {
+                        if (instructor) {
                             result = `${instructor.user.fullname}`
                         }
                     }
@@ -1056,7 +1061,7 @@
                                 instructor = ins
                             }
                         })
-                        if (instructor.length > 0) {
+                        if (instructor) {
                             result = `${instructor.user.id}`
                         }
                     }
