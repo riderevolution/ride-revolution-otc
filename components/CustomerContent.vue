@@ -158,6 +158,7 @@
                 <div class="cms_table_toggler">
                     <div :class="`status ${(classesHistoryStatus == 'all') ? 'active' : ''}`" @click="toggleClassesHistory('all')">All</div>
                     <div :class="`status ${(classesHistoryStatus == 'completed') ? 'active' : ''}`" @click="toggleClassesHistory('completed')">Completed</div>
+                    <div :class="`status ${(classesHistoryStatus == 'guest') ? 'active' : ''}`" @click="toggleClassesHistory('guest')">Guest</div>
                     <div :class="`status ${(classesHistoryStatus == 'no-show') ? 'active' : ''}`" @click="toggleClassesHistory('no-show')">No Show</div>
                     <div :class="`status ${(classesHistoryStatus == 'cancelled') ? 'active' : ''}`" @click="toggleClassesHistory('cancelled')">Cancelled</div>
                 </div>
@@ -200,7 +201,12 @@
                             </div>
                             <p v-else>N/A</p>
                         </td>
-                        <td class="alt">{{ checkStatus(data) }}</td>
+                        <td class="alt">
+                            <div class="table_actions">
+                                <span>{{ checkStatus(data) }}</span>
+                                <div class="action_status ml green" v-if="data.is_guest">GUEST</div>
+                            </div>
+                        </td>
                         <td>{{ getPaymentCode(data.user_package_count.payment) }}</td>
                         <td>
                             <p>{{ data.class_package.name }}</p>
@@ -1044,7 +1050,7 @@
                                 instructor = ins
                             }
                         })
-                        if (instructor.length > 0) {
+                        if (instructor) {
                             result = `${instructor.user.fullname}`
                         }
                     }
@@ -1056,7 +1062,7 @@
                                 instructor = ins
                             }
                         })
-                        if (instructor.length > 0) {
+                        if (instructor) {
                             result = `${instructor.user.id}`
                         }
                     }
