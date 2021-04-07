@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="form_wrapper">
+                        <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Auto Publish Class</h2>
                             </div>
@@ -89,7 +89,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Dashboard Targets</h2>
