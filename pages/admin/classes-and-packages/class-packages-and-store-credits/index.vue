@@ -59,6 +59,7 @@
                                 <th class="stick">Estimated Price Per Class</th>
                                 <th class="stick" v-if="package_status == 5">Type</th>
                                 <th class="stick" v-if="package_status == 5">Sequence</th>
+                                <th class="stick" v-if="package_status == 1">Quick Sale Sequence</th>
                                 <th class="stick">Action</th>
                             </tr>
                         </thead>
@@ -80,6 +81,13 @@
                                     <div class="table_actions" :data-vv-scope="`sequence_form_${key}`">
                                         <input class="textbox edit" :id="`sequence_${key}`" :name="`sequence_form_${key}.sequence`" :data-vv-name="`sequence_form_${key}.sequence`" v-model="data.sequence" v-validate="{ required: true, numeric: true }" />
                                         <div class="table_action_success link" @click="updateSequence(data)">Save</div>
+                                        <transition name="slide"><span class="validation_errors" v-if="errors.has(`sequence_form_${key}.sequence`)">{{ properFormat(errors.first(`sequence_form_${key}.sequence`)) }}</span></transition>
+                                    </div>
+                                </td>
+                                <td v-if="package_status == 1">
+                                    <div class="table_actions" :data-vv-scope="`sequence_form_${key}`">
+                                        <input class="textbox edit" :id="`sequence_${key}`" :name="`sequence_form_${key}.sequence`" :data-vv-name="`sequence_form_${key}.sequence`" v-model="data.quick_sale_sequence" v-validate="{ required: true, numeric: true }" />
+                                        <div class="table_action_success link" @click="updateSequence(data, true)">Save</div>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has(`sequence_form_${key}.sequence`)">{{ properFormat(errors.first(`sequence_form_${key}.sequence`)) }}</span></transition>
                                     </div>
                                 </td>
@@ -165,16 +173,24 @@
             }
         },
         methods: {
-            updateSequence (data) {
+            updateSequence (data, quick_sale = false) {
                 const me = this
                 let form_data = new FormData()
                 form_data.append('class_package_id', data.id)
-                form_data.append('sequence', data.sequence)
+                if (quick_sale) {
+                    form_data.append('quick_sale_sequence', data.quick_sale_sequence)
+                } else {
+                    form_data.append('sequence', data.sequence)
+                }
 
                 me.loader(true)
 
                 me.$axios.post('api/packages/class-packages/update-sequence', form_data).then(res => {
-                    me.fetchData(1, 5)
+                    if (quick_sale) {
+                        me.fetchData(1, 1)
+                    } else {
+                        me.fetchData(1, 5)
+                    }
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
