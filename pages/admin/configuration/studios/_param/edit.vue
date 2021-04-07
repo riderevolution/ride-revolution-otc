@@ -209,7 +209,7 @@
                     me.res = res.data.studio
                     me.form.publish_day = me.res.schedule_publish_day
                     if (me.res.schedule_publish_time) {
-                        me.form.publish_time = me.$moment(me.res.schedule_publish_time).format('hh:mm A')
+                        me.form.publish_time = me.$moment(me.res.schedule_publish_time, 'hh:mm A').format('hh:mm A')
                     }
                     me.onlineClass = (me.res.online_class == 1) ? true : false
                     me.loaded = true
