@@ -139,7 +139,7 @@
                         'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
                         'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
                         'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
-                        'Username': (value.employee) ? value.employee.fullname : 'Customer'
+                        'Last Action Taken By': (value.employee) ? value.employee.fullname : 'Customer'
                     }))
                 ]
             }

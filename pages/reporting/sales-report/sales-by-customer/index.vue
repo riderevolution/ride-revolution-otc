@@ -168,7 +168,7 @@
                         'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
                         'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',
                         'Remarks': (value.payment.payment_method.remarks) ? value.payment.payment_method.remarks : 'N/A',
-                        'Username': (value.payment.employee) ? value.payment.employee.fullname : 'No Employee'
+                        'Last Action Taken By': (value.payment.employee) ? value.payment.employee.fullname : 'No Employee'
                     }))
                 ]
             }
