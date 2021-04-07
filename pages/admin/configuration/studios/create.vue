@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="form_wrapper">
+                        <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Auto Publish Class</h2>
                             </div>
@@ -84,12 +84,12 @@
                                     </div>
                                     <div class="form_group">
                                         <label for="publish_time">Publish Time <span>*</span></label>
-                                        <v-ctk v-model="form.publish_time" :only-time="true" :format="'hh:mm'" :formatted="'hh:mm'" :no-label="true" :color="'#33b09d'" id="publish_time" name="publish_time" :label="'Select start time'" v-validate="'required'"></v-ctk>
+                                        <v-ctk v-model="form.publish_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" id="publish_time" name="publish_time" :label="'Select start time'" v-validate="'required'"></v-ctk>
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has('publish_time')">{{ properFormat(errors.first('publish_time')) }}</span></transition>
                                     </div>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Dashboard Targets</h2>
@@ -158,7 +158,7 @@
                 days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                 form: {
                     publish_day: '',
-                    publish_time: ''
+                    publish_time: this.$moment().format('hh:mm A')
                 }
             }
         },
@@ -170,8 +170,8 @@
                         let token = me.$cookies.get('70hokcotc3hhhn5')
                         let formData = new FormData(document.getElementById('default_form'))
 
-                        // formData.append('schedule_publish_day', me.form.publish_day)
-                        // formData.append('schedule_publish_time', me.form.publish_time)
+                        formData.append('schedule_publish_day', me.form.publish_day)
+                        formData.append('schedule_publish_time', me.form.publish_time)
 
                         me.loader(true)
                         me.$axios.post('api/studios', formData, {
