@@ -16,21 +16,21 @@
                     </div>
                     <div class="right_side">
                         <div class="modal_tab_content_header">
-                            <div :class="`tab_content_flex ${(toCompare.package == 2) ? 'alternate' : ''}`">
+                            <div :class="`tab_content_flex ${(toCompare.package == 99999) ? 'alternate' : ''}`">
                                 <div class="form_flex">
-                                    <div class="form_group" v-if="toCompare.package != 2">
+                                    <div class="form_group" v-if="toCompare.package != 99999">
                                         <label for="q">Search a Credit</label>
                                         <input type="text" name="q" autocomplete="off" placeholder="Search for a credits" v-model="form.search" class="default_text search_alternate">
                                     </div>
                                     <div class="button_group">
-                                        <button type="button" class="action_btn alternate margin" v-if="toCompare.package != 2" @click="submitFilter()">Search</button>
+                                        <button type="button" class="action_btn alternate margin" v-if="toCompare.package != 99999" @click="submitFilter()">Search</button>
                                     </div>
                                 </div>
                                 <div class="button_group">
                                     <button type="button" class="action_btn alternate" @click="takePayment(2)">Take Payment</button>
                                 </div>
                             </div>
-                            <div class="total_items" v-if="toCompare.package != 2">{{ totalItems(total) }} <span>items</span></div>
+                            <div class="total_items" v-if="toCompare.package != 99999">{{ totalItems(total) }} <span>items</span></div>
                         </div>
                         <div class="modal_tab_content">
                             <form id="product_form" data-vv-scope="product_form" v-show="isProduct">
@@ -289,12 +289,7 @@
                 products: [],
                 menus: [
                     {
-                        id: 1,
-                        name: 'Series',
-                        type: 'class-package'
-                    },
-                    {
-                        id: 2,
+                        id: 99999,
                         name: 'Promos',
                         type: 'promo-package'
                     }
@@ -393,29 +388,40 @@
                 let products = []
                 let status = true
                 switch (me.toCompare.package) {
-                    case 0:
-                        me.products.forEach((product, index) => {
-                            if (product.is_promo == 0) {
-                                product.isClassPackageShow = true
-                                product.isGiftShow = true
-                            } else {
-                                product.isPromoPackageShow = false
-                            }
-                        })
-                        break
-                    case 1:
+                    case 99999:
                         me.products.forEach((product, index) => {
                             if (product.is_promo == 1) {
                                 product.isPromoPackageShow = true
-                                product.isGiftShow = true
                             } else {
                                 product.isClassPackageShow = false
                             }
 
                         })
                         break
+                    default:
+                        me.products.forEach((product, index) => {
+                            if (product.is_promo == 0) {
+                                if (me.toCompare.package == product.package_type_id) {
+                                    product.isClassPackageShow = true
+                                } else {
+                                    product.isClassPackageShow = false
+                                }
+                            } else {
+                                product.isPromoPackageShow = false
+                            }
+                        })
+                        break
                 }
-                products = me.products
+                me.products.forEach((item, i) => {
+                    if (item.isClassPackageShow) {
+                        products.push(item)
+                    }
+                })
+
+                products.sort((a, b) => {
+                    return parseInt(a.quick_sale_sequence) - parseInt(b.quick_sale_sequence)
+                })
+
                 return products
             }
         },
@@ -636,27 +642,7 @@
                 let ctr  = 0
                 me.loader(true)
                 switch (me.toCompare.package) {
-                    case 0:
-                        me.$refs.quickSale.forEach((classPackage, qindex) => {
-                            if (classPackage.value.is_promo == 0) {
-                                let product = classPackage.value.name.toLowerCase()
-                                if (me.form.search != '') {
-                                    if (product.includes(me.form.search.toLowerCase())) {
-                                        ctr++
-                                        classPackage.isSearched = true
-                                    } else {
-                                        classPackage.isSearched = false
-                                    }
-                                } else {
-                                    ctr++
-                                    classPackage.isSearched = true
-                                }
-                            } else {
-                                classPackage.isSearched = false
-                            }
-                        })
-                        break
-                    case 1:
+                    case 99999:
                         me.$refs.quickSale.forEach((promoPackage, qindex) => {
                             if (promoPackage.value.is_promo == 1) {
                                 let product = promoPackage.value.name.toLowerCase()
@@ -673,6 +659,30 @@
                                 }
                             } else {
                                 promoPackage.isSearched = false
+                            }
+                        })
+                        break
+                    default:
+                        me.$refs.quickSale.forEach((classPackage, qindex) => {
+                            if (classPackage.value.is_promo == 0) {
+                                if (classPackage.value.package_type_id == me.toCompare.package) {
+                                    let product = classPackage.value.name.toLowerCase()
+                                    if (me.form.search != '') {
+                                        if (product.includes(me.form.search.toLowerCase())) {
+                                            ctr++
+                                            classPackage.isSearched = true
+                                        } else {
+                                            classPackage.isSearched = false
+                                        }
+                                    } else {
+                                        ctr++
+                                        classPackage.isSearched = true
+                                    }
+                                } else {
+                                    classPackage.isSearched = false
+                                }
+                            } else {
+                                classPackage.isSearched = false
                             }
                         })
                         break
@@ -694,7 +704,9 @@
                     case 'class-package':
                         me.products.forEach((product, index) => {
                             if (product.is_promo == 0) {
-                                count++
+                                if (me.toCompare.package == product.package_type_id) {
+                                    count++
+                                }
                             }
                         })
                         break
@@ -725,11 +737,11 @@
                 }, 10)
                 switch (type) {
                     case 'class-package':
-                        me.toCompare.package = 0
+                        me.toCompare.package = id
                         me.countTotalItems('class-package')
                         break
                     case 'promo-package':
-                        me.toCompare.package = 1
+                        me.toCompare.package = 99999
                         me.countTotalItems('promo-package')
                         break
                 }
@@ -738,10 +750,28 @@
                 const me = this
                 me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}`).then(res => {
                     if (res.data) {
+
                         res.data.classPackages.forEach((classPackage, index) => {
                             classPackage.isChecked = false
+                            classPackage.isClassPackageShow = false
                             me.products.push(classPackage)
                         })
+
+                        me.$axios.get(`api/packages/package-types?enabled=1&no_paginate=1`).then(res => {
+                            res.data.packageTypes.forEach((packageType, index) => {
+                                me.menus.unshift(
+                                    {
+                                        id: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].id,
+                                        name: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].name,
+                                        type: 'class-package'
+                                    }
+                                )
+                            })
+                            me.toCompare.package = me.menus[0].id
+                            // me.toggleStatus(0, 'class-package', me.menus[0].id)
+                            me.countTotalItems('class-package')
+                        })
+
                         me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}&is_promo=1`).then(res => {
                             if (res.data) {
                                 res.data.classPackages.forEach((promoPackage, index) => {
