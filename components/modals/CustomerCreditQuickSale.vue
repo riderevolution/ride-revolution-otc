@@ -413,8 +413,14 @@
                         break
                 }
                 me.products.forEach((item, i) => {
-                    if (item.isClassPackageShow) {
-                        products.push(item)
+                    if (me.toCompare.package == 99999) {
+                        if (item.isPromoPackageShow) {
+                            products.push(item)
+                        }
+                    } else {
+                        if (item.isClassPackageShow) {
+                            products.push(item)
+                        }
                     }
                 })
 
