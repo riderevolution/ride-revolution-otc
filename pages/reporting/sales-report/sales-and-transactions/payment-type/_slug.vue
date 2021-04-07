@@ -44,7 +44,7 @@
                                 <th>Total Qty.</th>
                                 <th>Payment Method</th>
                                 <th>Total Price</th>
-                                <th>Employee</th>
+                                <th>Transaction By</th>
                                 <th>Status</th>
                                 <th>Remarks</th>
                             </tr>
@@ -179,7 +179,7 @@
                         'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
                         'Email Address': value.parent.user.email,
                         'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : '-' ,
-                        'Employee': me.getPaymentDetails(value.parent, 'employee'),
+                        'Transaction By': me.getPaymentDetails(value.parent, 'employee'),
                         'Remarks': value.parent.remarks
                     }))
                 ]

@@ -175,7 +175,7 @@
                         <th>Status</th>
                         <th>Reference Number</th>
                         <th>Series ID</th>
-                        <th>Username</th>
+                        <th>Last Action Taken By</th>
                     </tr>
                 </thead>
                 <tbody v-if="value.classHistory.data.length > 0">
@@ -232,7 +232,7 @@
                         <th>Total Qty.</th>
                         <th>Payment Method</th>
                         <th>Total Price</th>
-                        <th>Employee</th>
+                        <th>Transaction By</th>
                         <th>Status</th>
                         <th>Comp Reason</th>
                         <th>Note</th>

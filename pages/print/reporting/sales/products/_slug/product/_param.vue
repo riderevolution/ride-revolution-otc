@@ -20,7 +20,7 @@
                     <th>Full Name</th>
                     <th>Qty.</th>
                     <th>Payment</th>
-                    <th>Employee</th>
+                    <th>Transaction By</th>
                     <th>Total</th>
                     <th>Comp Reason</th>
                     <th>Note</th>

@@ -25,7 +25,7 @@
                     <th>Comp Reason</th>
                     <th>Note</th>
                     <th>Remarks</th>
-                    <th>Employee</th>
+                    <th>Transaction By</th>
                 </tr>
             </thead>
             <tbody v-for="(data, key) in res" v-if="res.length > 0">

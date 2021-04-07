@@ -45,7 +45,7 @@
                                 <th>Comp Reason</th>
                                 <th>Note</th>
                                 <th>Remarks</th>
-                                <th>Employee</th>
+                                <th>Transaction By</th>
                             </tr>
                         </thead>
                         <tbody v-for="(data, key) in res.results.data" v-if="res.results.data.length > 0">
@@ -166,7 +166,7 @@
                         'Note': (value.parent.note) ? value.parent.note : 'N/A',
                         'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
                         'Studio': me.getPaymentStudio(value.parent),
-                        'Employee': me.getPaymentDetails(value.parent, 'employee')
+                        'Transaction By': me.getPaymentDetails(value.parent, 'employee')
                     }))
                 ]
             }
