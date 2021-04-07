@@ -135,7 +135,7 @@
                                     <th>Comp Reason</th>
                                     <th>Note</th>
                                     <th>Remarks</th>
-                                    <th>Username</th>
+                                    <th>Last Action Taken By</th>
                                 </tr>
                             </thead>
                             <tbody :class="`tbp ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in transactions.payments.data" v-if="transactions.payments.data.length > 0">
@@ -302,7 +302,7 @@
                         'Comp Reason': (value.parent.payment_method.comp_reason) ? value.parent.payment_method.comp_reason : 'N/A',
                         'Note': (value.parent.payment_method.note) ? value.parent.payment_method.note : 'N/A',
                         'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
-                        'Username': me.getPaymentDetails(value.parent, 'employee')
+                        'Last Action Taken By': me.getPaymentDetails(value.parent, 'employee')
                     }))
                 ]
             }

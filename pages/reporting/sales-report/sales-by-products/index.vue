@@ -159,7 +159,7 @@
                         'Comp Reason': (value.parent.payment_method.comp_reason) ? value.parent.payment_method.comp_reason : 'N/A',
                         'Note': (value.parent.payment_method.note) ? value.parent.payment_method.note : 'N/A',
                         'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
-                        'Username': me.getPaymentDetails(value.parent, 'employee')
+                        'Last Action Taken By': me.getPaymentDetails(value.parent, 'employee')
                     }))
                 ]
             },

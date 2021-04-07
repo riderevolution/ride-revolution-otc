@@ -244,7 +244,7 @@
                         'Comp Reason': (value.booking.user_package_count.payment_item.payment_method.comp_reason) ? value.booking.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
                         'Note': (value.booking.user_package_count.payment_item.payment_method.note) ? value.booking.user_package_count.payment_item.payment_method.note : 'N/A',
                         'Remarks': (value.booking.user_package_count.payment_item.payment_method.remarks) ? value.booking.user_package_count.payment_item.payment_method.remarks : 'N/A',
-                        'Username': (value.booking.employee) ? value.booking.employee.fullname : 'Customer'
+                        'Last Action Taken By': (value.booking.employee) ? value.booking.employee.fullname : 'Customer'
                     }))
                 ]
             }
