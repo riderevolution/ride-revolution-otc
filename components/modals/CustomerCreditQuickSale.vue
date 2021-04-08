@@ -268,6 +268,9 @@
         <transition name="fade">
             <prompt-promo v-if="$store.state.promptPromoStatus" :message="message" />
         </transition>
+        <transition name="fade">
+            <confirm-status v-if="$store.state.confirmStatus" ref="enabled" />
+        </transition>
     </div>
 </template>
 
@@ -275,11 +278,13 @@
     import CustomerCreditQuickSaleTabContent from './CustomerCreditQuickSaleTabContent'
     import PromptPromo from './PromptPromo'
     import PromptQuickSale from './PromptQuickSale'
+    import ConfirmStatus from '~/components/modals/quicksale/ConfirmStatus'
     export default {
         components: {
             CustomerCreditQuickSaleTabContent,
             PromptPromo,
-            PromptQuickSale
+            PromptQuickSale,
+            ConfirmStatus
         },
         data () {
             return {
@@ -432,6 +437,16 @@
             }
         },
         methods: {
+            toggleDeactivate (id) {
+                const me = this
+                me.$store.state.confirmStatus = true
+                setTimeout( () => {
+                    me.$refs.enabled.confirm.table_name = 'class_packages'
+                    me.$refs.enabled.confirm.id = id
+                    me.$refs.enabled.confirm.enabled = 0
+                    me.$refs.enabled.confirm.type = 'class package'
+                }, 100)
+            },
             computeQuantity (id, quantity, key, price) {
                 const me = this
                 if (quantity != '') {
@@ -754,6 +769,15 @@
             },
             fetchData () {
                 const me = this
+                me.products = []
+                me.menus = [
+                    {
+                        id: 99999,
+                        name: 'Promos',
+                        type: 'promo-package'
+                    }
+                ]
+
                 me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}`).then(res => {
                     if (res.data) {
 
