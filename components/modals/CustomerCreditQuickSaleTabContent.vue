@@ -15,6 +15,7 @@
                     <transition name="slide"><span class="validation_errors" v-if="errors.has('product_form.quantity[]')">{{ properFormat(errors.first('product_form.quantity[]')) }}</span></transition>
                 </div>
             </div>
+            <div class="table_action_cancel link" @click="$parent.toggleDeactivate(value.id)">Deactivate</div>
         </div>
     </div>
 </template>

@@ -1935,6 +1935,30 @@ table
                             align-items: center
                             padding: 10px 0
                             border-bottom: 2px dashed $border
+                            .link
+                                flex: 0 0 auto
+                                text-align: center
+                                text-decoration: none
+                                sf_pro_medium(14px)
+                                padding: 10px
+                                cursor: pointer
+                                margin-left: 10px
+                                &.table_action_cancel
+                                    border-radius: 3px
+                                    background-color: $light_red
+                                    color: $red
+                                    transition: .3s ease-in-out
+                                    &.disabled
+                                        cursor: not-allowed
+                                        pointer-events: none
+                                        color: $black
+                                        background-color: $border_alt
+                                        border: 1px solid #ccc
+                                        transition: .3s ease-in-out
+                                    &:hover
+                                        background-color: $red
+                                        color: $white
+                                        transition: .3s ease-in-out
                             &.no_qty
                                 padding: 15px 0
                             .form_check
