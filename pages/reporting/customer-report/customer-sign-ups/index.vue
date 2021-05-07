@@ -163,7 +163,7 @@
                         'First Purchase Date': (value.payment.id) ? me.$moment(value.payment.created_at).format('MMMM DD, YYYY') : value.payment,
                         'First Package': (value.package.id) ? value.package.class_package.name : value.package,
                         'Current Active Package': me.checkActivePackages(value.user_package_counts),
-                        'First Class Date': (value.bookings.length > 0) ? $moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet',
+                        'First Class Date': (value.bookings.length > 0) ? me.$moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet',
                         'First Class Type': (value.bookings.length > 0) ? value.bookings[0].scheduled_date.schedule.class_type.name : 'No Class Type'
                     }))
                 ]
