@@ -301,7 +301,7 @@
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
                         'Comp Reason': (value.parent.payment_method.comp_reason) ? value.parent.payment_method.comp_reason : 'N/A',
                         'Note': (value.parent.payment_method.note) ? value.parent.payment_method.note : 'N/A',
-                        'Remarks': (value.parent.remarks) ? value.parent.remarks : 'N/A',
+                        'Remarks': (value.parent.payment_method.remarks) ? value.parent.payment_method.remarks : 'N/A',
                         'Last Action Taken By': me.getPaymentDetails(value.parent, 'employee')
                     }))
                 ]

@@ -179,8 +179,10 @@
                         'Customer': `${value.parent.user.first_name} ${value.parent.user.last_name}`,
                         'Email Address': value.parent.user.email,
                         'Contact Number': (value.parent.user.customer_details.co_contact_number != null) ? value.parent.user.customer_details.co_contact_number : (value.parent.user.customer_details.ec_contact_number) ? value.parent.user.customer_details.ec_contact_number : '-' ,
-                        'Transaction By': me.getPaymentDetails(value.parent, 'employee'),
-                        'Remarks': value.parent.remarks
+                        'Comp Reason': (value.parent.payment_method.comp_reason) ? value.parent.payment_method.comp_reason : 'N/A',
+                        'Note': (value.parent.payment_method.note) ? value.parent.payment_method.note : 'N/A',
+                        'Remarks': (value.parent.payment_method.remarks) ? value.parent.payment_method.remarks : 'N/A',
+                        'Last Action Taken By': me.getPaymentDetails(value.parent, 'employee')
                     }))
                 ]
             }
