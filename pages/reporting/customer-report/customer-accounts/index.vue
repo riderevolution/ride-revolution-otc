@@ -161,13 +161,18 @@
                         'Customer Type': value.customer_details.customer_type.name,
                         'Gender': me.getCustomerDetails(value, 'gender'),
                         'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
+                        'Age': -(me.$moment(value.customer_details.co_birthdate).diff(me.$moment(), 'years')),
                         'Contact Number': me.getCustomerDetails(value, 'contact_number'),
                         'Email Address': value.email,
                         'Weight': me.getCustomerDetails(value, 'weight'),
                         'Shoe Size': me.getCustomerDetails(value, 'shoe_size'),
                         'Dumbbell': me.getCustomerDetails(value, 'dumbbell'),
                         'Personal Address': me.getCustomerDetails(value, 'personal'),
+                        'Personal Address Region': value.customer_details.personal_state,
+                        'Personal Address City': value.customer_details.pa_city,
                         'Billing Address': me.getCustomerDetails(value, 'billing'),
+                        'Billing Address Region': value.customer_details.billing_state,
+                        'Billing Address City': value.customer_details.ba_city,
                         'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
                         'First Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet',
                         'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[value.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet'
@@ -266,6 +271,9 @@
                             if (data.customer_details.personal_state) {
                                 result += `, ${data.customer_details.personal_state}`
                             }
+                            if (data.customer_details.pa_city) {
+                                result += `, ${data.customer_details.pa_city}`
+                            }
                             if (data.customer_details.personal_country) {
                                 result += `, ${data.customer_details.personal_country}`
                             }
@@ -284,6 +292,9 @@
                             }
                             if (data.customer_details.billing_state) {
                                 result += `, ${data.customer_details.billing_state}`
+                            }
+                            if (data.customer_details.ba_city) {
+                                result += `, ${data.customer_details.ba_city}`
                             }
                             if (data.customer_details.billing_country) {
                                 result += `, ${data.customer_details.billing_country}`
