@@ -313,15 +313,15 @@
 
                     if (ins_ctr == 2) {
                         if (export_status != null) {
-                            result = ${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}
+                            result = `${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
                         } else {
-                            result = <b>${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>
+                            result = `<b>${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         }
                     } else {
                         if (export_status != null) {
-                            result = ${targetInstructor.user.fullname}
+                            result = `${targetInstructor.user.fullname}`
                         } else {
-                            result = <b>${targetInstructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>
+                            result = `<b>${targetInstructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         }
                     }
                 }
