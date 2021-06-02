@@ -319,9 +319,9 @@
                         }
                     } else {
                         if (export_status != null) {
-                            result = `${targetInstructor.user.fullname}`
+                            result = `${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}`
                         } else {
-                            result = `<b>${targetInstructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                            result = `<b>${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         }
                     }
                 }
