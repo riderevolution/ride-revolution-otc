@@ -176,6 +176,7 @@
                         <th>Reference Number</th>
                         <th>Series ID</th>
                         <th>Last Action Taken By</th>
+                        <th>Timestamp</th>
                     </tr>
                 </thead>
                 <tbody v-if="value.classHistory.data.length > 0">
@@ -213,6 +214,7 @@
                             <p class="id">{{ data.class_package.sku_id }}</p>
                         </td>
                         <td>{{ (data.employee) ? data.employee.fullname : 'Customer' }}</td>
+                        <td>{{$moment(data.updated_at).format('MMM DD, YYYY hh:mm:ss A') }}</td>
                     </tr>
                 </tbody>
                 <tbody class="no_results" v-else>
