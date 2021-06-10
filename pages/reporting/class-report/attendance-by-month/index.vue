@@ -97,7 +97,6 @@
             Foot,
         },
         data () {
-            const values = []
             return {
                 name: 'Attendance by Month',
                 access: true,
@@ -111,7 +110,6 @@
                 yearName: '',
                 studio: [],
                 studios: [],
-                values: [],
                 instructors: [],
                 classTypes: [],
                 schedules: [],
@@ -125,146 +123,7 @@
                 }
             }
         },
-        computed: {
-            attendanceByMonthAttributes () {
-                const me = this
-                return [
-                    ...me.values.map((value, key) => ({
-                        'Transaction Date': me.$moment(value.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
-                        'Reference Number': me.getPaymentCode(value.user_package_count),
-                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
-                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
-                        'Studio': me.studio.name,
-                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
-                        'Booking Status': value.status,
-                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
-                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
-                        'Schedule Name': (value.scheduled_date.schedule.custom_name != null) ? value.scheduled_date.schedule.custom_name : value.scheduled_date.schedule.class_type.name,
-                        'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
-                        'Start Time': value.scheduled_date.schedule.start_time,
-                        'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
-                        'Full Name': `${value.user.first_name} ${value.user.last_name}`,
-                        'Customer Type': value.customer_type,
-                        'Email Address': value.user.email,
-                        'Gross Revenue': me.computeRevenue(value, 'gross'),
-                        'Discount': me.computeRevenue(value, 'discount'),
-                        'Net Revenue': me.computeRevenue(value, 'net'),
-                        'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
-                        'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
-                        'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
-                        'Last Action Taken By': (value.employee) ? value.employee.fullname : 'Customer'
-                    }))
-                ]
-            }
-        },
         methods: {
-            getPaymentCode (data) {
-                const me = this
-                let result = ''
-
-                switch (data.payment_item.payment_method.method) {
-                    case 'paypal':
-                        result = data.payment_item.payment_method.paypal_transaction_id
-                        break
-                    case 'paymaya':
-                        result = data.payment_item.payment_method.paymaya_transaction_id
-                        break
-                    default:
-                        result = data.payment.payment_code
-                }
-
-                return result
-            },
-            computeRevenue (data, type) {
-                const me = this
-                let result = ''
-                let base_value = 0
-                if (data.status != 'cancelled') {
-                    if (data.user_package_count.payment_item.payment_method.method != 'comp') {
-                        switch (type) {
-                            case 'revenue':
-                                base_value = me.totalCount(data.revenue)
-                                break
-                            case 'net':
-                                base_value = me.totalCount(data.net_revenue)
-                                break
-                            case 'discount':
-                                base_value = me.totalCount(data.discount)
-                                break
-                        }
-                        result = me.totalCount(base_value * parseInt(me.scheduled_date.schedule.class_credits))
-                    } else {
-                        result = 0
-                    }
-                } else {
-                    result = 0
-                }
-
-                return result
-            },
-            getInstructorsInSchedule (data, export_status = null) {
-                const me = this
-                let result = ''
-                if (data != '') {
-                    let ins_ctr = 0, instructor = [], subInstructor = [], targetInstructor = []
-                    data.schedule.instructor_schedules.forEach((ins, index) => {
-                        if (ins.substitute == 0) {
-                            ins_ctr += 1
-                            subInstructor = ins
-                        }
-                        if (ins.primary == 1) {
-                            instructor = ins
-                        }
-                    })
-
-                    targetInstructor = (instructor != []) ? instructor : subInstructor
-
-                    if (ins_ctr == 2) {
-                        if (export_status != null) {
-                            result = `${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
-                        } else {
-                            result = `<b>${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        }
-                    } else {
-                        if (export_status != null) {
-                            result = `${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}`
-                        } else {
-                            result = `<b>${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        }
-                    }
-                }
-
-                return result
-            },
-            getClasses () {
-                const me = this
-
-                let current_month = me.form.month.split(' '),
-                    current_date = `${current_month[0]} ${current_month[1]}`,
-                    formData = new FormData(),
-                    startDate = me.$moment(current_date, 'MMMM YYYY').format('YYYY-MM-01'),
-                    endDate = me.$moment(current_date, 'MMMM YYYY').format('YYYY-MM-') + me.$moment(current_date, 'MMMM YYYY').daysInMonth()
-
-                formData.append('studio_id', me.form.studio_id)
-                formData.append('class_type_id', me.form.class_type_id)
-                formData.append('instructor_id', me.form.instructor_id)
-                formData.append('start_date', startDate)
-                formData.append('end_date', endDate)
-
-                me.values = []
-                me.loader(true)
-                me.$axios.post(`api/exports/class-report/attendance-by-month`, formData).then(res => {
-                    if (res.data) {
-
-                        me.values = res.data.export_data
-                    }
-                }).catch((err) => {
-
-                }).then(() => {
-                    me.loader(false)
-                    document.querySelector('.me').click()
-                })
-            },
             computeAvg () {
                 const me = this
                 let hasSchedules = false

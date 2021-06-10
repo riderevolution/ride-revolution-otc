@@ -187,7 +187,7 @@
                 formData.append('no_show', (me.form.booking_status) ? 1 : 0)
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/attendance-with-revenue?for_export=1`, formData).then(res => {
+                me.$axios.post(`api/exports/class-report/attendance-by-timeslot`, formData).then(res => {
                     if (res.data) {
                         me.values = res.data.export_data
                     }
@@ -246,27 +246,30 @@
                 const me = this
                 let result = ''
                 if (data != '') {
-                    let ins_ctr = 0, instructor = []
+                    let ins_ctr = 0, instructor = [], subInstructor = [], targetInstructor = []
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.substitute == 0) {
                             ins_ctr += 1
+                            subInstructor = ins
                         }
                         if (ins.primary == 1) {
                             instructor = ins
                         }
                     })
 
+                    targetInstructor = (instructor != []) ? instructor : subInstructor
+
                     if (ins_ctr == 2) {
                         if (export_status != null) {
-                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                            result = `${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
                         } else {
-                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                            result = `<b>${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         }
                     } else {
                         if (export_status != null) {
-                            result = `${instructor.user.fullname}`
+                            result = `${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}`
                         } else {
-                            result = `${instructor.user.fullname}`
+                            result = `<b>${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         }
                     }
                 }
