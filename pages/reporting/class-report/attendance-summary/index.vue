@@ -222,29 +222,29 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Transaction Date': me.$moment(value.booking.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
-                        'Reference Number': me.getPaymentCode(value.booking.user_package_count),
-                        'Promo Code': (value.booking.user_package_count.payment.promo_code_used != null) ? value.booking.user_package_count.payment.promo_code_used : 'N/A',
-                        'Payment Method': value.booking.user_package_count.payment_item.payment_method.method,
+                        'Transaction Date': me.$moment(value.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
-                        'Package Used': (value.booking.user_package_count) ? value.booking.user_package_count.class_package.name : 'N/A',
-                        'Booking Status': value.booking.status,
-                        'Reservation Timestamp': me.$moment(value.booking.created_at).format('MMM DD, YYYY hh:mm A'),
-                        'Status Timestamp': me.$moment(value.booking.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Booking Status': value.status,
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
                         'Schedule Name': (value.scheduled_date.schedule.custom_name != null) ? value.scheduled_date.schedule.custom_name : value.scheduled_date.schedule.class_type.name,
-                        'Schedule Date': me.$moment(value.booking.scheduled_date.date).format('MMMM DD, YYYY'),
+                        'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
                         'Start Time': value.scheduled_date.schedule.start_time,
                         'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
-                        'Full Name': `${value.booking.user.first_name} ${value.booking.user.last_name}`,
-                        'Customer Type': value.booking.customer_type,
-                        'Email Address': value.booking.user.email,
+                        'Full Name': `${value.user.first_name} ${value.user.last_name}`,
+                        'Customer Type': value.customer_type,
+                        'Email Address': value.user.email,
                         'Gross Revenue': me.computeRevenue(value, 'gross'),
                         'Discount': me.computeRevenue(value, 'discount'),
                         'Net Revenue': me.computeRevenue(value, 'net'),
-                        'Comp Reason': (value.booking.user_package_count.payment_item.payment_method.comp_reason) ? value.booking.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
-                        'Note': (value.booking.user_package_count.payment_item.payment_method.note) ? value.booking.user_package_count.payment_item.payment_method.note : 'N/A',
-                        'Remarks': (value.booking.user_package_count.payment_item.payment_method.remarks) ? value.booking.user_package_count.payment_item.payment_method.remarks : 'N/A',
-                        'Last Action Taken By': (value.booking.employee) ? value.booking.employee.fullname : 'Customer'
+                        'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
+                        'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
+                        'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
+                        'Last Action Taken By': (value.employee) ? value.employee.fullname : 'Customer'
                     }))
                 ]
             }
