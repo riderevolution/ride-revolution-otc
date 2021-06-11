@@ -162,7 +162,7 @@
                         'Type': me.tabStatus,
                         'Start Time': value.scheduled_date.schedule.start_time,
                         'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
-                        'Full Name': `${value.user.first_name} ${value.user.last_name}`,
+                        'Full Name': value.user.fullname,
                         'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
                         'Gross Revenue': me.computeRevenue(value, 'gross'),
