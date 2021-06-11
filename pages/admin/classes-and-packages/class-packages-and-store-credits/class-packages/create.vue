@@ -123,7 +123,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form_wrapper">
+                        <!-- <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Subscription</h2>
                                 <div class="form_check toggler" @click="isRecurring ^= true">
@@ -138,7 +138,7 @@
                                     <input type="text" name="plan_code" autocomplete="off" readonly placeholder="This field will be automatically generated" class="disabled default_text">
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form_wrapper">
                             <div class="form_header_wrapper">
                                 <h2 class="form_title">Class Package Configuration</h2>
