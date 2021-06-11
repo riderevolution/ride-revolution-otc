@@ -284,7 +284,7 @@
                                 base_value = me.totalCount(data.discount)
                                 break
                         }
-                        result = me.totalCount(base_value * parseInt(data.schedule_date.schedule.class_credits))
+                        result = me.totalCount(base_value * parseInt(data.scheduled_date.schedule.class_credits))
                     } else {
                         result = 0
                     }
