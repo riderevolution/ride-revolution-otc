@@ -151,7 +151,7 @@
                         'Substitute Instructor': (value.substitute) ? `${value.substitute.user.first_name } ${ value.substitute.user.last_name}` : 'No Substitute',
                         'Total Bookings': value.bookings.length,
                         'Total Cancelled': value.cancelled,
-                        'Remarks': (value.substitutev) ? value.substitute.remarks : 'No Remarks'
+                        'Remarks': (value.substitute) ? value.substitute.remarks : 'No Remarks'
                     }))
                 ]
             }
@@ -162,11 +162,9 @@
                 me.values = []
                 let formData = new FormData(document.getElementById('filter'))
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/summary-of-instructor-subbing-per-period?all=1`, formData).then(res => {
+                me.$axios.post(`api/exports/class-report/summary-of-instructor-subbing-per-period`, formData).then(res => {
                     if (res.data) {
-                        res.data.scheduledDates.forEach((item, index) => {
-                            me.values.push(item)
-                        })
+                        me.values = res.data.scheduledDates
                     }
                 }).catch((err) => {
 
