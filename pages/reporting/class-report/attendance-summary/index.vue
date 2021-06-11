@@ -368,7 +368,7 @@
                 let formData = new FormData(document.getElementById('filter'))
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/attendance-summary-export`, formData).then(res => {
+                me.$axios.post(`api/exports/class-report/attendance-summary`, formData).then(res => {
                     if (res.data) {
                         me.values = res.data.bookings
                     }

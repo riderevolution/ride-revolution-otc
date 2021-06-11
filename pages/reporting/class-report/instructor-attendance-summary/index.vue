@@ -293,27 +293,30 @@
                 const me = this
                 let result = ''
                 if (data != '') {
-                    let ins_ctr = 0, instructor = []
+                    let ins_ctr = 0, instructor = [], subInstructor = [], targetInstructor = []
                     data.schedule.instructor_schedules.forEach((ins, index) => {
                         if (ins.substitute == 0) {
                             ins_ctr += 1
+                            subInstructor = ins
                         }
                         if (ins.primary == 1) {
                             instructor = ins
                         }
                     })
 
+                    targetInstructor = (instructor != []) ? instructor : subInstructor
+
                     if (ins_ctr == 2) {
                         if (export_status != null) {
-                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                            result = `${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
                         } else {
-                            result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                            result = `<b>${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         }
                     } else {
                         if (export_status != null) {
-                            result = `${instructor.user.fullname}`
+                            result = `${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}`
                         } else {
-                            result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                            result = `<b>${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         }
                     }
                 }
