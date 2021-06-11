@@ -203,7 +203,7 @@
 
                 me.values = []
 
-                me.$axios.post('api/reporting/classes/attendance-export', formData).then(res => {
+                me.$axios.post('api/exports/class-report/attendance-export', formData).then(res => {
                     setTimeout( () => {
                         me.values = res.data.bookings
                     }, 500)
