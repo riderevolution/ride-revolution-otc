@@ -201,29 +201,29 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Transaction Date': me.$moment(value.booking.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
-                        'Reference Number': me.getPaymentCode(value.booking.user_package_count),
-                        'Promo Code': (value.booking.user_package_count.payment.promo_code_used != null) ? value.booking.user_package_count.payment.promo_code_used : 'N/A',
-                        'Payment Method': value.booking.user_package_count.payment_item.payment_method.method,
+                        'Transaction Date': me.$moment(value.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Promo Code': (value.user_package_count.payment.promo_code_used != null) ? value.user_package_count.payment.promo_code_used : 'N/A',
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
-                        'Package Used': (value.booking.user_package_count) ? value.booking.user_package_count.class_package.name : 'N/A',
-                        'Booking Status': value.booking.status,
-                        'Reservation Timestamp': me.$moment(value.booking.created_at).format('MMM DD, YYYY hh:mm A'),
-                        'Status Timestamp': me.$moment(value.booking.updated_at).format('MMM DD, YYYY hh:mm A'),
-                        'Schedule Name': (value.schedule_date.schedule.custom_name != null) ? value.schedule_date.schedule.custom_name : value.schedule_date.schedule.class_type.name,
-                        'Schedule Date': me.$moment(value.booking.scheduled_date.date).format('MMMM DD, YYYY'),
-                        'Start Time': value.schedule_date.schedule.start_time,
-                        'Instructor': me.getInstructorsInSchedule(value.schedule_date, 1),
-                        'Full Name': `${value.booking.user.first_name} ${value.booking.user.last_name}`,
-                        'Customer Type': value.booking.customer_type,
-                        'Email Address': value.booking.user.email,
+                        'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Booking Status': value.status,
+                        'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
+                        'Schedule Name': (value.scheduled_date.schedule.custom_name != null) ? value.scheduled_date.schedule.custom_name : value.scheduled_date.schedule.class_type.name,
+                        'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
+                        'Start Time': value.scheduled_date.schedule.start_time,
+                        'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
+                        'Full Name': value.user.fullname,
+                        'Customer Type': value.customer_type,
+                        'Email Address': value.user.email,
                         'Gross Revenue': me.computeRevenue(value, 'gross'),
                         'Discount': me.computeRevenue(value, 'discount'),
                         'Net Revenue': me.computeRevenue(value, 'net'),
-                        'Comp Reason': (value.booking.user_package_count.payment_item.payment_method.comp_reason) ? value.booking.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
-                        'Note': (value.booking.user_package_count.payment_item.payment_method.note) ? value.booking.user_package_count.payment_item.payment_method.note : 'N/A',
-                        'Remarks': (value.booking.user_package_count.payment_item.payment_method.remarks) ? value.booking.user_package_count.payment_item.payment_method.remarks : 'N/A',
-                        'Last Action Taken By': (value.booking.employee) ? value.booking.employee.fullname : 'Customer'
+                        'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
+                        'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
+                        'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
+                        'Last Action Taken By': (value.employee) ? value.employee.fullname : 'Customer'
                     }))
                 ]
             },
@@ -266,20 +266,20 @@
                 const me = this
                 let result = ''
                 let base_value = 0
-                if (data.booking.status != 'cancelled') {
-                    if (data.booking.user_package_count.payment_item.payment_method.method != 'comp') {
+                if (data.status != 'cancelled') {
+                    if (data.user_package_count.payment_item.payment_method.method != 'comp') {
                         switch (type) {
                             case 'gross':
-                                base_value = me.totalCount(data.booking.gross_revenue)
+                                base_value = me.totalCount(data.gross_revenue)
                                 break
                             case 'net':
-                                base_value = me.totalCount(data.booking.net_revenue)
+                                base_value = me.totalCount(data.net_revenue)
                                 break
                             case 'discount':
-                                base_value = me.totalCount(data.booking.discount)
+                                base_value = me.totalCount(data.discount)
                                 break
                         }
-                        result = me.totalCount(base_value * parseInt(data.schedule_date.schedule.class_credits))
+                        result = me.totalCount(base_value * parseInt(data.scheduled_date.schedule.class_credits))
                     } else {
                         result = 0
                     }
@@ -386,7 +386,7 @@
 
                 me.values = []
                 me.loader(true)
-                me.$axios.post(`api/reporting/classes/attendance-summary-export`, formData).then(res => {
+                me.$axios.post(`api/exports/class-report/instructor-attendance-summary`, formData).then(res => {
                     if (res.data) {
                         me.values = res.data.bookings
                     }
