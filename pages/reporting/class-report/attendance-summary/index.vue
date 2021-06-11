@@ -271,17 +271,17 @@
                 const me = this
                 let result = ''
                 let base_value = 0
-                if (data.booking.status != 'cancelled') {
-                    if (data.booking.user_package_count.payment_item.payment_method.method != 'comp') {
+                if (data.status != 'cancelled') {
+                    if (data.user_package_count.payment_item.payment_method.method != 'comp') {
                         switch (type) {
                             case 'gross':
-                                base_value = me.totalCount(data.booking.gross_revenue)
+                                base_value = me.totalCount(data.gross_revenue)
                                 break
                             case 'net':
-                                base_value = me.totalCount(data.booking.net_revenue)
+                                base_value = me.totalCount(data.net_revenue)
                                 break
                             case 'discount':
-                                base_value = me.totalCount(data.booking.discount)
+                                base_value = me.totalCount(data.discount)
                                 break
                         }
                         result = me.totalCount(base_value * parseInt(data.schedule_date.schedule.class_credits))
