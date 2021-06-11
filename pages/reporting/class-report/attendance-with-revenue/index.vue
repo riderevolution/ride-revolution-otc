@@ -96,7 +96,7 @@
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ $moment(data.date).format('MMMM DD, YYYY') }}</td>
                                 <td>{{ data.schedule.start_time }}</td>
                                 <td>{{ (data.schedule.set_custom_name) ? data.schedule.custom_name : data.schedule.class_type.name }}</td>
-                                <td>{{ getInstructorsInSchedule(data) }}</td>
+                                <td v-html="getInstructorsInSchedule(data)"></td>
                                 <td>{{ data.bookings.length }}</td>
                                 <td>Php {{ totalCount(data.total_revenue) }}</td>
                                 <td>Php {{ totalCount(data.total_discount) }}</td>
