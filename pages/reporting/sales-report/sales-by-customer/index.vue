@@ -219,11 +219,10 @@
             getSales () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('export', 1)
                 me.values = []
 
                 me.loader(true)
-                me.$axios.post('api/reporting/sales/sales-by-customer', formData).then(res => {
+                me.$axios.post('api/exports/sales-report/sales-by-customer', formData).then(res => {
                     if (res.data) {
                         res.data.results.forEach((item, key) => {
                             me.values.push(item)
