@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Income from subscription class package sold.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package?start_date=${form.start_date}&end_date=${form.end_date}&type=${tab}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/subscription?start_date=${form.start_date}&end_date=${form.end_date}&type=${tab}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -117,7 +117,7 @@
         data () {
             const values = []
             return {
-                name: 'Sales by Class Package',
+                name: 'Sales by Subscription',
                 access: true,
                 filter: true,
                 loaded: false,

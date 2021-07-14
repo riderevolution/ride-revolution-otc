@@ -3,7 +3,7 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
-                    <nuxt-link :to="`/reporting/sales-report/sales-by-class-package?start_date=${form.start_date}&end_date=${form.end_date}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Class Package</span></nuxt-link>
+                    <nuxt-link :to="`/reporting/sales-report/sales-by-subscription?start_date=${form.start_date}&end_date=${form.end_date}`" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Sales by Subscription</span></nuxt-link>
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
@@ -13,7 +13,7 @@
                             <h2 class="header_subtitle">Income from {{ package.name }}.</h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/sales/class-package/${$route.params.param}?slug=class-package&id=${$route.query.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <a :href="`/print/reporting/sales/subscription/${$route.params.param}?slug=class-package&id=${$route.query.id}&start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
 
                             <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
                                 Export
@@ -22,7 +22,7 @@
                                 v-if="res.result.data.length > 0"
                                 class="hidden me"
                                 :data="classPackageParamAttributes"
-                                :name="`sales-by-class-package-${$route.params.param}-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
+                                :name="`sales-by-subscription-${$route.params.param}-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                 Export
                             </download-csv>
 
@@ -101,8 +101,8 @@
 </template>
 
 <script>
-    import Foot from '../../../../../components/Foot'
-    import Pagination from '../../../../../components/Pagination'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
     export default {
         components: {
             Foot,
@@ -111,7 +111,7 @@
         data () {
             const values = []
             return {
-                name: 'Sales by Class Package',
+                name: 'Sales by Subscription',
                 access: true,
                 filter: true,
                 loaded: false,
@@ -277,7 +277,7 @@
                 me.values = []
 
                 me.loader(true)
-                me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.param}?all=1`, formData).then(res => {
+                me.$axios.post(`api/reporting/sales/sales-by-subscription/${me.$route.params.param}?all=1`, formData).then(res => {
                     if (res.data) {
                         res.data.result.forEach((item, key) => {
                             me.values.push(item)
@@ -317,7 +317,7 @@
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
 
-                me.$axios.post(`api/reporting/sales/sales-by-class-package/${me.$route.params.param}`, formData).then(res => {
+                me.$axios.post(`api/reporting/sales/sales-by-subscription/${me.$route.params.param}`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
                             me.res = res.data
