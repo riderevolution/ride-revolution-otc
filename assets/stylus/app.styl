@@ -9130,17 +9130,19 @@ input::placeholder
                             margin: 0
             .right
                 flex: 0 0 100%
-                display: flex
-                flex-flow: row wrap
-                align-items: flex-start
-                .parent_column
-                    flex: 0 0 calc(50% - 30px)
+                .two_column
+                    display: flex
+                    flex-flow: row wrap
+                    align-items: flex-start
+                    .parent_column
+                        flex: 0 0 calc(50% - 30px)
+                        background-color: $white
+                        margin-bottom: 30px
+                        &:last-child
+                            flex: 1 0 10%
+                            margin-left: 30px
+                .full
                     background-color: $white
-                    margin-bottom: 30px
-                    &:last-child
-                        flex: 1 0 10%
-                        margin-left: 30px
-                        margin-bottom: 0
 /**
  * Animation */
 .fade-enter-active,
