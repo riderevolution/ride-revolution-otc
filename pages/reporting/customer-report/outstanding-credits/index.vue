@@ -184,7 +184,7 @@
 
                 me.values = []
                 me.loader(true)
-                me.$axios.post('api/reporting/customers/outstanding-store-credits', formData).then(res => {
+                me.$axios.post('api/exports/customer-report/outstanding-store-credits', formData).then(res => {
                     if (res.data) {
                         res.data.results.forEach((item, key) => {
                             me.values.push(item)

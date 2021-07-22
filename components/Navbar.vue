@@ -238,6 +238,10 @@
                                         link: '/reporting/sales-report/sales-by-class-package'
                                     },
                                     {
+                                        title: 'Sales by Subscription',
+                                        link: '/reporting/sales-report/sales-by-subscription'
+                                    },
+                                    {
                                         title: 'Sales by Products',
                                         link: '/reporting/sales-report/sales-by-products'
                                     },

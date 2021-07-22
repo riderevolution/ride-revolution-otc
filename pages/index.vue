@@ -240,44 +240,68 @@
                         </div>
                     </div>
                     <div class="right">
-                        <div class="parent_column">
-                            <div class="stats_header">
-                                <h2>Top Riders</h2>
-                                <form id="filter" class="date_form" @submit.prevent="getTopRiders()">
-                                    <div class="flex_date">
-                                        <div class="form_group">
-                                            <label for="start_date">Start Date <span>*</span></label>
-                                            <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'"></v-ctk>
+                        <div class="two_column">
+                            <div class="parent_column">
+                                <div class="stats_header">
+                                    <h2>Top Riders</h2>
+                                    <form id="filter" class="date_form" @submit.prevent="getTopRiders()">
+                                        <div class="flex_date">
+                                            <div class="form_group">
+                                                <label for="start_date">Start Date <span>*</span></label>
+                                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'"></v-ctk>
+                                            </div>
+                                            <div class="form_group margin">
+                                                <label for="end_date">End Date <span>*</span></label>
+                                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'"></v-ctk>
+                                            </div>
                                         </div>
-                                        <div class="form_group margin">
-                                            <label for="end_date">End Date <span>*</span></label>
-                                            <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'"></v-ctk>
+                                        <div class="button">
+                                            <button type="submit" name="button" class="action_btn alternate margin">Apply</button>
                                         </div>
-                                    </div>
-                                    <div class="button">
-                                        <button type="submit" name="button" class="action_btn alternate margin">Apply</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="stats_content alt" v-if="topRiders.length > 0">
-                                <div class="wrapper" v-for="(data, key) in topRiders" :key="key">
-                                    <div class="count">{{ key + 1 }}</div>
-                                    <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
-                                    <div class="image" v-else>
-                                        <div class="overlay">
-                                            {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                    </form>
+                                </div>
+                                <div class="stats_content alt" v-if="topRiders.length > 0">
+                                    <div class="wrapper" v-for="(data, key) in topRiders" :key="key">
+                                        <div class="count">{{ key + 1 }}</div>
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="image" v-else>
+                                            <div class="overlay">
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="info">
-                                        <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
+                                        <div class="info">
+                                            <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="no_results" v-else>
+                                    No top riders as of now
+                                </div>
                             </div>
-                            <div class="no_results" v-else>
-                                No top riders as of now
+                            <div class="parent_column">
+                                <div class="stats_header">
+                                    <h2>Birthdays</h2>
+                                </div>
+                                <div class="stats_content alt" v-if="birthdays.length > 0">
+                                    <div class="wrapper" v-for="(data, key) in birthdays" :key="key">
+                                        <div class="count">{{ key + 1 }}</div>
+                                        <img :src="data.customer_details.images[0].path" v-if="data.customer_details.images[0].path != null" />
+                                        <div class="image" v-else>
+                                            <div class="overlay">
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        <div class="info">
+                                            <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="no_results" v-else>
+                                    No birthdays as of now
+                                </div>
                             </div>
                         </div>
-                        <div class="parent_column">
+                        <div class="full parent_column">
                             <div class="stats_header">
                                 <h2>Riders with Pending Payments</h2>
                                 <div class="button">
@@ -345,6 +369,7 @@
                 studio: [],
                 topRiders: [],
                 pendingPayments: [],
+                birthdays: [],
                 alerts: {
                     vips: [],
                     milestones: [],
@@ -825,6 +850,7 @@
                         })
 
                         me.pendingPayments = res.data.usersWithPendingPayments
+                        me.birthdays = res.data.birthdays
                     }
                 }).catch(err => {
                     me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })

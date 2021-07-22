@@ -233,7 +233,7 @@
                 formData.append('all', 1)
                 me.values = []
                 me.loader(true)
-                me.$axios.post('api/reporting/customers/non-returning-customers', formData).then(res => {
+                me.$axios.post('api/exports/customer-report/non-returning-customers', formData).then(res => {
                     if (res.data) {
                         res.data.customers.forEach((item, key) => {
                             me.values.push(item)

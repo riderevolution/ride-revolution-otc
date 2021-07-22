@@ -251,7 +251,8 @@
                                         <textarea name="notepad" rows="10" v-model="notePad" @focusout="updateNotes($event)"></textarea>
                                     </div>
                                 </div>
-                                <div :class="`booker_waitlist ${(studio.online_class) ? 'nope' : '' }`">
+                                <!-- <div :class="`booker_waitlist ${(studio.online_class) ? 'nope' : '' }`"> -->
+                                <div class="booker_waitlist">
                                     <div class="footer_header">
                                         <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
                                         <div :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</div>
@@ -268,9 +269,11 @@
                                             <tr v-for="(waitlist, key) in waitlists" :key="key">
                                                 <td>{{ waitlist.user.last_name }}</td>
                                                 <td>{{ waitlist.user.first_name }}</td>
-                                                <td class="action">
-                                                    <div @click="prioritizeWaitlist(waitlist)" :class="`link ${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</div>
-                                                    <div :class="`link margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</div>
+                                                <td>
+                                                    <div class="action">
+                                                        <div @click="prioritizeWaitlist(waitlist)" :class="`link ${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</div>
+                                                        <div :class="`link margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </tbody>
