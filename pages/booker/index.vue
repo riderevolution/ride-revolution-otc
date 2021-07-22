@@ -251,8 +251,7 @@
                                         <textarea name="notepad" rows="10" v-model="notePad" @focusout="updateNotes($event)"></textarea>
                                     </div>
                                 </div>
-                                <!-- <div :class="`booker_waitlist ${(studio.online_class) ? 'nope' : '' }`"> -->
-                                <div class="booker_waitlist">
+                                <div :class="`booker_waitlist ${(studio.online_class) ? 'nope' : '' }`">
                                     <div class="footer_header">
                                         <h2 class="footer_title">Waitlist ({{ waitlistCount }})</h2>
                                         <div :class="`action_success_btn ${(inWaitlist || $store.state.customerID == 0 || $store.state.scheduleID == 0 || (waitlists.length > 0 && waitlists[0].past == 1)) ? 'disabled' : ''}`" @click="addToWaitlist()">Add to Waitlist</div>
