@@ -185,6 +185,12 @@
                             </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType != 3">
+                            <template v-if="form.paymentType == 9999">
+                                <div class="form_group">
+                                    <label>Remaining Store Credits</label>
+                                    <input type="text" readonly disabled class="default_text disabled" key="store" v-model="(customer.store_credits) ? totalItems(customer.store_credits.amount) : 0">
+                                </div>
+                            </template>
                             <div class="form_group">
                                 <label for="remarks">Remarks</label>
                                 <textarea name="remarks" rows="8" id="remarks" class="default_text" placeholder="Enter remarks"></textarea>
@@ -288,6 +294,7 @@
         },
         data () {
             return {
+                customer: null,
                 user: [],
                 nextStep: 1,
                 status: 0,
@@ -788,6 +795,10 @@
                     me.user = res.data.user
                     me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}`).then(res => {
                         if (res.data) {
+
+                            me.$axios.get(`api/customers/${me.$store.state.customerID}`).then(res => {
+                                me.customer = res.data.user
+                            })
 
                             res.data.classPackages.forEach((classPackage, index) => {
                                 classPackage.isChecked = false
