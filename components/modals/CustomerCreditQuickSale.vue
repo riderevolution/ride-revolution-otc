@@ -188,7 +188,7 @@
                             <template v-if="form.paymentType == 9999">
                                 <div class="form_group">
                                     <label>Remaining Store Credits</label>
-                                    <input type="text" readonly disabled class="default_text disabled" key="store" v-model="(customer.store_credits) ? totalItems(customer.store_credits.amount) : 0">
+                                    <input type="text" readonly disabled class="default_text disabled" key="store" :value="(customer.store_credits) ? totalItems(customer.store_credits.amount) : 0">
                                 </div>
                             </template>
                             <div class="form_group">
