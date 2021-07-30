@@ -796,9 +796,9 @@
                     me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}`).then(res => {
                         if (res.data) {
 
-                            me.$axios.get(`api/customers/${me.$store.state.customerID}`).then(res => {
-                                me.customer = res.data.user
-                            })
+                            // me.$axios.get(`api/customers/${me.$store.state.customerID}`).then(res => {
+                            //     me.customer = res.data.user
+                            // })
 
                             res.data.classPackages.forEach((classPackage, index) => {
                                 classPackage.isChecked = false
