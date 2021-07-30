@@ -796,38 +796,38 @@
                     me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}`).then(res => {
                         if (res.data) {
 
-                            // me.$axios.get(`api/customers/${me.$store.state.customerID}`).then(res => {
-                            //     me.customer = res.data.user
-                            // })
+                            me.$axios.get(`api/customers/${me.$store.state.customerID}`).then(res => {
+                                me.customer = res.data.user
 
-                            res.data.classPackages.forEach((classPackage, index) => {
-                                classPackage.isChecked = false
-                                classPackage.isClassPackageShow = false
-                                me.products.push(classPackage)
-                            })
-
-                            me.$axios.get(`api/packages/package-types?enabled=1&no_paginate=1`).then(res => {
-                                res.data.packageTypes.forEach((packageType, index) => {
-                                    me.menus.unshift(
-                                        {
-                                            id: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].id,
-                                            name: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].name,
-                                            type: 'class-package'
-                                        }
-                                    )
+                                res.data.classPackages.forEach((classPackage, index) => {
+                                    classPackage.isChecked = false
+                                    classPackage.isClassPackageShow = false
+                                    me.products.push(classPackage)
                                 })
-                                me.toCompare.package = me.menus[0].id
-                                // me.toggleStatus(0, 'class-package', me.menus[0].id)
-                                me.countTotalItems('class-package')
-                            })
 
-                            me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}&is_promo=1`).then(res => {
-                                if (res.data) {
-                                    res.data.classPackages.forEach((promoPackage, index) => {
-                                        promoPackage.isChecked = false
-                                        me.products.push(promoPackage)
+                                me.$axios.get(`api/packages/package-types?enabled=1&no_paginate=1`).then(res => {
+                                    res.data.packageTypes.forEach((packageType, index) => {
+                                        me.menus.unshift(
+                                            {
+                                                id: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].id,
+                                                name: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].name,
+                                                type: 'class-package'
+                                            }
+                                        )
                                     })
-                                }
+                                    me.toCompare.package = me.menus[0].id
+                                    // me.toggleStatus(0, 'class-package', me.menus[0].id)
+                                    me.countTotalItems('class-package')
+                                })
+
+                                me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}&is_promo=1`).then(res => {
+                                    if (res.data) {
+                                        res.data.classPackages.forEach((promoPackage, index) => {
+                                            promoPackage.isChecked = false
+                                            me.products.push(promoPackage)
+                                        })
+                                    }
+                                })
                             })
                         }
                     }).catch(err => {
