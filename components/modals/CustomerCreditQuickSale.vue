@@ -185,12 +185,6 @@
                             </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType != 3">
-                            <template v-if="form.paymentType == 9999">
-                                <div class="form_group">
-                                    <label>Remaining Store Credits</label>
-                                    <input type="text" readonly disabled class="default_text disabled" key="store" v-model="(customer.store_credits) ? totalItems(customer.store_credits.amount) : 0">
-                                </div>
-                            </template>
                             <div class="form_group">
                                 <label for="remarks">Remarks</label>
                                 <textarea name="remarks" rows="8" id="remarks" class="default_text" placeholder="Enter remarks"></textarea>
@@ -294,7 +288,6 @@
         },
         data () {
             return {
-                customer: null,
                 user: [],
                 nextStep: 1,
                 status: 0,
@@ -796,38 +789,34 @@
                     me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}`).then(res => {
                         if (res.data) {
 
-                            me.$axios.get(`api/customers/${me.$store.state.customerID}`).then(res => {
-                                me.customer = res.data.user
+                            res.data.classPackages.forEach((classPackage, index) => {
+                                classPackage.isChecked = false
+                                classPackage.isClassPackageShow = false
+                                me.products.push(classPackage)
+                            })
 
-                                res.data.classPackages.forEach((classPackage, index) => {
-                                    classPackage.isChecked = false
-                                    classPackage.isClassPackageShow = false
-                                    me.products.push(classPackage)
+                            me.$axios.get(`api/packages/package-types?enabled=1&no_paginate=1`).then(res => {
+                                res.data.packageTypes.forEach((packageType, index) => {
+                                    me.menus.unshift(
+                                        {
+                                            id: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].id,
+                                            name: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].name,
+                                            type: 'class-package'
+                                        }
+                                    )
                                 })
+                                me.toCompare.package = me.menus[0].id
+                                // me.toggleStatus(0, 'class-package', me.menus[0].id)
+                                me.countTotalItems('class-package')
+                            })
 
-                                me.$axios.get(`api/packages/package-types?enabled=1&no_paginate=1`).then(res => {
-                                    res.data.packageTypes.forEach((packageType, index) => {
-                                        me.menus.unshift(
-                                            {
-                                                id: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].id,
-                                                name: res.data.packageTypes[res.data.packageTypes.length - (index + 1)].name,
-                                                type: 'class-package'
-                                            }
-                                        )
+                            me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}&is_promo=1`).then(res => {
+                                if (res.data) {
+                                    res.data.classPackages.forEach((promoPackage, index) => {
+                                        promoPackage.isChecked = false
+                                        me.products.push(promoPackage)
                                     })
-                                    me.toCompare.package = me.menus[0].id
-                                    // me.toggleStatus(0, 'class-package', me.menus[0].id)
-                                    me.countTotalItems('class-package')
-                                })
-
-                                me.$axios.get(`api/packages/class-packages/for-buy-credits?studio_id=${me.$store.state.user.current_studio_id}&user_id=${(me.$route.params.param) ? me.$route.params.param : me.$store.state.customerID}&is_promo=1`).then(res => {
-                                    if (res.data) {
-                                        res.data.classPackages.forEach((promoPackage, index) => {
-                                            promoPackage.isChecked = false
-                                            me.products.push(promoPackage)
-                                        })
-                                    }
-                                })
+                                }
                             })
                         }
                     }).catch(err => {
