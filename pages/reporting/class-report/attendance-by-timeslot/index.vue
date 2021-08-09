@@ -237,7 +237,7 @@
                         result = data.payment_item.payment_method.paymaya_transaction_id
                         break
                     case 'paymongo':
-                        result = data.payment_item.payment_method.paymongo_transaction_id
+                        result = data.payment_item.payment_method.paymongo_source_id
                         break
                     default:
                         result = data.payment.payment_code

@@ -52,50 +52,55 @@
                     <table class="cms_table alt">
                         <thead>
                             <tr>
-                                <th class="sticky">Package</th>
-                                <th class="sticky">Sold</th>
-                                <th class="sticky">Returned</th>
-                                <th class="sticky">Comp</th>
-                                <th class="sticky">Gross</th>
+                                <th class="sticky">Date of Purchase</th>
+                                <th class="sticky">Reference No.</th>
+                                <th class="sticky">Customer</th>
+                                <th class="sticky">Class Package</th>
+                                <th class="sticky">Expiration Date</th>
+                                <th class="sticky">Method</th>
+                                <th class="sticky">Comp Reason</th>
                                 <th class="sticky">Comp Value</th>
                                 <th class="sticky">Discount</th>
-                                <th class="sticky">Taxes</th>
                                 <th class="sticky">Total Income</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.result.data.length > 0">
-                            <tr class="parent bb">
-                                <td><b>{{ total.name }}</b></td>
-                                <td><b>{{ total.sold }}</b></td>
-                                <td><b>{{ total.returned }}</b></td>
-                                <td><b>{{ total.comp }}</b></td>
-                                <td><b>Php {{ totalCount(total.gross) }}</b></td>
+                            <tr>
+                                <td colspan="7"><b>{{ total.name }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_comp) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_discount) }}</b></td>
-                                <td><b>Php {{ totalCount(total.total_tax) }}</b></td>
                                 <td><b>Php {{ totalCount(total.total_income) }}</b></td>
                             </tr>
-                            <tr v-for="(data, key) in res.result.data" :key="key">
+                            <tr v-for="(data, key) in res.result.data" :key="key" v-if="res.result.data.length > 0">
+                                <td>{{ $moment(data.payment.created_at).format('MMM DD, YYYY hh:mm A') }}</td>
+                                <td>{{ getPaymentCode(data.payment) }}</td>
                                 <td>
-                                    <div class="table_data_link" @click="openWindowInside(data)">{{ data.name }}</div>
+                                    <div class="thumb">
+                                        <img :src="data.payment.user.customer_details.images[0].path_resized" v-if="data.payment.user.customer_details.images[0].path != null" />
+                                        <div class="table_image_default" v-else>
+                                            <div class="overlay">
+                                                {{ data.payment.user.first_name.charAt(0) }}{{ data.payment.user.last_name.charAt(0) }}
+                                            </div>
+                                        </div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.payment.user.id}/packages`)" v-if="data.payment.user != null">{{ data.payment.user.fullname }}</div>
+                                        <div v-else>N/A</div>
+                                    </div>
                                 </td>
-                                <td>{{ (data.sold) ? data.sold : 0 }}</td>
-                                <td>{{ (data.returned) ? data.returned : 0 }}</td>
-                                <td>{{ (data.comp) ? data.comp : 0 }}</td>
-                                <td>Php {{ (data.gross) ? totalCount(data.gross) : 0 }}</td>
+                                <td>{{ data.class_package.name }}</td>
+                                <td>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, true) : formatDate(data.user_package_count.expiry_date_if_not_activated, true) }}</td>
+                                <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
+                                <td>{{ (data.payment.payment_method.method == 'comp') ? data.payment.payment_method.comp_reason : 'N/A' }}</td>
                                 <td>Php {{ (data.total_comp) ? totalCount(data.total_comp) : 0 }}</td>
                                 <td>Php {{ (data.total_discount) ? totalCount(data.total_discount) : 0 }}</td>
-                                <td>Php {{ (data.total_tax) ? totalCount(data.total_tax) : 0 }}</td>
                                 <td>Php {{ (data.total_income) ? totalCount(data.total_income) : 0 }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
                             <tr>
-                                <td colspan="9">No Result(s) Found.</td>
+                                <td :colspan="rowCount">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
-
                     <pagination :apiRoute="res.result.path" :current="res.result.current_page" :last="res.result.last_page" />
                 </section>
             </div>
@@ -124,7 +129,7 @@
                 res: [],
                 values: [],
                 total: [],
-                tab: 'studio',
+                tab: 'online',
                 form: {
                     start_date: this.$moment().subtract(1, 'day').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD')
@@ -162,9 +167,18 @@
             }
         },
         methods: {
-            openWindowInside (data) {
+            formatDate (value, withTime) {
+                if (value) {
+                    if (withTime) {
+                        return this.$moment(value).format('MMM DD, YYYY hh:mm A')
+                    } else {
+                        return this.$moment(value).format('MMM DD, YYYY')
+                    }
+                }
+            },
+            openWindow (slug) {
                 const me = this
-                window.open(`${me.$route.path}/${data.slug}?slug=class-package&id=${data.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
             },
             getSales () {
                 const me = this
@@ -173,9 +187,9 @@
                     let formData = new FormData(document.getElementById('filter'))
 
                     me.loader(true)
-                    me.$axios.post(`api/reporting/sales/sales-by-subscription?all=1&export=1`, formData).then(res => {
+                    me.$axios.post(`api/reporting/sales/sales-by-subscription?export=1`, formData).then(res => {
                         if (res.data) {
-                            res.data.payment_items.forEach((data, key) => {
+                            res.data.result.forEach((data, key) => {
                                 me.values.push(data)
                             })
                         }
@@ -287,13 +301,17 @@
 
                 switch (payment.payment_method.method) {
                     case 'paypal':
-                        result = payment.payment_method.paypal_transaction_id
+                        if (payment.payment_method.paypal_transaction_id) {
+                            result = payment.payment_method.paypal_transaction_id
+                        } else {
+                            result = payment.payment_code
+                        }
                         break
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
                         break
                     case 'paymongo':
-                        result = payment.payment_method.paymongo_transaction_id
+                        result = payment.payment_method.paymongo_source_id
                         break
                     default:
                         result = payment.payment_code
@@ -377,6 +395,7 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
+                        me.rowCount = document.getElementsByTagName('th').length
                     }, 500)
                 })
             }
