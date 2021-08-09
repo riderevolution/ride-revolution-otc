@@ -11,23 +11,20 @@
                             </div>
                             <h2 class="header_subtitle">List of store credits per customers</h2>
                         </div>
-                        <!-- <div class="actions">
+                        <div class="actions">
                             <div class="action_buttons">
-                                <a :href="`/print/reporting/sales/gift-card?studio_id=${form.studio_id}&start_date=${form.start_date}&end_date=${form.end_date}&type=${tab_type}`" target="_blank" class="action_btn alternate">Print</a>
-
-                                <div class="action_btn alternate" @click="getSales()" v-if="res.result.data.length > 0">
+                                <div class="action_btn alternate" @click="getSales()" v-if="res.results.data.length > 0">
                                     Export
                                 </div>
                                 <download-csv
-                                    v-if="res.result.data.length > 0"
+                                    v-if="res.results.data.length > 0"
                                     class="hidden me"
-                                    :data="giftCardsAttributes"
-                                    :name="`gift-cards-report-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
+                                    :data="storeCreditsAttributes"
+                                    :name="`store-credits-report-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
                                     Export
                                 </download-csv>
-
                             </div>
-                        </div> -->
+                        </div>
                     </div>
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter" @submit.prevent="submitFilter()">
@@ -139,30 +136,71 @@
             }
         },
         computed: {
-            // giftCardsAttributes () {
-            //     const me = this
-            //     return [
-            //         ...me.values.map(value => ({
-            //             'Card Code': value.card_code,
-            //             'Class Package': value.class_package.name,
-            //             'Price': `Php ${me.totalCount(value.price)}`,
-            //             'Studio': me.getDetails(value, 'studio'),
-            //             'Date Purchased': me.$moment(value.payment_item.payment.created_at).format('MMMM DD, YYYY'),
-            //             'Purchased By': me.getDetails(value, 'sender'),
-            //             'Purchaser Email': me.getDetails(value, 'sender_email'),
-            //             'Purchaser Contact Number': me.getDetails(value, 'sender_contact'),
-            //             'Redemption Date': me.getDetails(value, 'redemption_date'),
-            //             'Redeemed By': me.getDetails(value, 'redeemer'),
-            //             'Redeemer Email': me.getDetails(value, 'redeemer_email'),
-            //             'Redeemer Contact Number': me.getDetails(value, 'redeemer_contact')
-            //         }))
-            //     ]
-            // }
+            storeCreditsAttributes () {
+                const me = this
+                return [
+                    ...me.values.map(value => ({
+                        'Studio': me.getPaymentStudio(value.payment),
+                        'Customer': (value.payment.user) ? value.payment.user.fullname : 'No Customer',
+                        'Email Address': (value.payment.user) ? value.payment.user.email : 'No Customer Email',
+                        'Contact Number': (value.payment.user) ? (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
+                        'Payment ID': value.payment.id,
+                        'Reference Number': me.getPaymentCode(value.payment),
+                        'Transaction Date': me.$moment(value.payment.created_at).format('MMMM DD, YYYY hh:mm A'),
+                        'Promo Code': (value.payment.promo_code_used != null) ? value.payment.promo_code_used : 'No Promo Code Used',
+                        'Payment Status': value.payment.status,
+                        'Payment Method': me.replacer(value.payment.payment_method.method),
+                        'Payment Item Id': value.id,
+                        'SKU ID': me.getPaymentItem(value, 'sku'),
+                        'Item': me.getPaymentItem(value, 'name'),
+                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                        'Quantity': value.quantity,
+                        'Discount': `${(value.payment.promo_code_used != null) ? value.payment.discount.discount : 0}`,
+                        'Price': `${(value.payment.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
+                        'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',
+                        'Remarks': (value.payment.payment_method.remarks) ? value.payment.payment_method.remarks : 'N/A',
+                        'Last Action Taken By': me.getPaymentDetails(value.payment, 'employee')
+                    }))
+                ]
+            }
         },
         methods: {
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
             },
             getPaymentDetails (payment, type) {
                 const me = this
