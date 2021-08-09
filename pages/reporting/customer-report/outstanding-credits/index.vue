@@ -70,7 +70,7 @@
                                 <td>{{ data.customer_details.customer_type.name }}</td>
                                 <td>Php {{ totalCount(data.total_store_credits_bought) }}</td>
                                 <td>Php {{ totalCount(data.store_credits.amount) }}</td>
-                                <td>Php {{ -totalCount(data.store_credits.amount - data.total_store_credits_bought) }}</td>
+                                <td>Php {{ totalCount(-(parseInt(data.store_credits.amount) - parseInt(data.total_store_credits_bought))) }}</td>
                                 <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
                                 <td>{{ data.email }}</td>
                             </tr>
@@ -168,6 +168,9 @@
                         break
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
+                        break
+                    case 'paymongo':
+                        result = payment.payment_method.paymongo_transaction_id
                         break
                     default:
                         result = payment.payment_code

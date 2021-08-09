@@ -188,6 +188,10 @@
             }
         },
         methods: {
+            openWindow (slug) {
+                const me = this
+                window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
+            },
             generateLink () {
                 const me = this
                 let result = `/reporting/sales-report/sales-and-transactions?tab_status=${me.tab_status}&studio_id=${me.form.studio_id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`
@@ -263,7 +267,7 @@
                         if (payment.employee != null) {
                             result = `${payment.employee.first_name} ${payment.employee.last_name}`
                         } else {
-                            result = '-'
+                            result = 'Customer'
                         }
                         break
                 }
@@ -292,6 +296,9 @@
                         break
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
+                        break
+                    case 'paymongo':
+                        result = payment.payment_method.paymongo_transaction_id
                         break
                     default:
                         result = payment.payment_code

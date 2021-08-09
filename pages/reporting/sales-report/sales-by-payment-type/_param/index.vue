@@ -290,7 +290,7 @@
                         if (payment.employee != null) {
                             result = `${payment.employee.first_name} ${payment.employee.last_name}`
                         } else {
-                            result = 'No User'
+                            result = 'Customer'
                         }
                         break
                 }
@@ -323,6 +323,9 @@
                         break
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
+                        break
+                    case 'paymongo':
+                        result = payment.payment_method.paymongo_transaction_id
                         break
                     default:
                         result = payment.payment_code

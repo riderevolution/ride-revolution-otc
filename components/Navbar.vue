@@ -246,6 +246,10 @@
                                         link: '/reporting/sales-report/sales-by-products'
                                     },
                                     {
+                                        title: 'Store Credits Report',
+                                        link: '/reporting/sales-report/store-credits-report'
+                                    },
+                                    {
                                         title: 'Revenue Summary',
                                         link: '/reporting/sales-report/revenue-summary'
                                     },
