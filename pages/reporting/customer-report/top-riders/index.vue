@@ -297,7 +297,7 @@
                 me.values = []
 
                 me.loader(true)
-                me.$axios.post('api/reporting/customers/top-riders', formData).then(res => {
+                me.$axios.post('api/reporting/customers/top-riders?all=1', formData).then(res => {
                     if (res.data) {
                         res.data.topRiders.forEach((item, key) => {
                             me.values.push(item)
