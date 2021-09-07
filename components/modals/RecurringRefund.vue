@@ -46,7 +46,7 @@
                 me.loader(true)
                 let formData = new FormData()
                 formData.append('paypal_subscription_id', me.user_package_count.paypal_subscription_id)
-                formData.append('reason', me.form.reason)
+                formData.append('reason', me.form.reasons)
                 me.$axios.post('api/paypal/cancel-subscription', formData, {
                     headers: {
                         Authorization: `Bearer ${token}`

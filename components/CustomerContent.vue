@@ -42,9 +42,15 @@
                                 <p>{{ formatDate(data.created_at, false) }} / {{ (data.activation_date != 'NA') ? formatDate(data.activation_date, false) : 'N/A' }}</p>
                                 <label>Purchase Date / Activation Date</label>
                             </div>
+                            <template v-if="data.cancelled_subscription_at">
+                                <div class="date margin">
+                                    <p>{{ formatDate(data.cancelled_subscription_at, false) }}</p>
+                                    <label>Cancellation Date</label>
+                                </div>
+                            </template>
                             <div class="date margin">
                                 <p>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, false) : formatDate(data.expiry_date_if_not_activated, false) }}</p>
-                                <label>Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')" v-if="!data.class_package.recurring">Edit</a></label>
+                                <label>Termination/Expiry date <a href="javascript:void(0)" class="expiry_btn" @click="togglePackageAction(data, 'expiry')" v-if="!data.class_package.recurring">Edit</a></label>
                             </div>
                         </div>
                         <div class="package_action" v-if="packageStatus != 'expired'">
