@@ -838,7 +838,11 @@
                         case 'remarks':
                             if (data.payment_item.payment_method.remarks) {
                                 if (data.payment_item.payment.studio == null && data.payment_item.payment_method.method == 'cash') {
-                                    result = 'From Import'
+                                    if (data.payment_item.payment_method.remarks != null) {
+                                        result = data.payment_item.payment_method.remarks
+                                    } else {
+                                        result = 'From Import'
+                                    }
                                 } else {
                                     result = data.payment_item.payment_method.remarks
                                 }
@@ -941,7 +945,11 @@
                         case 'remarks':
                             if (data.payment_method.remarks) {
                                 if (data.studio == null && data.payment_method.method == 'cash') {
-                                    result = 'From Import'
+                                    if (data.payment_method.remarks != null) {
+                                        result = data.payment_method.remarks
+                                    } else {
+                                        result = 'From Import'
+                                    }
                                 } else {
                                     result = data.payment_method.remarks
                                 }
