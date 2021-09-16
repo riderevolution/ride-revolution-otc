@@ -61,7 +61,12 @@
                                         <transition name="slide"><span class="validation_errors" v-if="errors.has(start_time)">{{ properFormat(errors.first(start_time)) }}</span></transition>
                                     </div>
                                 </div>
-                                <div class="form_flex">
+                                <div class="form_check">
+                                    <input type="checkbox" id="no_end_date" name="no_end_date" class="action_check" :checked="(res.no_end_date == 1) ? true : false" v-model="res.no_end_date">
+                                    <label for="no_end_date">No End Date</label>
+                                </div>
+                                <br>
+                                <div :class="{'form_flex': true, 'disabled': res.no_end_date == 1 }" v-if="!res.no_end_date">
                                     <div class="form_group">
                                         <label for="end_date">End Date <span>*</span></label>
                                         <v-ctk v-model="res.end_date" :only-date="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :min-date="$moment(res.start_date).format('YYYY-MM-DD')" :label="'Select end date'" v-validate="'required'"></v-ctk>
@@ -400,3 +405,11 @@
         }
     }
 </script>
+
+<style scoped lang="stylus">
+    .form_flex
+        &.disabled
+            opacity: 0.5
+            pointer-events: none
+            cursor: not-allowed
+</style>
