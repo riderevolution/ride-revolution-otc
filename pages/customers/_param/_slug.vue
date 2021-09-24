@@ -31,6 +31,7 @@
                             <div class="user_action">
                                 <div class="action_user_btn" @click="toggleQuickSale('credit')">Buy Classes</div>
                                 <div class="action_user_btn margin" @click="toggleQuickSale('product')">Buy Products</div>
+                                <div class="action_user_btn margin" @click="toggleQuickSale('gift-card')">Send Gift Card</div>
                                 <div class="action_success_btn alternate margin" @click="getCurrentCustomer()">Booker</div>
                             </div>
                         </div>
@@ -147,6 +148,9 @@
                         break
                     case 'product':
                         me.$store.state.customerProductQuickSaleStatus = true
+                        break
+                    case 'gift-card':
+                        me.$store.state.customerSendGiftCardStatus = true
                         break
                 }
                 document.body.classList.add('no_scroll')

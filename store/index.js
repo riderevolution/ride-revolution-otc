@@ -54,6 +54,7 @@ const createStore = () => {
             calendarClearStatus: false,
             customerCreditQuickSaleStatus: false,
             customerProductQuickSaleStatus: false,
+            customerSendGiftCardStatus: false,
             customerPendingQuickSaleStatus: false,
             quickSaleStatus: false,
             successfulStatus: false,

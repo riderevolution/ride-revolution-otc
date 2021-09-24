@@ -39,6 +39,9 @@
             <customer-product-quick-sale v-if="$store.state.customerProductQuickSaleStatus" />
         </transition>
         <transition name="fade">
+            <customer-send-gift-card v-if="$store.state.customerSendGiftCardStatus" />
+        </transition>
+        <transition name="fade">
             <successful v-if="$store.state.successfulStatus" />
         </transition>
         <transition name="fade">
@@ -67,6 +70,7 @@
     import QuickSale from '../components/modals/QuickSale'
     import CustomerCreditQuickSale from '../components/modals/CustomerCreditQuickSale'
     import CustomerProductQuickSale from '../components/modals/CustomerProductQuickSale'
+    import CustomerSendGiftCard from '../components/modals/CustomerSendGiftCard'
     import Successful from '../components/modals/Successful'
     import SuccessfulLater from '../components/modals/SuccessfulLater'
     import StudioChanger from '../components/modals/StudioChanger'
@@ -83,6 +87,7 @@
             ResetSuccessful,
             CustomerCreditQuickSale,
             CustomerProductQuickSale,
+            CustomerSendGiftCard,
             QuickSale,
             Successful,
             SuccessfulLater,
