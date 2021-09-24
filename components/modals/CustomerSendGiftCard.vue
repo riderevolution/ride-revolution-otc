@@ -65,16 +65,21 @@
         <transition name="fade">
             <prompt v-if="prompt" :message="`Send this gift card to customer?`" :hasCancel="true" :hasChange="true" />
         </transition>
+        <transition name="fade">
+            <prompt-gift-card-sent v-if="promptGiftCardSent" :message="message"/>
+        </transition>
     </div>
 </template>
 
 <script>
     import PromptQuickSale from './PromptQuickSale'
     import Prompt from './Prompt'
+    import PromptGiftCardSent from './PromptGiftCardSent'
     export default {
         components: {
             PromptQuickSale,
-            Prompt
+            Prompt,
+            PromptGiftCardSent
         },
         data () {
             return {
@@ -124,7 +129,8 @@
                 toCheckout: [],
                 cardType: '',
                 promoApplied: false,
-                prompt: false
+                prompt: false,
+                promptGiftCardSent: false
             }
         },
         computed: {
@@ -234,15 +240,12 @@
                 }}
 
                 me.$axios.post(`api/inventory/gift-cards/send-from-admin`, toSubmit).then(res => {
-                    console.log(res.data)
                     if (res.data) {
                         me.message = 'Gift Card sent'
 
                         setTimeout(() => {
                             me.showErrors = false
-                            me.$store.state.promptQuickSaleStatus = true
-                            document.querySelector('.nonsense').scrollIntoView({block: 'center', behavior: 'smooth'})
-                            me.$store.state.customerSendGiftCardStatus = false
+                            me.promptGiftCardSent = true
                         }, 10)
                     }
                 }).catch(err => {
