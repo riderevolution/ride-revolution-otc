@@ -57,244 +57,24 @@
                         </div>
                     </div>
                 </div>
-                <form class="modal_tab_wrapper alternate" id="step2" data-vv-scope="checkout_form" v-show="nextStep == 2">
-                    <div class="header_side">
-                        <h2 class="header_title">Checkout</h2>
-                        <div class="header_subtitle">
-                            <span>ID: {{ form.id }}</span>
-                        </div>
-                    </div>
-                    <div class="left_side">
-                        <h2 class="left_title">Payment Method</h2>
-                        <div class="form_flex_radio">
-                            <div class="form_radio">
-                                <input type="radio" id="debit_card" value="debit-card" name="payment_method" class="action_radio" checked @change="checkPayment('debit')">
-                                <label for="debit_card">Debit Card</label>
-                            </div>
-                            <div class="form_radio">
-                                <input type="radio" id="check" value="check" name="payment_method" class="action_radio" @change="checkPayment('check')">
-                                <label for="check">Check</label>
-                            </div>
-                            <div class="form_radio">
-                                <input type="radio" id="credit_card" value="credit-card" name="payment_method" class="action_radio" @change="checkPayment('credit')">
-                                <label for="credit_card">Credit Card</label>
-                            </div>
-                            <div class="form_radio">
-                                <input type="radio" id="comp" value="comp" name="payment_method" class="action_radio" @change="checkPayment('comp')">
-                                <label for="comp">Comp</label>
-                            </div>
-                            <div class="form_radio">
-                                <input type="radio" id="gcash" value="gcash" name="payment_method" class="action_radio" @change="checkPayment('gcash')">
-                                <label for="gcash">GCash</label>
-                            </div>
-                            <div class="form_radio">
-                                <input type="radio" id="cash" value="cash" name="payment_method" class="action_radio" @change="checkPayment('cash')">
-                                <label for="cash">Cash</label>
-                            </div>
-                            <div class="form_radio">
-                                <input type="radio" id="conversion" value="conversion" name="payment_method" class="action_radio" @change="checkPayment('conversion')">
-                                <label for="conversion">Conversion</label>
-                            </div>
-                            <div class="form_radio">
-                                <input type="radio" id="third_party_platform" value="third_party_platform" name="payment_method" class="action_radio" @change="checkPayment('third_party_platform')">
-                                <label for="third_party_platform">Third Party Platform</label>
-                            </div>
-                            <div class="form_radio" v-if="hasStoreCredits">
-                                <input type="radio" id="store_credits" value="store-credits" name="payment_method" class="action_radio" @change="checkPayment('store-credits')">
-                                <label for="store_credits">Store Credits</label>
-                            </div>
-                        </div>
-                        <div class="form_main_group" v-if="form.paymentType == 0 || form.paymentType == 2">
-                            <div class="form_group">
-                                <label for="bank">Bank<span>*</span></label>
-                                <select class="default_select alternate" name="bank" key="bank" v-validate="'required'">
-                                    <option value="" selected disabled>Select a Bank</option>
-                                    <option value="bpi">Bank of the Philippines Islands</option>
-                                    <option value="bdo">Banco de Oro</option>
-                                    <option value="psbank">PSBank</option>
-                                    <option value="metrobank">MetroBank</option>
-                                </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ properFormat(errors.first('checkout_form.bank')) }}</span></transition>
-                            </div>
-                            <div class="form_group">
-                                <label for="terminal">Terminal <span>*</span></label>
-                                <select class="default_select alternate" name="terminal" key="terminal" v-validate="'required'" v-model="cardType">
-                                    <option value="" selected disabled>Select Terminal</option>
-                                    <option value="paymaya">Paymaya</option>
-                                    <option value="bdo">BDO</option>
-                                </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.terminal')">{{ properFormat(errors.first('checkout_form.terminal')) }}</span></transition>
-                            </div>
-                            <div class="form_group" v-if="cardType == 'others'">
-                                <label for="others">Others <span>*</span></label>
-                                <input type="text" name="others" class="default_text" key="others" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.others')">{{ properFormat(errors.first('checkout_form.others')) }}</span></transition>
-                            </div>
-                        </div>
-                        <div class="form_main_group" v-else-if="form.paymentType == 1">
-                            <div class="form_group">
-                                <label for="bank">Bank<span>*</span></label>
-                                <input type="text" name="bank" class="default_text" key="bank" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ properFormat(errors.first('checkout_form.bank')) }}</span></transition>
-                            </div>
-                            <div class="form_group">
-                                <label for="check_number">Check Number<span>*</span></label>
-                                <input type="text" name="check_number" class="default_text" key="check_number" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.check_number')">{{ properFormat(errors.first('checkout_form.check_number')) }}</span></transition>
-                            </div>
-                        </div>
-                        <div class="form_main_group" v-else-if="form.paymentType == 3">
-                            <div class="form_group">
-                                <label for="comp_reason">Comp Reason <span>*</span></label>
-                                <select class="default_select alternate" name="comp_reason" v-validate="'required'" key="comp_reason" v-model="form.comp">
-                                    <option value="" selected disabled>Select a Reason</option>
-                                    <option value="Bike Purchase">Bike Purchase</option>
-                                    <option value="Bike Rental">Bike Rental</option>
-                                    <option value="Ride Along">Ride Along</option>
-                                    <option value="Customer Complaint">Customer Complaint</option>
-                                    <option value="Special Deal (Promo)">Special Deal (Promo)</option>
-                                    <option value="Prize (Event/Campaign)">Prize (Event/Campaign)</option>
-                                    <option value="X Deal">X Deal</option>
-                                    <option value="RR Team">RR Team</option>
-                                    <option value="RR Investor/Shareholder">RR Investor/Shareholder</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.comp_reason')">{{ properFormat(errors.first('checkout_form.comp_reason')) }}</span></transition>
-                            </div>
-                            <transition name="fade">
-                                <div class="form_group" v-if="reasonType">
-                                    <label for="indicate_reason">Details Required <span>*</span></label>
-                                    <input type="text" name="indicate_reason" class="default_text" v-validate="'required'" key="indicate_reason">
-                                    <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.indicate_reason')">{{ properFormat(errors.first('checkout_form.indicate_reason')) }}</span></transition>
-                                </div>
-                            </transition>
-                            <div class="form_group">
-                                <label for="remarks">Notes/Remarks <span>*</span></label>
-                                <textarea name="remarks" rows="8" id="remarks" class="default_text" key="remarks" placeholder="Enter remarks" v-validate="{ required: true }"></textarea>
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.remarks')">{{ properFormat(errors.first('checkout_form.remarks')) }}</span></transition>
-                            </div>
-                        </div>
-                        <div class="form_main_group" v-else-if="form.paymentType == 4">
-                            <div class="form_group">
-                                <label for="cash_tendered">Cash Tendered (PHP)<span>*</span></label>
-                                <input type="text" name="cash_tendered" class="default_text" key="cash_tendered" v-validate="{required: true, regex: '^[0-9]+(\.[0-9]{1,2})?$', min_value: form.total, max_value: 9999999}" v-model="form.change">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.cash_tendered')">{{ properFormat(errors.first('checkout_form.cash_tendered')) }}</span></transition>
-                            </div>
-                            <div class="form_group">
-                                <label for="change">Change (PHP)</label>
-                                <input type="text" name="change" class="default_text disabled" v-model="computeChange" v-validate="'required'">
-                            </div>
-                        </div>
-                        <div class="form_main_group" v-else-if="form.paymentType == 5">
-                            <div class="form_group">
-                                <label for="reference_number">Reference Number <span>*</span></label>
-                                <input type="text" name="reference_number" class="default_text" v-validate="'required'" key="reference_number">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.reference_number')">{{ properFormat(errors.first('checkout_form.reference_number')) }}</span></transition>
-                            </div>
-                        </div>
-                        <div class="form_main_group" v-else-if="form.paymentType == 6 || form.paymentType == 7">
-                            <div class="form_group">
-                                <label for="note">Note <span>*</span></label>
-                                <input type="text" name="note" class="default_text" key="note" v-validate="{ required: true }">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.note')">{{ properFormat(errors.first('checkout_form.note')) }}</span></transition>
-                            </div>
-                        </div>
-                        <div class="form_main_group" v-if="form.paymentType != 3">
-                            <div class="form_group">
-                                <label for="remarks">Remarks</label>
-                                <textarea name="remarks" rows="8" id="remarks" class="default_text" placeholder="Enter remarks"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="right_side">
-                        <div class="breakdown_wrapper">
-                            <table class="breakdown_table">
-                                <thead>
-                                    <tr>
-                                        <th>Items</th>
-                                        <th>Qty.</th>
-                                        <th>Price Per Item</th>
-                                        <th>Computed Price</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody v-if="totalPrice.length > 0">
-                                    <tr v-for="(data, key) in showBreakDown" :key="key">
-                                        <td class="item_name" width="35%">({{ data.quantity }}) {{ (data.item.product) ? (data.item.product.product ? `${data.item.product.product.name} - ${data.item.name}` : data.item.name) : data.item.name }}</td>
-                                        <td width="15%">
-                                            <div class="form_flex_input" :data-vv-scope="`breakdown_${key}`">
-                                                <input type="text" name="quantity" :id="`quantity_${key}`" :class="`${(data.type == 'gift-card' || data.type == 'custom-gift-card') ? 'disabled' : ''} default_text number`" maxlength="2" autocomplete="off" :data-vv-name="`breakdown_${key}.quantity`" v-model="data.quantity" v-validate="`numeric|min_value:1|${(data.type != 'custom-gift-card') ? (data.item.product.product_quantities ? `max_value:${data.item.product.product_quantities[0].quantity}` : '') : '' }`">
-                                                <div class="up" v-if="data.type == 'product' || data.type == 'store-credit'" @click="addCount(data.id, data.quantity, key, (data.type == 'product') ? data.item.product.sale_price : (data.type == 'gift-card' ? data.item.product.class_package.package_price : data.item.product.amount ))"></div>
-                                                <div class="down" v-if="data.type == 'product' || data.type == 'store-credit'" @click="subtractCount(data.id, data.quantity, key, (data.type == 'product') ? data.item.product.sale_price : (data.type == 'gift-card' ? data.item.product.class_package.package_price : data.item.product.amount ))"></div>
-                                                <transition name="slide"><span class="validation_errors" v-if="errors.has(`breakdown_${key}.quantity`)">{{ errors.properFormat(first(`breakdown_${key}.quantity`)) }}</span></transition>
-                                            </div>
-                                        </td>
-                                        <td class="item_price" width="25%">PHP {{ totalCount(data.item.origPrice) }}</td>
-                                        <td class="item_price" width="25%" v-if="!promo_applied">
-                                            <p>PHP {{ totalCount(data.price) }}</p>
-                                        </td>
-                                        <td class="item_price" width="25%" v-else>
-                                            <p class="prev_price" >PHP {{ totalCount(data.price) }}</p>
-                                            <p>PHP {{ totalCount(data.discounted_price) }}</p>
-                                        </td>
-                                        <td>
-                                            <div class="close_wrapper alternate" @click="removeOrder(key, data.item.id)">
-                                                <div class="close_icon"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tbody class="no_results" v-else>
-                                    <tr>
-                                        <td colspan="4">No Product(s) Found.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="breakdown_total">
-                            <div class="promo">
-                                <div class="form_group">
-                                    <label for="promo_code">Promo Code</label>
-                                    <input type="text" name="promo_code" :class="`default_text ${(promoApplied) ? 'disabled' : ''}`">
-                                </div>
-                                <button type="button" :class="`${(promoApplied) ? 'disabled' : ''} action_btn alternate`" @click="applyPromo()">Apply</button>
-                            </div>
-                            <div class="total_wrapper">
-                                <div class="total_title">Total</div>
-                                <div class="total_price">PHP {{ computeTotal }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="footer_side">
-                        <div class="form_group_disclaimer">
-                            <div class="form_disclaimer"><img src="/icons/disclaimer-icon.svg" /> <span>Note: Promo code won’t be applicable to promo products/packages.</span></div>
-                        </div>
-                        <div class="button_group">
-                            <button type="button" class="action_btn" @click="takePayment(1)">Go Back</button>
-                            <button type="button" class="action_success_btn alternate margin" @click.prevent="submitQuickSale()">Place Order</button>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
         <transition name="fade">
             <prompt-quick-sale v-if="$store.state.promptQuickSaleStatus" :message="message" />
         </transition>
         <transition name="fade">
-            <prompt-promo v-if="$store.state.promptPromoStatus" :message="message" />
+            <prompt v-if="prompt" :message="`Send this gift card to customer?`" :hasCancel="true" :hasChange="true" />
         </transition>
     </div>
 </template>
 
 <script>
-    import CustomerProductQuickSaleTabContent from './CustomerProductQuickSaleTabContent'
-    import PromptPromo from './PromptPromo'
     import PromptQuickSale from './PromptQuickSale'
+    import Prompt from './Prompt'
     export default {
         components: {
-            CustomerProductQuickSaleTabContent,
-            PromptPromo,
-            PromptQuickSale
+            PromptQuickSale,
+            Prompt
         },
         data () {
             return {
@@ -343,7 +123,8 @@
                 totalPrice: [],
                 toCheckout: [],
                 cardType: '',
-                promoApplied: false
+                promoApplied: false,
+                prompt: false
             }
         },
         computed: {
@@ -445,50 +226,36 @@
             }
         },
         methods: {
+            submissionSuccess () {
+                let me = this
+
+                let toSubmit = { ...me.customGiftCard, ...{
+                    customer_id: me.$route.params.param
+                }}
+
+                me.$axios.post(`api/inventory/gift-cards/send-from-admin`, toSubmit).then(res => {
+                    console.log(res.data)
+                    if (res.data) {
+                        me.message = 'Gift Card sent'
+
+                        setTimeout(() => {
+                            me.showErrors = false
+                            me.$store.state.promptQuickSaleStatus = true
+                            document.querySelector('.nonsense').scrollIntoView({block: 'center', behavior: 'smooth'})
+                            me.$store.state.customerSendGiftCardStatus = false
+                        }, 10)
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
             submitCustom () {
                 const me = this
                 let customIndex = null
                 me.$validator.validateAll('custom_gift_form').then(valid => {
                     if (valid) {
-                        me.$axios.get(`api/customers/${me.$route.params.param}`).then(res => {
-                            if (res.data) {
-                                if (me.customGiftCard.customCardRecipientEmail == res.data.user.email) {
-                                    me.$store.state.errorList = ['You cannot send an email to yourself.']
-                                    me.$store.state.errorQuickSaleStatus = true
-                                } else {
-                                    if (me.customGiftCard.classPackages != '') {
-                                        me.totalPrice.forEach((data, index) => {
-                                            if (data.id == 9999999) {
-                                                customIndex = index
-                                            }
-                                        })
-                                        if (customIndex != null) {
-                                            me.totalPrice[customIndex].price = parseFloat(me.customGiftCard.classPackagePrice)
-                                            me.totalPrice[customIndex].item.origPrice = parseFloat(me.customGiftCard.classPackagePrice)
-                                        } else {
-                                            me.totalPrice.push(
-                                                {
-                                                    id: 9999999,
-                                                    quantity: 1,
-                                                    item: {
-                                                        name: 'Custom Gift Card',
-                                                        origPrice: parseFloat(me.customGiftCard.classPackagePrice)
-                                                    },
-                                                    price: parseFloat(me.customGiftCard.classPackagePrice),
-                                                    type: 'custom-gift-card'
-                                                }
-                                            )
-                                        }
-                                        me.message = 'You have successfully added your custom gift card.'
-                                        setTimeout( () => {
-                                            me.showErrors = false
-                                            me.$store.state.promptQuickSaleStatus = true
-                                            document.querySelector('.nonsense').scrollIntoView({block: 'center', behavior: 'smooth'})
-                                        }, 10)
-                                    }
-                                }
-                            }
-                        })
+                        me.prompt = true
+                        return
                     } else {
                         me.showErrors = true
                         setTimeout( () => {
