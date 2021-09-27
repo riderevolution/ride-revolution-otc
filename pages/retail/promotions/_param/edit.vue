@@ -249,7 +249,7 @@
                 me.filterType = type
                 switch (type) {
                     case 'class_packages':
-                        apiRoute = 'api/packages/class-packages?promotion=1'
+                        apiRoute = `api/packages/class-packages?promotion=1&promo_id=${me.$route.params.param}`
                         break
                     case 'products':
                         apiRoute = 'api/inventory/product-categories'
@@ -298,6 +298,7 @@
                 let formData = new FormData()
                 formData.append('promotion', 1)
                 formData.append('q', me.form.query)
+                formData.append('promo_id', me.$route.params.param)
                 switch (type) {
                     case 'class_packages':
                         me.$axios.post('api/packages/class-packages/search', formData).then(res => {
