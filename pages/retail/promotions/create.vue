@@ -138,7 +138,7 @@
                                         <div class="form_check class_package_select" v-for="(data, key) in filterData" :key="key">
                                             <input type="checkbox" :id="`data_${key}`" name="filter_data" class="action_check" v-model="data.checked">
                                             <label :for="`data_${key}`">{{ data.name }}</label>
-                                            <input type="number" placeholder="Promo Limit Application" class="class_package_option" :name="`class_package_limit[${key}]`" v-show="data.checked && filterType == 'class_packages'">
+                                            <input v-model="data.application_limit" type="number" placeholder="Promo Application Limit" class="class_package_option" v-show="data.checked && filterType == 'class_packages'">
                                         </div>
                                         <transition name="slide"><span class="validation_errors" v-if="hasProduct">The Product field is required</span></transition>
                                     </div>
