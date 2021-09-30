@@ -216,6 +216,9 @@
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
                         break
+                    case 'paymongo':
+                        result = payment.payment_method.paymongo_source_id
+                        break
                     default:
                         result = payment.payment_code
                 }

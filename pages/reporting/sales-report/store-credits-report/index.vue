@@ -7,7 +7,7 @@
                         <div>
                             <div class="header_title">
                                 <h1>Store Credits Report</h1>
-                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">List of store credits per customers</h2>
                         </div>
@@ -31,7 +31,7 @@
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" v-model="form.studio_id" name="studio_id">
-                                    <option value="" selected>All Studios</option>
+                                    <option value="0" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                     <option value="os">Website/Online Sales</option>
                                 </select>
@@ -46,7 +46,6 @@
                                 <v-ctk v-model="form.end_date" :only-date="true" :no-button="true" :format="'YYYY-MM-DD'" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
-                            <input type="text" name="type" class="hidden none" v-model="tab_type">
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
                     </div>
@@ -55,40 +54,40 @@
                     <table class="cms_table alt">
                         <thead>
                             <tr>
-                                <th class="sticky">Transaction Date</th>
-                                <th class="sticky">Customer</th>
-                                <th class="sticky">Reference No.</th>
-                                <th class="sticky">Method</th>
-                                <th class="sticky">Amount</th>
-                                <th class="sticky">Remarks</th>
+                                <th class="sticky">Full Name</th>
+                                <th class="sticky">Type</th>
+                                <th class="sticky">Email</th>
+                                <th class="sticky">Contact No.</th>
+                                <th class="sticky">Cumulative Store Credits</th>
+                                <th class="sticky">Total Spent</th>
+                                <th class="sticky">Remaining Store Credits</th>
                                 <th class="sticky">Action</th>
-                                <th class="sticky">Last Action Taken By</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.results.data.length > 0">
                             <tr v-for="(data, key) in res.results.data" :key="key">
-                                <td>{{ $moment(data.payment.created_at).format('MMMM DD, YYYY hh:mm A') }}</td>
                                 <td>
                                     <div class="thumb">
-                                        <img :src="data.payment.user.customer_details.images[0].path_resized" v-if="data.payment.user.customer_details.images[0].path != null" />
+                                        <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
                                         <div class="table_image_default" v-else>
                                             <div class="overlay">
-                                                {{ data.payment.user.first_name.charAt(0) }}{{ data.payment.user.last_name.charAt(0) }}
+                                                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                             </div>
                                         </div>
-                                        <div class="table_data_link" @click="openWindow(`/customers/${data.payment.user.id}/packages`)">{{ data.payment.user.fullname }}</div>
+                                        <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                     </div>
                                 </td>
-                                <td>{{ getPaymentCode(data.payment) }}</td>
-                                <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
-                                <td>{{ getPaymentDetails(data.payment, 'price') }}</td>
-                                <td>{{ (data.payment.payment_method.remarks) ? data.payment.payment_method.remarks : '-' }}</td>
-                                <td>
+                                <td>{{ data.customer_details.customer_type.name }}</td>
+                                <td>{{ data.email }}</td>
+                                <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
+                                <td class="blue">Php {{ totalCount(data.total_store_credits_bought) }}</td>
+                                <td class="red">Php {{ totalCount(data.store_credits.amount) }}</td>
+                                <td class="green">Php {{ totalCount(-(parseInt(data.store_credits.amount) - parseInt(data.total_store_credits_bought))) }}</td>
+                                <td width="175px">
                                     <div class="table_actions">
-                                        <div class="table_action_cancel disabled link">Non-refundable</div>
+                                        <a href="#" class="table_action_edit pointer" @click.prevent="openWindowInside(data)">View Transactions</a>
                                     </div>
                                 </td>
-                                <td>{{ getPaymentDetails(data.payment, 'employee') }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
@@ -131,7 +130,7 @@
                 form: {
                     start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
-                    studio_id: ''
+                    studio_id: 0
                 }
             }
         },
@@ -140,86 +139,35 @@
                 const me = this
                 return [
                     ...me.values.map(value => ({
-                        'Studio': me.getPaymentStudio(value.payment),
-                        'Customer': (value.payment.user) ? value.payment.user.fullname : 'No Customer',
-                        'Email Address': (value.payment.user) ? value.payment.user.email : 'No Customer Email',
-                        'Contact Number': (value.payment.user) ? (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
-                        'Payment ID': value.payment.id,
+                        'Transaction Date': me.$moment(value.payment.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Reference Number': me.getPaymentCode(value.payment),
-                        'Transaction Date': me.$moment(value.payment.created_at).format('MMMM DD, YYYY hh:mm A'),
-                        'Promo Code': (value.payment.promo_code_used != null) ? value.payment.promo_code_used : 'No Promo Code Used',
-                        'Payment Status': value.payment.status,
-                        'Payment Method': me.replacer(value.payment.payment_method.method),
-                        'Payment Item Id': value.id,
-                        'SKU ID': me.getPaymentItem(value, 'sku'),
-                        'Item': me.getPaymentItem(value, 'name'),
-                        'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
-                        'Quantity': value.quantity,
-                        'Discount': `${(value.payment.promo_code_used != null) ? value.payment.discount.discount : 0}`,
-                        'Price': `${(value.payment.promo_code_used != null) ? value.total : value.price_per_item}`,
+                        'Item': value.payment_item.store_credit.name,
+                        'Quantity': value.payment_item.quantity,
+                        'Total': value.payment_item.total,
+                        'Status': value.payment.status,
+                        'Method': value.payment.payment_method.method,
+                        'Studio': (value.payment.studio) ? value.payment.studio.name : 'Website/Online',
+                        'Customer': value.customer.fullname,
+                        'Member ID': value.customer.member_id,
+                        'Customer Type': value.customer.customer_details.customer_type.name,
+                        'Email Address': value.customer.email,
+                        'Contact Number': (value.customer.customer_details.co_contact_number != null) ? value.customer.customer_details.co_contact_number : (value.customer.customer_details.ec_contact_number) ? value.customer.customer_details.ec_contact_number : 'N/A',
                         'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
                         'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',
                         'Remarks': (value.payment.payment_method.remarks) ? value.payment.payment_method.remarks : 'N/A',
-                        'Last Action Taken By': me.getPaymentDetails(value.payment, 'employee')
+                        'Last Action Taken By': (value.payment.employee) ? value.payment.employee.fullname : 'Customer'
                     }))
                 ]
             }
         },
         methods: {
+            openWindowInside (data) {
+                const me = this
+                window.open(`${me.$route.path}/${data.id}/view?start_date=${me.form.start_date}&end_date=${me.form.end_date}&studio_id=${me.form.studio_id}`, '_blank')
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
-            },
-            getPaymentItem (payment_item, type) {
-                const me = this
-                let result = ''
-
-                if (type == 'sku') {
-                    switch (payment_item.type) {
-                        case 'store-credit':
-                            result = payment_item.store_credit.sku_id
-                            break
-                    }
-                } else {
-                    switch (payment_item.type) {
-                        case 'store-credit':
-                            result = payment_item.store_credit.name
-                            break
-                    }
-                }
-
-                return result
-            },
-            getPaymentStudio (payment) {
-                const me = this
-                let result = ''
-
-                if (payment.studio != null) {
-                    result = payment.studio.name
-                } else {
-                    result = 'Website/Online'
-                }
-
-                return result
-            },
-            getPaymentDetails (payment, type) {
-                const me = this
-                let result = 0
-
-                switch (type) {
-                    case 'price':
-                        result = `Php ${me.totalCount(payment.total)}`
-                        break
-                    case 'employee':
-                        if (payment.employee != null) {
-                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
-                        } else {
-                            result = 'Customer'
-                        }
-                        break
-                }
-
-                return result
             },
             getPaymentCode (payment) {
                 const me = this
@@ -249,11 +197,7 @@
 
                 me.loader(true)
                 me.$axios.post('api/reporting/sales/store-credits-report', formData).then(res => {
-                    if (res.data) {
-                        res.data.results.forEach((item, key) => {
-                            me.values.push(item)
-                        })
-                    }
+                    me.values = res.data.results
                 }).catch((err) => {
 
                 }).then(() => {
