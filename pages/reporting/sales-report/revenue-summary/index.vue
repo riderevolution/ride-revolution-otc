@@ -13,12 +13,6 @@
                         </div>
                         <div class="actions">
                             <download-csv
-                                class="hidden me class_package"
-                                :data="revenueSummaryClassPackageAttributes"
-                                :name="`revenue-summary-${exported_report}-report-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
-                                Export
-                            </download-csv>
-                            <download-csv
                                 class="hidden me"
                                 :data="revenueSummaryAttributes"
                                 :name="`revenue-summary-${exported_report}-report-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
@@ -127,39 +121,62 @@
                 name: 'Revenue Summary',
                 access: true,
                 loaded: false,
+                type: '',
                 exported_report: ''
             }
         },
         computed: {
             revenueSummaryAttributes () {
                 const me = this
-                return [
-                    ...me.values.map((value, key) => ({
-                        'Revenue': value.name,
-                        'Subtotal Revenue': `Php ${me.totalCount(value.total)}`,
-                        'Type': (value.parent) ? '-' : value.name,
-                        'Total': (value.parent) ? '-' : `Php ${me.totalCount(value.total)}`
-                    }))
-                ]
-            },
-            revenueSummaryClassPackageAttributes () {
-                const me = this
-                return [
-                    ...me.values.map((value, key) => ({
-                        'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
-                        'Status': value.scheduled_date.status,
-                        'Transaction Date': me.$moment(value.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
-                        'Reference Number': me.getPaymentCode(value.user_package_count),
-                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
-                        'Class Package': value.user_package_count.class_package.name,
-                        'Customer': value.user.fullname,
-                        'Email': value.user.email,
-                        'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
-                        'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
-                        'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
-                        'Revenue': `Php ${me.totalCount(value.total)}`
-                    }))
-                ]
+
+                switch (me.type) {
+                    case 'class_package':
+                        return [
+                            ...me.values.map((value, key) => ({
+                                'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
+                                'Status': value.scheduled_date.status,
+                                'Transaction Date': me.$moment(value.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
+                                'Reference Number': me.getPaymentCode(value.user_package_count),
+                                'Payment Method': value.user_package_count.payment_item.payment_method.method,
+                                'Class Package': value.user_package_count.class_package.name,
+                                'Customer': value.user.fullname,
+                                'Email': value.user.email,
+                                'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
+                                'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
+                                'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
+                                'Revenue': `Php ${me.totalCount(value.revenue)}`
+                            }))
+                        ]
+                        break
+                    case 'variant':
+                        me.exported_report = 'from-products'
+                        break
+                    case 'class_package_expiration':
+                        return [
+                            ...me.values.map((value, key) => ({
+                                'Transaction Date': me.$moment(value.payment.created_at).format('MMM DD, YYYY hh:mm A'),
+                                'Reference Number': me.getPaymentCode(value),
+                                'Payment Method': value.payment_item.payment_method.method,
+                                'Class Package': value.class_package.name,
+                                'Estimated Price Per Class': value.estimated_price_per_class,
+                                'Original Count': value.original_package_count,
+                                'Used Count': value.count,
+                                'Activation Date': (value.activation_date) ? me.$moment(value.activation_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                                'Expiration Date': (value.computed_expiration_date) ? me.$moment(value.computed_expiration_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                                'Expiration If Not Activated': (value.expiry_date_if_not_activated) ? me.$moment(value.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                                'Customer': value.user.fullname,
+                                'Email': value.user.email,
+                                'Comp Reason': (value.payment_item.payment_method.comp_reason) ? value.payment_item.payment_method.comp_reason : 'N/A',
+                                'Note': (value.payment_item.payment_method.note) ? value.payment_item.payment_method.note : 'N/A',
+                                'Remarks': (value.payment_item.payment_method.remarks) ? value.payment_item.payment_method.remarks : 'N/A',
+                                'Revenue': `Php ${me.totalCount(value.revenue)}`
+                            }))
+                        ]
+                        break
+                    case 'gift_card':
+                        me.exported_report = 'from-gift-cards'
+                        break
+                }
             }
         },
         methods: {
@@ -185,7 +202,7 @@
             },
             exportRevenue (data) {
                 const me = this
-                let url = ''
+                me.type = data.type
 
                 switch (data.type) {
                     case 'class_package':
@@ -209,14 +226,14 @@
                 form_data.append('export', 1);
 
                 me.loader(true)
-                me.$axios.post(`api/reporting/sales/revenue-summary`, form_data).then(res => {
+                me.$axios.post(`api/reporting/sales/revenue-summary-export`, form_data).then(res => {
                     if (res.data) {
                         me.values = res.data.values
                     }
                 }).catch((err) => {
                 }).then(() => {
                     me.loader(false)
-                    document.querySelector(`.me.${me.exported_report}`).click()
+                    document.querySelector(`.me`).click()
                 })
             },
             getName (parent, child) {
