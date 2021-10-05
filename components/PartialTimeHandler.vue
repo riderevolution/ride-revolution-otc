@@ -8,7 +8,7 @@
         </div>
         <div class="form_group">
             <label for="end_time">End Time <span>*</span></label>
-            <v-ctk v-model="form.end_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'end_time'" :name="'end_time[]'" :min="form.end_time" :min-date="form.end_time" :label="'Select end time'" @input="checkTime()" :data-vv-name="`time_form_${unique}.end_time[]`" v-validate="'required'" :class="`${(form.hasTimeFrom) ? '' : 'disabled'}`"></v-ctk>
+            <v-ctk v-model="form.end_time" :only-time="true" :format="'hh:mm A'" :formatted="'hh:mm A'" :no-label="true" :color="'#33b09d'" :id="'end_time'" :name="'end_time[]'" :min="form.end_time" :minDate="form.end_time" :label="'Select end time'" @input="checkTime()" :data-vv-name="`time_form_${unique}.end_time[]`" v-validate="'required'" :class="`${(form.hasTimeFrom) ? '' : 'disabled'}`"></v-ctk>
             <transition name="slideY"><span class="validation_errors" v-if="errors.has(`time_form_${unique}.end_time[]`) && !form.lowerThanStart">{{ properFormat(errors.first(`time_form_${unique}.end_time[]`)) }}</span></transition>
 
             <transition name="slideY"><span class="validation_errors" v-if="form.lowerThanStart">The End Time field is required</span></transition>

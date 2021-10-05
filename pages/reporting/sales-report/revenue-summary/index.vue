@@ -7,21 +7,23 @@
                         <div>
                             <div class="header_title">
                                 <h1>Revenue Summary</h1>
-                                <span>{{ $moment(form.start_date).format('MMMM DD, YYYY') }}</span>
+                                <span>{{ $moment(form.start_date).format('MMM DD, YYYY') }} - {{ $moment(form.end_date).format('MMM DD, YYYY') }}</span>
                             </div>
                             <h2 class="header_subtitle">This report classifies gift cards and store credits as income. It excludes tax and refunds.</h2>
                         </div>
                         <div class="actions">
-                            <!-- <div class="action_buttons">
-                                <a :href="`/print/reporting/sales/revenue-summary?start_date=${form.start_date}&end_date=${form.end_date}`" target="_blank" class="action_btn alternate">Print</a>
-                                <download-csv
-                                    v-if="res.length > 0"
-                                    class="action_btn alternate margin"
-                                    :data="revenueSummaryAttributes"
-                                    :name="`revenue-summary-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
-                                    Export
-                                </download-csv>
-                            </div> -->
+                            <download-csv
+                                class="hidden me class_package"
+                                :data="revenueSummaryClassPackageAttributes"
+                                :name="`revenue-summary-${exported_report}-report-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
+                                Export
+                            </download-csv>
+                            <download-csv
+                                class="hidden me"
+                                :data="revenueSummaryAttributes"
+                                :name="`revenue-summary-${exported_report}-report-${$moment(form.start_date).format('MM-DD-YY')}-${$moment(form.end_date).format('MM-DD-YY')}.csv`">
+                                Export
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -49,12 +51,20 @@
                             <tr>
                                 <th>Group</th>
                                 <th>Total Revenue</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res" v-if="res.length > 0">
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.name }}</td>
                                 <td>Php {{ totalCount(data.total) }}</td>
+                                <td width="105px">
+                                    <template v-if="data.values.length > 0">
+                                        <div class="table_actions">
+                                            <a href="#" class="table_action_edit pointer" @click.prevent="exportRevenue(data)">Export</a>
+                                        </div>
+                                    </template>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="pads" colspan="8">
@@ -117,22 +127,98 @@
                 name: 'Revenue Summary',
                 access: true,
                 loaded: false,
+                exported_report: ''
             }
         },
-        // computed: {
-        //     revenueSummaryAttributes () {
-        //         const me = this
-        //         return [
-        //             ...me.values.map((value, key) => ({
-        //                 'Revenue': value.name,
-        //                 'Subtotal Revenue': `Php ${me.totalCount(value.total)}`,
-        //                 'Type': (value.parent) ? '-' : value.name,
-        //                 'Total': (value.parent) ? '-' : `Php ${me.totalCount(value.total)}`
-        //             }))
-        //         ]
-        //     }
-        // },
+        computed: {
+            revenueSummaryAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Revenue': value.name,
+                        'Subtotal Revenue': `Php ${me.totalCount(value.total)}`,
+                        'Type': (value.parent) ? '-' : value.name,
+                        'Total': (value.parent) ? '-' : `Php ${me.totalCount(value.total)}`
+                    }))
+                ]
+            },
+            revenueSummaryClassPackageAttributes () {
+                const me = this
+                return [
+                    ...me.values.map((value, key) => ({
+                        'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
+                        'Status': value.scheduled_date.status,
+                        'Transaction Date': me.$moment(value.user_package_count.payment.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Reference Number': me.getPaymentCode(value.user_package_count),
+                        'Payment Method': value.user_package_count.payment_item.payment_method.method,
+                        'Class Package': value.user_package_count.class_package.name,
+                        'Customer': value.user.fullname,
+                        'Email': value.user.email,
+                        'Comp Reason': (value.user_package_count.payment_item.payment_method.comp_reason) ? value.user_package_count.payment_item.payment_method.comp_reason : 'N/A',
+                        'Note': (value.user_package_count.payment_item.payment_method.note) ? value.user_package_count.payment_item.payment_method.note : 'N/A',
+                        'Remarks': (value.user_package_count.payment_item.payment_method.remarks) ? value.user_package_count.payment_item.payment_method.remarks : 'N/A',
+                        'Revenue': `Php ${me.totalCount(value.total)}`
+                    }))
+                ]
+            }
+        },
         methods: {
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                switch (data.payment_item.payment_method.method) {
+                    case 'paypal':
+                        result = data.payment_item.payment_method.paypal_transaction_id
+                        break
+                    case 'paymaya':
+                        result = data.payment_item.payment_method.paymaya_transaction_id
+                        break
+                    case 'paymongo':
+                        result = data.payment_item.payment_method.paymongo_source_id
+                        break
+                    default:
+                        result = data.payment.payment_code
+                }
+
+                return result
+            },
+            exportRevenue (data) {
+                const me = this
+                let url = ''
+
+                switch (data.type) {
+                    case 'class_package':
+                        me.exported_report = 'from-class-packages'
+                        break
+                    case 'variant':
+                        me.exported_report = 'from-products'
+                        break
+                    case 'class_package_expiration':
+                        me.exported_report = 'from-series-expiration'
+                        break
+                    case 'gift_card':
+                        me.exported_report = 'from-gift-cards'
+                        break
+                }
+
+                let form_data = new FormData()
+                form_data.append('start_date', me.form.start_date)
+                form_data.append('end_date', me.form.end_date)
+                form_data.append('type', data.type);
+                form_data.append('export', 1);
+
+                me.loader(true)
+                me.$axios.post(`api/reporting/sales/revenue-summary`, form_data).then(res => {
+                    if (res.data) {
+                        me.values = res.data.values
+                    }
+                }).catch((err) => {
+                }).then(() => {
+                    me.loader(false)
+                    document.querySelector(`.me.${me.exported_report}`).click()
+                })
+            },
             getName (parent, child) {
                 const me = this
                 let result = ''
