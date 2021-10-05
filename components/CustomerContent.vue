@@ -290,8 +290,8 @@
                                             <td>{{ (item.product_variant) ? item.product_variant.product.category.name : 'N/A' }}</td>
                                             <td>{{ item.quantity }}</td>
                                             <td class="price">
-                                                <p :class="`${(data.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.promo_code_used !== null">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
-                                                <p>PHP {{ totalCount((data.promo_code_used !== null) ? item.discounted_price : item.price_per_item * item.quantity) }}</p>
+                                                <p :class="`${(item.applied_promo == 1) ? 'prev_price' : ''}`" v-if="item.applied_promo == 1">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
+                                                <p>PHP {{ totalCount((item.applied_promo == 1) ? item.discounted_price : item.price_per_item * item.quantity) }}</p>
                                             </td>
                                             <td class="alt_2">{{ (item.refund_type) ? replacer(item.refund_type) : 'N/A' }}</td>
                                             <td>{{ (item.refunder) ? item.refunder.fullname : 'N/A' }}</td>
