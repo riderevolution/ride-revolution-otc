@@ -148,8 +148,33 @@
                             }))
                         ]
                         break
+                    case 'gift_card':
                     case 'variant':
-                        me.exported_report = 'from-products'
+                        return [
+                            ...me.values.map(value => ({
+                                'Studio': me.getPaymentStudio(value.payment),
+                                'Customer': (value.payment.user) ? value.payment.user.fullname : 'No Customer',
+                                'Email Address': (value.payment.user) ? value.payment.user.email : 'No Customer Email',
+                                'Contact Number': (value.payment.user) ? (value.payment.user.customer_details.co_contact_number != null) ? value.payment.user.customer_details.co_contact_number : (value.payment.user.customer_details.ec_contact_number) ? value.payment.user.customer_details.ec_contact_number : 'N/A' : 'No Customer Contact',
+                                'Payment ID': value.payment.id,
+                                'Reference Number': me.getPaymentCode(value.payment),
+                                'Transaction Date': me.$moment(value.payment.created_at).format('MMMM DD, YYYY hh:mm A'),
+                                'Promo Code': (value.payment.promo_code_used != null) ? value.payment.promo_code_used : 'No Promo Code Used',
+                                'Payment Status': value.payment.status,
+                                'Payment Method': me.replacer(value.payment.payment_method.method),
+                                'Payment Item Id': value.id,
+                                'SKU ID': me.getPaymentItem(value, 'sku'),
+                                'Item': me.getPaymentItem(value, 'name'),
+                                'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
+                                'Quantity': value.quantity,
+                                'Discount': `${(value.payment.promo_code_used != null) ? value.payment.discount.discount : 0}`,
+                                'Price': `${(value.payment.promo_code_used != null) ? value.total : value.price_per_item}`,
+                                'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
+                                'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',
+                                'Remarks': (value.payment.payment_method.remarks) ? value.payment.payment_method.remarks : 'N/A',
+                                'Last Action Taken By': me.getPaymentDetails(value.payment, 'employee')
+                            }))
+                        ]
                         break
                     case 'class_package_expiration':
                         return [
@@ -173,13 +198,104 @@
                             }))
                         ]
                         break
-                    case 'gift_card':
-                        me.exported_report = 'from-gift-cards'
-                        break
                 }
             }
         },
         methods: {
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.card_code
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                if (type == 'qty') {
+                    payment.payment_items.forEach((payment_item, key) => {
+                        result += payment_item.quantity
+                    })
+                }
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        let temp_price = 0
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                temp_price += parseInt(payment_item.total)
+                            } else {
+                                temp_price += parseInt(payment_item.price_per_item)
+                            }
+                        })
+                        result = `Php ${me.totalCount(temp_price)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = 'Customer'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
             getPaymentCode (data) {
                 const me = this
                 let result = ''
