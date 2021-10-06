@@ -153,7 +153,7 @@
                         'SKU ID': me.getPaymentItem(value, 'sku'),
                         'Item': me.getPaymentItem(value, 'name'),
                         'Quantity': value.quantity,
-                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
+                        'Discount': `${(value.parent.promo_code_used != null) ? (value.parent.discount) ? value.parent.discount.discount : 0 : 0}`,
                         'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
                         'Customer': (value.parent.user) ? value.parent.user.fullname : 'No Customer',
                         'Email Address': (value.parent.user) ? value.parent.user.email : 'No Customer Email',

@@ -167,7 +167,7 @@
                                 'Item': me.getPaymentItem(value, 'name'),
                                 'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
                                 'Quantity': value.quantity,
-                                'Discount': `${(value.payment.promo_code_used != null) ? value.payment.discount.discount : 0}`,
+                                'Discount': `${(value.payment.promo_code_used != null) ? (value.payment.discount) ? value.payment.discount.discount : 0 : 0}`,
                                 'Price': `${(value.payment.promo_code_used != null) ? value.total : value.price_per_item}`,
                                 'Comp Reason': (value.payment.payment_method.comp_reason) ? value.payment.payment_method.comp_reason : 'N/A',
                                 'Note': (value.payment.payment_method.note) ? value.payment.payment_method.note : 'N/A',

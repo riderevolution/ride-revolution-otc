@@ -181,7 +181,7 @@
                         'Item': me.getPaymentItem(value, 'name'),
                         'Item Category': (value.product_variant) ? value.product_variant.product.category.name : 'N/A',
                         'Quantity': value.quantity,
-                        'Discount': `${(value.parent.promo_code_used != null) ? value.parent.discount.discount : 0}`,
+                        'Discount': `${(value.parent.promo_code_used != null) ? (value.parent.discount) ? value.parent.discount.discount : 0 : 0}`,
                         'Price': `${(value.parent.promo_code_used != null) ? value.total : value.price_per_item}`,
                         'Last Action Taken By': me.getPaymentDetails(value.parent, 'employee'),
                         'Comp Reason': (value.parent.comp_reason) ? value.parent.comp_reason : 'N/A',
