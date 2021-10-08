@@ -12,6 +12,11 @@
                                     <div class="modal_main_group alternate">
                                         <div class="nonsense"></div>
                                         <div class="form_main_group">
+                                            <!-- <div class="form_group" v-if="$store.state.giftCardToAnyone"> -->
+                                            <div class="form_group">
+                                                <label for="recipient_email">Recipient Email <span>*</span></label>
+                                                <input type="email" name="recipient_email" class="default_text" v-model="customGiftCard.customCardRecipientEmail">
+                                            </div>
                                             <div class="form_group">
                                                 <label for="class_package_sku_id">Card Value <span>*</span></label>
                                                 <select class="default_select alternate" name="class_package_sku_id" v-validate="'required'" v-model="customGiftCard.classPackages" @change="getPackagePrice($event)">
@@ -536,6 +541,7 @@
             toggleClose () {
                 const me = this
                 me.$store.state.customerSendGiftCardStatus = false
+                me.$store.state.giftCardToAnyone = false
                 document.body.classList.remove('no_scroll')
             },
             countTotalItems (type) {
