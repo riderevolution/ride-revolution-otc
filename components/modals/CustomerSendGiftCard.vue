@@ -12,10 +12,13 @@
                                     <div class="modal_main_group alternate">
                                         <div class="nonsense"></div>
                                         <div class="form_main_group">
-                                            <!-- <div class="form_group" v-if="$store.state.giftCardToAnyone"> -->
-                                            <div class="form_group">
+                                            <div class="form_group" v-if="$store.state.giftCardToAnyone">
                                                 <label for="recipient_email">Recipient Email <span>*</span></label>
                                                 <input type="email" name="recipient_email" class="default_text" v-model="customGiftCard.customCardRecipientEmail">
+                                            </div>
+                                            <div class="form_group" v-if="$store.state.giftCardToAnyone">
+                                                <label for="recipient_name">Recipient Name <span>*</span></label>
+                                                <input type="text" name="recipient_name" class="default_text" v-model="customGiftCard.customCardTo">
                                             </div>
                                             <div class="form_group">
                                                 <label for="class_package_sku_id">Card Value <span>*</span></label>
@@ -241,7 +244,7 @@
                 let me = this
 
                 let toSubmit = { ...me.customGiftCard, ...{
-                    customer_id: me.$route.params.param
+                    customer_id: (this.$store.state.giftCardToAnyone) ? null : me.$route.params.param
                 }}
 
                 me.$axios.post(`api/inventory/gift-cards/send-from-admin`, toSubmit).then(res => {
