@@ -181,7 +181,7 @@
                             ...me.values.map((value, key) => ({
                                 'Transaction Date': me.$moment(value.payment.created_at).format('MMM DD, YYYY hh:mm A'),
                                 'Reference Number': me.getPaymentCode(value),
-                                'Payment Method': value.payment_item.payment_method.method,
+                                'Payment Method': (value.payment_item.payment_method) ? value.payment_item.payment_method.method : 'N/A',
                                 'Class Package': value.class_package.name,
                                 'Estimated Price Per Class': value.estimated_price_per_class,
                                 'Original Count': value.original_package_count,
@@ -300,18 +300,22 @@
                 const me = this
                 let result = ''
 
-                switch (data.payment_item.payment_method.method) {
-                    case 'paypal':
-                        result = data.payment_item.payment_method.paypal_transaction_id
-                        break
-                    case 'paymaya':
-                        result = data.payment_item.payment_method.paymaya_transaction_id
-                        break
-                    case 'paymongo':
-                        result = data.payment_item.payment_method.paymongo_source_id
-                        break
-                    default:
-                        result = data.payment.payment_code
+                if (data.payment_item.payment_method) {
+                    switch (data.payment_item.payment_method.method) {
+                        case 'paypal':
+                            result = data.payment_item.payment_method.paypal_transaction_id
+                            break
+                        case 'paymaya':
+                            result = data.payment_item.payment_method.paymaya_transaction_id
+                            break
+                        case 'paymongo':
+                            result = data.payment_item.payment_method.paymongo_source_id
+                            break
+                        default:
+                            result = data.payment.payment_code
+                    }
+                } else {
+                    result = data.payment.payment_code
                 }
 
                 return result

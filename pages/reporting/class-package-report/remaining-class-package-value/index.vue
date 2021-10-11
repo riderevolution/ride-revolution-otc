@@ -156,17 +156,144 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Package Type': value.package_type.name,
-                        'Class Package': value.name,
-                        'Starting Class Count': (value.starting_class_count == 'Unlimited') ? value.starting_class_count : me.totalItems(value.starting_class_count),
-                        'Starting Value': `Php ${me.totalCount(value.starting_value)}`,
-                        'Remaining Class Count': (value.remaining_class_count == 'Unlimited') ? value.remaining_class_count : me.totalItems(value.remaining_class_count),
-                        'Remaining Value': `Php ${me.totalCount(value.remaining_value)}`
+                        'Transaction Date': me.$moment(value.payment.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Reference Number': me.getPaymentCode(value),
+                        'Payment Method': (value.payment_item.payment_method) ? value.payment_item.payment_method.method : 'N/A',
+                        'Class Package': value.class_package.name,
+                        'Estimated Price Per Class': value.estimated_price_per_class,
+                        'Original Count': value.original_package_count,
+                        'Used Count': value.count,
+                        'Activation Date': (value.activation_date) ? me.$moment(value.activation_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                        'Expiration Date': (value.computed_expiration_date) ? me.$moment(value.computed_expiration_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                        'Expiration If Not Activated': (value.expiry_date_if_not_activated) ? me.$moment(value.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                        'Customer': value.user.fullname,
+                        'Email': value.user.email,
+                        'Comp Reason': (value.payment_item.payment_method.comp_reason) ? value.payment_item.payment_method.comp_reason : 'N/A',
+                        'Note': (value.payment_item.payment_method.note) ? value.payment_item.payment_method.note : 'N/A',
+                        'Remarks': (value.payment_item.payment_method.remarks) ? value.payment_item.payment_method.remarks : 'N/A'
                     }))
                 ]
             }
         },
         methods: {
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.card_code
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                if (type == 'qty') {
+                    payment.payment_items.forEach((payment_item, key) => {
+                        result += payment_item.quantity
+                    })
+                }
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        let temp_price = 0
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                temp_price += parseInt(payment_item.total)
+                            } else {
+                                temp_price += parseInt(payment_item.price_per_item)
+                            }
+                        })
+                        result = `Php ${me.totalCount(temp_price)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = 'Customer'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Website/Online'
+                }
+
+                return result
+            },
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                if (data.payment_item.payment_method) {
+                    switch (data.payment_item.payment_method.method) {
+                        case 'paypal':
+                            result = data.payment_item.payment_method.paypal_transaction_id
+                            break
+                        case 'paymaya':
+                            result = data.payment_item.payment_method.paymaya_transaction_id
+                            break
+                        case 'paymongo':
+                            result = data.payment_item.payment_method.paymongo_source_id
+                            break
+                        default:
+                            result = data.payment.payment_code
+                    }
+                } else {
+                    result = data.payment.payment_code
+                }
+
+                return result
+            },
             /**
              * Custom toggler for accordion
              * @param  {[object]} event
@@ -220,13 +347,11 @@
             getPackages () {
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
-                formData.append('all', 1)
                 me.values = []
                 me.loader(true)
-                me.$axios.post('api/reporting/packages/remaining-class-package-value', formData).then(res => {
+                me.$axios.post('api/reporting/packages/remaining-class-package-value-export', formData).then(res => {
                     if (res.data) {
-
-                        res.data.classPackages.forEach((item, index) => {
+                        res.data.values.forEach((item, index) => {
                             me.values.push(item)
                         })
                     }
