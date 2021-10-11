@@ -151,7 +151,7 @@
                         'Customer': value.fullname,
                         'Customer Type': value.customer_details.customer_type.name,
                         'Gender': me.getCustomerDetails(value, 'gender'),
-                        'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
+                        'Birthdate': (value.customer_details.co_birthdate) ? me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY') ? 'Incomplete Profile',
                         'Contact Number': me.getCustomerDetails(value, 'contact_number'),
                         'Email Address': value.email,
                         'Weight': me.getCustomerDetails(value, 'weight'),
