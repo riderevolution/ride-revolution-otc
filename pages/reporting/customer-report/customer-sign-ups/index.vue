@@ -151,7 +151,7 @@
                         'Customer': value.fullname,
                         'Customer Type': value.customer_details.customer_type.name,
                         'Gender': me.getCustomerDetails(value, 'gender'),
-                        'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
+                        'Birthdate': (value.customer_details.co_birthdate) ? me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY') : 'Incomplete Profile',
                         'Contact Number': me.getCustomerDetails(value, 'contact_number'),
                         'Email Address': value.email,
                         'Weight': me.getCustomerDetails(value, 'weight'),
@@ -177,18 +177,31 @@
                     ctr = 0
 
                 user_package_counts.forEach((element, index) => {
-                    let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
-                    if (parseInt(expiry.diff(current)) > 0) {
-                        ctr += 1
+                    let expiry = null
+                    if (element.computed_expiration_date) {
+                        expiry = me.$moment(element.computed_expiration_date)
+                    } else if (element.expiry_date_if_not_activated) {
+                        expiry = me.$moment(element.expiry_date_if_not_activated)
+                    } else {
+                        ctr = 101010
+                    }
+                    if (expiry) {
+                        if (parseInt(expiry.diff(current)) > 0) {
+                            ctr += 1
+                        }
                     }
                 })
 
-                if (ctr == 0) {
-                    result = 'No Active Package'
-                } else if (ctr > 0 && ctr <= 1) {
-                    result = user_package_counts[0].class_package.name
+                if (ctr == 101010) {
+                    result = 'Not Activated'
                 } else {
-                    result = 'Multiple'
+                    if (ctr == 0) {
+                        result = 'No Active Package'
+                    } else if (ctr > 0 && ctr <= 1) {
+                        result = user_package_counts[0].class_package.name
+                    } else {
+                        result = 'Multiple'
+                    }
                 }
 
                 return result
