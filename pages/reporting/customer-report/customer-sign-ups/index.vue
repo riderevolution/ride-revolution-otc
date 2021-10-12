@@ -174,7 +174,8 @@
                 const me = this
                 let result = '',
                     current = me.$moment(),
-                    ctr = 0
+                    ctr = 0,
+                    not_activated = false
 
                 user_package_counts.forEach((element, index) => {
                     let expiry = null
@@ -183,7 +184,8 @@
                     } else if (element.expiry_date_if_not_activated) {
                         expiry = me.$moment(element.expiry_date_if_not_activated)
                     } else {
-                        ctr = 101010
+                        not_activated = true
+                        ctr += 1
                     }
                     if (expiry) {
                         if (parseInt(expiry.diff(current)) > 0) {
@@ -192,8 +194,12 @@
                     }
                 })
 
-                if (ctr == 101010) {
-                    result = 'Not Activated'
+                if (not_activated) {
+                    if (not_activated && (ctr > 0 && ctr <= 1)) {
+                        result = 'Not Activated'
+                    } else if (ctr > 0) {
+                        result = 'Multiple'
+                    }
                 } else {
                     if (ctr == 0) {
                         result = 'No Active Package'
