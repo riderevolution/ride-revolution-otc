@@ -47,7 +47,8 @@
                 <section id="content">
                     <div class="cms_table_toggler">
                         <div :class="`status ${(tab == 'studio') ? 'active' : ''}`" @click="toggleStatus('studio')">Studio</div>
-                        <div :class="`status ${(tab == 'online') ? 'active' : ''}`" @click="toggleStatus('online')">Online</div>
+                        <div :class="`status ${(tab == 'online') ? 'active' : ''}`" @click="toggleStatus('online')">Online Class</div>
+                        <div :class="`status ${(tab == 'os') ? 'active' : ''}`" @click="toggleStatus('online')">Website/Online Sales</div>
                     </div>
                     <table class="cms_table alt">
                         <thead>
