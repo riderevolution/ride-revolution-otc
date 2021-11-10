@@ -16,8 +16,8 @@
                         <div class="sub_wrapper" v-if="navItem.subItems">
                             <ul class="sub_nav_list" v-for="(subItem, sub_key) in navItem.subItems" :key="sub_key" v-if="subItem.access">
                                 <li :class="`sub_item_wrapper ${(subItem.hasChild) ? 'child' : ''}`">
-                                    <nuxt-link class="sub_nav_item" :to="subItem.link" @click.native.self="resetToggle()" v-if="!subItem.hasChild">{{ subItem.title }}</nuxt-link>
-                                    <nuxt-link class="sub_nav_item" :event="''" :to="subItem.link" @click.native.self="toggleSubChild(subItem)" v-else>{{ subItem.title }}</nuxt-link>
+                                    <nuxt-link :class="{'sub_nav_item': true, 'inactive': ($route.path == subItem.inactive_on) }" :to="subItem.link" @click.native.self="resetToggle()" v-if="!subItem.hasChild">{{ subItem.title }}</nuxt-link>
+                                    <nuxt-link :class="{'sub_nav_item': true, 'inactive': ($route.path == subItem.inactive_on) }" :event="''" :to="subItem.link" @click.native.self="toggleSubChild(subItem)" v-else>{{ subItem.title }}</nuxt-link>
                                 </li>
                             </ul>
                         </div>
