@@ -126,18 +126,8 @@
                 return [
                     ...me.values.map(value => ({
                         'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
-                        'Start Time': value.schedule.start_time,
-                        'End Time': value.schedule.end_time,
-                        'Studio': value.schedule.studio.name,
-                        'Peak Type': value.schedule.peak_type,
-                        'Class Type': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
-                        'Class Length': value.schedule.class_length_formatted,
-                        'Class Credits': value.schedule.class_credits,
-                        'Instructor': me.getInstructorsInSchedule(value, 'primary'),
-                        'Substitute Instructor': me.getInstructorsInSchedule(value, 'substitute'),
-                        'Zoom Link': value.zoom_link,
-                        'No. of Bookings': value.bookings.length,
-                        'No. of Available Seats': value.availableSeatsCount
+                        'Instructor': value.user.fullname,
+                        'Status': value.status
                     }))
                 ]
             }
@@ -224,11 +214,11 @@
                 let current = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d')
                 let excess = 0
                 if (search) {
-                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}`).then(res => {
+                    await me.$axios.get(`api/reporting/instructor-availability?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}`).then(res => {
                         me.schedules = res.data.schedules
                     })
                 } else {
-                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}`).then(res => {
+                    await me.$axios.get(`api/reporting/instructor-availability?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}`).then(res => {
                         me.schedules = res.data.schedules
                     })
                 }
@@ -340,39 +330,16 @@
                 let result = ''
                 me.schedules.forEach((data, index) => {
                     let scheduleCurrent = me.$moment(data.date).format('D')
-                    let currentDate = me.$moment(`${me.currentYear}-${me.currentMonth}-${date} ${data.schedule.start_time}`)
+                    let currentDate = me.$moment(`${me.currentYear}-${me.currentMonth}-${date}`)
                     let scheduleDate = me.$moment()
                     let unixTimestamp = me.$moment(`${me.currentYear}-${me.currentMonth}-${scheduleCurrent}`, 'YYYY-MM-D').valueOf()
                     if (date == scheduleCurrent) {
-                        if (data.schedule.private_class == 1) {
-                            if (data.schedule.enabled == 1) {
-                                result += `
-                                    <a href="javascript:void(0)" class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'} private">
-                                        <div class="class_text margin"><img src="/icons/private-class.svg" /><span>${data.schedule.start_time}</span></div>
-                                        <div class="class_text">${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
-                                    </a>`
-                            } else {
-                                result += `
-                                    <a href="javascript:void(0)" class="class_wrapper draft private ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
-                                        <div class="class_text margin"><img src="/icons/private-class.svg" /><span>${data.schedule.start_time}</span></div>
-                                        <div class="class_text">${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
-                                    </a>`
-                            }
-                        } else {
-                            if (data.schedule.enabled == 1) {
-                                result += `
-                                    <div class="class_wrapper ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
-                                        <div class="class_text margin">${data.schedule.start_time}</div>
-                                        <div class="class_text">${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
-                                    </div>`
-                            } else {
-                                result += `
-                                    <div class="class_wrapper draft ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
-                                        <div class="class_text margin">${data.schedule.start_time}</div>
-                                        <div class="class_text">${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
-                                    </div>`
-                            }
-                        }
+                        result += `
+                            <div class="class_wrapper ${(data.status) ? 'original' : 'completed'}">
+                                <div class="class_text margin">${data.user.fullname}</div>
+                                <div class="class_text">${data.status}</div>
+                            </div>`
+                       
                     }
                 })
                 return result
