@@ -180,7 +180,7 @@
                                                 <span>{{ checkIdentifierText(data.identifier) }}</span>
                                             </div>
                                             <div class="violator label" v-if="data.type == 1">{{
-                                            getInstructorsInSchedule(data.bookings[0].scheduled_date) }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            getInstructorsInSchedule(data.firstBooking.scheduled_date) }} ({{ $moment(data.firstBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.firstBooking.scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                             <!-- <div class="violator label" v-else>{{ data.fullname }} ({{ $moment(data.bookings[0].scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.bookings[0].scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div> -->
                                         </div>
                                     </div>
@@ -229,7 +229,7 @@
                                             <div class="name link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                             <div class="violator orange"><img src="/icons/star-orange.svg" /><span>Last Class</span></div>
                                             <div class="violator label">{{
-                                            getInstructorsInSchedule(data.bookings[0].scheduled_date) }} ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
+                                            getInstructorsInSchedule(data.lastBooking.scheduled_date) }} ({{ $moment(data.lastBooking.scheduled_date.date).format('MMM DD, YYYY') }} {{ $moment(data.lastBooking.scheduled_date.schedule.start_time, 'hh:mm A').format('hh:mm A') }})</div>
                                         </div>
                                     </div>
                                 </div>
