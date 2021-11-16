@@ -2,6 +2,7 @@
     <div class="header">
         <div class="header_icons">
             <div class="header_actions">
+                <div class="action_btn" @click="toggleSendGiftCard()">Send Gift Card</div>
                 <nuxt-link to="/customers/create" class="action_btn"><svg xmlns="http://www.w3.org/2000/svg" width="17.016" height="17.016" viewBox="0 0 17.016 17.016"><defs></defs><g transform="translate(-553 -381)"><circle class="add" cx="8.508" cy="8.508" r="8.508" transform="translate(553 381)"/><g transform="translate(558.955 386.955)"><line class="add_sign" y2="5.233" transform="translate(2.616 0)"/><line class="add_sign" x2="5.233" transform="translate(0 2.616)"/></g></g></svg>Add New Customer</nuxt-link>
                 <div class="action_btn" @click="toggleQuickSale()"><svg xmlns="http://www.w3.org/2000/svg" width="20.607" height="18.758" viewBox="0 0 20.607 18.758"><defs><style></style></defs><g transform="translate(-1062.166 -439.333)"><path class="cart" d="M1069.335,444h15.891a.826.826,0,0,1,.809.992l-1.372,6.724a.826.826,0,0,1-.713.655l-12.62,1.793" transform="translate(-3.279 -2.049)"/><path class="cart_sign" d="M1062.667,439.833h1.9a1.184,1.184,0,0,1,1.164.967l2.413,11.407a2.3,2.3,0,0,0,2.26,1.877h11.325"/><circle class="cart" cx="1.318" cy="1.318" r="1.318" transform="translate(1068.972 455.455)"/><circle class="cart" cx="1.318" cy="1.318" r="1.318" transform="translate(1078.653 455.455)"/></g></svg>Quick Sale</div>
             </div>
@@ -78,6 +79,10 @@
             }
         },
         methods: {
+            toggleSendGiftCard () {
+                this.$store.state.customerSendGiftCardStatus = true
+                this.$store.state.giftCardToAnyone = true
+            },
             changeStudio () {
                 const me = this
                 me.isToggled = false
