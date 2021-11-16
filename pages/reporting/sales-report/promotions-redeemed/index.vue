@@ -106,14 +106,14 @@
                                                 <tr v-for="(child, key) in data.payment_items" :key="key">
                                                     <td>{{ getPaymentCode(child) }}</td>
                                                     <td>
-                                                        <div class="thumb" v-if="data.user">
-                                                            <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                                        <div class="thumb" v-if="child.user">
+                                                            <img :src="child.user.customer_details.images[0].path_resized" v-if="child.user.customer_details.images[0].path != null" />
                                                             <div class="table_image_default" v-else>
                                                                 <div class="overlay">
-                                                                    {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
+                                                                    {{ child.user.first_name.charAt(0) }}{{ child.user.last_name.charAt(0) }}
                                                                 </div>
                                                             </div>
-                                                            <div class="table_data_link" @click="openWindow(`/customers/${data.user.id}/packages`)">{{ data.user.fullname }}</div>
+                                                            <div class="table_data_link" @click="openWindow(`/customers/${child.user.id}/packages`)">{{ child.user.fullname }}</div>
                                                         </div>
                                                         <div v-else>
                                                             No Customer
