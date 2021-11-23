@@ -692,6 +692,7 @@
                 })
                 me.$axios.get(`api/instructors?enabled=1&studio_id=${studio_id}`).then(res => {
                     me.instructors = res.data.instructors.data
+					me.instructors.sort((a, b) => (a.fullname > b.fullname) ? 1 : -1)
                 })
                 me.form.studio_id = studio_id
 
