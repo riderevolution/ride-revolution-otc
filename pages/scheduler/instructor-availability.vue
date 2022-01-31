@@ -9,7 +9,7 @@
 							<download-csv
 								class="action_btn alternate"
 								:data="scheduleAttributes"
-								:name="`schedule-${$moment().format('MM-DD-YY-hh-mm')}.csv`" v-if="schedules.length > 0">
+								:name="`schedule-${$moment().format('MM-DD-YY-hh-mm')}.csv`" v-if="values.length > 0">
 								Export
 							</download-csv>
 						</div>
@@ -144,54 +144,28 @@
 					...me.values.map(value => ({
 						'Date': (value.date) ? me.$moment(value.date).format('MMMM DD, YYYY') : 'N/A',
 						'Instructor': value.user.fullname,
-						'Status': value.status
+						'Status': value.status,
+						'Studio': me.getStudioName()
 					}))
 				]
 			}
 		},
 		methods: {
-			getInstructorsInSchedule (data, type) {
+			getStudioName () {
 				const me = this
 				let result = ''
-				if (data != '') {
-					let ins_ctr = 0
-					let ins_sub_ctr = 0
-					let instructor = []
-					let sub_instructor = []
-					data.schedule.instructor_schedules.forEach((ins, index) => {
 
-						if (type == 'substitute') {
-							if (ins.substitute == 1) {
-								ins_sub_ctr += 1
-								sub_instructor = ins
-							}
-						} else {
-							if (ins.substitute == 0) {
-								ins_ctr += 1
-							}
-							instructor = ins
-						}
-					})
-
-					if (ins_ctr == 2) {
-						result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
-					} else {
-						if (type == 'substitute' && ins_sub_ctr > 0) {
-							result = `${sub_instructor.user.fullname}`
-						}
-						if (type == 'primary') {
-							result = `${instructor.user.fullname}`
-						}
+				me.studios.forEach((item, i) => {
+					if (item.id == me.form.studio_id) {
+						result = item.name
 					}
-
-				} else {
-					result = '- -'
-				}
+				})
 
 				return result
 			},
 			async submissionSuccess () {
 				const me = this
+				me.values = []
 				me.generateCalendar(me.currentYear, me.currentMonth, 0, 1)
 			},
 			generatePrevCalendar () {
@@ -235,6 +209,10 @@
 					me.schedules = res.data.schedules
 
 					me.values = me.schedules
+
+					if (me.form.status == 'undecided') {
+						me.values = []
+					}
 
 					/**
 					 * Generate Rows **/
@@ -312,7 +290,6 @@
 						let lastElement = document.querySelectorAll('tr #col_5')[document.querySelectorAll('tr #col_5').length - 1]
 					})
 					setTimeout( () => {
-						me.clickDates(0, endDate, excess)
 						me.checkAllDayPerWeek()
 						me.loader(false)
 					}, 500)
@@ -388,187 +365,51 @@
 					}
 				})
 				let values = []
-				me.instructors.forEach((item, i) => {
-					if (decided_instrutors.indexOf(item.id) < 0) {
-						result += `
-							<div class="class_wrapper draft">
-								<div class="class_text big margin">${item.fullname}</div>
-								<div class="class_text">Undecided</div>
-							</div>`
-						if (me.form.status == 'undecided') {
-							values.push({
-								'date': me.$moment(`${me.currentYear}-${me.currentMonth}-${date}`),
-								user: {
-									fullname: item.fullname
-								},
-								status: 'Undecided'
-							})
+
+				if (me.form.instructor_id) {
+					me.instructors.forEach((item, i) => {
+						if (item.id == me.form.instructor_id) {
+							result += me.populateInstructors(item)
+							values.push(me.populateUndecidedInstructors(date, item))
 						}
-					}
-				})
+					})
+				} else {
+					me.instructors.forEach((item, i) => {
+						if (decided_instrutors.indexOf(item.id) < 0) {
+							result += me.populateInstructors(item)
+							values.push(me.populateUndecidedInstructors(date, item))
+						}
+					})
+				}
 
 				if (me.form.status == 'undecided') {
-					me.values = values
+					values.forEach((value, i) => {
+						me.values.push(value)
+					})
 				}
 
 				return result
 			},
-			toggleOverlays (e) {
+			populateUndecidedInstructors (date, item) {
 				const me = this
-				let target = e.target
-				let startDate = 1
-				let endDate = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').daysInMonth()
-				let elementMonth = document.getElementById('gear_month')
-				if (elementMonth !== target.ownerSVGElement && elementMonth !== target.parentNode.parentNode.parentNode.previousElementSibling) {
-					me.monthStatus = false
+				return {
+					'date': me.$moment(`${me.currentYear}-${me.currentMonth}-${date}`),
+					user: {
+						fullname: item.fullname
+					},
+					status: 'undecided'
 				}
-				do {
-					let elementDay = document.getElementById(`menu_${startDate}`)
-					let elementWeek = document.getElementById(`gear_${startDate}`)
-					if (elementDay !== target && elementDay !== target.parentNode.parentNode.parentNode.previousElementSibling) {
-						if (elementDay.nextElementSibling.classList.contains('active')) {
-							elementDay.classList.remove('active')
-							elementDay.nextElementSibling.classList.remove('active')
-						}
-					}
-					if (elementWeek != null) {
-						if (elementWeek !== target.ownerSVGElement && elementWeek !== target.parentNode.parentNode.parentNode.previousElementSibling) {
-							if (elementWeek.nextElementSibling.classList.contains('active')) {
-								elementWeek.classList.remove('active')
-								elementWeek.nextElementSibling.classList.remove('active')
-							}
-						}
-					}
-					startDate++
-				} while (startDate <= endDate)
 			},
-			monthGear () {
-				const me = this
-				me.value = me.$moment(`${me.currentYear}-${me.currentMonth}-1`, 'YYYY-MM-D').format('YYYY-MM-DD')
-				me.monthStatus ^= true
-			},
-			clearMonth () {
-				const me = this
-				me.value = me.$moment(`${me.currentYear}-${me.currentMonth}-${1}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
-				me.calendarType = 'month'
-				me.$store.state.calendarClearStatus = true
-				document.body.classList.add('no_scroll')
-			},
-			duplicateMonth () {
-				const me = this
-				me.calendarType = 'month'
-				me.$store.state.calendarDuplicateStatus = true
-				document.body.classList.add('no_scroll')
-			},
-			clickDates (startNum, endNum, firstDayExcess) {
-				const me = this
-				let month = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('M')
-				let year = me.$moment(`${me.currentYear}-${me.currentMonth}`, 'YYYY-MM').format('YYYY')
-				do {
-					startNum++
-					let elementDay = (document.getElementById(`menu_${startNum}`) != null) ? document.getElementById(`menu_${startNum}`) : null
-					let elementWeek = (document.getElementById(`gear_${startNum}`) != null) ? document.getElementById(`gear_${startNum}`) : null
-					let elementDayAdd = (elementDay != null) ? elementDay.nextElementSibling.querySelector('.menu_list_wrapper .add') : null
-					let elementDayClear = (elementDay != null) ? elementDay.nextElementSibling.querySelector('.menu_list_wrapper .clear') : null
-					let elementDayDuplicate = (elementDay != null) ? elementDay.nextElementSibling.querySelector('.menu_list_wrapper .duplicate') : null
-					let classNode = (document.getElementById(`class_${startNum}`) != null) ? document.getElementById(`class_${startNum}`) : null
-					/**
-					 * Day **/
-					if (elementDay != null) {
-						/**
-						* Toggle Day Overlay **/
-						elementDay.addEventListener('click', function(e) {
-							let me = this
-							let overlay = me.nextElementSibling
-							if (overlay.classList.contains('active')) {
-								overlay.classList.remove('active')
-							} else {
-								overlay.classList.add('active')
-							}
-						})
-						if (elementDayAdd != null) {
-							elementDayAdd.addEventListener('click', function(e) {
-								e.preventDefault()
-								me.$router.push(e.target.getAttribute('href'))
-							})
-						}
-						if (elementDayClear != null) {
-							elementDayClear.addEventListener('click', function(e) {
-								e.preventDefault()
-								me.value = e.target.getAttribute('href')
-								me.calendarType = 'day'
-								me.$store.state.calendarClearStatus = true
-								document.body.classList.add('no_scroll')
-							})
-						}
-						if (elementDayDuplicate != null) {
-							elementDayDuplicate.addEventListener('click', function(e) {
-								e.preventDefault()
-								me.value = e.target.getAttribute('href')
-								me.calendarType = 'day'
-								me.$store.state.calendarDuplicateStatus = true
-								document.body.classList.add('no_scroll')
-							})
-						}
-					}
+			populateInstructors (item) {
+				let result = ''
 
-					/**
-					 * Weekly **/
-					if (elementWeek != null && elementWeek != 0) {
-						/**
-						* Toggle Week Overlay **/
-						elementWeek.addEventListener('click', function(e) {
-							e.preventDefault()
-							let element = this
-							let overlay = element.nextElementSibling
-							let id = element.id.split('_')[1]
-							me.value = `${me.getFirstDayofWeek(id, firstDayExcess)}|||${me.getLastDayofWeek(id)}`
-							if (overlay.classList.contains('active')) {
-								overlay.classList.remove('active')
-								overlay.previousElementSibling.classList.remove('active')
-							} else {
-								overlay.classList.add('active')
-								overlay.previousElementSibling.classList.add('active')
-							}
-						})
-					}
+				result = `
+					<div class="class_wrapper draft">
+						<div class="class_text big margin">${item.fullname}</div>
+						<div class="class_text">Undecided</div>
+					</div>`
 
-					if (classNode != null) {
-						if (classNode.querySelectorAll('.class_wrapper').length > 0) {
-							classNode.querySelectorAll('.class_wrapper').forEach((element, index) => {
-								element.addEventListener('click', function(e) {
-									e.preventDefault()
-									me.$router.push(this.getAttribute('href'))
-								})
-							})
-							// classNode.querySelector('.class_wrapper').addEventListener('click', function(e) {
-							//     e.preventDefault()
-							//     me.$router.push(this.getAttribute('href'))
-							// })
-						}
-						if (classNode.querySelectorAll('.class_wrapper').length <= 0) {
-							classNode.parentNode.classList.add('disabled_menu')
-						}
-					}
-				} while (startNum < endNum + firstDayExcess)
-			},
-			getFirstDayofWeek (startDate, excess) {
-				const me = this
-				let firstDayofWeek = parseInt(me.$moment(`${me.currentYear}-${me.currentMonth}-${startDate}`, 'YYYY-MM-D').startOf('week').format('D')) + parseInt(excess)
-				if (firstDayofWeek == 31 || firstDayofWeek == 32) {
-					firstDayofWeek = 1
-				} else {
-					firstDayofWeek = firstDayofWeek - excess
-				}
-				return me.$moment(`${me.currentYear}-${me.currentMonth}-${firstDayofWeek}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
-			},
-			getLastDayofWeek (startDate) {
-				const me = this
-				let lastDayofWeek = me.$moment(`${me.currentYear}-${me.currentMonth}-${startDate}`, 'YYYY-MM-D').endOf('week').format('D')
-				if (startDate == 30 || startDate == 31) {
-					lastDayofWeek = me.$moment(`${me.currentYear}-${me.currentMonth}-${startDate}`, 'YYYY-MM-D').daysInMonth()
-				}
-				return me.$moment(`${me.currentYear}-${me.currentMonth}-${lastDayofWeek}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
+				return result
 			},
 			fetchData () {
 				const me = this
