@@ -592,6 +592,13 @@ table
 	cursor: pointer
 	user-select: none
 	transition: .3s ease-in-out
+	&.sent
+		.sent_icon
+			fill: none
+			stroke: $blue
+			stroke-width: 2
+			stroke-linecap: round
+			stroke-linejoin: round
 	svg
 		margin-right: 10px
 		.add,
@@ -1398,6 +1405,18 @@ table
 				&.white
 					span
 						background-color: $white
+						border: 1px solid $black
+				&.green
+					span
+						background-color: $green
+						border: 1px solid $black
+				&.yellow
+					span
+						background-color: $yellow
+						border: 1px solid $black
+				&.red
+					span
+						background-color: $red
 						border: 1px solid $black
 				&.gradient
 					span
@@ -4827,6 +4846,16 @@ input::placeholder
 										transform: translateY(0%)
 										&.open
 											background-color: $violet
+									&.available,
+									&.unavailable,
+									&.partially-available
+										&.circle
+											background-color: transparent
+											border: 6px solid $gray
+											pointer-events: none
+										&.single
+											border: 6px solid $black
+											transition: .3s ease-in-out
 									&.single
 										background-color: $white
 										border: 6px solid $black
@@ -4835,29 +4864,14 @@ input::placeholder
 										background-color: #74f4da
 										border: 6px solid #74f4da
 										transition: .3s ease-in-out
-										&.circle
-											background-color: transparent
-											border: 6px solid #74f4da
-										&.single
-											border: 6px solid $black
-											transition: .3s ease-in-out
 									&.unavailable
 										background-color: #fb9096
 										border: 6px solid #fb9096
 										transition: .3s ease-in-out
-										&.single
-											border: 6px solid $black
-											transition: .3s ease-in-out
 									&.partially-available
 										background-color: $yellow
 										border: 6px solid $yellow
 										transition: .3s ease-in-out
-										&.circle
-											background-color: transparent
-											border: 6px solid $yellow
-										&.single
-											border: 6px solid $black
-											transition: .3s ease-in-out
 									.header_day
 										position: absolute
 										top: 50%
@@ -5021,6 +5035,8 @@ input::placeholder
 								padding: 5px 10px
 								margin-bottom: 3px
 								text-decoration: none
+								&.red
+									background-color: $red
 								&.green
 									background-color: $green
 								&.yellow
@@ -5043,6 +5059,8 @@ input::placeholder
 								.class_text
 									color: $white
 									sf_pro_regular(14px)
+									&.big
+										sf_pro_bold(16px)
 									&.margin
 										margin-bottom: 5px
 							.time_wrapper
@@ -8805,6 +8823,15 @@ input::placeholder
 							&.blue
 								span
 									color: $blue
+							&.green
+								span
+									color: $green
+							&.yellow
+								span
+									color: $yellow
+							&.red
+								span
+									color: $red
 				.filter_flex
 					display: flex
 					flex-flow: row wrap

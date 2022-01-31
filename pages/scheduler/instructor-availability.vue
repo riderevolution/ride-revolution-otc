@@ -36,10 +36,18 @@
 									<option value="" selected>All Status</option>
 									<option value="available">Available</option>
 									<option value="partially-available">Partially-Available</option>
+									<option value="unavailable">Unavailable</option>
+									<option value="undecided">Undecided</option>
 								</select>
 							</div>
 							<button type="submit" name="button" class="action_btn alternate margin">Search</button>
 						</form>
+						<div class="legends_wrapper">
+							<div class="legend_title green"><span>&#x25CF;</span>&nbsp;Available</div>
+							<div class="legend_title margin yellow"><span>&#x25CF;</span>&nbsp;Partially-Available</div>
+							<div class="legend_title margin red"><span>&#x25CF;</span>&nbsp;Unavailable</div>
+							<div class="legend_title margin black"><span>&#x25CF;</span>&nbsp;Undecided</div>
+						</div>
 					</div>
 				</section>
 				<section id="content">
@@ -134,7 +142,7 @@
 				const me = this
 				return [
 					...me.values.map(value => ({
-						'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
+						'Date': (value.date) ? me.$moment(value.date).format('MMMM DD, YYYY') : 'N/A',
 						'Instructor': value.user.fullname,
 						'Status': value.status
 					}))
@@ -225,60 +233,68 @@
 
 				await me.$axios.get(`api/reporting/instructor-availability?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}&status=${me.form.status}`).then(res => {
 					me.schedules = res.data.schedules
-				})
 
-				me.values = me.schedules
+					me.values = me.schedules
 
-				/**
-				 * Generate Rows **/
-				for (let i = 0; i < 6; i++) {
-					let tableRow = document.createElement('tr')
 					/**
-					* Generate Columns **/
-					for (let j = 0; j < 7; j++) {
-						if (startDate <= endDate) {
-							if (me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d') == j) {
-								let unixTimestamp = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').valueOf()
-								let dayDate = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
-								if (highlight && me.currentDate == startDate) {
-									tableRow.classList.add('highlighted')
-									setTimeout( () => {
-										document.querySelector('.highlighted').scrollIntoView({block: 'center', behavior: 'smooth'})
-									}, 250)
-								}
-								tableRow.innerHTML += `
-									<td id="col_${i}" class='day_wrapper fade_in'>
-										<div class='header_wrapper'>
-											<div class='header_day ${(me.currentDate == startDate) ? 'active' : '' }'>${startDate}</div>
-										</div>
-										<div class="classes" id="class_${startDate}">
-											${me.populateScheduler(startDate)}
-										</div>
-									</td>`
-								startDate++
-							} else {
-								let prevDate = me.$moment(`${year}-${(month - 1 == 0) ? 12 : month - 1}`, 'YYYY-MM').daysInMonth()
-								current--
-								if (current <= 0) {
-									prevDate = me.$moment(`${year}-${(month - 1 == 0) ? 12 : month - 1}`, 'YYYY-MM').daysInMonth()
+					 * Generate Rows **/
+					for (let i = 0; i < 6; i++) {
+						let tableRow = document.createElement('tr')
+						/**
+						* Generate Columns **/
+						for (let j = 0; j < 7; j++) {
+							if (startDate <= endDate) {
+								if (me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d') == j) {
+									let unixTimestamp = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').valueOf()
+									let dayDate = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
+									if (highlight && me.currentDate == startDate) {
+										tableRow.classList.add('highlighted')
+										setTimeout( () => {
+											document.querySelector('.highlighted').scrollIntoView({block: 'center', behavior: 'smooth'})
+										}, 250)
+									}
+									tableRow.innerHTML += `
+										<td id="col_${i}" class='day_wrapper fade_in'>
+											<div class='header_wrapper'>
+												<div class='header_day ${(me.currentDate == startDate) ? 'active' : '' }'>${startDate}</div>
+											</div>
+											<div class="classes" id="class_${startDate}">
+												${me.populateScheduler(startDate)}
+											</div>
+										</td>`
+									startDate++
 								} else {
-									prevDate = prevDate - current
+									let prevDate = me.$moment(`${year}-${(month - 1 == 0) ? 12 : month - 1}`, 'YYYY-MM').daysInMonth()
+									current--
+									if (current <= 0) {
+										prevDate = me.$moment(`${year}-${(month - 1 == 0) ? 12 : month - 1}`, 'YYYY-MM').daysInMonth()
+									} else {
+										prevDate = prevDate - current
+									}
+									excess++
+									/**
+									 * Generate Previous Dates **/
+									tableRow.innerHTML += `
+										<td class='day_wrapper fade_in disabled_day'>
+											<div class='header_wrapper'>
+												<div class='header_day'>${prevDate}</div>
+											</div>
+										</td>`
 								}
-								excess++
+							} else {
 								/**
-								 * Generate Previous Dates **/
-								tableRow.innerHTML += `
-									<td class='day_wrapper fade_in disabled_day'>
-										<div class='header_wrapper'>
-											<div class='header_day'>${prevDate}</div>
-										</div>
-									</td>`
-							}
-						} else {
-							/**
-							 * Generate Next Dates **/
-							if (me.$moment(`${year}-${month}-${1}`, 'YYYY-MM-D').format('d') == 0) {
-								if (i == 4) {
+								 * Generate Next Dates **/
+								if (me.$moment(`${year}-${month}-${1}`, 'YYYY-MM-D').format('d') == 0) {
+									if (i == 4) {
+										tableRow.innerHTML += `
+											<td id="col_${i}" class='day_wrapper fade_in disabled_day'>
+												<div class='header_wrapper'>
+													<div class='header_day'>${nextDate}</div>
+												</div>
+											</td>`
+										nextDate++
+									}
+								} else {
 									tableRow.innerHTML += `
 										<td id="col_${i}" class='day_wrapper fade_in disabled_day'>
 											<div class='header_wrapper'>
@@ -287,28 +303,20 @@
 										</td>`
 									nextDate++
 								}
-							} else {
-								tableRow.innerHTML += `
-									<td id="col_${i}" class='day_wrapper fade_in disabled_day'>
-										<div class='header_wrapper'>
-											<div class='header_day'>${nextDate}</div>
-										</div>
-									</td>`
-								nextDate++
 							}
 						}
+						calendarTable.appendChild(tableRow)
 					}
-					calendarTable.appendChild(tableRow)
-				}
-				document.querySelectorAll('tr #col_5').forEach((element, index) => {
-					let lastValue = element.querySelector('.header_wrapper .header_day').innerHTML
-					let lastElement = document.querySelectorAll('tr #col_5')[document.querySelectorAll('tr #col_5').length - 1]
+					document.querySelectorAll('tr #col_5').forEach((element, index) => {
+						let lastValue = element.querySelector('.header_wrapper .header_day').innerHTML
+						let lastElement = document.querySelectorAll('tr #col_5')[document.querySelectorAll('tr #col_5').length - 1]
+					})
+					setTimeout( () => {
+						me.clickDates(0, endDate, excess)
+						me.checkAllDayPerWeek()
+						me.loader(false)
+					}, 500)
 				})
-				setTimeout( () => {
-					me.clickDates(0, endDate, excess)
-					me.checkAllDayPerWeek()
-					me.loader(false)
-				}, 500)
 			},
 			checkAllDayPerWeek () {
 				const me = this
@@ -331,28 +339,78 @@
 			 */
 			populateScheduler (date) {
 				const me = this
-				let result = ''
+				let result = '',
+					decided_instrutors = []
+
 				me.schedules.forEach((data, index) => {
 					let scheduleCurrent = me.$moment(data.date).format('D')
 					let currentDate = me.$moment(`${me.currentYear}-${me.currentMonth}-${date}`)
 					let scheduleDate = me.$moment()
 					let unixTimestamp = me.$moment(`${me.currentYear}-${me.currentMonth}-${scheduleCurrent}`, 'YYYY-MM-D').valueOf()
+					let className = '',
+						status = ''
+					switch (data.status) {
+						case 'available':
+							className = 'green'
+							status = 'Available'
+							break
+						case 'partially-available':
+							className = 'yellow'
+							status = 'Partially-Available'
+							break
+						case 'unavailable':
+							className = 'red'
+							status = 'Unavailable'
+							break
+					}
 					if (date == scheduleCurrent) {
-						result += `
-							<div class="class_wrapper ${(data.status == 'Available') ? 'green' : 'yellow'}">
-								<div class="class_text margin">${data.user.fullname}</div>
-								<div class="class_text">${data.status}</div>
-							</div>`
-						if (data.times.length > 0) {
-							data.times.forEach((time, key) => {
+						if (me.form.status != 'undecided') {
+							result += `
+								<div class="class_wrapper ${className}">
+									<div class="class_text big margin">${(data.user) ? data.user.fullname : `${data.user.first_name} ${data.user.last_name}`}</div>
+									<div class="class_text">${status}</div>
+								</div>`
+							if (data.times.length > 0) {
 								result += `
-		                            <div class="time_wrapper">
-		                                <div class="text">${time.time_from} - ${time.time_to}</div>
-		                            </div>`
+									<div class="class_wrapper blue">
+										<div class="class_text big">${data.user.first_name}'s Schedule</div>
+									</div>`
+								data.times.forEach((time, key) => {
+									result += `
+										<div class="time_wrapper">
+											<div class="text">${time.time_from} - ${time.time_to}</div>
+										</div>`
+								})
+							}
+						}
+
+						decided_instrutors.push(data.user.id)
+					}
+				})
+				let values = []
+				me.instructors.forEach((item, i) => {
+					if (decided_instrutors.indexOf(item.id) < 0) {
+						result += `
+							<div class="class_wrapper draft">
+								<div class="class_text big margin">${item.fullname}</div>
+								<div class="class_text">Undecided</div>
+							</div>`
+						if (me.form.status == 'undecided') {
+							values.push({
+								'date': me.$moment(`${me.currentYear}-${me.currentMonth}-${date}`),
+								user: {
+									fullname: item.fullname
+								},
+								status: 'Undecided'
 							})
 						}
 					}
 				})
+
+				if (me.form.status == 'undecided') {
+					me.values = values
+				}
+
 				return result
 			},
 			toggleOverlays (e) {
