@@ -10,8 +10,17 @@
                                 class="action_btn alternate"
                                 :data="scheduleAttributes"
                                 :name="`schedule-${$moment().format('MM-DD-YY-hh-mm')}.csv`" v-if="schedules.length > 0">
-                                Export
+                                Export Schedules
                             </download-csv>
+                            <download-csv
+                                class="action_btn alternate"
+                                :data="draftedScheduleAttributes"
+                                :name="`drafted-schedule-${monthName}-${yearName}.csv`" v-if="drafted_values.length > 0">
+                                Export Drafted Schedules
+                            </download-csv>
+							<div class="action_btn green margin" @click="toggleModal('import')">
+								Import Drafted Schedules
+							</div>
                         </div>
                     </div>
                     <div class="filter_wrapper alternate">
@@ -93,6 +102,9 @@
             <transition name="fade">
                 <calendar-action-message v-if="$store.state.calendarActionSuccess" :message="message" />
             </transition>
+            <transition name="fade">
+                <import-drafted-schedules v-if="toggle.import" />
+            </transition>
         </div>
     </transition>
 </template>
@@ -102,17 +114,25 @@
     import CalendarClear from '../../components/modals/CalendarClear'
     import CalendarDuplicate from '../../components/modals/CalendarDuplicate'
     import CalendarActionMessage from '../../components/modals/CalendarActionMessage'
+    import ImportDraftedSchedules from '../../components/modals/ImportDraftedSchedules'
+
     export default {
         components: {
             Foot,
             CalendarClear,
             CalendarDuplicate,
-            CalendarActionMessage
+            CalendarActionMessage,
+            ImportDraftedSchedules
         },
         data () {
-            const values = []
+            const values = [],
+				drafted_values = []
             return {
+				toggle: {
+					import: false
+				},
                 values: [],
+                drafted_values: [],
                 name: 'Scheduler',
                 access: true,
                 lastRoute: '',
@@ -156,9 +176,29 @@
                         'No. of Available Seats': value.availableSeatsCount
                     }))
                 ]
-            }
+            },
+			draftedScheduleAttributes () {
+				const me = this
+                return [
+                    ...me.drafted_values.map(value => ({
+						'Schedule ID': value.schedule_id,
+                        'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
+                        'Start Time': value.schedule.start_time,
+                        'End Time': value.schedule.end_time,
+                        'Studio': value.schedule.studio.name,
+                        'Class Type': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
+                        'Instructor': me.getInstructorsInSchedule(value, 'primary'),
+                        'Substitute Instructor': me.getInstructorsInSchedule(value, 'substitute'),
+						'Status': value.schedule.enabled
+                    }))
+                ]
+			}
         },
         methods: {
+			toggleModal (type) {
+				this.toggle[type] = true
+				document.body.classList.add('no_scroll')
+			},
             getInstructorsInSchedule (data, type) {
                 const me = this
                 let result = ''
@@ -239,17 +279,13 @@
                 let calendarTable = document.querySelector('.cms_table_calendar tbody')
                 let current = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d')
                 let excess = 0
-                if (search) {
-                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}`).then(res => {
-                        me.schedules = res.data.schedules
-                    })
-                } else {
-                    await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}`).then(res => {
-                        me.schedules = res.data.schedules
-                    })
-                }
 
-                me.values = me.schedules
+                await me.$axios.get(`api/schedules?year=${me.currentYear}&month=${me.currentMonth}&studio_id=${me.form.studio_id}&instructor_id=${me.form.instructor_id}`).then(res => {
+                    me.schedules = res.data.schedules
+					me.values = me.schedules
+                })
+
+				me.drafted_values = []
 
                 /**
                  * Generate Rows **/
@@ -481,6 +517,9 @@
                                         <div class="class_text">${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                                     </a>`
                             } else {
+								if (currentDate.diff(scheduleDate) > 0) {
+									me.drafted_values.push(data)
+								}
                                 result += `
                                     <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft private ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
                                         <div class="class_text margin"><img src="/icons/private-class.svg" /><span>${data.schedule.start_time}</span></div>
@@ -495,6 +534,9 @@
                                         <div class="class_text">${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</div>
                                     </a>`
                             } else {
+								if (currentDate.diff(scheduleDate) > 0) {
+									me.drafted_values.push(data)
+								}
                                 result += `
                                     <a href="/${me.lastRoute}/${unixTimestamp}/${data.schedule.id}/edit?i=${data.id}" class="class_wrapper draft ${(currentDate.diff(scheduleDate) < 0) ? 'completed' : 'original'}">
                                         <div class="class_text margin">${data.schedule.start_time}</div>
