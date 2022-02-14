@@ -181,7 +181,7 @@
 				const me = this
                 return [
                     ...me.drafted_values.map(value => ({
-						'Schedule ID': value.schedule_id,
+						'Schedule Date ID': value.id,
                         'Date': me.$moment(value.date).format('MMMM DD, YYYY'),
                         'Start Time': value.schedule.start_time,
                         'End Time': value.schedule.end_time,
