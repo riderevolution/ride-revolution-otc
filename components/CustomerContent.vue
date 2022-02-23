@@ -340,7 +340,7 @@
                                             <td>{{ getTransactionType(data, 'quantity') }}</td>
                                             <td class="price">
                                                 <p :class="`${(data.payment_item.payment.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.payment_item.payment.promo_code_used !== null">PHP {{ totalCount(data.payment_item.price_per_item * data.payment_item.quantity) }}</p>
-                                                <p>PHP {{ totalCount((data.payment_item.payment.promo_code_used !== null) ? data.total : data.payment_item.price_per_item * data.payment_item.quantity) }}</p>
+                                                <p>PHP {{ totalCount((data.payment_item.payment.promo_code_used != null) ? data.payment_item.total : parseFloat(data.payment_item.price_per_item) * data.payment_item.quantity) }}</p>
                                             </td>
                                             <td class="alt_2">{{ (data.payment_item.refund_type) ? replacer(data.payment_item.refund_type) : 'N/A' }}</td>
                                             <td>{{ (data.payment_item.refund_remarks) ? data.payment_item.refund_remarks : 'N/A' }}</td>

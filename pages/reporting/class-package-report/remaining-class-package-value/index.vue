@@ -168,9 +168,9 @@
                         'Expiration If Not Activated': (value.expiry_date_if_not_activated) ? me.$moment(value.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
                         'Customer': value.user.fullname,
                         'Email': value.user.email,
-                        'Comp Reason': (value.payment_item.payment_method.comp_reason) ? value.payment_item.payment_method.comp_reason : 'N/A',
-                        'Note': (value.payment_item.payment_method.note) ? value.payment_item.payment_method.note : 'N/A',
-                        'Remarks': (value.payment_item.payment_method.remarks) ? value.payment_item.payment_method.remarks : 'N/A'
+                        'Comp Reason': (value.payment_item.payment_method) ? value.payment_item.payment_method.comp_reason : 'N/A',
+                        'Note': (value.payment_item.payment_method) ? value.payment_item.payment_method : 'N/A',
+                        'Remarks': (value.payment_item.payment_method) ? value.payment_item.payment_method.remarks : 'N/A'
                     }))
                 ]
             }
