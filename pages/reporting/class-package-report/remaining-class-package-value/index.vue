@@ -163,7 +163,7 @@
                         'Estimated Price Per Class': value.estimated_price_per_class,
                         'Original Count': value.original_package_count,
                         'Used Count': value.count,
-                        'Remaining Credits' value.original_package_count - value.count,
+                        'Remaining Credits': value.original_package_count - value.count,
                         'Activation Date': (value.activation_date) ? me.$moment(value.activation_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
                         'Expiration Date': (value.computed_expiration_date) ? me.$moment(value.computed_expiration_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
                         'Expiration If Not Activated': (value.expiry_date_if_not_activated) ? me.$moment(value.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
