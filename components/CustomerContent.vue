@@ -290,8 +290,13 @@
                                             <td>{{ (item.product_variant) ? item.product_variant.product.category.name : 'N/A' }}</td>
                                             <td>{{ item.quantity }}</td>
                                             <td class="price">
-                                                <p :class="`${(item.applied_promo == 1) ? 'prev_price' : ''}`" v-if="item.applied_promo == 1">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
-                                                <p>PHP {{ totalCount((item.applied_promo == 1) ? item.discounted_price : item.price_per_item * item.quantity) }}</p>
+                                                <template v-if="data.is_recurrence">
+                                                  <p>PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
+                                                </template>
+                                                <template v-else>
+                                                  <p :class="`${(item.applied_promo == 1) ? 'prev_price' : ''}`" v-if="item.applied_promo == 1">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
+                                                  <p>PHP {{ totalCount((item.applied_promo == 1) ? item.discounted_price : item.price_per_item * item.quantity) }}</p>
+                                                </template>
                                             </td>
                                             <td class="alt_2">{{ (item.refund_type) ? replacer(item.refund_type) : 'N/A' }}</td>
                                             <td>{{ (item.refunder) ? item.refunder.fullname : 'N/A' }}</td>
@@ -799,7 +804,7 @@
                             result = data.payment_item.quantity
                             break
                         case 'price':
-                            result = me.totalCount(data.payment_item.payment.total)
+                            result = me.totalCount(data.payment_item.price_per_item * data.payment_item.quantity)
                             break
                         case 'status':
                             result = data.payment_item.payment.status
