@@ -290,13 +290,8 @@
                                             <td>{{ (item.product_variant) ? item.product_variant.product.category.name : 'N/A' }}</td>
                                             <td>{{ item.quantity }}</td>
                                             <td class="price">
-                                                <template v-if="data.is_recurrence">
-                                                  <p>PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
-                                                </template>
-                                                <template v-else>
-                                                  <p :class="`${(item.applied_promo == 1) ? 'prev_price' : ''}`" v-if="item.applied_promo == 1">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
-                                                  <p>PHP {{ totalCount((item.applied_promo == 1) ? item.discounted_price : item.price_per_item * item.quantity) }}</p>
-                                                </template>
+                                                <p :class="`${(item.applied_promo == 1) ? 'prev_price' : ''}`" v-if="item.applied_promo == 1">PHP {{ totalCount(item.price_per_item * item.quantity) }}</p>
+                                                <p>PHP {{ totalCount((item.applied_promo == 1) ? item.discounted_price : item.price_per_item * item.quantity) }}</p>
                                             </td>
                                             <td class="alt_2">{{ (item.refund_type) ? replacer(item.refund_type) : 'N/A' }}</td>
                                             <td>{{ (item.refunder) ? item.refunder.fullname : 'N/A' }}</td>
@@ -344,8 +339,13 @@
                                             <td>{{ getTransactionType(data, 'products') }}</td>
                                             <td>{{ getTransactionType(data, 'quantity') }}</td>
                                             <td class="price">
-                                                <p :class="`${(data.payment_item.payment.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.payment_item.payment.promo_code_used !== null">PHP {{ totalCount(data.payment_item.price_per_item * data.payment_item.quantity) }}</p>
-                                                <p>PHP {{ totalCount((data.payment_item.payment.promo_code_used != null) ? data.payment_item.total : parseFloat(data.payment_item.price_per_item) * data.payment_item.quantity) }}</p>
+                                                <template v-if="data.duplicated">
+                                                  <p>PHP {{ totalCount(data.payment_item.price_per_item * data.payment_item.quantity) }}</p>
+                                                </template>
+                                                <template v-else>
+                                                  <p :class="`${(data.payment_item.payment.promo_code_used !== null) ? 'prev_price' : ''}`" v-if="data.payment_item.payment.promo_code_used !== null">PHP {{ totalCount(data.payment_item.price_per_item * data.payment_item.quantity) }}</p>
+                                                  <p>PHP {{ totalCount((data.payment_item.payment.promo_code_used != null) ? data.payment_item.total : parseFloat(data.payment_item.price_per_item) * data.payment_item.quantity) }}</p>
+                                                </template>
                                             </td>
                                             <td class="alt_2">{{ (data.payment_item.refund_type) ? replacer(data.payment_item.refund_type) : 'N/A' }}</td>
                                             <td>{{ (data.payment_item.refund_remarks) ? data.payment_item.refund_remarks : 'N/A' }}</td>
@@ -804,7 +804,11 @@
                             result = data.payment_item.quantity
                             break
                         case 'price':
-                            result = me.totalCount(data.payment_item.price_per_item * data.payment_item.quantity)
+                            if (data.duplicated) {
+                              result = me.totalCount(data.payment_item.price_per_item * data.payment_item.quantity)
+                            } else {
+                              result = me.totalCount(data.payment_item.payment.total)
+                            }
                             break
                         case 'status':
                             result = data.payment_item.payment.status
