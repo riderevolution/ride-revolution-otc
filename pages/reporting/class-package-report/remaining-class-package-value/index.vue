@@ -63,8 +63,8 @@
                             <tr class="parent">
                                 <td><b>Total</b></td>
                                 <td><b>{{ totalItems(res.summary.starting_class_count) }}</b></td>
-                                <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
                                 <td><b>{{ totalItems(res.summary.remaining_class_count) }}</b></td>
+                                <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.remaining_value) }}</b></td>
                             </tr>
                             <tr></tr>
