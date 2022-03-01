@@ -96,8 +96,8 @@
                                                     <td>{{ value.package_type.name }}</td>
                                                     <td>{{ value.name }}</td>
                                                     <td>{{ (value.starting_class_count == 'Unlimited') ? value.starting_class_count : totalItems(value.starting_class_count) }}</td>
-                                                    <td>Php {{ totalCount(value.starting_value) }}</td>
                                                     <td>{{ (value.remaining_class_count == 'Unlimited') ? value.remaining_class_count : totalItems(value.remaining_class_count) }}</td>
+                                                    <td>Php {{ totalCount(value.starting_value) }}</td>
                                                     <td>Php {{ totalCount(value.remaining_value) }}</td>
                                                 </tr>
                                             </tbody>
