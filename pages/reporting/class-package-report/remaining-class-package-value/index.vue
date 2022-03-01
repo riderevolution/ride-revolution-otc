@@ -351,6 +351,7 @@
                 const me = this
                 let formData = new FormData(document.getElementById('filter'))
                 formData.append('type', me.tab)
+
                 me.values = []
                 me.loader(true)
                 me.$axios.post('api/reporting/packages/remaining-class-package-value-export', formData).then(res => {
@@ -375,7 +376,7 @@
                 me.loader(true)
                 let formData = new FormData()
                 formData.append('cut_off_date', me.form.cut_off_date)
-                formData.append('type', 'studio')
+                formData.append('type', me.tab)
                 me.$axios.post('api/reporting/packages/remaining-class-package-value', formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {
