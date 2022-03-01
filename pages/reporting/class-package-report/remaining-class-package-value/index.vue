@@ -73,8 +73,8 @@
                             <tr class="parent">
                                 <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.name }}</td>
                                 <td>{{ (data.starting_class_count == 'Unlimited') ? data.starting_class_count : totalItems(data.starting_class_count) }}</td>
-                                <td>Php {{ totalCount(data.starting_value) }}</td>
                                 <td>{{ (data.remaining_class_count == 'Unlimited') ? data.remaining_class_count : totalItems(data.remaining_class_count) }}</td>
+                                <td>Php {{ totalCount(data.starting_value) }}</td>
                                 <td>Php {{ totalCount(data.remaining_value) }}</td>
                             </tr>
                             <tr>
