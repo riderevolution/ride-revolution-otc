@@ -284,7 +284,7 @@
                 const me = this
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
-                if ((status == 'reserved-guest' || status == 'reserved') && id != null) {
+                if (status == 'reserved' && id != null) {
                     me.$axios.post(`api/bookings/sign-in/${id}`, formData, {
                         headers: {
                             Authorization: `Bearer ${token}`
@@ -295,6 +295,20 @@
                                 me.$parent.$parent.$parent.getSeats()
                             }, 10)
                         }
+                    })
+                } else if (status == 'reserved-guest' && id != null) {
+                    formData.append('booking_id', id)
+                    formData.append('status', 'signed-in')
+                    me.$axios.post('api/bookings/change-status', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
+                      if (res.data) {
+                          setTimeout( () => {
+                              me.$parent.$parent.$parent.getSeats()
+                          }, 10)
+                      }
                     })
                 } else if (status == 'signed-in' && id != null) {
                     me.$store.state.bookingID = id
