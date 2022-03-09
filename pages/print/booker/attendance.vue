@@ -135,7 +135,7 @@
                     me.$store.state.errorStatus = true
                 }).then(() => {
                     setTimeout( () => {
-                        // window.print()
+                        window.print()
                     }, 1000)
                 })
             }
