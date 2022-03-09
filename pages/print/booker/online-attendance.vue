@@ -37,13 +37,13 @@
                         {{ data.user.email }}
                     </td>
                     <td>
-                        {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number ? data.user.customer_details.ec_contact_number : 'N/A') }}
+                        {{ (data.user.customer_details.co_contact_number != null) ? data.user.customer_details.co_contact_number : (data.user.customer_details.ec_contact_number ? data.user.customer_details.ec_contact_number : '----') }}
                     </td>
                     <td>
-                        {{ (data.user.customer_details.dumbbells != null) ? data.user.customer_details.dumbbells : 'N/A' }}
+                        {{ (data.user.customer_details.dumbbells != null) ? data.user.customer_details.dumbbells : '----' }}
                     </td>
                     <td>
-                        {{ (data.user.customer_details.co_shoe_size != null) ? data.user.customer_details.co_shoe_size : 'N/A' }}
+                        {{ (data.user.customer_details.co_shoe_size != null) ? data.user.customer_details.co_shoe_size : '----' }}
                     </td>
                 </tr>
             </tbody>
