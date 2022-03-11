@@ -68,23 +68,16 @@
             addSeatClass (seat) {
                 const me = this
                 let result = ''
-                if (seat.bookings.length > 0 && (seat.bookings[0].user.id == me.$route.params.param)) {
-                    result += 'highlight '
-                }
                 switch (seat.status) {
                     case 'open':
                         result += 'available'
                         break
                     case 'comp':
-                        if (seat.comp.length > 0) {
-                            result += 'comp'
-                        }
+                          result += 'comp'
                         break
                     case 'reserved':
                     case 'reserved-guest':
-                        if (seat.bookings.length > 0 && (seat.bookings[0].user != null && seat.bookings[0].user.id != me.$route.params.param)) {
-                            result += 'sign_in'
-                        }
+                          result += 'sign_in'
                         break
                     case 'blocked':
                         result += 'comp blocked'
@@ -147,11 +140,11 @@
             }
         },
         mounted () {
-			const me = this
+			    const me = this
             me.initial()
             window.onafterprint = function(){
                 window.close()
             }
-		}
+		    }
     }
 </script>

@@ -10,32 +10,12 @@
                 </div>
             </div>
 
-            <div class="seat_details" v-if="seat.status == 'signed-in' || seat.status == 'reserved'">
-                <div class="seat_name">{{ seat.number }} - {{ seat.bookings[0].user.first_name }} {{ seat.bookings[0].user.last_name }}</div>
-                <div class="seat_violator">{{ seat.status.charAt(0).toUpperCase() }}{{ seat.status.slice(1) }}</div>
-                <div :class="[ 'flex alt', (seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.has_first_timer) ? 'margin' : '' ]">
-                    <div class="info_image" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
-                        <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
-                    </div>
-                    <span>{{ seat.bookings[0].user.customer_details.customer_type.name }}</span>
-                </div>
-                <div class="flex alt" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.has_first_timer">
-                    <div class="info_image">
-                        <img src="/icons/first-timer-package-icon.png" />
-                    </div>
-                    <span>First Timer Package</span>
-                </div>
-                <div class="seat_pending_total" v-if="seat.userPendingPayments">
-                    <img src="/icons/pending-payment-icon.svg">
-                    <span>Php {{ totalCount(seat.userPendingPaymentsTotal) }} (Pending)</span>
-                </div>
-            </div>
-
-            <div class="seat_details" v-if="seat.status == 'reserved-guest'">
+            <div class="seat_details" v-if="seat.status == 'signed-in' || seat.status == 'reserved' || seat.status == 'reserved-guest'">
                 <div class="seat_name">{{ seat.number }} - {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.first_name : seat.bookings[0].guest_first_name }} {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.last_name : seat.bookings[0].guest_last_name }}</div>
                 <div class="seat_violator">{{ seat.status.charAt(0).toUpperCase() }}{{ seat.status.slice(1) }}</div>
-
-                <div class="seat_name alt margin">Booked By - <b>{{ seat.bookings[0].original_booker.fullname }}</b></div>
+                <template v-if="seat.bookings.length > 0 && seat.bookings[0].is_guest">
+                  <div class="seat_name alt margin">Booked By - <b>{{ seat.bookings[0].original_booker.fullname }}</b></div>
+                </template>
 
                 <div :class="['flex alt', (seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.has_first_timer || seat.bookings[0].is_guest == 1) ? 'margin' : '']" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
                     <div class="info_image">
@@ -304,7 +284,7 @@
                 const me = this
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let formData = new FormData()
-                if ((status == 'reserved-guest' || status == 'reserved') && id != null) {
+                if (status == 'reserved' && id != null) {
                     me.$axios.post(`api/bookings/sign-in/${id}`, formData, {
                         headers: {
                             Authorization: `Bearer ${token}`
@@ -315,6 +295,20 @@
                                 me.$parent.$parent.$parent.getSeats()
                             }, 10)
                         }
+                    })
+                } else if (status == 'reserved-guest' && id != null) {
+                    formData.append('booking_id', id)
+                    formData.append('status', 'signed-in')
+                    me.$axios.post('api/bookings/change-status', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(res => {
+                      if (res.data) {
+                          setTimeout( () => {
+                              me.$parent.$parent.$parent.getSeats()
+                          }, 10)
+                      }
                     })
                 } else if (status == 'signed-in' && id != null) {
                     me.$store.state.bookingID = id

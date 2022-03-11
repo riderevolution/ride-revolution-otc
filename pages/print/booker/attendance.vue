@@ -10,9 +10,11 @@
                     <th>Seat Number</th>
                     <th>Signed In</th>
                     <th>Full Name</th>
+                    <th>Package Used</th>
                     <th>Customer Type</th>
                     <th>Email Address</th>
-                    <th>Contact Number</th>
+                    <th>Contact</th>
+                    <th>Dumbbell</th>
                     <th>Shoe size</th>
                 </tr>
             </thead>
@@ -29,14 +31,22 @@
                         <div class="table_data_link" v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
                             {{ data.bookings[0].user.first_name }} {{ data.bookings[0].user.last_name }}
                         </div>
+                        <div v-if="data.bookings.length <= 0">----</div>
+                    </td>
+                    <td>
+                        <div v-if="data.bookings.length > 0">
+                          {{ data.bookings[0].user_package_count.class_package.name }}
+                        </div>
+                        <div v-if="data.bookings.length <= 0">----</div>
                     </td>
                     <td>
                         <div v-if="data.bookings.length > 0 && (data.bookings[0].user && data.bookings[0].user.customer_details.customer_type)">
                             <img :src="data.bookings[0].user.customer_details.customer_type.image.path" />
                         </div>
                         <div v-if="data.bookings.length > 0 && !data.bookings[0].user">
-                            <img src="/icons/guest-icon.svg" />
+                            <img src="/icons/guest-icon.svg" width="37px" height="37px" />
                         </div>
+                        <div v-if="data.bookings.length <= 0">----</div>
                     </td>
                     <td>
                         <div v-if="data.bookings.length > 0 && data.bookings[0].is_guest">
@@ -45,37 +55,44 @@
                         <div v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
                             {{ data.bookings[0].user.email }}
                         </div>
+                        <div v-if="data.bookings.length <= 0">----</div>
                     </td>
                     <td>
                         <div v-if="data.bookings.length > 0 && data.bookings[0].is_guest">
-                            <span v-if="data.bookings[0].user">{{ data.bookings[0].user.customer_details.co_contact_number }}</span>
-                            <span v-else>N/A</span>
+                            <div v-if="data.bookings[0].user">{{ data.bookings[0].user.customer_details.co_contact_number }}</div>
+                            <div v-else>----</div>
                         </div>
                         <div v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
                             {{ data.bookings[0].user.customer_details.co_contact_number }}
                         </div>
+                        <div v-if="data.bookings.length <= 0">----</div>
                     </td>
                     <td>
                         <div v-if="data.bookings.length > 0 && data.bookings[0].is_guest">
-                            <span v-if="data.bookings[0].user">{{ data.bookings[0].user.customer_details.dumbbells }}</span>
-                            <span v-else>N/A</span>
+                            <div v-if="data.bookings[0].user">{{ (data.bookings[0].user.customer_details.dumbbells) ? data.bookings[0].user.customer_details.dumbbells : '----' }}</div>
+                            <div v-else>----</div>
                         </div>
                         <div v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
-                            US - {{ data.bookings[0].user.customer_details.dumbbells }}
+                            {{ (data.bookings[0].user.customer_details.dumbbells) ? data.bookings[0].user.customer_details.dumbbells : '----' }}
                         </div>
+                        <div v-if="data.bookings.length <= 0">----</div>
                     </td>
                     <td>
                         <div v-if="data.bookings.length > 0 && data.bookings[0].is_guest">
-                            <span v-if="data.bookings[0].user">US - {{ data.bookings[0].user.customer_details.co_shoe_size }}</span>
-                            <span v-else>N/A</span>
+                            <div v-if="data.bookings[0].user">{{ (data.bookings[0].user.customer_details.co_shoe_size) ? `US - ${data.bookings[0].user.customer_details.co_shoe_size}` : '----' }}</div>
+                            <div v-else>----</div>
                         </div>
                         <div v-if="data.bookings.length > 0 && !data.bookings[0].is_guest">
-                            US - {{ data.bookings[0].user.customer_details.co_shoe_size }}
+                            {{ (data.bookings[0].user.customer_details.co_shoe_size) ? `US - ${data.bookings[0].user.customer_details.co_shoe_size}` : '----' }}
                         </div>
+                        <div v-if="data.bookings.length <= 0">----</div>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <div class="signature">
+            <div class="label">SIGNATURE OVER PRINTED NAME</div>
+        </div>
     </div>
 </template>
 
@@ -109,6 +126,7 @@
                         })
 
                         me.seats = res.data.seats
+                        console.log(me.seats);
 
                         me.loaded = true
                     }
