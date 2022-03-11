@@ -200,6 +200,7 @@
                                 <label for="comp_reason">Comp Reason <span>*</span></label>
                                 <select class="default_select alternate" name="comp_reason" v-validate="'required'" key="comp_reason" v-model="form.comp">
                                     <option value="" selected disabled>Select a Reason</option>
+                                    <option value="Guest">Guest</option>
                                     <option value="Bike Purchase">Bike Purchase</option>
                                     <option value="Bike Rental">Bike Rental</option>
                                     <option value="Ride Along">Ride Along</option>
