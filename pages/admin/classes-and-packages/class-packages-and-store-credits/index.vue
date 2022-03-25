@@ -187,7 +187,7 @@
 
                 me.$axios.post('api/packages/class-packages/update-sequence', form_data).then(res => {
                     if (quick_sale) {
-                        me.fetchData(1, me.package_status)
+                        me.fetchData(me.status, me.package_status)
                     } else {
                         me.fetchData(1, 5)
                     }
