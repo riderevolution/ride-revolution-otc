@@ -13,7 +13,7 @@
             <div class="input_content">{{ value.product.category.name }}</div>
             <div class="input_content">{{ value.product_quantities[0].quantity }}</div>
             <div class="input_content">
-                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" :data-vv-name="`purchase_order_form_${unique}.quantity[]`" v-model="quantity" @change="isQuantity = true">
+                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99999'" :data-vv-name="`purchase_order_form_${unique}.quantity[]`" v-model="quantity" @change="isQuantity = true">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ properFormat(errors.first(`purchase_order_form_${unique}.quantity[]`)) }}</span></transition>
             </div>
             <div class="input_content">PHP {{ value.unit_price }}</div>
@@ -57,7 +57,7 @@
             <div class="input_content">{{ value.product_variant.product.category.name }}</div>
             <div class="input_content">{{ value.product_variant.product_quantities.quantity }}</div>
             <div class="input_content">
-                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
+                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99999'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ properFormat(errors.first(`purchase_order_form_${unique}.quantity[]`)) }}</span></transition>
             </div>
             <div class="input_content">PHP {{ totalCount(value.product_variant.unit_price) }}</div>
@@ -87,7 +87,7 @@
             <div class="input_content">{{ value.product_variant.product.category.name }}</div>
             <div class="input_content">{{ value.product_variant.product_quantities.quantity }}</div>
             <div class="input_content">
-                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
+                <input type="text" name="quantity[]" class="default_text" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:99999'" v-model="quantity = value.quantity" @change="isQuantity = true" :data-vv-name="`purchase_order_form_${unique}.quantity[]`">
                 <transition name="slide"><span class="validation_errors" v-if="errors.has(`purchase_order_form_${unique}.quantity[]`)">{{ properFormat(errors.first(`purchase_order_form_${unique}.quantity[]`)) }}</span></transition>
             </div>
             <div class="input_content">PHP {{ totalCount(value.product_variant.unit_price) }}</div>

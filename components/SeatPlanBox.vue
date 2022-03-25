@@ -29,8 +29,8 @@
                     </div>
                     <span>First Timer Package</span>
                 </div>
-                <div class="flex alt">
-                    <div class="info_image" v-if="seat.bookings[0].is_guest == 1">
+                <div class="flex alt" v-if="seat.bookings[0].is_guest == 1">
+                    <div class="info_image">
                         <img src="/icons/guest-icon.svg" />
                     </div>
                     <span>Guest</span>
