@@ -156,6 +156,10 @@
                                 <input type="radio" id="third_party_platform" value="third_party_platform" name="payment_method" class="action_radio" @change="checkPayment('third_party_platform')">
                                 <label for="third_party_platform">Third Party Platform</label>
                             </div>
+                            <div class="form_radio">
+                                <input type="radio" id="class_pass" value="class_pass" name="payment_method" class="action_radio" @change="checkPayment('class_pass')">
+                                <label for="class_pass">ClassPass</label>
+                            </div>
                             <div class="form_radio" v-if="hasStoreCredits">
                                 <input type="radio" id="store_credits" value="store-credits" name="payment_method" class="action_radio" @change="checkPayment('store-credits')">
                                 <label for="store_credits">Store Credits</label>
@@ -825,6 +829,12 @@
                         break
                     case 'conversion':
                         me.form.paymentType = 6
+                        break
+                    case 'third_party_platform':
+                        me.form.paymentType = 7
+                        break
+                    case 'class_pass':
+                        me.form.paymentType = 8
                         break
                     case 'store-credits':
                         me.form.paymentType = 9999

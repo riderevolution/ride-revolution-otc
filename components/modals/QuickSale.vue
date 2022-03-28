@@ -155,6 +155,10 @@
                                 <input type="radio" id="third_party_platform" value="third_party_platform" name="payment_method" class="action_radio" @change="checkPayment('third_party_platform')">
                                 <label for="third_party_platform">Third Party Platform</label>
                             </div>
+                            <div class="form_radio">
+                                <input type="radio" id="class_pass" value="class_pass" name="payment_method" class="action_radio" @change="checkPayment('class_pass')">
+                                <label for="class_pass">ClassPass</label>
+                            </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 0 || form.paymentType == 2">
                             <div class="form_group">
@@ -712,6 +716,9 @@
                         break
                     case 'third_party_platform':
                         me.form.paymentType = 7
+                        break
+                    case 'class_pass':
+                        me.form.paymentType = 8
                         break
                 }
                 me.cardType = ''
