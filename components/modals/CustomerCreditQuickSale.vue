@@ -182,7 +182,7 @@
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.reference_number')">{{ properFormat(errors.first('checkout_form.reference_number')) }}</span></transition>
                             </div>
                         </div>
-                        <div class="form_main_group" v-else-if="form.paymentType == 6 || form.paymentType == 7">
+                        <div class="form_main_group" v-else-if="form.paymentType == 6 || form.paymentType == 7 || form.paymentType == 8">
                             <div class="form_group">
                                 <label for="note">Note <span>*</span></label>
                                 <input type="text" name="note" class="default_text" key="note" v-validate="{ required: true }">
