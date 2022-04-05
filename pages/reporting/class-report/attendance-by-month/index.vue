@@ -20,7 +20,7 @@
                             <div class="form_group">
                                 <label for="studio_id">Studio</label>
                                 <select class="default_select alternate" name="studio_id" v-model="form.studio_id">
-                                    <option value="" selected>Choose a Studio</option>
+                                    <option value="0" selected>All Studios</option>
                                     <option :value="studio.id" v-for="(studio, key) in studios" :key="key">{{ studio.name }}</option>
                                 </select>
                             </div>
@@ -322,6 +322,7 @@
                                 <div class="atd_left">
                                     <p>${me.$moment(data.schedule.start_time, 'hh:mm A').format('h:mm A')}</p>
                                     <p>${(data.schedule.custom_name != null) ? data.schedule.custom_name : data.schedule.class_type.name} (${data.schedule.class_length_formatted})</p>
+                                    <p style="color: ${data.schedule.studio.color_code}; text-transform: uppercase;"><b>${data.schedule.studio.name}</b></p>
                                 </div>
                                 <div class="atd_right">
                                     ${me.getBookings(data.bookings)}
