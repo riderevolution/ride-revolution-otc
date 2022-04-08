@@ -290,7 +290,7 @@
                                 <h2 class="form_title">Image Upload</h2>
                             </div>
                             <div class="form_main_group">
-                                <image-handler-container ref="image_handler" :notRequired="false" :dimension="imageDimensions" :multiple="false" :data="(res.images) ? res.images : [0]" :parent="res.id" />
+                                <image-handler-container ref="image_handler" :notRequired="false" :dimension="imageDimensions" :multiple="false" :data="(res.images && res.images.path != null) ? res.images : [0]" :parent="res.id" />
                             </div>
                         </div>
                         <div class="form_wrapper" v-if="!isRecurring">
