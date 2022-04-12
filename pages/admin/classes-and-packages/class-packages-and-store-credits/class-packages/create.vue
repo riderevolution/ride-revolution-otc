@@ -238,9 +238,9 @@
                                         </div>
                                     </div>
                                     <div class="form_group flex" v-if="!isRecurring">
-                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer</label>
+                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer <span>*</span></label>
                                         <div class="form_flex_input full">
-                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" autocomplete="off" v-validate="'numeric|max_value:99999'">
+                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" autocomplete="off" v-validate="'required|numeric|max_value:99999'">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ properFormat(errors.first('purchase_limit_per_customer')) }}</span></transition>
                                         </div>
                                     </div>
