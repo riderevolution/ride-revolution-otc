@@ -238,9 +238,9 @@
                                         </div>
                                     </div>
                                     <div class="form_group flex" v-if="!isRecurring">
-                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer</label>
+                                        <label for="purchase_limit_per_customer">Purchase Limit per Customer <span>*</span></label>
                                         <div class="form_flex_input full">
-                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" autocomplete="off" v-model="res.purchase_limit_per_customer" v-validate="'numeric|max_value:99999'">
+                                            <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" autocomplete="off" v-model="res.purchase_limit_per_customer" v-validate="'required|numeric|max_value:99999'">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ properFormat(errors.first('purchase_limit_per_customer')) }}</span></transition>
                                         </div>
                                     </div>
@@ -290,7 +290,7 @@
                                 <h2 class="form_title">Image Upload</h2>
                             </div>
                             <div class="form_main_group">
-                                <image-handler-container ref="image_handler" :notRequired="false" :dimension="imageDimensions" :multiple="false" :data="res.images" :parent="res.id" />
+                                <image-handler-container ref="image_handler" :notRequired="false" :dimension="imageDimensions" :multiple="false" :data="(res.images && res.images.path != null) ? res.images : [0]" :parent="res.id" />
                             </div>
                         </div>
                         <div class="form_wrapper" v-if="!isRecurring">

@@ -161,6 +161,7 @@
                         'Payment Method': (value.payment_item.payment_method) ? value.payment_item.payment_method.method : 'N/A',
                         'Class Package': value.class_package.name,
                         'Class Package Price': (value.payment.promo_code_used != null) ? value.payment_item.total : value.payment_item.price_per_item,
+                        'Class Package Status': me.getPackageStatus(value),
                         'Estimated Price Per Class': value.estimated_price_per_class,
                         'Original Count': value.original_package_count,
                         'Used Count': value.original_package_count - value.count,
@@ -179,6 +180,24 @@
             }
         },
         methods: {
+            getPackageStatus (value) {
+                let result = ''
+
+                if (value.frozen) {
+                    result = 'Frozen'
+                    if (value.activation_date == 'N/A' || !value.activation_date) {
+                        result += ' & Not Activated'
+                    }
+                } else {
+                    if (value.activation_date == 'N/A' || !value.activation_date) {
+                        result = 'Not Activated'
+                    } else {
+                        result = 'Active'
+                    }
+                }
+
+                return result
+            },
             getPaymentItem (payment_item, type) {
                 const me = this
                 let result = ''
