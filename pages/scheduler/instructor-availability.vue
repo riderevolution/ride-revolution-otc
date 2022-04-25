@@ -368,9 +368,11 @@
 
 				if (me.form.instructor_id) {
 					me.instructors.forEach((item, i) => {
-						if (item.id == me.form.instructor_id) {
-							result += me.populateInstructors(item)
-							values.push(me.populateUndecidedInstructors(date, item))
+            if (item.id == me.form.instructor_id) {
+              if (decided_instrutors.indexOf(me.form.instructor_id) < 0) {
+                result += me.populateInstructors(item)
+                values.push(me.populateUndecidedInstructors(date, item))
+              }
 						}
 					})
 				} else {
