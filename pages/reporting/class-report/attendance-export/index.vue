@@ -145,7 +145,7 @@
                 const me = this
                 let result = ''
 
-                if (data && data.payment_item) {
+                if (data && data.payment && data.payment_item) {
                   switch (data.payment_item.payment_method.method) {
                       case 'paypal':
                           result = data.payment_item.payment_method.paypal_transaction_id
