@@ -747,10 +747,10 @@
                                             me.packageCount++
                                         }
                                     } else {
-                                        element.expired = true
+                                        element.expired = (me.packageStatus == 'frozen') ? false : true 
                                     }
                                 } else {
-                                    element.expired = true
+                                    element.expired = (me.packageStatus == 'frozen') ? false : true 
                                 }
                                 result.push(element)
                             })
