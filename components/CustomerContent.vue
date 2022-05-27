@@ -14,7 +14,9 @@
                     <div class="package_title">
                         <div class="p_inline">
                             {{ data.class_package.name }}
-                            <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
+                            <template v-if="packageStatus != 'frozen'">
+                              <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
+                            </template>
                             <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
                             <span class="frozen" v-if="data.frozen">Frozen</span>
                         </div>
