@@ -177,7 +177,7 @@
                         <transition name="fade">
                             <div class="form_wrapper" v-if="!isPrivate">
                                 <div class="form_header_wrapper">
-                                    <h2 class="form_title">Restrictions</h2>
+                                    <h2 class="form_title">Restrictions *</h2>
                                 </div>
                                 <div class="form_main_group">
                                     <div class="form_flex select_all">
@@ -189,6 +189,7 @@
                                             <input type="checkbox" :id="`data_${key}`" name="filter_data" class="action_check" v-model="customerType.checked">
                                             <label :for="`data_${key}`">{{ customerType.name }}</label>
                                         </div>
+                                        <transition name="slide"><span class="validation_errors" v-if="checkRestrictions">Restrictions is required.</span></transition>
                                     </div>
                                 </div>
                             </div>
@@ -294,6 +295,17 @@
                     result = false
                 }
                 return result
+            },
+            checkRestrictions () {
+              let ctr = 0
+
+              this.packageTypes.forEach((data, index) => {
+                  if (data.checked) {
+                      ctr++
+                  }
+              })
+
+              return (ctr > 0) ? true : false
             }
         },
         methods: {
