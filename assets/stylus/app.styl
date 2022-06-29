@@ -597,11 +597,12 @@ table
 	transition: .3s ease-in-out
 	&.sent
 		.sent_icon
-			fill: none
+			fill: transparent
 			stroke: $blue
 			stroke-width: 2
 			stroke-linecap: round
 			stroke-linejoin: round
+			transition: .3s ease-in-out
 	svg
 		margin-right: 10px
 		.add,
@@ -678,6 +679,9 @@ table
 		background-color: $blue
 		color: $white
 		transition: .3s ease-in-out
+		&.sent
+			.sent_icon
+				stroke: $white
 		.add,
 		.cart
 			fill: $white

@@ -223,12 +223,16 @@
                                 }
                                 break
                             case 'create':
+                            case 'create-waitlist':
                                 if (me.user_package_count_id != 0) {
                                     formData = new FormData(document.getElementById('default_form'))
                                     formData.append('is_guest', 0)
                                     formData.append('scheduled_date_id', me.$store.state.scheduleID)
                                     formData.append('seat_id', me.$store.state.seat.id)
                                     formData.append('user_id', me.$store.state.customerID)
+                                    if (me.type) {
+                                        formData.append('waitlisted_id', me.$store.state.waitlistID)
+                                    }
                                     formData.append('user_package_count_id', me.user_package_count_id)
                                     me.loader(true)
                                     me.$axios.post('api/bookings', formData, {
@@ -250,7 +254,6 @@
                                             me.$store.state.errorStatus = true
                                         }, 500)
                                     }).then(() => {
-                                        me.$store.state.customerPackageStatus = false
                                         setTimeout( () => {
                                             me.$parent.getSeats()
                                             me.$parent.fetchWaitlist(me.$store.state.scheduleID)
@@ -259,6 +262,7 @@
                                             me.$store.state.seat = ''
                                             me.$store.state.disableBookerUI = false
                                             me.$store.state.assignWaitlistBookerUI = false
+                                            me.$store.state.customerPackageStatus = false
                                         }, 500)
                                     })
                                 } else {

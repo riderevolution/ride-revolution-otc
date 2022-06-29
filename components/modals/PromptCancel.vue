@@ -41,6 +41,7 @@
                         me.$store.state.errorStatus = true
                     }).then(() => {
                         me.$store.state.bookingID = 0
+                        me.$store.state.seat = ''
                         me.$store.state.promptCancelStatus = false
                         setTimeout( () => {
                             me.$parent.getSeats()
@@ -48,6 +49,7 @@
                     })
                 } else {
                     me.$store.state.bookingID = 0
+                    me.$store.state.seat = ''
                     me.$store.state.promptCancelStatus = false
                     document.body.classList.remove('no_scroll')
                 }
