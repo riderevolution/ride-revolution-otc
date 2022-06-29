@@ -270,7 +270,7 @@
                                                 <td>{{ waitlist.user.first_name }}</td>
                                                 <td>
                                                     <div class="action">
-                                                        <div @click="prioritizeWaitlist(waitlist)" :class="`link ${(waitlist.past == 1) ? 'disabled' : ''}`">Prioritize</div>
+                                                        <div @click="prioritizeWaitlist(waitlist)" :class="`link ${(waitlist.past == 1) ? 'disabled' : ''}`">Book Now</div>
                                                         <div :class="`link margin ${(waitlist.past == 1) ? 'disabled' : 'cancel'}`" @click="removeToWaitlist(waitlist.id)">Remove</div>
                                                     </div>
                                                 </td>
@@ -710,29 +710,54 @@
                 formData.append('_method', 'PATCH')
                 me.$store.state.customerID = data.user_id
                 me.$store.state.waitlistID = data.id
-                me.customer = data.user
-                me.loader(true)
-                me.$axios.post(`api/waitlists/${data.id}/prioritize`, formData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
+                // me.customer = data.user
+                // me.loader(true)
+                setTimeout(() => {
+                    let seats = me.$refs.plan.seats,
+                        picked = false
+                    for (const identifier in seats) {
+                        seats[identifier].data.forEach(datum => {
+                            if (!picked) {
+                                if (datum.status == 'open') {
+                                    me.$store.state.seat = datum
+                                    picked = true
+                                }
+                            }
+                        })
                     }
-                }).then(res => {
-                    if (res.data) {
-                        setTimeout( () => {
-                            me.actionMessage = `Successfully prioritized ${me.customer.first_name} ${me.customer.last_name}`
-                            me.$store.state.promptBookerActionStatus = true
-                        }, 500)
+                    if (!picked) {
+                        me.$store.state.errorOverlayStatus = true
+                        me.$store.state.errorList = ['No available seat found in this schedule.']
+                        me.$store.state.errorStatus = true
+                    } else {
+                        me.$store.state.customerPackageStatus = true
+                        me.packageMethod = 'create-waitlist'
+                        document.body.classList.add('no_scroll')
                     }
-                }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        me.fetchWaitlist(me.$store.state.scheduleID)
-                        me.$store.state.waitlistID = 0
-                        me.loader(false)
-                    }, 500)
-                })
+                }, 10)
+
+
+                // me.$axios.post(`api/waitlists/${data.id}/prioritize`, formData, {
+                //     headers: {
+                //         Authorization: `Bearer ${token}`
+                //     }
+                // }).then(res => {
+                //     if (res.data) {
+                //         setTimeout( () => {
+                //             me.actionMessage = `Successfully prioritized ${me.customer.first_name} ${me.customer.last_name}`
+                //             me.$store.state.promptBookerActionStatus = true
+                //         }, 500)
+                //     }
+                // }).catch(err => {
+                //     me.$store.state.errorList = err.response.data.errors
+                //     me.$store.state.errorStatus = true
+                // }).then(() => {
+                //     setTimeout( () => {
+                //         me.fetchWaitlist(me.$store.state.scheduleID)
+                //         me.$store.state.waitlistID = 0
+                //         me.loader(false)
+                //     }, 500)
+                // })
             },
             removeToWaitlist (id) {
                 const me = this

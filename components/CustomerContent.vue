@@ -14,7 +14,9 @@
                     <div class="package_title">
                         <div class="p_inline">
                             {{ data.class_package.name }}
-                            <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
+                            <template v-if="packageStatus != 'frozen'">
+                              <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
+                            </template>
                             <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
                             <span class="frozen" v-if="data.frozen">Frozen</span>
                         </div>
@@ -740,17 +742,22 @@
                         } else {
                             me.res.user_package_counts.forEach((element, index) => {
                                 let expiry = me.$moment((element.computed_expiration_date != null) ? element.computed_expiration_date : element.expiry_date_if_not_activated)
-                                if (!element.paypal_subscription_id) {
-                                    if (parseInt(expiry.diff(current)) > 0 && element.count > 0) {
-                                        element.expired = false
-                                        if (element.count > 0) {
-                                            me.packageCount++
+                                if (me.packageStatus == 'frozen') {
+                                  element.expired = false
+                                  me.packageCount++
+                                } else {
+                                    if (!element.paypal_subscription_id) {
+                                        if (parseInt(expiry.diff(current)) > 0 && element.count > 0) {
+                                            element.expired = false
+                                            if (element.count > 0) {
+                                                me.packageCount++
+                                            }
+                                        } else {
+                                            element.expired = true
                                         }
                                     } else {
                                         element.expired = true
                                     }
-                                } else {
-                                    element.expired = true
                                 }
                                 result.push(element)
                             })

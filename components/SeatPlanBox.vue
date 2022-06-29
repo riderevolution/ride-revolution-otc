@@ -304,11 +304,11 @@
                             Authorization: `Bearer ${token}`
                         }
                     }).then(res => {
-                      if (res.data) {
-                          setTimeout( () => {
-                              me.$parent.$parent.$parent.getSeats()
-                          }, 10)
-                      }
+                        if (res.data) {
+                            setTimeout( () => {
+                                me.$parent.$parent.$parent.getSeats()
+                            }, 10)
+                        }
                     })
                 } else if (status == 'signed-in' && id != null) {
                     me.$store.state.bookingID = id
