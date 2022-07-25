@@ -50,71 +50,40 @@
                         <div :class="`status ${(tab == 'online') ? 'active' : ''}`" @click="toggleStatus('online')">Online</div>
                         <div :class="`status ${(tab == 'os') ? 'active' : ''}`" @click="toggleStatus('os')">Website/Online Sales</div>
                     </div>
-                    <table class="cms_table_accordion">
+                    <table class="cms_table alt">
                         <thead>
                             <tr>
-                                <th>Group</th>
-                                <th>Starting Class Count</th>
-                                <th>Remaining Class Count</th>
-                                <th>Starting Value</th>
-                                <th>Remaining Value</th>
+                                <th class="sticky">Class Package</th>
+                                <th class="sticky">Package Type</th>
+                                <th class="sticky">Starting Class Count</th>
+                                <th class="sticky">Remaining Class Count</th>
+                                <th class="sticky">Starting Value</th>
+                                <th class="sticky">Remaining Value</th>
                             </tr>
                         </thead>
-                        <tbody class="content_wrapper">
-                            <tr class="parent">
+                        <tbody v-if="res.classPackages.length > 0">
+                            <tr class="parent bb">
                                 <td><b>Total</b></td>
+                                <td><b></b></td>
                                 <td><b>{{ totalItems(res.summary.starting_class_count) }}</b></td>
                                 <td><b>{{ totalItems(res.summary.remaining_class_count) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.remaining_value) }}</b></td>
                             </tr>
-                            <tr></tr>
-                        </tbody>
-                        <tbody :class="`content_wrapper ${(data.open) ? 'toggled' : ''}`" v-for="(data, key) in res.classPackages" v-if="res.classPackages.length > 0">
-                            <tr class="parent">
-                                <td class="toggler" @click.self="toggleAccordion($event, key)">{{ data.name }}</td>
-                                <td>{{ (data.starting_class_count == 'Unlimited') ? data.starting_class_count : totalItems(data.starting_class_count) }}</td>
-                                <td>{{ (data.remaining_class_count == 'Unlimited') ? data.remaining_class_count : totalItems(data.remaining_class_count) }}</td>
-                                <td>Php {{ totalCount(data.starting_value) }}</td>
-                                <td>Php {{ totalCount(data.remaining_value) }}</td>
-                            </tr>
-                            <tr>
-                                <td class="pads" colspan="8">
-                                    <div class="accordion_table">
-                                        <table class="cms_table alt">
-                                            <thead>
-                                                <tr>
-                                                    <th>Package Type</th>
-                                                    <th>Class Package</th>
-                                                    <th>Starting Class Count</th>
-                                                    <th>Remaining Class Count</th>
-                                                    <th>Starting Value</th>
-                                                    <th>Remaining Value</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody v-if="data.values.length > 0">
-                                                <tr v-for="(value, key) in data.values" :key="key">
-                                                    <td>{{ value.package_type.name }}</td>
-                                                    <td>{{ value.name }}</td>
-                                                    <td>{{ (value.starting_class_count == 'Unlimited') ? value.starting_class_count : totalItems(value.starting_class_count) }}</td>
-                                                    <td>{{ (value.remaining_class_count == 'Unlimited') ? value.remaining_class_count : totalItems(value.remaining_class_count) }}</td>
-                                                    <td>Php {{ totalCount(value.starting_value) }}</td>
-                                                    <td>Php {{ totalCount(value.remaining_value) }}</td>
-                                                </tr>
-                                            </tbody>
-                                            <tbody class="no_results" v-else>
-                                                <tr>
-                                                    <td colspan="7">No Result(s) Found.</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                            <tr v-for="(value, key) in res.classPackages" :key="key">
+                                <td>
+                                    <div class="table_data_link" @click="openWindowInside(value)">{{ value.name }}</div>
                                 </td>
+                                <td>{{ value.package_type.name }}</td>
+                                <td>{{ (value.starting_class_count == 'Unlimited') ? value.starting_class_count : totalItems(value.starting_class_count) }}</td>
+                                <td>{{ (value.remaining_class_count == 'Unlimited') ? value.remaining_class_count : totalItems(value.remaining_class_count) }}</td>
+                                <td>Php {{ totalCount(value.starting_value) }}</td>
+                                <td>Php {{ totalCount(value.remaining_value) }}</td>
                             </tr>
                         </tbody>
-                        <tbody class="no_results" v-if="res.classPackages.length == 0">
+                        <tbody class="no_results" v-else>
                             <tr>
-                                <td colspan="8">No Result(s) Found.</td>
+                                <td colspan="6">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -181,6 +150,10 @@
             }
         },
         methods: {
+            openWindowInside (data) {
+                const me = this
+                window.open(`${me.$route.path}/${data.slug}?slug=class-package&id=${data.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
+            },
             getPackageStatus (value) {
                 let result = ''
 
