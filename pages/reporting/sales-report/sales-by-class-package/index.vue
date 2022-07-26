@@ -177,6 +177,7 @@
                     me.$axios.post(`api/reporting/sales/sales-by-class-package?all=1&export=1`, formData).then(res => {
                         if (res.data) {
                             res.data.payment_items.forEach((data, key) => {
+                                if (!data.class_package) console.log(data)
                                 me.values.push(data)
                             })
                         }
@@ -184,7 +185,7 @@
 
                     }).then(() => {
                         me.loader(false)
-                        document.querySelector('.me').click()
+                        // document.querySelector('.me').click()
                     })
                 }, 10)
             },

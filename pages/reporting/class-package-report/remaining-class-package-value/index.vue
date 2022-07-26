@@ -19,8 +19,7 @@
                             </h2>
                         </div>
                         <div class="actions">
-                            <a :href="`/print/reporting/class-package/remaining-package-value?cut_off_date=${form.cut_off_date}`" target="_blank" class="action_btn alternate">Print</a>
-
+                            <!-- <a :href="`/print/reporting/class-package/remaining-package-value?cut_off_date=${form.cut_off_date}`" target="_blank" class="action_btn alternate">Print</a> -->
                             <div class="action_btn alternate" @click="getPackages()" v-if="res.classPackages.length > 0">
                                 Export
                             </div>
@@ -28,7 +27,7 @@
                                 v-if="res.classPackages.length > 0"
                                 class="hidden me"
                                 :data="remainingPackageValueAttributes"
-                                :name="`remaining-package-value-${$moment(form.cut_off_date).format('MM-DD-YY-hh-mm')}.csv`">
+                                :name="`remaining-package-value-${tab}-${$moment(form.cut_off_date).format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
                             </download-csv>
                         </div>
@@ -62,8 +61,7 @@
                         </thead>
                         <tbody v-if="res.classPackages.length > 0">
                             <tr class="parent bb">
-                                <td><b>Total</b></td>
-                                <td><b></b></td>
+                                <td colspan="2"><b>Total</b></td>
                                 <td><b>{{ totalItems(res.summary.starting_class_count) }}</b></td>
                                 <td><b>{{ totalItems(res.summary.remaining_class_count) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
@@ -109,7 +107,6 @@
             return {
                 form: {
                     cut_off_date: this.$moment().format('YYYY-MM-DD')
-                    // end_date: this.$moment().format('YYYY-MM-DD')
                 },
                 name: 'Remaining Class Package Value',
                 access: true,
@@ -125,9 +122,10 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
+                        'Studio': me.getPaymentStudio(value.payment),
                         'Transaction Date': me.$moment(value.payment.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Reference Number': me.getPaymentCode(value),
-                        'Payment Method': (value.payment_item.payment_method) ? value.payment_item.payment_method.method : 'N/A',
+                        'Payment Method': (value.payment.payment_method) ? value.payment.payment_method.method : 'N/A',
                         'Class Package': value.class_package.name,
                         'Class Package Price': (value.payment.promo_code_used != null) ? value.payment_item.total : value.payment_item.price_per_item,
                         'Class Package Status': me.getPackageStatus(value),
@@ -136,14 +134,15 @@
                         'Used Count': value.original_package_count - value.count,
                         'Remaining Credits': value.count,
                         'Remaining Peso Value': value.remaining_value,
-                        'Activation Date': (value.activation_date) ? me.$moment(value.activation_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                        'Activation Date': (value.class_package.activation_date != 'NA') ? (value.class_package.activation_date != null ? me.$moment(value.class_package.activation_date).format('MMM DD, YYYY hh:mm A') : 'N/A') : 'N/A',
                         'Expiration Date': (value.computed_expiration_date) ? me.$moment(value.computed_expiration_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
-                        'Expiration If Not Activated': (value.expiry_date_if_not_activated) ? me.$moment(value.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                        'Expiration If Not Activated': (value.class_package.expiry_date_if_not_activated) ? me.$moment(value.class_package.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
                         'Customer': value.user.fullname,
                         'Email': value.user.email,
-                        'Comp Reason': (value.payment_item.payment_method) ? value.payment_item.payment_method.comp_reason : 'N/A',
-                        'Note': (value.payment_item.payment_method) ? value.payment_item.payment_method.note : 'N/A',
-                        'Remarks': (value.payment_item.payment_method) ? value.payment_item.payment_method.remarks : 'N/A'
+                        'Comp Reason': (value.payment.payment_method) ? value.payment.payment_method.comp_reason : 'N/A',
+                        'Note': (value.payment.payment_method) ? value.payment.payment_method.note : 'N/A',
+                        'Remarks': (value.payment.payment_method) ? value.payment.payment_method.remarks : 'N/A',
+                        'Last Action Taken By': me.getPaymentDetails(value.payment, 'employee')
                     }))
                 ]
             }
@@ -151,7 +150,7 @@
         methods: {
             openWindowInside (data) {
                 const me = this
-                window.open(`${me.$route.path}/${data.slug}?slug=class-package&id=${data.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
+                window.open(`${me.$route.path}/${data.slug}?id=${data.id}&type=${me.tab}&cut_off_date=${me.form.cut_off_date}`, '_blank')
             },
             getPackageStatus (value) {
                 let result = ''
@@ -181,37 +180,12 @@
                         case 'promo-package':
                             result = payment_item.class_package.sku_id
                             break
-                        case 'product-variant':
-                            result = payment_item.product_variant.sku_id
-                            break
-                        case 'custom-gift-card':
-                            result = payment_item.gift_card.card_code
-                            break
-                        case 'physical-gift-card':
-                            result = payment_item.gift_card.sku_id
-                            break
-                        case 'store-credit':
-                            result = payment_item.store_credit.sku_id
-                            break
                     }
                 } else {
                     switch (payment_item.type) {
                         case 'class-package':
                         case 'promo-package':
                             result = payment_item.class_package.name
-                            break
-                        case 'product-variant':
-                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
-                            break
-                        case 'custom-gift-card':
-                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
-                            break
-                        case 'physical-gift-card':
-                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
-                            break
-                        case 'store-credit':
-                            result = payment_item.store_credit.name
-                            break
                     }
                 }
 
@@ -221,27 +195,7 @@
                 const me = this
                 let result = 0
 
-                if (type == 'qty') {
-                    payment.payment_items.forEach((payment_item, key) => {
-                        result += payment_item.quantity
-                    })
-                }
-
                 switch (type) {
-                    case 'qty':
-                        result = me.totalItems(result)
-                        break
-                    case 'price':
-                        let temp_price = 0
-                        payment.payment_items.forEach((payment_item, key) => {
-                            if (payment.promo_code_used !== null) {
-                                temp_price += parseInt(payment_item.total)
-                            } else {
-                                temp_price += parseInt(payment_item.price_per_item)
-                            }
-                        })
-                        result = `Php ${me.totalCount(temp_price)}`
-                        break
                     case 'employee':
                         if (payment.employee != null) {
                             result = `${payment.employee.first_name} ${payment.employee.last_name}`
@@ -260,7 +214,7 @@
                 if (payment.studio != null) {
                     result = payment.studio.name
                 } else {
-                    result = 'Website/Online'
+                    result = 'Old Package/Online Sale'
                 }
 
                 return result
@@ -269,45 +223,26 @@
                 const me = this
                 let result = ''
 
-                if (data.payment_item.payment_method) {
-                    switch (data.payment_item.payment_method.method) {
+                if (data.payment.payment_method) {
+                    switch (data.payment.payment_method.method) {
                         case 'paypal':
-                            result = data.payment_item.payment_method.paypal_transaction_id
+                            result = data.payment.payment_method.paypal_transaction_id
                             break
                         case 'paymaya':
-                            result = data.payment_item.payment_method.paymaya_transaction_id
+                            result = data.payment.payment_method.paymaya_transaction_id
                             break
                         case 'paymongo':
-                            result = data.payment_item.payment_method.paymongo_source_id
+                            result = data.payment.payment_method.paymongo_source_id
                             break
                         default:
                             result = data.payment.payment_code
+                            break
                     }
                 } else {
                     result = data.payment.payment_code
                 }
 
                 return result
-            },
-            /**
-             * Custom toggler for accordion
-             * @param  {[object]} event
-             * @param  {[int]} key
-             * @return {[css]}
-             */
-            toggleAccordion (event, key) {
-                const me = this
-                const target = event.target
-                me.res.classPackages[key].open ^= true
-                if (me.res.classPackages[key].open) {
-                    if (target.parentNode.parentNode.querySelector('.accordion_table')) {
-                        target.parentNode.parentNode.querySelector('.accordion_table').style.height = `${target.parentNode.parentNode.querySelector('.accordion_table').scrollHeight}px`
-                    }
-                } else {
-                    if (target.parentNode.parentNode.querySelector('.accordion_table')) {
-                        target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
-                    }
-                }
             },
             toggleStatus (value) {
                 const me = this
@@ -330,12 +265,6 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
-                        elements.forEach((element, index) => {
-                            if (element.querySelector('.accordion_table')) {
-                                element.querySelector('.accordion_table').style.height = 0
-                            }
-                        })
                     }, 500)
                 })
             },
@@ -367,6 +296,12 @@
                 const me = this
                 me.loader(true)
                 let formData = new FormData()
+
+                if (!me.loaded) {
+                    if (me.$route.query.cut_off_date) me.form.cut_off_date = me.$route.query.cut_off_date
+                    if (me.$route.query.type) me.tab = me.$route.query.type
+                }
+
                 formData.append('cut_off_date', me.form.cut_off_date)
                 formData.append('type', me.tab)
                 me.$axios.post('api/reporting/packages/remaining-class-package-value', formData).then(res => {
@@ -382,12 +317,6 @@
                 }).then(() => {
                     setTimeout( () => {
                         me.loader(false)
-                        const elements = document.querySelectorAll('.cms_table_accordion .content_wrapper')
-                        elements.forEach((element, index) => {
-                            if (element.querySelector('.accordion_table')) {
-                                element.querySelector('.accordion_table').style.height = 0
-                            }
-                        })
                     }, 500)
                 })
             }
@@ -396,22 +325,7 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
-                me.loader(true)
-                let token = me.$cookies.get('70hokcotc3hhhn5')
-                me.$axios.get('api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }).then(res => {
-                    if (res.data != 0) {
-                        setTimeout( () => {
-                            me.form.studio_id = res.data.user.current_studio_id
-                            me.fetchData()
-                        }, 500)
-                    }
-                }).catch(err => {
-                    me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
-                })
+                me.fetchData()
             } else {
                 me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
