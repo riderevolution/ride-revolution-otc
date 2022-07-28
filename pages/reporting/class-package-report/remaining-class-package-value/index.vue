@@ -53,6 +53,7 @@
                             <tr>
                                 <th class="sticky">Class Package</th>
                                 <th class="sticky">Package Type</th>
+                                <th class="sticky">Quantity</th>
                                 <th class="sticky">Starting Class Count</th>
                                 <th class="sticky">Remaining Class Count</th>
                                 <th class="sticky">Starting Value</th>
@@ -62,6 +63,7 @@
                         <tbody v-if="res.classPackages.length > 0">
                             <tr class="parent bb">
                                 <td colspan="2"><b>Total</b></td>
+                                <td><b>{{ totalItems(res.summary.quantity) }}</b></td>
                                 <td><b>{{ totalItems(res.summary.starting_class_count) }}</b></td>
                                 <td><b>{{ totalItems(res.summary.remaining_class_count) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
@@ -72,6 +74,7 @@
                                     <div class="table_data_link" @click="openWindowInside(value)">{{ value.name }}</div>
                                 </td>
                                 <td>{{ value.package_type.name }}</td>
+                                <td>{{ value.quantity }}</td>
                                 <td>{{ (value.starting_class_count == 'Unlimited') ? value.starting_class_count : totalItems(value.starting_class_count) }}</td>
                                 <td>{{ (value.remaining_class_count == 'Unlimited') ? value.remaining_class_count : totalItems(value.remaining_class_count) }}</td>
                                 <td>Php {{ totalCount(value.starting_value) }}</td>
