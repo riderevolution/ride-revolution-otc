@@ -2,7 +2,7 @@
     <div class="print_table" v-if="loaded">
         <div class="text">
             <h2>{{ studio.name }} - Class Attendance ({{ (scheduleDate.schedule.custom_name != null) ? scheduleDate.schedule.custom_name : scheduleDate.schedule.class_type.name }})</h2>
-            <h3><span>{{ $moment(scheduleDate.date).format('ddd, MMM DD, YYYY') }} at {{ scheduleDate.schedule.start_time }} - {{ scheduleDate.schedule.instructor_schedules[0].user.first_name }} {{ scheduleDate.schedule.instructor_schedules[0].user.last_name }}</span></h3>
+            <h3><span>{{ $moment(scheduleDate.date).format('ddd, MMM DD, YYYY') }} at {{ scheduleDate.schedule.start_time }} - {{ instructorData(scheduleDate, 'name') }}</span></h3>
         </div>
         <table class="cms_table print">
             <thead>
@@ -35,7 +35,7 @@
                     </td>
                     <td>
                         <div v-if="data.bookings.length > 0">
-                          {{ data.bookings[0].user_package_count.class_package.name }}
+                            {{ data.bookings[0].user_package_count.class_package.name }}
                         </div>
                         <div v-if="data.bookings.length <= 0">----</div>
                     </td>
@@ -108,6 +108,61 @@
             }
         },
         methods: {
+            instructorData (data, type) {
+                let main = null,
+                    substitute = null,
+                    additional = null,
+                    sub_primary = false,
+                    result = ''
+
+                if (data) {
+                    main = data.schedule.instructor_schedules.filter((item) => {
+                        return item.primary == 1
+                    })
+                    main = (main.length > 0) ? main[0].user : data.schedule.instructor_schedules[0].user
+    
+                    substitute = data.schedule.instructor_schedules.filter((item) => {
+                        return item.substitute == 1
+                    })
+                    substitute = (substitute.length > 0) ? substitute[0].user : null
+    
+                    additional = data.schedule.instructor_schedules.filter((item, index) => {
+                        if (index != 0) {
+                            return (!item.substitute && !item.primary)
+                        }
+                    })
+                    additional = (additional.length > 0) ? additional[0].user : null
+
+                    sub_primary = (substitute) ? (substitute.fullname == main.fullname ? true : false) : false
+
+                    switch (type) {
+                        case 'name':
+                            if (sub_primary) {
+                                if (additional) {
+                                    result = `${substitute.instructor_details.nickname} + ${additional.instructor_details.nickname}`
+                                } else {
+                                    result = substitute.fullname
+                                }
+                            } else {
+                                if (substitute && additional) {
+                                    result = `${main.instructor_details.nickname} + ${substitute.instructor_details.nickname} + ${additional.instructor_details.nickname}`
+                                }
+                                if (!substitute && additional) {
+                                    result = `${main.instructor_details.nickname} + ${additional.instructor_details.nickname}`
+                                }
+                                if (substitute && !additional) {
+                                    result = `${main.instructor_details.nickname} + ${substitute.instructor_details.nickname}`
+                                }
+                                if (!substitute && !additional) {
+                                    result = main.fullname
+                                }
+                            }
+                            break
+                    }
+                }
+
+                return result
+            },
             async initial () {
                 const me = this
 
