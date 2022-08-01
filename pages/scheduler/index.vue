@@ -169,8 +169,10 @@
                         'Class Type': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
                         'Class Length': value.schedule.class_length_formatted,
                         'Class Credits': value.schedule.class_credits,
-                        'Instructor': me.getInstructorsInSchedule(value, 'primary'),
+                        'Main Instructor': me.getInstructorsInSchedule(value, 'main'),
                         'Substitute Instructor': me.getInstructorsInSchedule(value, 'substitute'),
+                        'Additional Instructor': me.getInstructorsInSchedule(value, 'additional'),
+                        'Primary Instructor': me.getInstructorsInSchedule(value, 'primary'),
                         'Zoom Link': value.zoom_link,
                         'No. of Bookings': value.bookings.length,
                         'No. of Available Seats': value.availableSeatsCount
@@ -187,8 +189,10 @@
                         'End Time': value.schedule.end_time,
                         'Studio': value.schedule.studio.name,
                         'Class Type': (value.schedule.custom_name != null) ? value.schedule.custom_name : value.schedule.class_type.name,
-                        'Instructor': me.getInstructorsInSchedule(value, 'primary'),
+                        'Main Instructor': me.getInstructorsInSchedule(value, 'main'),
                         'Substitute Instructor': me.getInstructorsInSchedule(value, 'substitute'),
+                        'Additional Instructor': me.getInstructorsInSchedule(value, 'additional'),
+                        'Primary Instructor': me.getInstructorsInSchedule(value, 'primary'),
 						'Status': value.schedule.enabled
                     }))
                 ]
@@ -200,41 +204,32 @@
 				document.body.classList.add('no_scroll')
 			},
             getInstructorsInSchedule (data, type) {
-                const me = this
                 let result = ''
-                if (data != '') {
-                    let ins_ctr = 0
-                    let ins_sub_ctr = 0
-                    let instructor = []
-                    let sub_instructor = []
-                    data.schedule.instructor_schedules.forEach((ins, index) => {
 
-                        if (type == 'substitute') {
-                            if (ins.substitute == 1) {
-                                ins_sub_ctr += 1
-                                sub_instructor = ins
+                switch (type) {
+                    case 'main':
+                        result = data.schedule.instructor_schedules[0].user.fullname
+                        break
+                    case 'substitute':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.substitute == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'additional':
+                        result = data.schedule.instructor_schedules.filter((item, index) => {
+                            if (index != 0) {
+                                return (!item.substitute && !item.primary)
                             }
-                        } else {
-                            if (ins.substitute == 0) {
-                                ins_ctr += 1
-                            }
-                            instructor = ins
-                        }
-                    })
-
-                    if (ins_ctr == 2) {
-                        result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
-                    } else {
-                        if (type == 'substitute' && ins_sub_ctr > 0) {
-                            result = `${sub_instructor.user.fullname}`
-                        }
-                        if (type == 'primary') {
-                            result = `${instructor.user.fullname}`
-                        }
-                    }
-
-                } else {
-                    result = '- -'
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'primary':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.primary == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
                 }
 
                 return result
@@ -734,7 +729,7 @@
                 })
                 me.$axios.get(`api/instructors?enabled=1&studio_id=${studio_id}`).then(res => {
                     me.instructors = res.data.instructors.data
-			              me.instructors.sort((a, b) => (a.fullname > b.fullname) ? 1 : -1)
+                    me.instructors.sort((a, b) => (a.fullname > b.fullname) ? 1 : -1)
                 })
                 me.form.studio_id = studio_id
 

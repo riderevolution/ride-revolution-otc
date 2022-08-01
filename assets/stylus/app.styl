@@ -30,9 +30,10 @@ image_default =
 body
 	&::-webkit-scrollbar
 		width: 20px
-		background-color: $white
+		background-color: rgba(255, 255 ,255 0.1)
 	&::-webkit-scrollbar-track
 		box-shadow: none
+		background-color: rgba(255, 255 ,255 0.1)
 	&::-webkit-scrollbar-thumb
 		background-color: $green
 		border: 6px solid rgba(0, 0, 0, 0)
@@ -53,6 +54,7 @@ body
 
 body
 	overflow-x: hidden
+	overflow-y: overlay
 	&.cms
 		background-color: #f8f8fb
 	&.no_click

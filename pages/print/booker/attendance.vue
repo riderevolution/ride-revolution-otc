@@ -108,7 +108,7 @@
             }
         },
         methods: {
-            initial () {
+            async initial () {
                 const me = this
 
                 if (me.$route.query.studio_id.length > 0) {
@@ -117,7 +117,7 @@
                     })
                 }
 
-                me.$axios.get(`/api/seats?studio_id=${me.$route.query.studio_id}&scheduled_date_id=${me.$route.query.scheduled_date_id}`).then(res => {
+                await me.$axios.get(`/api/seats?studio_id=${me.$route.query.studio_id}&scheduled_date_id=${me.$route.query.scheduled_date_id}`).then(res => {
                     if (res.data) {
                         me.scheduleDate = res.data.scheduled_date
 
@@ -133,11 +133,10 @@
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        window.print()
-                    }, 1000)
                 })
+                setTimeout( () => {
+                    window.print()
+                }, 1000)
             }
         },
         mounted () {

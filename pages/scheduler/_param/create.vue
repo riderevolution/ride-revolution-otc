@@ -155,7 +155,7 @@
                                         <label for="substitute_instructor_id">Substitute Instructor</label>
                                         <select :class="`default_select alternate ${(form.instructor_id != '') ? '' : 'disabled'}`" name="substitute_instructor_id" v-model="form.substitute_instructor_id">
                                             <option value="" selected>Select a Substitute Instructor</option>
-                                            <option :value="instructor.id" v-for="(instructor, key) in instructors" :key="key" v-if="form.instructor_id != instructor.id && form.additional_instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                                            <option :value="instructor.id" v-for="(instructor, key) in sub_instructors" :key="key" v-if="form.instructor_id != instructor.id && form.additional_instructor_id != instructor.id">{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -237,6 +237,7 @@
                 classTypes: [],
                 packageTypes: [],
                 instructors: [],
+                sub_instructors: [],
                 form: {
                     hasTime: false,
                     setCustomName: '',
@@ -271,15 +272,15 @@
                 return result
             },
             checkRestrictions () {
-              let ctr = 0
+                let ctr = 0
 
-              this.packageTypes.forEach((data, index) => {
-                  if (data.checked) {
-                      ctr++
-                  }
-              })
+                this.packageTypes.forEach((data, index) => {
+                    if (data.checked) {
+                        ctr++
+                    }
+                })
 
-              return (ctr > 0) ? false : true
+                return (ctr > 0) ? false : true
             }
         },
         methods: {
@@ -371,6 +372,9 @@
                 let studio_id = me.$cookies.get('CSID')
                 me.$axios.get(`api/packages/class-types?studio_id=${studio_id}&get=1`).then(res => {
                     me.classTypes = res.data.classTypes
+                })
+                me.$axios.get(`api/instructors?all=1`).then(res => {
+                    me.sub_instructors = res.data.instructors
                 })
                 me.$axios.get(`api/packages/package-types?no_paginate=1&studio_id=${studio_id}`).then(res => {
                     res.data.packageTypes.forEach((data, index) => {

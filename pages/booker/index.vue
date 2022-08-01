@@ -130,8 +130,7 @@
                                                     {{ (data.isFull) ? `Full (${data.schedule.studio.seats.length})` : `Enrolled: ${data.enrolled}` }}
                                                 </div>
                                             </div>
-                                            <!-- <div class="class_text">{{ data.schedule.instructor_schedules[0].user.first_name }} {{ data.schedule.instructor_schedules[0].user.last_name }}</div> -->
-                                            <div class="class_text" v-html="getInstructorsInSchedule(data, 1)"></div>
+                                            <div class="class_text" v-html="instructorLabel(data, 'violator')"></div>
                                             <div class="class_text alternate">
                                                 <span>Signed-in: {{ data.signedIn }}</span>
                                                 <span>Available: {{ (data.schedule.studio.online_class) ? 'Unlimited' : data.availableSeatsCount }}</span>
@@ -190,7 +189,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <label class="booker_label" v-html="getInstructorsInSchedule(schedule)"></label>
+                                        <label class="booker_label" v-html="instructorLabel(schedule, 'title')"></label>
                                         <div :class="`controls ${(studio.online_class) ? 'nope' : '' }`">
                                             <button id="zoom_in">Zoom in</button>
                                             <button id="zoom_out" class="margin">Zoom out</button>
@@ -499,7 +498,10 @@
                         'Schedule Name': (me.schedule.schedule.custom_name != null) ? me.schedule.schedule.custom_name : me.schedule.schedule.class_type.name,
                         'Schedule Date': me.$moment(me.schedule.date).format('MMMM DD, YYYY'),
                         'Start Time': me.schedule.schedule.start_time,
-                        'Instructor': me.getInstructorsInSchedule(me.schedule, 1),
+                        'Main Instructor': me.getInstructorsInSchedule(me.schedule, 'main'),
+                        'Substitute Instructor': me.getInstructorsInSchedule(me.schedule, 'substitute'),
+                        'Additional Instructor': me.getInstructorsInSchedule(me.schedule, 'additional'),
+                        'Primary Instructor': me.getInstructorsInSchedule(me.schedule, 'primary'),
                         'Customer ID': value.user.id,
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.customer_type,
@@ -636,31 +638,66 @@
                     }
                 })
             },
-            getInstructorsInSchedule (data, export_status = null) {
-                const me = this
+            getInstructorsInSchedule (data, type) {
                 let result = ''
-                if (data != '') {
-                    let ins_ctr = 0, instructor = []
-                    data.schedule.instructor_schedules.forEach((ins, index) => {
-                        if (ins.substitute == 0) {
-                            ins_ctr += 1
-                        }
-                        if (ins.primary == 1) {
-                            instructor = ins
+
+                switch (type) {
+                    case 'main':
+                        result = data.schedule.instructor_schedules[0].user.fullname
+                        break
+                    case 'substitute':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.substitute == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'additional':
+                        result = data.schedule.instructor_schedules.filter((item, index) => {
+                            if (index != 0) {
+                                return (!item.substitute && !item.primary)
+                            }
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'primary':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.primary == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                }
+
+                return result
+            },
+            instructorLabel (data, type) {
+                let primary = null,
+                    additional = null,
+                    result = ''
+
+                if (data) {
+                    primary = data.schedule.instructor_schedules.filter((item) => {
+                        return item.primary == 1
+                    })
+                    primary = (primary.length > 0) ? primary[0].user : data.schedule.instructor_schedules[0].user
+    
+                    additional = data.schedule.instructor_schedules.filter((item, index) => {
+                        if (index != 0) {
+                            return (!item.substitute && !item.primary)
                         }
                     })
-
-                    if (ins_ctr == 2) {
-                        if (export_status != null) {
-                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
+                    additional = (additional.length > 0) ? additional[0].user : null
+    
+                    if (additional) {
+                        if (type == 'title') {
+                            result = `<b>${primary.instructor_details.nickname} + ${additional.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         } else {
-                            result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                            result = `${primary.instructor_details.nickname} (Primary) + ${additional.instructor_details.nickname} (Additional)`
                         }
                     } else {
-                        if (export_status != null) {
-                            result = `${instructor.user.fullname} ${(instructor.primary == 1 && instructor.substitute == 1) ? '(Sub)' : '(Main)'}`
+                        if (type == 'title') {
+                            result = `<b>${primary.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
                         } else {
-                            result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                            result = `${primary.fullname} (Primary)`
                         }
                     }
                 }

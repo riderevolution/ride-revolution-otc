@@ -63,19 +63,19 @@
             }
         },
         methods: {
-            initial () {
+            async initial () {
                 const me = this
 
                 if (me.$route.query.studio_id.length > 0) {
-                    me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
+                    await me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                         me.studio = res.data.studio
                     })
                 }
-                me.$axios.get(`api/schedules/${me.$route.query.scheduled_date_id}`).then(res => {
+                await me.$axios.get(`api/schedules/${me.$route.query.scheduled_date_id}`).then(res => {
                     me.schedule = res.data.schedule
                 })
 
-                me.$axios.get(`api/online-class-bookings?scheduled_date_id=${me.$route.query.scheduled_date_id}&studio_id=${me.$route.query.studio_id}`).then(res => {
+                await me.$axios.get(`api/online-class-bookings?scheduled_date_id=${me.$route.query.scheduled_date_id}&studio_id=${me.$route.query.studio_id}`).then(res => {
                     if (res.data) {
                         me.res = res.data.bookings
                         me.loaded = true
@@ -83,11 +83,11 @@
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
-                }).then(() => {
-                    setTimeout( () => {
-                        window.print()
-                    }, 2000)
                 })
+
+                setTimeout( () => {
+                    window.print()
+                }, 1000)
             }
         },
         mounted () {
