@@ -670,15 +670,22 @@
                 return result
             },
             instructorLabel (data, type) {
-                let primary = null,
+                let main = null,
+                    substitute = null,
                     additional = null,
+                    sub_primary = false,
                     result = ''
 
                 if (data) {
-                    primary = data.schedule.instructor_schedules.filter((item) => {
+                    main = data.schedule.instructor_schedules.filter((item) => {
                         return item.primary == 1
                     })
-                    primary = (primary.length > 0) ? primary[0].user : data.schedule.instructor_schedules[0].user
+                    main = (main.length > 0) ? main[0].user : data.schedule.instructor_schedules[0].user
+    
+                    substitute = data.schedule.instructor_schedules.filter((item) => {
+                        return item.substitute == 1
+                    })
+                    substitute = (substitute.length > 0) ? substitute[0].user : null
     
                     additional = data.schedule.instructor_schedules.filter((item, index) => {
                         if (index != 0) {
@@ -686,19 +693,54 @@
                         }
                     })
                     additional = (additional.length > 0) ? additional[0].user : null
+
+                    sub_primary = (substitute) ? (substitute.fullname == main.fullname ? true : false) : false
     
-                    if (additional) {
-                        if (type == 'title') {
-                            result = `<b>${primary.instructor_details.nickname} + ${additional.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        } else {
-                            result = `${primary.instructor_details.nickname} (Primary) + ${additional.instructor_details.nickname} (Additional)`
-                        }
-                    } else {
-                        if (type == 'title') {
-                            result = `<b>${primary.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        } else {
-                            result = `${primary.fullname} (Primary)`
-                        }
+                    switch (type) {
+                        case 'title':
+                            if (sub_primary) {
+                                if (additional) {
+                                    result = `<b>${substitute.instructor_details.nickname} + ${additional.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                                } else {
+                                    result = `<b>${substitute.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                                }
+                            } else {
+                                if (substitute && additional) {
+                                    result = `<b>${main.instructor_details.nickname} + ${substitute.instructor_details.nickname} + ${additional.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                                }
+                                if (!substitute && additional) {
+                                    result = `<b>${main.instructor_details.nickname} + ${additional.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                                }
+                                if (substitute && !additional) {
+                                    result = `<b>${main.instructor_details.nickname} + ${substitute.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                                }
+                                if (!substitute && !additional) {
+                                    result = `<b>${main.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
+                                }
+                            }
+                            break
+                        case 'violator':
+                            if (sub_primary) {
+                                if (additional) {
+                                    result = `${substitute.instructor_details.nickname} (Primary) + ${additional.instructor_details.nickname} (Additional)`
+                                } else {
+                                    result = `${substitute.fullname} (Primary)`
+                                }
+                            } else {
+                                if (substitute && additional) {
+                                    result = `${main.instructor_details.nickname} (Primary) + ${substitute.instructor_details.nickname} (Substitute) + ${additional.instructor_details.nickname} (Additional)`
+                                }
+                                if (!substitute && additional) {
+                                    result = `${main.instructor_details.nickname} (Primary) + ${additional.instructor_details.nickname} (Additional)`
+                                }
+                                if (substitute && !additional) {
+                                    result = `${main.instructor_details.nickname} (Primary) + ${substitute.instructor_details.nickname} (Substitute)`
+                                }
+                                if (!substitute && !additional) {
+                                    result = `${main.instructor_details.nickname} (Primary)`
+                                }
+                            }
+                            break
                     }
                 }
 

@@ -91,15 +91,22 @@
                 return result
             },
             instructorData (data, type) {
-                let primary = null,
+                let main = null,
+                    substitute = null,
                     additional = null,
+                    sub_primary = false,
                     result = ''
 
                 if (data) {
-                    primary = data.schedule.instructor_schedules.filter((item) => {
+                    main = data.schedule.instructor_schedules.filter((item) => {
                         return item.primary == 1
                     })
-                    primary = (primary.length > 0) ? primary[0].user : data.schedule.instructor_schedules[0].user
+                    main = (main.length > 0) ? main[0].user : data.schedule.instructor_schedules[0].user
+    
+                    substitute = data.schedule.instructor_schedules.filter((item) => {
+                        return item.substitute == 1
+                    })
+                    substitute = (substitute.length > 0) ? substitute[0].user : null
     
                     additional = data.schedule.instructor_schedules.filter((item, index) => {
                         if (index != 0) {
@@ -107,23 +114,46 @@
                         }
                     })
                     additional = (additional.length > 0) ? additional[0].user : null
-    
-                    if (additional) {
-                        if (type == 'name') {
-                            result = `${primary.instructor_details.nickname} + ${additional.instructor_details.nickname}`
-                        }
-                    } else {
-                        if (type == 'name') {
-                            result = primary.fullname
-                        }
-                    }
 
-                    if (type == 'image') {
-                        result = primary.instructor_details.images[0].path
-                    }
+                    sub_primary = (substitute) ? (substitute.fullname == main.fullname ? true : false) : false
 
-                    if (type == 'initials') {
-                        result = `${primary.first_name.charAt(0)} ${primary.last_name.charAt(0)}`
+                    switch (type) {
+                        case 'name':
+                            if (sub_primary) {
+                                if (additional) {
+                                    result = `${substitute.instructor_details.nickname} + ${additional.instructor_details.nickname}`
+                                } else {
+                                    result = substitute.fullname
+                                }
+                            } else {
+                                if (substitute && additional) {
+                                    result = `${main.instructor_details.nickname} + ${substitute.instructor_details.nickname} + ${additional.instructor_details.nickname}`
+                                }
+                                if (!substitute && additional) {
+                                    result = `${main.instructor_details.nickname} + ${additional.instructor_details.nickname}`
+                                }
+                                if (substitute && !additional) {
+                                    result = `${main.instructor_details.nickname} + ${substitute.instructor_details.nickname}`
+                                }
+                                if (!substitute && !additional) {
+                                    result = main.fullname
+                                }
+                            }
+                            break
+                        case 'initials':
+                            if (sub_primary) {
+                                result = `${substitute.first_name.charAt(0)} ${substitute.last_name.charAt(0)}`
+                            } else {
+                                result = `${main.first_name.charAt(0)} ${main.last_name.charAt(0)}`
+                            }
+                            break
+                        case 'image':
+                            if (sub_primary) {
+                                result = substitute.instructor_details.images[0].path
+                            } else {
+                                result = main.instructor_details.images[0].path
+                            }
+                            break
                     }
                 }
 
