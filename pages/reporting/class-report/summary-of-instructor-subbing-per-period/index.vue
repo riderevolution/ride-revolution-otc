@@ -68,8 +68,10 @@
                                 <th class="stick">Class Type</th>
                                 <th class="stick">Schedule Released</th>
                                 <th class="stick">Studio</th>
+                                <th class="stick">Main Instructor</th>
                                 <th class="stick">Primary Instructor</th>
                                 <th class="stick">Substitute Instructor</th>
+                                <th class="stick">Additional Instructor</th>
                                 <th class="stick">Cancelled</th>
                                 <th class="stick">Remarks</th>
                             </tr>
@@ -81,8 +83,10 @@
                                 <td>{{ (data.schedule.set_custom_name) ? data.schedule.custom_name : data.schedule.class_type.name }}</td>
                                 <td>{{ (data.schedule.enabled) ? 'Yes' : 'No' }}</td>
                                 <td>{{ data.schedule.studio.name }}</td>
-                                <td>{{ data.primary.user.first_name }} {{ data.primary.user.last_name }}</td>
-                                <td>{{ (data.substitute) ? `${data.substitute.user.first_name} ${data.substitute.user.last_name}` : 'No Substitute' }}</td>
+                                <td>{{ data.main.user.fullname }}</td>
+                                <td>{{ data.primary.user.fullname }}</td>
+                                <td>{{ (data.substitute) ? `${data.substitute.user.fullname}` : 'No Substitute' }}</td>
+                                <td>{{ (data.additional) ? `${data.additional.user.fullname}` : 'No Additional' }}</td>
                                 <td>{{ totalItems(data.cancelled) }}</td>
                                 <td>{{ (data.substitute) ? data.substitute.remarks : 'No Remarks' }}</td>
                             </tr>
@@ -104,51 +108,47 @@
 </template>
 
 <script>
-    import Foot from '../../../../components/Foot'
-    import Pagination from '../../../../components/Pagination'
     export default {
         components: {
-            Foot,
-            Pagination
+            Foot: () => import('~/components/Foot'),
+            Pagination: () => import('~/components/Pagination')
         },
-        data () {
-            const values = []
-            return {
-                name: 'Summary of Instructor Subbing per Period',
-                access: true,
-                loaded: false,
-                filter: true,
-                rowCount: 0,
-                values: [],
-                res: [],
-                studios: [],
-                studio: [],
-                instructors: [],
-                form: {
-                    start_date: this.$moment().subtract(1, 'month').format('YYYY-MM-DD'),
-                    end_date: this.$moment().format('YYYY-MM-DD'),
-                    studio_id: '',
-                    instructor_id: ''
-                }
+        data: ({ $moment }) => ({
+            name: 'Summary of Instructor Subbing per Period',
+            access: true,
+            loaded: false,
+            filter: true,
+            rowCount: 0,
+            values: [],
+            res: [],
+            studios: [],
+            studio: [],
+            instructors: [],
+            form: {
+                start_date: $moment().subtract(1, 'month').format('YYYY-MM-DD'),
+                end_date: $moment().format('YYYY-MM-DD'),
+                studio_id: '',
+                instructor_id: ''
             }
-        },
+        }),
         computed: {
             summaryInstructorSubbingPerPeriodAttributes () {
-                const me = this
                 return [
-                    ...me.values.map((value, key) => ({
+                    ...this.values.map((value, key) => ({
                         'Studio': value.schedule.studio.name,
-                        'Date': me.$moment(value.date, 'YYYY-MM-DD').format('MMMM DD, YYYY'),
-                        'Start Time': me.$moment(value.schedule.start_time, 'HH:mm A').format('h:mm A'),
-                        'End Time': me.$moment(value.schedule.end_time, 'HH:mm A').format('h:mm A'),
+                        'Date': this.$moment(value.date, 'YYYY-MM-DD').format('MMMM DD, YYYY'),
+                        'Start Time': this.$moment(value.schedule.start_time, 'HH:mm A').format('h:mm A'),
+                        'End Time': this.$moment(value.schedule.end_time, 'HH:mm A').format('h:mm A'),
                         'Class Type': (value.schedule.set_custom_name) ? value.schedule.custom_name : value.schedule.class_type.name,
                         'Class Credits': value.schedule.class_credits,
                         'Class Length': value.schedule.class_length_formatted,
                         'Peak Type': value.schedule.peak_type,
                         'Private Class': (!value.schedule.private_class) ? 'No' : 'Yes',
                         'Schedule Released': (value.schedule.enabled) ? 'Yes' : 'No',
-                        'Primary Instructor': `${value.primary.user.first_name } ${ value.primary.user.last_name}`,
-                        'Substitute Instructor': (value.substitute) ? `${value.substitute.user.first_name } ${ value.substitute.user.last_name}` : 'No Substitute',
+                        'Main Instructor': `${value.main.user.fullname}`,
+                        'Primary Instructor': `${value.primary.user.fullname}`,
+                        'Substitute Instructor': (value.substitute) ? `${value.substitute.user.fullname}` : 'No Substitute',
+                        'Additional Instructor': (value.additional) ? `${value.additional.user.fullname}` : 'No Additional',
                         'Total Bookings': value.bookings.length,
                         'Total Cancelled': value.cancelled,
                         'Remarks': (value.substitute) ? value.substitute.remarks : 'No Remarks'
@@ -158,81 +158,77 @@
         },
         methods: {
             getClasses () {
-                const me = this
-                me.values = []
+                this.values = []
                 let formData = new FormData(document.getElementById('filter'))
-                me.loader(true)
-                me.$axios.post(`api/exports/class-report/summary-of-instructor-subbing-per-period`, formData).then(res => {
+                this.loader(true)
+                this.$axios.post(`api/exports/class-report/summary-of-instructor-subbing-per-period`, formData).then(res => {
                     if (res.data) {
-                        me.values = res.data.scheduledDates
+                        this.values = res.data.scheduledDates
                     }
                 }).catch((err) => {
 
                 }).then(() => {
-                    me.loader(false)
+                    this.loader(false)
                     document.querySelector('.me').click()
                 })
             },
             submissionSuccess () {
-                const me = this
-                me.filter = true
-                me.fetchData()
+                this.filter = true
+                this.fetchData()
             },
             fetchData () {
-                const me = this
-                me.loader(true)
+                this.loader(true)
 
                 let formData = new FormData()
-                formData.append('start_date', me.form.start_date)
-                formData.append('end_date', me.form.end_date)
-                formData.append('studio_id', me.form.studio_id)
-                formData.append('instructor_id', me.form.instructor_id)
+                formData.append('start_date', this.form.start_date)
+                formData.append('end_date', this.form.end_date)
+                formData.append('studio_id', this.form.studio_id)
+                formData.append('instructor_id', this.form.instructor_id)
 
-                me.$axios.post(`api/reporting/classes/summary-of-instructor-subbing-per-period`, formData).then(res => {
+                this.$axios.post(`api/reporting/classes/summary-of-instructor-subbing-per-period`, formData).then(res => {
                     setTimeout( () => {
-                        me.res = res.data
-                        me.loaded = true
+                        this.res = res.data
+                        this.loaded = true
                     }, 500)
                 }).catch(err => {
-                    me.$store.state.errorList = err.response.data.errors
-                    me.$store.state.errorStatus = true
+                    this.$store.state.errorList = err.response.data.errors
+                    this.$store.state.errorStatus = true
                 }).then(() => {
                     setTimeout( () => {
-                        me.loader(false)
+                        this.loader(false)
                     }, 500)
-                    me.rowCount = document.getElementsByTagName('th').length
+                    this.rowCount = document.getElementsByTagName('th').length
                 })
             },
-            fetchExtraAPI () {
-                const me = this
-                let token = me.$cookies.get('70hokcotc3hhhn5')
-                let studio_id = me.$cookies.get('CSID')
-                me.$axios.get('api/studios', {
+            async fetchExtraAPI () {
+                let token = this.$cookies.get('70hokcotc3hhhn5'),
+                    studio_id = this.$cookies.get('CSID')
+
+                await this.$axios.get('api/studios', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 }).then(res => {
                     if (res.data) {
-                        me.studios = res.data.studios
-                        me.form.studio_id = studio_id
-                        me.$axios.get(`api/studios/${studio_id}`).then(res => {
-                            me.studio = res.data.studio
+                        this.studios = res.data.studios
+                        this.form.studio_id = studio_id
+                        this.$axios.get(`api/studios/${studio_id}`).then(res => {
+                            this.studio = res.data.studio
                         })
                     }
                 })
-                me.$axios.get(`api/instructors?enabled=1&all=1`).then(res => {
-                    me.instructors = res.data.instructors
+                await this.$axios.get(`api/instructors?enabled=1&all=1`).then(res => {
+                    this.instructors = res.data.instructors
                 })
+                await this.fetchData()
             }
         },
         async mounted () {
-            const me = this
-            await me.checkPagePermission(me)
-            if (me.access) {
-                me.fetchExtraAPI()
-                me.fetchData()
+            await this.checkPagePermission(this)
+            if (this.access) {
+                this.fetchExtraAPI()
             } else {
-                me.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
+                this.$nuxt.error({ statusCode: 403, message: 'Something Went Wrong' })
             }
             setTimeout( () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })

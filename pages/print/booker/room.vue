@@ -200,17 +200,17 @@
                 }).catch(err => {
                     me.$store.state.errorList = err.response.data.errors
                     me.$store.state.errorStatus = true
+                }).then(() => {
+                    setTimeout( () => {
+                        window.print()
+                    }, 2000)
                 })
-
-                setTimeout( () => {
-                    window.print()
-                }, 1000)
             }
         },
         mounted () {
             const me = this
             me.initial()
-            window.onafterprint = function(){
+            window.onafterprint = () => {
                 window.close()
             }
         }
