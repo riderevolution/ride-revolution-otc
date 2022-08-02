@@ -237,13 +237,9 @@
                 me.form.studio_id = me.$route.query.studio_id
 
                 let formData = new FormData()
-                formData.append('class_type_id', me.form.class_type_id)
-                formData.append('customer_type_id', me.form.customer_type_id)
-                formData.append('instructor_id', me.form.instructor_id)
-                formData.append('class_package_id', me.form.class_package_id)
-                formData.append('studio_id', me.$route.query.studio_id)
-                formData.append('start_date', me.form.start_date)
-                formData.append('end_date', me.form.end_date)
+                for (const identifier in this.form) {
+                    if (this.form[identifier]) formData.append(identifier, this.form[identifier])
+                }
                 me.$axios.post(`api/reporting/classes/attendance-summary?all=1`, formData).then(res => {
                     if (res.data) {
                         setTimeout( () => {

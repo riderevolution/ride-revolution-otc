@@ -170,9 +170,9 @@
                         'Class Length': value.schedule.class_length_formatted,
                         'Class Credits': value.schedule.class_credits,
                         'Main Instructor': me.getInstructorsInSchedule(value, 'main'),
+                        'Primary Instructor': me.getInstructorsInSchedule(value, 'primary'),
                         'Substitute Instructor': me.getInstructorsInSchedule(value, 'substitute'),
                         'Additional Instructor': me.getInstructorsInSchedule(value, 'additional'),
-                        'Primary Instructor': me.getInstructorsInSchedule(value, 'primary'),
                         'Zoom Link': value.zoom_link,
                         'No. of Bookings': value.bookings.length,
                         'No. of Available Seats': value.availableSeatsCount
