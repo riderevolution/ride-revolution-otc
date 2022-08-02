@@ -39,16 +39,16 @@
                     <table class="cms_table alt">
                         <thead>
                             <tr>
-                                <th class="sticky">Studio</th>
-                                <th class="sticky">Date of Purchase</th>
-                                <th class="sticky">Reference Number</th>
-                                <th class="sticky">Customer</th>
-                                <th class="sticky">Package</th>
-                                <th class="sticky">Package Status</th>
-                                <th class="sticky">Package Expiration</th>
-                                <th class="sticky">Payment</th>
+                                <th class="sticky">Purchase Location</th>
+                                <th class="sticky">Customer Name</th>
+                                <th class="sticky">Package Name</th>
+                                <th class="sticky">Starting Count</th>
+                                <th class="sticky">Remaining Count</th>
                                 <th class="sticky">Starting Value</th>
                                 <th class="sticky">Remaining Value</th>
+                                <th class="sticky">Date of Purchase</th>
+                                <th class="sticky">Package Status</th>
+                                <th class="sticky">Package Expiration</th>
                             </tr>
                         </thead>
                         <tbody v-if="res.values.data.length > 0">
@@ -59,11 +59,9 @@
                             </tr>
                             <tr v-for="(data, key) in res.values.data" :key="key" v-if="res.values.data.length > 0">
                                 <td>{{ (data.payment.studio) ? data.payment.studio.name : 'Old Package/Online Sale' }}</td>
-                                <td>{{ $moment(data.payment.created_at).format('MMM DD, YYYY hh:mm A') }}</td>
-                                <td>{{ getPaymentCode(data.payment) }}</td>
                                 <td>
-                                <div class="thumb">
-                                    <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
+                                    <div class="thumb">
+                                        <img :src="data.user.customer_details.images[0].path_resized" v-if="data.user.customer_details.images[0].path != null" />
                                         <div class="table_image_default" v-else>
                                             <div class="overlay">
                                                 {{ data.user.first_name.charAt(0) }}{{ data.user.last_name.charAt(0) }}
@@ -74,11 +72,13 @@
                                     </div>
                                 </td>
                                 <td>{{ data.class_package.name }}</td>
+                                <td>{{ data.starting_class_count }}</td>
+                                <td>{{ data.remaining_class_count }}</td>
+                                <td>Php {{ totalCount(data.starting_value) }}</td>
+                                <td>Php {{ totalCount(data.remaining_value) }}</td>
+                                <td>{{ $moment(data.payment.created_at).format('MMM DD, YYYY hh:mm A') }}</td>
                                 <td>{{ getPackageStatus(data) }}</td>
                                 <td>{{ $moment((data.computed_expiration_date) ? data.computed_expiration_date : data.expiry_date_if_activated).format('MMM DD, YYYY hh:mm A') }}</td>
-                                <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
-                                <td>Php {{ totalCount(data.starting_value) }} {{ (data.starting_value < data.remaining_value ) ? data.payment.id : '0' }}</td>
-                                <td>Php {{ totalCount(data.remaining_value) }}</td>
                             </tr>
                         </tbody>
                         <tbody class="no_results" v-else>
