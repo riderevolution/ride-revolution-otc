@@ -120,58 +120,66 @@
 
                 await me.$axios.post(`api/reporting/classes/attendance-by-month`, formData).then(res => {
                     me.schedules = res.data.schedules
-                })
 
-                /**
-                 * Generate Rows **/
-                for (let i = 0; i < 6; i++) {
-                    let tableRow = document.createElement('tr')
                     /**
-                    * Generate Columns **/
-                    for (let j = 0; j < 7; j++) {
-                        if (startDate <= endDate) {
-                            if (me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d') == j) {
-                                let unixTimestamp = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').valueOf()
-                                let dayDate = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
-                                if (highlight && me.currentDate == startDate) {
-                                    tableRow.classList.add('highlighted')
-                                    setTimeout( () => {
-                                        document.querySelector('.highlighted').scrollIntoView({block: 'center', behavior: 'smooth'})
-                                    }, 250)
-                                }
-                                tableRow.innerHTML += `
-                                    <td id="col_${i}" class='day_wrapper fade_in'>
-                                        <div class='header_wrapper'>
-                                            <div class='header_day ${(me.currentDate == startDate) ? 'active' : '' }'>${startDate}</div>
-                                        </div>
-                                        <div class="classes" id="class_${startDate}">
-                                            ${me.populateScheduler(startDate)}
-                                        </div>
-                                    </td>`
-                                startDate++
-                            } else {
-                                let prevDate = me.$moment(`${year}-${(month - 1 == 0) ? 12 : month - 1}`, 'YYYY-MM').daysInMonth()
-                                current--
-                                if (current <= 0) {
-                                    prevDate = me.$moment(`${year}-${(month - 1 == 0) ? 12 : month - 1}`, 'YYYY-MM').daysInMonth()
+                     * Generate Rows **/
+                    for (let i = 0; i < 6; i++) {
+                        let tableRow = document.createElement('tr')
+                        /**
+                        * Generate Columns **/
+                        for (let j = 0; j < 7; j++) {
+                            if (startDate <= endDate) {
+                                if (me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').format('d') == j) {
+                                    let unixTimestamp = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-D').valueOf()
+                                    let dayDate = me.$moment(`${year}-${month}-${startDate}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
+                                    if (highlight && me.currentDate == startDate) {
+                                        tableRow.classList.add('highlighted')
+                                        setTimeout( () => {
+                                            document.querySelector('.highlighted').scrollIntoView({block: 'center', behavior: 'smooth'})
+                                        }, 250)
+                                    }
+                                    tableRow.innerHTML += `
+                                        <td id="col_${i}" class='day_wrapper fade_in'>
+                                            <div class='header_wrapper'>
+                                                <div class='header_day ${(me.currentDate == startDate) ? 'active' : '' }'>${startDate}</div>
+                                            </div>
+                                            <div class="classes" id="class_${startDate}">
+                                                ${me.populateScheduler(startDate)}
+                                            </div>
+                                        </td>`
+                                    startDate++
                                 } else {
-                                    prevDate = prevDate - current
+                                    let prevDate = me.$moment(`${year}-${(month - 1 == 0) ? 12 : month - 1}`, 'YYYY-MM').daysInMonth()
+                                    current--
+                                    if (current <= 0) {
+                                        prevDate = me.$moment(`${year}-${(month - 1 == 0) ? 12 : month - 1}`, 'YYYY-MM').daysInMonth()
+                                    } else {
+                                        prevDate = prevDate - current
+                                    }
+                                    excess++
+                                    /**
+                                     * Generate Previous Dates **/
+                                    tableRow.innerHTML += `
+                                        <td class='day_wrapper fade_in disabled_day'>
+                                            <div class='header_wrapper'>
+                                                <div class='header_day'>${prevDate}</div>
+                                            </div>
+                                        </td>`
                                 }
-                                excess++
+                            } else {
                                 /**
-                                 * Generate Previous Dates **/
-                                tableRow.innerHTML += `
-                                    <td class='day_wrapper fade_in disabled_day'>
-                                        <div class='header_wrapper'>
-                                            <div class='header_day'>${prevDate}</div>
-                                        </div>
-                                    </td>`
-                            }
-                        } else {
-                            /**
-                             * Generate Next Dates **/
-                            if (me.$moment(`${year}-${month}-${1}`, 'YYYY-MM-D').format('d') == 0) {
-                                if (i == 4) {
+                                 * Generate Next Dates **/
+                                if (me.$moment(`${year}-${month}-${1}`, 'YYYY-MM-D').format('d') == 0) {
+                                    if (i == 4) {
+                                        tableRow.innerHTML += `
+                                            <td id="col_${i}" class='day_wrapper fade_in disabled_day'>
+                                                <div class='header_wrapper'>
+                                                    <div class='header_day'>${nextDate}</div>
+                                                </div>
+                                            </td>`
+                                        nextDate++
+                                    }
+                                } else {
                                     tableRow.innerHTML += `
                                         <td id="col_${i}" class='day_wrapper fade_in disabled_day'>
                                             <div class='header_wrapper'>
@@ -180,25 +188,20 @@
                                         </td>`
                                     nextDate++
                                 }
-                            } else {
-                                tableRow.innerHTML += `
-                                    <td id="col_${i}" class='day_wrapper fade_in disabled_day'>
-                                        <div class='header_wrapper'>
-                                            <div class='header_day'>${nextDate}</div>
-                                        </div>
-                                    </td>`
-                                nextDate++
                             }
                         }
+                        calendarTable.appendChild(tableRow)
                     }
-                    calendarTable.appendChild(tableRow)
-                }
-                setTimeout( () => {
-                    me.loader(false)
+                }).catch(() => {
+
+                }).then(() => {
                     setTimeout( () => {
-                        window.print()
-                    }, 1000)
-                }, 500)
+                        me.loader(false)
+                        setTimeout( () => {
+                            window.print()
+                        }, 1000)
+                    }, 500)
+                })
             },
             /**
              * Populate the Scheduler

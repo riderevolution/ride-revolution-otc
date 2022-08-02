@@ -161,7 +161,10 @@
                         'Day': me.$moment(value.scheduled_date.date).format('dddd'),
                         'Type': me.tabStatus,
                         'Start Time': value.scheduled_date.schedule.start_time,
-                        'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
+                        'Main Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'main'),
+                        'Primary Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'primary'),
+                        'Substitute Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'substitute'),
+                        'Additional Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'additional'),
                         'Full Name': (value.user) ? value.user.fullname : `${value.guest_first_name} ${value.guest_last_name}`,
                         'Customer Type': value.customer_type,
                         'Email Address': (value.user) ? value.user.email : value.guest_email,
@@ -245,36 +248,33 @@
 
                 return result
             },
-            getInstructorsInSchedule (data, export_status = null) {
-                const me = this
+            getInstructorsInSchedule (data, type) {
                 let result = ''
-                if (data != '') {
-                    let ins_ctr = 0, instructor = [], subInstructor = [], targetInstructor = []
-                    data.schedule.instructor_schedules.forEach((ins, index) => {
-                        if (ins.substitute == 0) {
-                            ins_ctr += 1
-                            subInstructor = ins
-                        }
-                        if (ins.primary == 1) {
-                            instructor = ins
-                        }
-                    })
 
-                    targetInstructor = (instructor != []) ? instructor : subInstructor
-
-                    if (ins_ctr == 2) {
-                        if (export_status != null) {
-                            result = `${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
-                        } else {
-                            result = `<b>${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        }
-                    } else {
-                        if (export_status != null) {
-                            result = `${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}`
-                        } else {
-                            result = `<b>${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        }
-                    }
+                switch (type) {
+                    case 'main':
+                        result = data.schedule.instructor_schedules[0].user.fullname
+                        break
+                    case 'substitute':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.substitute == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'additional':
+                        result = data.schedule.instructor_schedules.filter((item, index) => {
+                            if (index != 0) {
+                                return (!item.substitute && !item.primary)
+                            }
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'primary':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.primary == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
                 }
 
                 return result
@@ -368,7 +368,6 @@
                 }).then(res => {
                     if (res.data) {
                         me.studios = res.data.studios
-                        me.form.studio_id = studio_id
                         me.$axios.get(`api/studios/${studio_id}`).then(res => {
                             me.studio = res.data.studio
                         })
@@ -386,6 +385,8 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
+                let studio_id = me.$cookies.get('CSID')
+                me.form.studio_id = studio_id
                 me.fetchExtraAPI()
                 me.fetchData('weekdays')
             } else {

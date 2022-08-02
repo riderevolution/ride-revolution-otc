@@ -3,13 +3,14 @@
         <div class="content" v-if="loaded">
             <div id="admin" class="cms_dashboard">
                 <section id="top_content" class="table">
+                    <nuxt-link to="/reporting/class-report/attendance-by-month" class="action_back_btn"><img src="/icons/back-icon.svg"><span>Attendance By Month</span></nuxt-link>
                     <div class="action_wrapper">
                         <div>
                             <div class="header_title">
                                 <h1>{{ (scheduled_date.schedule.custom_name != null) ? scheduled_date.schedule.custom_name : scheduled_date.schedule.class_type.name }}</h1>
                                 <span>{{ $moment(scheduled_date.schedule.start_time, 'hh:mm A').format('h:mm A') }}</span>
                             </div>
-                            <h2 class="header_subtitle">{{ scheduled_date.schedule.class_length_formatted }}</h2>
+                            <h2 class="header_subtitle">{{ scheduled_date.schedule.class_length_formatted }} - {{ instructorData(scheduled_date, 'name') }}</h2>
                         </div>
                         <div class="actions">
                             <div class="action_buttons">
@@ -41,7 +42,7 @@
                                 <th class="sticky">Type</th>
                                 <th class="sticky">Email Address</th>
                                 <th class="sticky">Package Used</th>
-                                <th class="sticky">Revenue</th>
+                                <th class="sticky">Gross Revenue</th>
                                 <th class="sticky">Discount</th>
                                 <th class="sticky">Net Revenue</th>
                             </tr>
@@ -130,7 +131,10 @@
                         'Schedule Name': (value.scheduled_date.schedule.custom_name != null) ? value.scheduled_date.schedule.custom_name : value.scheduled_date.schedule.class_type.name,
                         'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
                         'Start Time': value.scheduled_date.schedule.start_time,
-                        'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
+                        'Main Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'main'),
+                        'Primary Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'primary'),
+                        'Substitute Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'substitute'),
+                        'Additional Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'additional'),
                         'Full Name': `${value.user.first_name} ${value.user.last_name}`,
                         'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
@@ -154,6 +158,61 @@
             }
         },
         methods: {
+            instructorData (data, type) {
+                let main = null,
+                    substitute = null,
+                    additional = null,
+                    sub_primary = false,
+                    result = ''
+
+                if (data) {
+                    main = data.schedule.instructor_schedules.filter((item) => {
+                        return item.primary == 1
+                    })
+                    main = (main.length > 0) ? main[0].user : data.schedule.instructor_schedules[0].user
+    
+                    substitute = data.schedule.instructor_schedules.filter((item) => {
+                        return item.substitute == 1
+                    })
+                    substitute = (substitute.length > 0) ? substitute[0].user : null
+    
+                    additional = data.schedule.instructor_schedules.filter((item, index) => {
+                        if (index != 0) {
+                            return (!item.substitute && !item.primary)
+                        }
+                    })
+                    additional = (additional.length > 0) ? additional[0].user : null
+
+                    sub_primary = (substitute) ? (substitute.fullname == main.fullname ? true : false) : false
+
+                    switch (type) {
+                        case 'name':
+                            if (sub_primary) {
+                                if (additional) {
+                                    result = `${substitute.instructor_details.nickname} + ${additional.instructor_details.nickname}`
+                                } else {
+                                    result = substitute.fullname
+                                }
+                            } else {
+                                if (substitute && additional) {
+                                    result = `${main.instructor_details.nickname} + ${substitute.instructor_details.nickname} + ${additional.instructor_details.nickname}`
+                                }
+                                if (!substitute && additional) {
+                                    result = `${main.instructor_details.nickname} + ${additional.instructor_details.nickname}`
+                                }
+                                if (substitute && !additional) {
+                                    result = `${main.instructor_details.nickname} + ${substitute.instructor_details.nickname}`
+                                }
+                                if (!substitute && !additional) {
+                                    result = main.fullname
+                                }
+                            }
+                            break
+                    }
+                }
+
+                return result
+            },
             getPaymentCode (data) {
                 const me = this
                 let result = ''
@@ -170,6 +229,7 @@
                         break
                     default:
                         result = data.payment.payment_code
+                        break
                 }
 
                 return result
@@ -182,7 +242,7 @@
                     if (data.user_package_count.payment_item.payment_method.method != 'comp') {
                         switch (type) {
                             case 'revenue':
-                                base_value = me.totalCount(data.revenue)
+                                base_value = me.totalCount(data.gross_revenue)
                                 break
                             case 'net':
                                 base_value = me.totalCount(data.net_revenue)
@@ -201,33 +261,33 @@
 
                 return result
             },
-            getInstructorsInSchedule (data, export_status = null) {
-                const me = this
+            getInstructorsInSchedule (data, type) {
                 let result = ''
-                if (data != '') {
-                    let ins_ctr = 0, instructor = []
-                    data.schedule.instructor_schedules.forEach((ins, index) => {
-                        if (ins.substitute == 0) {
-                            ins_ctr += 1
-                        }
-                        if (ins.primary == 1) {
-                            instructor = ins
-                        }
-                    })
 
-                    if (ins_ctr == 2) {
-                        if (export_status != null) {
-                            result = `${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
-                        } else {
-                            result = `<b>${instructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        }
-                    } else {
-                        if (export_status != null) {
-                            result = `${instructor.user.fullname}`
-                        } else {
-                            result = `<b>${instructor.user.fullname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        }
-                    }
+                switch (type) {
+                    case 'main':
+                        result = data.schedule.instructor_schedules[0].user.fullname
+                        break
+                    case 'substitute':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.substitute == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'additional':
+                        result = data.schedule.instructor_schedules.filter((item, index) => {
+                            if (index != 0) {
+                                return (!item.substitute && !item.primary)
+                            }
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'primary':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.primary == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
                 }
 
                 return result
@@ -290,12 +350,12 @@
                             res.data.bookings.forEach((data, index) => {
                                 data.searched = true
                                 me.res.push(data)
+                                if (!data.scheduled_date.schedule) console.log(index);
                             })
                             me.values = me.res
                             me.$axios.get(`api/studios/${studio_id}`).then(res => {
                                 me.studio = res.data.studio
                             })
-                            me.loaded = true
                         }, 500)
                     }
                 }).catch(err => {
@@ -305,6 +365,7 @@
                     setTimeout( () => {
                         me.rowCount = document.getElementsByTagName('th').length
                         me.loader(false)
+                        me.loaded = true
                     }, 500)
                 })
             }

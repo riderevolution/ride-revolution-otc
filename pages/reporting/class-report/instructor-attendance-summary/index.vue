@@ -56,12 +56,12 @@
                             </div>
                             <div class="form_group margin">
                                 <label for="start_date">Start Date <span>*</span></label>
-                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'" :max-date="$moment().format('YYYY-MM-DD')"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
                             <div class="form_group margin">
                                 <label for="end_date">End Date <span>*</span></label>
-                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
+                                <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" :max-date="$moment().format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
                             </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
@@ -109,7 +109,6 @@
                                         <table class="cms_table alt">
                                             <thead>
                                                 <tr>
-
                                                     <th>Total Rides</th>
                                                     <th>Paying Riders</th>
                                                     <th>Comped Riders</th>
@@ -213,7 +212,10 @@
                         'Schedule Name': (value.scheduled_date.schedule.custom_name != null) ? value.scheduled_date.schedule.custom_name : value.scheduled_date.schedule.class_type.name,
                         'Schedule Date': me.$moment(value.scheduled_date.date).format('MMMM DD, YYYY'),
                         'Start Time': value.scheduled_date.schedule.start_time,
-                        'Instructor': me.getInstructorsInSchedule(value.scheduled_date, 1),
+                        'Main Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'main'),
+                        'Primary Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'primary'),
+                        'Substitute Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'substitute'),
+                        'Additional Instructor': me.getInstructorsInSchedule(value.scheduled_date, 'additional'),
                         'Full Name': value.user.fullname,
                         'Customer Type': value.customer_type,
                         'Email Address': value.user.email,
@@ -292,36 +294,33 @@
 
                 return result
             },
-            getInstructorsInSchedule (data, export_status = null) {
-                const me = this
+            getInstructorsInSchedule (data, type) {
                 let result = ''
-                if (data != '') {
-                    let ins_ctr = 0, instructor = [], subInstructor = [], targetInstructor = []
-                    data.schedule.instructor_schedules.forEach((ins, index) => {
-                        if (ins.substitute == 0) {
-                            ins_ctr += 1
-                            subInstructor = ins
-                        }
-                        if (ins.primary == 1) {
-                            instructor = ins
-                        }
-                    })
 
-                    targetInstructor = (instructor != []) ? instructor : subInstructor
-
-                    if (ins_ctr == 2) {
-                        if (export_status != null) {
-                            result = `${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}`
-                        } else {
-                            result = `<b>${targetInstructor.user.instructor_details.nickname} + ${data.schedule.instructor_schedules[1].user.instructor_details.nickname}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        }
-                    } else {
-                        if (export_status != null) {
-                            result = `${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}`
-                        } else {
-                            result = `<b>${(targetInstructor.user) ? targetInstructor.user.fullname : 'No Instructor Set'}</b> <b class="g">(${data.schedule.class_type.name})</b>`
-                        }
-                    }
+                switch (type) {
+                    case 'main':
+                        result = data.schedule.instructor_schedules[0].user.fullname
+                        break
+                    case 'substitute':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.substitute == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'additional':
+                        result = data.schedule.instructor_schedules.filter((item, index) => {
+                            if (index != 0) {
+                                return (!item.substitute && !item.primary)
+                            }
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
+                    case 'primary':
+                        result = data.schedule.instructor_schedules.filter((item) => {
+                            return item.primary == 1
+                        })
+                        result = (result.length > 0) ? result[0].user.fullname : 'N/A'
+                        break
                 }
 
                 return result

@@ -55,19 +55,19 @@
                     </div>
                     <div class="calendar_wrapper">
                         <div class="calendar_actions">
-                            <div class="action_flex">
+                            <!-- <div class="action_flex">
                                 <div class="action_calendar_btn" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 0, 0)">This Month</div>
                                 <div class="action_calendar_btn margin" @click="generateCalendar(currentYear = $moment().year(), currentMonth = $moment().month() + 1, 1, 0)">This Week</div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="calendar_header">
-                            <div class="calendar_prev" @click="generatePrevCalendar()">
+                            <!-- <div class="calendar_prev" @click="generatePrevCalendar()">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
-                            </div>
+                            </div> -->
                             <h2 class="calendar_title">{{ monthName }} {{ yearName }}</h2>
-                            <div class="calendar_next" @click="generateNextCalendar()">
+                            <!-- <div class="calendar_next" @click="generateNextCalendar()">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"> <g transform="translate(-248 -187)"> <g class="arrow_1" transform="translate(248 187)"> <circle class="arrow_3" cx="14" cy="14" r="14" /> <circle class="arrow_4" cx="14" cy="14" r="13.5" /> </g> <path class="arrow_2" d="M184.939,200.506l-3.981,3.981,3.981,3.981" transform="translate(445.438 405.969) rotate(180)" /> </g> </svg>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="cms_table_calendar_wrapper">
                             <table class="cms_table_calendar">
@@ -148,37 +148,43 @@
 
                 return result
             },
+            manipulateMonthValue () {
+                let date = this.form.month.split(' ')
+
+                this.monthName = this.$moment(`${date[1]}-${date[0]}`, 'YYYY-MMMM').format('MMMM')
+                this.yearName = this.$moment(`${date[1]}-${date[0]}`, 'YYYY-MMMM').format('YYYY')
+
+                this.currentMonth = this.$moment(`${date[0]}`, 'MMMM').month() + 1
+                this.currentYear = this.$moment(`${date[1]}`, 'YYYY').year()
+            },
             async submissionSuccess () {
                 const me = this
 
-                let date = me.form.month.split(' ')
-
-                me.monthName = me.$moment(`${date[1]}-${date[0]}`, 'YYYY-MMMM').format('MMMM')
-                me.yearName = me.$moment(`${date[1]}-${date[0]}`, 'YYYY-MMMM').format('YYYY')
-
-                me.currentMonth = me.$moment(`${date[0]}`, 'MMMM').month() + 1
-                me.currentYear = me.$moment(`${date[1]}`, 'YYYY').year()
+                await this.manipulateMonthValue()
 
                 me.generateCalendar(me.currentYear, me.currentMonth, 0, 1)
             },
-            generatePrevCalendar () {
-                const me = this
-                me.currentMonth = me.currentMonth - 1
-                if (me.currentMonth == 0) {
-                    me.currentMonth = 12
-                    me.currentYear = me.currentYear - 1
-                }
-                me.generateCalendar(me.currentYear, me.currentMonth, 0, 0)
-            },
-            generateNextCalendar () {
-                const me = this
-                me.currentMonth = me.currentMonth + 1
-                if (me.currentMonth == 13) {
-                    me.currentMonth = 1
-                    me.currentYear = me.currentYear + 1
-                }
-                me.generateCalendar(me.currentYear, me.currentMonth, 0, 0)
-            },
+            // async generatePrevCalendar () {
+            //     const me = this
+
+            //     me.currentMonth = me.currentMonth - 1
+            //     if (me.currentMonth == 0) {
+            //         me.currentMonth = 12
+            //         me.currentYear = me.currentYear - 1
+            //     }
+
+            //     me.generateCalendar(me.currentYear, me.currentMonth, 0, 0)
+            // },
+            // async generateNextCalendar () {
+            //     const me = this
+
+            //     me.currentMonth = me.currentMonth + 1
+            //     if (me.currentMonth == 13) {
+            //         me.currentMonth = 1
+            //         me.currentYear = me.currentYear + 1
+            //     }
+            //     me.generateCalendar(me.currentYear, me.currentMonth, 0, 0)
+            // },
             clearTableRows () {
                 document.querySelectorAll('.cms_table_calendar tbody tr').forEach(function(e){e.remove()})
             },
@@ -362,35 +368,34 @@
                 }
                 return me.$moment(`${me.currentYear}-${me.currentMonth}-${lastDayofWeek}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
             },
-            fetchData () {
+            async fetchData () {
                 const me = this
-                me.fetchExtraAPI()
-                me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
+                await me.fetchExtraAPI()
+                await me.generateCalendar(me.currentYear = me.$moment().year(), me.currentMonth = me.$moment().month() + 1, 0, 0)
             },
-            fetchExtraAPI () {
+            async fetchExtraAPI () {
                 const me = this
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 let studio_id = me.$cookies.get('CSID')
-                me.$axios.get('api/studios', {
+                await me.$axios.get('api/studios', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 }).then(res => {
                     if (res.data) {
                         me.studios = res.data.studios
-                        me.form.studio_id = studio_id
                         me.$axios.get(`api/studios/${studio_id}`).then(res => {
                             me.studio = res.data.studio
                         })
                     }
                 })
-                me.$axios.get(`api/instructors?enabled=1`).then(res => {
+                await me.$axios.get(`api/instructors?enabled=1`).then(res => {
                     me.instructors = res.data.instructors.data
                 })
-                me.$axios.get(`api/packages/class-types?enabled=1&get=1`).then(res => {
+                await me.$axios.get(`api/packages/class-types?enabled=1&get=1`).then(res => {
                     me.classTypes = res.data.classTypes
                 })
-                me.$axios.get(`api/extras/month-by-scheduled-dates`).then(res => {
+                await me.$axios.get(`api/extras/month-by-scheduled-dates`).then(res => {
                     me.monthsByScheduledDates = res.data.monthsByScheduledDates
                 })
             }
@@ -400,6 +405,8 @@
             await me.checkPagePermission(me)
             if (me.access) {
                 me.loader(true)
+                let studio_id = me.$cookies.get('CSID')
+                me.form.studio_id = studio_id
                 let token = me.$cookies.get('70hokcotc3hhhn5')
                 me.$axios.get('api/user', {
                     headers: {
