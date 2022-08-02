@@ -77,7 +77,7 @@
                                 <td>{{ getPackageStatus(data) }}</td>
                                 <td>{{ $moment((data.computed_expiration_date) ? data.computed_expiration_date : data.expiry_date_if_activated).format('MMM DD, YYYY hh:mm A') }}</td>
                                 <td class="alt_2">{{ replacer(data.payment.payment_method.method) }}</td>
-                                <td>Php {{ totalCount(data.starting_value) }}</td>
+                                <td>Php {{ totalCount(data.starting_value) }} {{ (data.starting_value < data.remaining_value ) ? data.payment.id : '0' }}</td>
                                 <td>Php {{ totalCount(data.remaining_value) }}</td>
                             </tr>
                         </tbody>
