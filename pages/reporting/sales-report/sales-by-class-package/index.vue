@@ -185,7 +185,7 @@
 
                     }).then(() => {
                         me.loader(false)
-                        // document.querySelector('.me').click()
+                        document.querySelector('.me').click()
                     })
                 }, 10)
             },
