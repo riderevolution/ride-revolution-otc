@@ -96,7 +96,7 @@
                             me.res = res.data.result
                             me.total = res.data.total
 
-                            if (me.form.studio_id != 0) {
+                            if (me.$route.query.studio_id != 0) {
                                 me.$axios.get(`api/studios/${me.$route.query.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
