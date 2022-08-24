@@ -241,16 +241,11 @@
                 const me = this
                 let result = 0
 
-                payment.payment_items.forEach((payment_item, key) => {
-                    switch (type) {
-                        case 'qty':
-                            result += payment_item.quantity
-                            break
-                    }
-                })
-
                 switch (type) {
                     case 'qty':
+                        payment.payment_items.forEach((payment_item, key) => {
+                            result += payment_item.quantity
+                        })
                         result = me.totalItems(result)
                         break
                     case 'price':
