@@ -9,7 +9,7 @@
                 </div>
             </div>
             <div class="text">
-                <h2>Sales by Products - {{ ($route.query.studio_id.length > 0) ? studio.name : 'All Studios' }}</h2>
+                <h2>Sales by Products - {{ ($route.query.studio_id && $route.query.studio_id != 0) ? studio.name : 'All Studios' }}</h2>
                 <h3><span>{{ $moment($route.query.start_date).format('MMMM DD, YYYY') }} - {{ $moment($route.query.end_date).format('MMMM DD, YYYY') }}</span></h3>
             </div>
         </div>
