@@ -347,7 +347,7 @@
                             me.total = res.data.total
                             me.variant = res.data.variant
 
-                            if (me.form.studio_id != '') {
+                            if (me.form.studio_id != 0) {
                                 me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
                                     me.studio = res.data.studio
                                 })
