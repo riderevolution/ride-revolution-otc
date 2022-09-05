@@ -55,7 +55,7 @@
                                         </div>
                                         <div class="form_footer_wrapper">
                                             <div class="button_group">
-                                                <button type="button" name="cancel" class="action_cancel_btn alternate margin-right">Cancel</button>
+                                                <button type="button" name="cancel" class="action_cancel_btn alternate margin-right" @click="toggleClose()">Cancel</button>
                                                 <button type="submit" name="submit" class="action_success_btn alternate">Proceed</button>
                                             </div>
                                         </div>

@@ -48,6 +48,7 @@
                                 <th class="stick">P.O. Number</th>
                                 <th class="stick">Supplier</th>
                                 <th class="stick">Studio</th>
+                                <th class="stick">Total Quantity</th>
                                 <th class="stick">Shipping Cost</th>
                                 <!-- <th class="stick">Additional Cost</th> -->
                                 <th class="stick">Total</th>
@@ -60,6 +61,7 @@
                                 <td><nuxt-link class="table_data_link alternate" :to="`${$route.path}/${data.id}/show`">{{ data.purchase_order_number }}</nuxt-link></td>
                                 <td>{{ data.supplier.name }}</td>
                                 <td>{{ data.studio.name }}</td>
+                                <td>{{ data.total_qty }}</td>
                                 <td>PHP {{ totalCount(data.total_shipping_cost) }}</td>
                                 <!-- <td>PHP {{ totalCount(data.total_additional_cost) }}</td> -->
                                 <td>PHP {{ totalCount(data.total_cost) }}</td>

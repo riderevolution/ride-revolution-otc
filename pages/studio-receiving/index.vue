@@ -21,6 +21,7 @@
                                 <th class="stick">P.O. Number</th>
                                 <th class="stick">Supplier</th>
                                 <th class="stick">Studio</th>
+                                <th class="stick">Total Quantity</th>
                                 <th class="stick">Requisition Date</th>
                                 <th class="stick">Delivery Date</th>
                                 <th class="stick">Lead Time</th>
@@ -32,6 +33,7 @@
                                 <td>{{ data.purchase_order_number }}</td>
                                 <td>{{ data.supplier.name }}</td>
                                 <td>{{ data.studio.name }}</td>
+                                <td>{{ data.total_qty }}</td>
                                 <td>{{ formatDate(data.created_at) }}</td>
                                 <td :class="`${(data.paid == 2) ? '' : 'red'}`">{{ (data.paid == 2) ? formatDate(data.delivery_date) : 'Pending' }}</td>
                                 <td>{{ (data.paid == 2) ? data.lead_time : '-' }}</td>
