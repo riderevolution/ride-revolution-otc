@@ -243,6 +243,9 @@
                                             <input type="text" name="purchase_limit_per_customer" placeholder="Enter purchase limit per customer" class="default_text number" autocomplete="off" v-model="res.purchase_limit_per_customer" v-validate="'required|numeric|max_value:99999'">
                                             <transition name="slide"><span class="validation_errors" v-if="errors.has('purchase_limit_per_customer')">{{ properFormat(errors.first('purchase_limit_per_customer')) }}</span></transition>
                                         </div>
+                                        <div class="form_group_disclaimer">
+                                            <div class="form_disclaimer"><img src="/icons/disclaimer-icon.svg" /> <span>Input <b>0</b> for no purchase limit.</span></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form_flex">
