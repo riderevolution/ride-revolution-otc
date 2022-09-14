@@ -745,8 +745,9 @@
                                 if (me.packageStatus == 'frozen') {
                                     element.expired = false
                                     me.packageCount++
+                                    result.push(element)
                                 } else {
-                                    if (!element.frozen) {
+                                    if (element.frozen) {
                                         if (!element.paypal_subscription_id) {
                                             if (parseInt(expiry.diff(current)) > 0 && element.count > 0) {
                                                 element.expired = false
@@ -759,9 +760,9 @@
                                         } else {
                                             element.expired = true
                                         }
+                                        result.push(element)
                                     }
                                 }
-                                result.push(element)
                             })
                         }
                     } else {
