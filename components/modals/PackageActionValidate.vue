@@ -2,8 +2,12 @@
     <div class="default_modal">
         <div class="background" @click.once="toggleClose(false)"></div>
         <div class="confirmation_wrapper">
-            <div class="confirmation_text">
+            <div class="confirmation_text mb-10">
                 Are you sure you want to {{ $parent.methodType }} this package?
+            </div>
+            <div class="form_group">
+                <label for="remarks">Notes/Remarks</label>
+                <textarea name="remarks" rows="8" id="remarks" class="default_text" v-model="form.remarks" placeholder="Enter remarks"></textarea>
             </div>
             <div class="button_group">
                 <a href="javascript:void(0)" class="action_cancel_btn" @click.once="toggleClose(false)">Cancel</a>
@@ -20,12 +24,18 @@
                 default: null
             }
         },
+        data: () => ({
+            form: {
+                remarks: ''
+            }
+        }),
         methods: {
             toggleClose (status) {
                 const me = this
                 if (status) {
                     let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData()
+                    formData.append('remarks', me.form.remarks)
                     me.loader(true)
                     if (me.$parent.methodType != 'unshare') {
                         formData.append('user_id', me.$parent.res.id)

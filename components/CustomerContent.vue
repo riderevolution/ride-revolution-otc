@@ -56,6 +56,11 @@
                             </div>
                         </div>
                         <div class="package_action" v-if="packageStatus != 'expired'">
+                            <template v-if="$store.state.user.staff_details.role_id == 1">
+                                <div>
+                                    <a :href="`/customers/${$route.params.param}/packages/${data.id}/logs`" target="_blank" class="action_btn">Package Logs</a>
+                                </div>
+                            </template>
                             <div v-if="!data.frozen" class="action_success_btn" @click="getCurrentCustomer()">Book a Class</div>
                             <div class="package_options" :class="{ no_margin: data.frozen }" v-if="(data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package || data.subscription_status)">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
