@@ -53,9 +53,11 @@
                         </thead>
                         <tbody v-if="res.values.data.length > 0">
                             <tr>
-                                <td colspan="8"><b>Total</b></td>
+                                <td colspan="3"><b>Total</b></td>
+                                <td><b>{{ totalCount(res.summary.starting_count) }}</b></td>
+                                <td><b>{{ totalCount(res.summary.remaining_count) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
-                                <td><b>Php {{ totalCount(res.summary.remaining_value) }}</b></td>
+                                <td colspan="3"><b>Php {{ totalCount(res.summary.remaining_value) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res.values.data" :key="key" v-if="res.values.data.length > 0">
                                 <td>{{ (data.payment.studio) ? data.payment.studio.name : 'Old Package/Online Sale' }}</td>
