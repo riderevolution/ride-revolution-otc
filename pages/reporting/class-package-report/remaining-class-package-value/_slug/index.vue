@@ -164,7 +164,7 @@
         methods: {
             getPackageStatus (value) {
                 let result = '',
-                    current = this.$moment(this.$route.query.cut_off_date)
+                    current = this.$moment(this.$route.query.cut_off_date),
                     expiry = this.$moment((value.computed_expiration_date != null) ? value.computed_expiration_date : value.expiry_date_if_not_activated)
 
                 if (parseInt(expiry.diff(current)) <= 0) {
