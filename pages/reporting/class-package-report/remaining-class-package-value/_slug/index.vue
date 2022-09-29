@@ -54,8 +54,8 @@
                         <tbody v-if="res.values.data.length > 0">
                             <tr>
                                 <td colspan="3"><b>Total</b></td>
-                                <td><b>{{ totalItems(res.summary.starting_count) }}</b></td>
-                                <td><b>{{ totalItems(res.summary.remaining_count) }}</b></td>
+                                <td><b>{{ (res.summary.starting_count != 'Unlimited') ? totalItems(res.summary.starting_count) : res.summary.starting_count }}</b></td>
+                                <td><b>{{ (res.summary.remaining_count != 'Unlimited') ? totalItems(res.summary.remaining_count) : res.summary.remaining_count }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
                                 <td colspan="4"><b>Php {{ totalCount(res.summary.remaining_value) }}</b></td>
                             </tr>
