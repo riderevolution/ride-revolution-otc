@@ -57,7 +57,7 @@
                                 <td><b>{{ totalItems(res.summary.starting_count) }}</b></td>
                                 <td><b>{{ totalItems(res.summary.remaining_count) }}</b></td>
                                 <td><b>Php {{ totalCount(res.summary.starting_value) }}</b></td>
-                                <td colspan="3"><b>Php {{ totalCount(res.summary.remaining_value) }}</b></td>
+                                <td colspan="4"><b>Php {{ totalCount(res.summary.remaining_value) }}</b></td>
                             </tr>
                             <tr v-for="(data, key) in res.values.data" :key="key" v-if="res.values.data.length > 0">
                                 <td>{{ (data.payment.studio) ? data.payment.studio.name : 'Old Package/Online Sale' }}</td>
@@ -163,18 +163,24 @@
         },
         methods: {
             getPackageStatus (value) {
-                let result = ''
+                let result = '',
+                    current = this.$moment(this.$route.query.cut_off_date)
+                    expiry = this.$moment((value.computed_expiration_date != null) ? value.computed_expiration_date : value.expiry_date_if_not_activated)
 
-                if (value.frozen) {
-                    result = 'Frozen'
-                    if (value.activation_date == 'N/A' || !value.activation_date) {
-                        result += ' & Not Activated'
-                    }
+                if (parseInt(expiry.diff(current)) <= 0) {
+                    result = 'Expired'
                 } else {
-                    if (value.activation_date == 'N/A' || !value.activation_date) {
-                        result = 'Not Activated'
+                    if (value.frozen) {
+                        result = 'Frozen'
+                        if (value.activation_date == 'N/A' || !value.activation_date) {
+                            result += ' & Not Activated'
+                        }
                     } else {
-                        result = 'Active'
+                        if (value.activation_date == 'N/A' || !value.activation_date) {
+                            result = 'Not Activated'
+                        } else {
+                            result = 'Active'
+                        }
                     }
                 }
 
