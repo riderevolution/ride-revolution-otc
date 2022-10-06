@@ -5,6 +5,12 @@
             <div class="confirmation_text mb-10">
                 Are you sure you want to {{ $parent.methodType }} this package?
             </div>
+            <template v-if="$parent.methodType == 'edit'">
+                <div class="form_group">
+                    <label for="package_credit">Updated Package Credit</label>
+                    <input type="text" class="default_text" v-model="form.package_credit" placeholder="Enter package creidt">
+                </div>
+            </template>
             <div class="form_group">
                 <label for="remarks">Notes/Remarks</label>
                 <textarea name="remarks" rows="8" id="remarks" class="default_text" v-model="form.remarks" placeholder="Enter remarks"></textarea>
@@ -26,6 +32,7 @@
         },
         data: () => ({
             form: {
+                package_credit: '',
                 remarks: ''
             }
         }),
@@ -35,6 +42,9 @@
                 if (status) {
                     let token = me.$cookies.get('70hokcotc3hhhn5')
                     let formData = new FormData()
+                    if (me.$parent.methodType == 'edit') {
+                        formData.append('package_credit', me.form.package_credit)
+                    }
                     formData.append('remarks', me.form.remarks)
                     me.loader(true)
                     if (me.$parent.methodType != 'unshare') {
@@ -52,12 +62,19 @@
                                         document.getElementById('packages').click()
                                     }
                                     me.$store.state.packageActionPromptStatus = true
-                                    if (me.$parent.methodType == 'freeze') {
-                                        me.$parent.packagePromptType = 'Freeze'
-                                        me.$parent.packagePromptMessage = 'You have successfully froze your package.'
-                                    } else {
-                                        me.$parent.packagePromptType = 'Unfreeze'
-                                        me.$parent.packagePromptMessage = 'You have successfully unfroze your package.'
+                                    switch (me.$parent.methodType) {
+                                        case 'freeze':
+                                            me.$parent.packagePromptType = 'Freeze'
+                                            me.$parent.packagePromptMessage = 'You have successfully froze your package.'
+                                            break
+                                        case 'unfreeze':
+                                            me.$parent.packagePromptType = 'Unfreeze'
+                                            me.$parent.packagePromptMessage = 'You have successfully unfroze your package.'
+                                            break
+                                        case 'edit':
+                                            me.$parent.packagePromptType = 'Edited Package Credit'
+                                            me.$parent.packagePromptMessage = 'You have successfully updated your package.'
+                                            break
                                     }
                                 }, 500)
                             }

@@ -65,7 +65,8 @@
                             <div class="package_options" :class="{ no_margin: data.frozen }" v-if="(data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package || data.subscription_status)">
                                 <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
                                 <div class="option_selector">
-
+                                    <div v-if="!data.class_package.recurring && !data.class_package.class_count_unlimited" class="option_link" @click="togglePackageAction(data, 'edit')">Edit Package Credit</div>
+                                    
                                     <div v-if="data.class_package.por_allow_transferring_of_package && !data.frozen && data.sharedto_user_id == null" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
 
                                     <div v-if="data.class_package.por_allow_sharing_of_package && !data.class_package.recurring" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
@@ -1193,6 +1194,11 @@
                         }
                         document.body.classList.add('no_scroll')
                         me.packageActionType = 'Share'
+                        break
+                    case 'edit':
+                        me.methodType = 'edit'
+                        me.$store.state.packageActionValidateStatus = true
+                        document.body.classList.add('no_scroll')
                         break
                     case 'freeze':
                         if (data.frozen) {
