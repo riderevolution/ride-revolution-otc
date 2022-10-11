@@ -92,6 +92,10 @@
                                 <input type="radio" id="store_credits" value="store-credits" name="payment_method" class="action_radio" @change="checkPayment('store-credits')">
                                 <label for="store_credits">Store Credits</label>
                             </div>
+                            <div class="form_radio">
+                                <input type="radio" id="gc_code " value="gc_code" name="payment_method" class="action_radio" @change="checkPayment('gc_code')">
+                                <label for="gc_code ">Gift Card</label>
+                            </div>
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 0 || form.paymentType == 2">
                             <div class="form_group">
@@ -180,6 +184,13 @@
                                 <label for="reference_number">Reference Number <span>*</span></label>
                                 <input type="text" name="reference_number" class="default_text" v-validate="'required'" key="reference_number">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.reference_number')">{{ properFormat(errors.first('checkout_form.reference_number')) }}</span></transition>
+                            </div>
+                        </div>
+                        <div class="form_main_group" v-else-if="form.paymentType == 9">
+                            <div class="form_group">
+                                <label for="gc_code">Card Code <span>*</span></label>
+                                <input type="text" name="gc_code" class="default_text" v-validate="'required'" key="gc_code">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.gc_code')">{{ properFormat(errors.first('checkout_form.gc_code')) }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 6 || form.paymentType == 7 || form.paymentType == 8">
@@ -669,6 +680,9 @@
                         break
                     case 'class_pass':
                         me.form.paymentType = 8
+                        break
+                    case 'gc_code':
+                        me.form.paymentType = 9
                         break
                     case 'store-credits':
                         me.form.paymentType = 9999

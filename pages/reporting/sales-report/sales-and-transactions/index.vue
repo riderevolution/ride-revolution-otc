@@ -448,8 +448,12 @@
                     case 'paymongo':
                         result = payment.payment_method.paymongo_source_id
                         break
+                    case 'gcash':
+                        result = payment.payment_method.gcash_reference_number
+                        break
                     default:
                         result = payment.payment_code
+                        break
                 }
 
                 return result

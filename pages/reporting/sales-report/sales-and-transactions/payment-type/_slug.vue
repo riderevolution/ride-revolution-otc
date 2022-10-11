@@ -292,7 +292,11 @@
 
                 switch (payment.payment_method.method) {
                     case 'paypal':
-                        result = payment.payment_method.paypal_transaction_id
+                        if (payment.payment_method.paypal_transaction_id) {
+                            result = payment.payment_method.paypal_transaction_id
+                        } else {
+                            result = payment.payment_code
+                        }
                         break
                     case 'paymaya':
                         result = payment.payment_method.paymaya_transaction_id
@@ -300,8 +304,12 @@
                     case 'paymongo':
                         result = payment.payment_method.paymongo_source_id
                         break
+                    case 'gcash':
+                        result = payment.payment_method.gcash_reference_number
+                        break
                     default:
                         result = payment.payment_code
+                        break
                 }
 
                 return result
