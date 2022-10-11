@@ -442,6 +442,9 @@
                     }
                 })
 
+                me.products.sort((a, b) => {
+                    return parseInt(a.quick_sale_sequence) - parseInt(b.quick_sale_sequence)
+                })
                 products.sort((a, b) => {
                     return parseInt(a.quick_sale_sequence) - parseInt(b.quick_sale_sequence)
                 })
