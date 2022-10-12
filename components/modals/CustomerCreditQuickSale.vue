@@ -188,9 +188,10 @@
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 9">
                             <div class="form_group">
-                                <label for="gc_code">Card Code <span>*</span></label>
-                                <input type="text" name="gc_code" class="default_text" v-validate="'required'" key="gc_code">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.gc_code')">{{ properFormat(errors.first('checkout_form.gc_code')) }}</span></transition>
+                                <label for="card_code">Card Code <span>*</span></label>
+                                <input type="text" name="card_code" class="default_text" v-validate="'required'" key="card_code" @input="validateInput($event, 'gc_code')">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.card_code') && !validate.gc_code">{{ properFormat(errors.first('checkout_form.card_code')) }}</span></transition>
+                                <transition name="slide"><span class="validation_errors" v-if="validate.gc_code">The card code already used.</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 6 || form.paymentType == 7 || form.paymentType == 8">
@@ -342,7 +343,11 @@
                 totalPrice: [],
                 toCheckout: [],
                 cardType: '',
-                promoApplied: false
+                promoApplied: false,
+                debounce_timeout: null,
+                validate: {
+                    gc_code: false
+                }
             }
         },
         computed: {
@@ -464,6 +469,20 @@
             }
         },
         methods: {
+            validateInput (event, payment_method) {
+                const me = this
+
+                clearTimeout(me.debounce_timeout)
+                me.debounce_timeout = setTimeout( () => {
+                    let form_data = new FormData()
+                    form_data.append('value', event.target.value)
+                    me.$axios.$post(`api/quick-sale/validate/${payment_method}`, form_data).then(() => {
+                        me.validate[payment_method] = false
+                    }).catch(() => {
+                        if (event.target.value) me.validate[payment_method] = true
+                    })
+                }, 500)
+            },
             toggleDeactivate (id) {
                 const me = this
                 me.$store.state.confirmStatus = true

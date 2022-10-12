@@ -287,18 +287,33 @@
                 const me = this
                 let result = ''
 
-                switch (payment.payment_method.method) {
-                    case 'paypal':
-                        result = payment.payment_method.paypal_transaction_id
-                        break
-                    case 'paymaya':
-                        result = payment.payment_method.paymaya_transaction_id
-                        break
-                    case 'paymongo':
-                        result = payment.payment_method.paymongo_source_id
-                        break
-                    default:
-                        result = payment.payment_code
+                if (payment.payment_method) {
+                    switch (payment.payment_method.method) {
+                        case 'paypal':
+                            if (payment.payment_method.paypal_transaction_id) {
+                                result = payment.payment_method.paypal_transaction_id
+                            } else {
+                                result = payment.payment_code
+                            }
+                            break
+                        case 'paymaya':
+                            result = payment.payment_method.paymaya_transaction_id
+                            break
+                        case 'paymongo':
+                            result = payment.payment_method.paymongo_source_id
+                            break
+                        case 'gcash':
+                            result = payment.payment_method.gcash_reference_number
+                            break
+                        case 'gc_code':
+                            result = `${payment.payment_code} - ${payment.payment_method.gc_code}`
+                            break
+                        default:
+                            result = payment.payment_code
+                            break
+                    }
+                } else {
+                    result = payment.payment_code
                 }
 
                 return result

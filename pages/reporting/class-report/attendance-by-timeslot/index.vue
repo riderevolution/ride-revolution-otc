@@ -232,18 +232,33 @@
                 const me = this
                 let result = ''
 
-                switch (data.payment_item.payment_method.method) {
-                    case 'paypal':
-                        result = data.payment_item.payment_method.paypal_transaction_id
-                        break
-                    case 'paymaya':
-                        result = data.payment_item.payment_method.paymaya_transaction_id
-                        break
-                    case 'paymongo':
-                        result = data.payment_item.payment_method.paymongo_source_id
-                        break
-                    default:
-                        result = data.payment.payment_code
+                if (data.payment_item.payment_method) {
+                    switch (data.payment_item.payment_method.method) {
+                        case 'paypal':
+                            if (data.payment_item.payment_method.paypal_transaction_id) {
+                                result = data.payment_item.payment_method.paypal_transaction_id
+                            } else {
+                                result = data.payment.payment_code
+                            }
+                            break
+                        case 'paymaya':
+                            result = data.payment_item.payment_method.paymaya_transaction_id
+                            break
+                        case 'paymongo':
+                            result = data.payment_item.payment_method.paymongo_source_id
+                            break
+                        case 'gcash':
+                            result = data.payment_item.payment_method.gcash_reference_number
+                            break
+                        case 'gc_code':
+                            result = `${data.payment.payment_code} - ${data.payment_item.payment_method.gc_code}`
+                            break
+                        default:
+                            result = data.payment.payment_code
+                            break
+                    }
+                } else {
+                    result = data.payment.payment_code
                 }
 
                 return result

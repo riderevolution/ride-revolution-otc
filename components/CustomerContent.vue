@@ -808,7 +808,32 @@
                             result = data.transaction_id
                             break
                         case 'method':
-                            result = data.payment_item.payment_method.method
+                            switch (data.payment_item.payment_method.method) {
+                                case 'gc_code':
+                                    result = 'Gift Card'
+                                    break
+                                case 'debit-card':
+                                    result = 'Debit Card'
+                                    break
+                                case 'credit-card':
+                                    result = 'Credit Card'
+                                    break
+                                case 'store-credits':
+                                    result = 'Store Credits'
+                                    break
+                                case 'gcash':
+                                    result = 'GCash'
+                                    break
+                                case 'class_pass':
+                                    result = 'ClassPass'
+                                    break
+                                case 'third_party_platform':
+                                    result = 'Third Party Platform'
+                                    break
+                                default:
+                                    result = data.payment_item.payment_method.method
+                                    break
+                            }
                             break
                         case 'transaction_date':
                             result = me.$moment(data.updated_at).format('MMMM DD, YYYY hh:mm A')
@@ -821,9 +846,9 @@
                             break
                         case 'price':
                             if (data.duplicated) {
-                              result = me.totalCount(data.payment_item.price_per_item * data.payment_item.quantity)
+                                result = me.totalCount(data.payment_item.price_per_item * data.payment_item.quantity)
                             } else {
-                              result = me.totalCount(data.payment_item.payment.total)
+                                result = me.totalCount(data.payment_item.payment.total)
                             }
                             break
                         case 'status':
@@ -890,12 +915,47 @@
                                 case 'paymaya':
                                     result = data.payment_method.paymaya_transaction_id
                                     break
+                                case 'paymongo':
+                                    result = data.payment_method.paymongo_source_id
+                                    break
+                                case 'gcash':
+                                    result = data.payment_method.gcash_reference_number
+                                    break
+                                case 'gc_code':
+                                    result = `${data.payment_code} - ${data.payment_method.gc_code}`
+                                    break
                                 default:
                                     result = data.payment_code
+                                    break
                             }
                             break
                         case 'method':
-                            result = data.payment_method.method
+                            switch (data.payment_method.method) {
+                                case 'gc_code':
+                                    result = 'Gift Card'
+                                    break
+                                case 'debit-card':
+                                    result = 'Debit Card'
+                                    break
+                                case 'credit-card':
+                                    result = 'Credit Card'
+                                    break
+                                case 'store-credits':
+                                    result = 'Store Credits'
+                                    break
+                                case 'gcash':
+                                    result = 'GCash'
+                                    break
+                                case 'class_pass':
+                                    result = 'ClassPass'
+                                    break
+                                case 'third_party_platform':
+                                    result = 'Third Party Platform'
+                                    break
+                                default:
+                                    result = data.payment_method.method
+                                    break
+                            }
                             break
                         case 'transaction_date':
                             result = me.$moment(data.updated_at).format('MMMM DD, YYYY hh:mm A')
@@ -1051,8 +1111,15 @@
                         case 'paymongo':
                             result = payment.payment_method.paymongo_source_id
                             break
+                        case 'gcash':
+                            result = payment.payment_method.gcash_reference_number
+                            break
+                        case 'gc_code':
+                            result = `${payment.payment_code} - ${payment.payment_method.gc_code}`
+                            break
                         default:
                             result = payment.payment_code
+                            break
                     }
                 } else {
                     result = 'N/A'
