@@ -108,12 +108,12 @@
                                 </div>
                                 <div class="form_group">
                                     <label for="description">Description <span>*</span></label>
-                                    <textarea name="description" rows="8" class="default_text" id="description" v-validate="'required|max:2000'"></textarea>
+                                    <textarea name="description" rows="8" class="default_text" id="description" v-validate="'required|max:3000'"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('description')">{{ properFormat(errors.first('description')) }}</span></transition>
                                 </div>
                                 <div class="form_group">
                                     <label for="summary">Summary <span>*</span></label>
-                                    <textarea name="summary" rows="4" id="summary" class="default_text" v-validate="'required|max:500'"></textarea>
+                                    <textarea name="summary" rows="4" id="summary" class="default_text" v-validate="'required|max:1000'"></textarea>
                                     <transition name="slide"><span class="validation_errors" v-if="errors.has('summary')">{{ properFormat(errors.first('summary')) }}</span></transition>
                                 </div>
                                 <div class="form_group">
