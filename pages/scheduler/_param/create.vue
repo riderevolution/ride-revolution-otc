@@ -191,6 +191,10 @@
                             </div>
                         </div>
                         <div class="form_footer_wrapper">
+                            <div class="form_check">
+                                <input type="checkbox" id="bookable" name="bookable" class="action_check">
+                                <label for="bookable">Bookable</label>
+                            </div>
                             <div class="form_flex">
                                 <div class="form_check">
                                     <input type="checkbox" id="enabled" name="enabled" class="action_check">
