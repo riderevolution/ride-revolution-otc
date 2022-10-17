@@ -193,7 +193,7 @@
                         <div class="form_footer_wrapper">
                             <div class="form_check">
                                 <input type="checkbox" id="bookable" name="bookable" class="action_check">
-                                <label for="bookable">Bookable</label>
+                                <label for="bookable">Website Bookable</label>
                             </div>
                             <div class="form_flex">
                                 <div class="form_check">

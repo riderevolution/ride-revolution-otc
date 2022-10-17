@@ -52,6 +52,7 @@ const createStore = () => {
             changeStudioStatus: false,
             calendarDuplicateStatus: false,
             calendarClearStatus: false,
+            calendarPublishStatus: false,
             customerCreditQuickSaleStatus: false,
             customerProductQuickSaleStatus: false,
             customerSendGiftCardStatus: false,

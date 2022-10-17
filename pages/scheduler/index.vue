@@ -97,6 +97,9 @@
                 <calendar-clear v-if="$store.state.calendarClearStatus" :value="value" :type="calendarType" />
             </transition>
             <transition name="fade">
+                <calendar-publish-classes v-if="$store.state.calendarPublishStatus" :value="value" />
+            </transition>
+            <transition name="fade">
                 <calendar-duplicate v-if="$store.state.calendarDuplicateStatus" :type="calendarType" :datePicked="value" :yearPicked="currentYear" :monthPicked="currentMonth" />
             </transition>
             <transition name="fade">
@@ -112,6 +115,7 @@
 <script>
     import Foot from '../../components/Foot'
     import CalendarClear from '../../components/modals/CalendarClear'
+    import CalendarPublishClasses from '../../components/modals/CalendarPublishClasses'
     import CalendarDuplicate from '../../components/modals/CalendarDuplicate'
     import CalendarActionMessage from '../../components/modals/CalendarActionMessage'
     import ImportDraftedSchedules from '../../components/modals/ImportDraftedSchedules'
@@ -120,6 +124,7 @@
         components: {
             Foot,
             CalendarClear,
+            CalendarPublishClasses,
             CalendarDuplicate,
             CalendarActionMessage,
             ImportDraftedSchedules
@@ -308,6 +313,7 @@
                                                 <div class='menu_overlay ${(j == 6) ? 'alternate' : ''}'>
                                                     <ul class='menu_list_wrapper'>
                                                         <li class='menu_list'><a class='add menu_item' href='/${me.lastRoute}/${unixTimestamp}/create'>Add a Class</a></li>
+                                                        <li class='menu_list'><a class='publish menu_item' href='${dayDate}'>Publish Classes</a></li>
                                                         <li class='menu_list'><a class='duplicate menu_item' href='${dayDate}'>Duplicate Day</a></li>
                                                         <li class='menu_list'><a class='clear red menu_item' href='${dayDate}'>Clear a Day</a></li>
                                                     </ul>
@@ -599,6 +605,7 @@
                     let elementDay = (document.getElementById(`menu_${startNum}`) != null) ? document.getElementById(`menu_${startNum}`) : null
                     let elementWeek = (document.getElementById(`gear_${startNum}`) != null) ? document.getElementById(`gear_${startNum}`) : null
                     let elementDayAdd = (elementDay != null) ? elementDay.nextElementSibling.querySelector('.menu_list_wrapper .add') : null
+                    let elementDayPublish = (elementDay != null) ? elementDay.nextElementSibling.querySelector('.menu_list_wrapper .publish') : null
                     let elementDayClear = (elementDay != null) ? elementDay.nextElementSibling.querySelector('.menu_list_wrapper .clear') : null
                     let elementDayDuplicate = (elementDay != null) ? elementDay.nextElementSibling.querySelector('.menu_list_wrapper .duplicate') : null
                     let elementWeekClear = (elementWeek != null) ? elementWeek.nextElementSibling.querySelector('.gear_list_wrapper .clear') : null
@@ -630,6 +637,14 @@
                                 me.value = e.target.getAttribute('href')
                                 me.calendarType = 'day'
                                 me.$store.state.calendarClearStatus = true
+                                document.body.classList.add('no_scroll')
+                            })
+                        }
+                        if (elementDayPublish != null) {
+                            elementDayPublish.addEventListener('click', function(e) {
+                                e.preventDefault()
+                                me.value = e.target.getAttribute('href')
+                                me.$store.state.calendarPublishStatus = true
                                 document.body.classList.add('no_scroll')
                             })
                         }
