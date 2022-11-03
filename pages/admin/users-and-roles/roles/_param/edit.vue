@@ -228,6 +228,16 @@
 						"checked": true
 					},
 					{
+						"name": "Customer Expiring Packages",
+						"class": "child",
+						"checked": true
+					},
+					{
+						"name": "No Ride Activity",
+						"class": "child",
+						"checked": true
+					},
+					{
 						"name": "Top Riders",
 						"class": "child",
 						"checked": true
@@ -488,6 +498,7 @@
 					me.res = res.data.role
 					me.permissionsPages = me.parser(res.data.role.permissions_pages)
 					me.permissionsReporting = me.parser(res.data.role.permissions_reporting)
+					console.log(me.permissionsReporting);
 					me.loaded = true
 				})
 			} else {

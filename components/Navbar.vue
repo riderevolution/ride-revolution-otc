@@ -153,6 +153,14 @@
                                         link: '/reporting/customer-report/customer-retention'
                                     },
                                     {
+                                        name: "Customer Expiring Packages",
+                                        link: '/reporting/customer-report/customer-expiring-packages'
+                                    },
+                                    {
+                                        name: "No Ride Activity",
+                                        link: '/reporting/customer-report/no-ride-activity'
+                                    },
+                                    {
                                         title: 'Top Riders',
                                         link: '/reporting/customer-report/top-riders'
                                     }

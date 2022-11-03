@@ -228,6 +228,16 @@
 						"checked": true
 					},
 					{
+						"name": "Customer Expiring Packages",
+						"class": "child",
+						"checked": true
+					},
+					{
+						"name": "No Ride Activity",
+						"class": "child",
+						"checked": true
+					},
+					{
 						"name": "Top Riders",
 						"class": "child",
 						"checked": true
