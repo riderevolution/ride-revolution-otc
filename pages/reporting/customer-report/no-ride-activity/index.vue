@@ -6,8 +6,8 @@
                   <div class="action_wrapper">
                       <div>
                           <div class="header_title">
-                              <h1>Customer Expiring Packages</h1>
-                              <span>{{ $moment(form.cut_off).format('MMMM DD, YYYY') }}</span>
+                              <h1>No Ride Activity</h1>
+                              <span>{{ $moment().format('MMMM DD, YYYY') }}</span>
                           </div>
                       </div>
                       <div class="actions">
@@ -17,8 +17,8 @@
                           <download-csv
                               v-if="res.customers.data.length > 0"
                               class="hidden me"
-                              :data="customerExpiringPackagesAttributes"
-                              :name="`customer-expiring-packages-${$moment(form.cut_off).format('MM-DD-YY-hh-mm')}.csv`">
+                              :data="noRideActivityAttributes"
+                              :name="`no-ride-activity-${$moment().format('MM-DD-YY-hh-mm')}.csv`">
                               Export
                           </download-csv>
                       </div>
@@ -30,13 +30,8 @@
                               <input type="text" name="q" autocomplete="off" placeholder="Search for a customer" class="default_text search_alternate" v-model="form.query">
                           </div>
                           <div class="form_group margin">
-                              <label for="cut_off">Cut-off Date <span>*</span></label>
-                              <v-ctk v-model="form.cut_off" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'cut_off'" :name="'cut_off'" :label="'Select cut date'" v-validate="'required'" :min-date="$moment().format('YYYY-MM-DD')"></v-ctk>
-                              <transition name="slide"><span class="validation_errors" v-if="errors.has('cut_off')">{{ properFormat(errors.first('cut_off')) }}</span></transition>
-                          </div>
-                          <div class="form_group margin">
-                              <label for="to_add">Days to Add</label>
-                              <input type="number" name="to_add" autocomplete="off" placeholder="X" class="default_text" v-model="form.to_add">
+                              <label for="to_sub">Months to Subtract</label>
+                              <input type="number" name="to_sub" autocomplete="off" placeholder="X" class="default_text" v-model="form.to_sub">
                           </div>
                           <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                       </form>
@@ -51,41 +46,41 @@
                   <table class="cms_table">
                       <thead>
                           <tr>
-                              <th class="stick">Member ID</th>
                               <th class="stick">Customer</th>
-                              <th class="stick">Customer Type</th>
-                              <th class="stick">Class Package</th>
-                              <th class="stick">Class Package Expiration</th>
+                              <th class="stick">Member ID</th>
                               <th class="stick">Sign Up Date</th>
+                              <th class="stick">First Class</th>
+                              <th class="stick">Last Class</th>
                               <th class="stick">Contact Number</th>
                               <th class="stick">Email Address</th>
+                              <th class="stick">City</th>
                               <th class="stick">Action</th>
                           </tr>
                       </thead>
                       <tbody v-if="res.customers.data.length > 0">
                           <tr v-for="(data, key) in res.customers.data" :key="key">
-                              <td>{{ data.customer.member_id }}</td>
+                              <td>{{ data.member_id }}</td>
                               <td>
                                   <div class="thumb">
-                                      <img :src="data.customer.customer_details.images[0].path_resized" v-if="data.customer.customer_details.images[0].path != null" />
+                                      <img :src="data.customer_details.images[0].path_resized" v-if="data.customer_details.images[0].path != null" />
                                       <div class="table_image_default" v-else>
                                           <div class="overlay">
-                                              {{ data.customer.first_name.charAt(0) }}{{ data.customer.last_name.charAt(0) }}
+                                              {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
                                           </div>
                                       </div>
-                                      <div class="table_data_link" @click="openWindow(`/customers/${data.customer.id}/packages`)">{{ data.customer.fullname }}</div>
+                                      <div class="table_data_link" @click="openWindow(`/customers/${data.id}/packages`)">{{ data.fullname }}</div>
                                   </div>
                               </td>
-                              <td>{{ data.customer.customer_details.customer_type.name }}</td>
-                              <td>{{ data.class_package.name }}</td>
-                              <td>{{ $moment(data.user_package.computed_expiration_date).format('MMMM DD, YYYY') }}</td>
-                              <td>{{ $moment(data.customer.created_at).format('MMMM DD, YYYY') }}</td>
-                              <td>{{ (data.customer.customer_details.co_contact_number != null) ? data.customer.customer_details.co_contact_number : (data.customer.customer_details.ec_contact_number) ? data.customer.customer_details.ec_contact_number : 'N/A' }}</td>
-                              <td>{{ data.customer.email }}</td>
+                              <td>{{ $moment(data.created_at).format('MMMM DD, YYYY') }}</td>
+                              <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
+                              <td>{{ (data.bookings.length > 0) ? $moment(data.bookings[data.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet' }}</td>
+                              <td>{{ (data.customer_details.co_contact_number != null) ? data.customer_details.co_contact_number : (data.customer_details.ec_contact_number) ? data.customer_details.ec_contact_number : 'N/A' }}</td>
+                              <td>{{ data.email }}</td>
+                              <td>{{ (data.customer_details.pa_city != null) ? data.customer_details.pa_city : 'N/A' }}</td>
                               <td>
                                   <div class="table_actions">
-                                      <a class="table_action_cancel" @click.self="customerStatus(data.customer, 'deactivate')" href="javascript:void(0)" v-if="data.customer.enabled">Deactivate</a>
-                                      <a class="table_action_success" @click.self="customerStatus(data.customer, 'activate')" href="javascript:void(0)"  v-else>Activate</a>
+                                      <a class="table_action_cancel" @click.self="customerStatus(data, 'deactivate')" href="javascript:void(0)" v-if="data.enabled">Deactivate</a>
+                                      <a class="table_action_success" @click.self="customerStatus(data, 'activate')" href="javascript:void(0)"  v-else>Activate</a>
                                   </div>
                               </td>
                           </tr>
@@ -123,7 +118,7 @@
       data () {
           const values = []
           return {
-              name: 'Customer Expiring Packages',
+              name: 'No Ride Activity',
               access: true,
               loaded: false,
               filter: true,
@@ -134,36 +129,35 @@
               total: 0,
               form: {
                   query: '',
-                  cut_off: this.$moment().format('YYYY-MM-DD'),
-                  to_add: 0
+                  to_sub: 0
               }
           }
       },
       computed: {
-          customerExpiringPackagesAttributes () {
+          noRideActivityAttributes () {
               const me = this
               return [
                   ...me.values.map((value, key) => ({
-                      'Member ID': value.customer.member_id,
-                      'Customer': value.customer.fullname,
-                      'Customer Type': value.customer.customer_details.customer_type.name,
-                      'Class Package': value.class_package.name,
-                      'Class Package Expiration': me.$moment(value.user_package.computed_expiration_date).format('MMMM DD, YYYY'),
-                      'Gender': me.getCustomerDetails(value.customer, 'gender'),
-                      'Birthdate': me.$moment(value.customer.customer_details.co_birthdate).format('MMM DD, YYYY'),
-                      'Age': -(me.$moment(value.customer.customer_details.co_birthdate).diff(me.$moment(), 'years')),
-                      'Contact Number': me.getCustomerDetails(value.customer, 'contact_number'),
-                      'Email Address': value.customer.email,
-                      'Weight': me.getCustomerDetails(value.customer, 'weight'),
-                      'Shoe Size': me.getCustomerDetails(value.customer, 'shoe_size'),
-                      'Dumbbell': me.getCustomerDetails(value.customer, 'dumbbell'),
-                      'Personal Address': me.getCustomerDetails(value.customer, 'personal'),
-                      'Personal Address Region': value.customer.customer_details.personal_state,
-                      'Personal Address City': value.customer.customer_details.pa_city,
-                      'Billing Address': me.getCustomerDetails(value.customer, 'billing'),
-                      'Billing Address Region': value.customer.customer_details.billing_state,
-                      'Billing Address City': value.customer.customer_details.ba_city,
-                      'Sign Up Date': me.$moment(value.customer.created_at).format('MMMM DD, YYYY')
+                      'Member ID': value.member_id,
+                      'Customer': value.fullname,
+                      'Customer Type': value.customer_details.customer_type.name,
+                      'Gender': me.getCustomerDetails(value, 'gender'),
+                      'Birthdate': me.$moment(value.customer_details.co_birthdate).format('MMM DD, YYYY'),
+                      'Age': -(me.$moment(value.customer_details.co_birthdate).diff(me.$moment(), 'years')),
+                      'Contact Number': me.getCustomerDetails(value, 'contact_number'),
+                      'Email Address': value.email,
+                      'Weight': me.getCustomerDetails(value, 'weight'),
+                      'Shoe Size': me.getCustomerDetails(value, 'shoe_size'),
+                      'Dumbbell': me.getCustomerDetails(value, 'dumbbell'),
+                      'Personal Address': me.getCustomerDetails(value, 'personal'),
+                      'Personal Address Region': value.customer_details.personal_state,
+                      'Personal Address City': value.customer_details.pa_city,
+                      'Billing Address': me.getCustomerDetails(value, 'billing'),
+                      'Billing Address Region': value.customer_details.billing_state,
+                      'Billing Address City': value.customer_details.ba_city,
+                      'Sign Up Date': me.$moment(value.created_at).format('MMMM DD, YYYY'),
+                      'First Class': (value.bookings.length > 0) ? me.$moment(value.bookings[0].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet',
+                      'Last Class': (value.bookings.length > 0) ? me.$moment(value.bookings[value.bookings.length - 1].scheduled_date.date).format('MMMM DD, YYYY') : 'No Class Yet'
                   }))
               ]
           }
@@ -192,7 +186,7 @@
               setTimeout( () => {
                   let formData = new FormData(document.getElementById('filter'))
 
-                  me.$axios.post('api/reporting/customers/customer-expiring-packages', formData).then(res => {
+                  me.$axios.post('api/reporting/customers/no-ride-activity', formData).then(res => {
                       if (res.data) {
                           setTimeout( () => {
                             me.res = res.data
@@ -284,7 +278,7 @@
               me.values = []
               me.loader(true)
 
-              me.$axios.post('api/reporting/customers/customer-expiring-packages?all=1', formData).then(res => {
+              me.$axios.post('api/reporting/customers/no-ride-activity?all=1', formData).then(res => {
                   if (res.data) {
                       me.values = res.data.customers
                   }
@@ -305,10 +299,9 @@
               let formData = new FormData()
 
               formData.append('q', me.form.query)
-              formData.append('cut_off', me.form.cut_off)
-              formData.append('to_add', me.form.to_add)
+              formData.append('to_sub', me.form.to_sub)
 
-              me.$axios.post('api/reporting/customers/customer-expiring-packages', formData).then(res => {
+              me.$axios.post('api/reporting/customers/no-ride-activity', formData).then(res => {
                   if (res.data) {
                       setTimeout( () => {
                           me.res = res.data
