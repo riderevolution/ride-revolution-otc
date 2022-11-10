@@ -29,6 +29,8 @@
 
                     <div class="filter_wrapper">
                         <form class="filter_flex" id="filter">
+                            <input type="hidden" name="status" :value="form.class_package_status">
+                            <input type="hidden" name="days" :value="form.days">
                             <input type="hidden" name="type" :value="form.type">
                             <input type="hidden" name="id" :value="form.id">
                             <input type="hidden" name="cut_off_date" :value="form.cut_off_date">
@@ -126,6 +128,8 @@
                 form: {
                     cut_off_date: this.$moment().format('YYYY-MM-DD'),
                     type: '',
+                    class_package_status: '',
+                    days: '',
                     id: 0
                 }
             }
@@ -322,9 +326,13 @@
                 if (me.$route.query.cut_off_date) me.form.cut_off_date = me.$route.query.cut_off_date
                 if (me.$route.query.id) me.form.id = me.$route.query.id
                 if (me.$route.query.type) me.form.type = me.$route.query.type
+                if (me.$route.query.status) me.form.class_package_status = me.$route.query.status
+                if (me.$route.query.days) me.form.days = me.$route.query.days
 
                 formData.append('id', me.form.id)
                 formData.append('cut_off_date', me.form.cut_off_date)
+                formData.append('status', me.form.class_package_status)
+                formData.append('days', me.form.days)
                 formData.append('type', me.form.type)
 
                 me.$axios.post(`api/reporting/packages/remaining-class-package-value/${me.$route.params.slug}`, formData).then(res => {

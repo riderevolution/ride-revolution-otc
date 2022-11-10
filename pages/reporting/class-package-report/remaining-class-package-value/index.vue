@@ -39,6 +39,29 @@
                                 <v-ctk v-model="form.cut_off_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'cut_off_date'" :name="'cut_off_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('cut_off_date')">{{ properFormat(errors.first('cut_off_date')) }}</span></transition>
                             </div>
+                            <div class="form_group margin">
+                                <label for="class_package_id">Class Packages</label>
+                                <select class="default_select alternate" v-model="form.class_package_id" name="class_package_id">
+                                    <option value="" selected>All Class Packages</option>
+                                    <option :value="class_package.id" v-for="(class_package, key) in res.filteredPackages" :key="key">{{ class_package.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="class_package_status">Class Package Status</label>
+                                <select class="default_select alternate" v-model="form.class_package_status" name="class_package_status">
+                                    <option value="" selected>All Class Package Status</option>
+                                    <option value="frozen">Frozen</option>
+                                    <option value="active">Active</option>
+                                    <option value="not-active">Not Active</option>
+                                </select>
+                            </div>
+                            <div class="form_group margin">
+                                <label for="days">Days</label>
+                                <select class="default_select alternate" v-model="form.days" name="days">
+                                    <option value="" selected>All Days</option>
+                                    <option :value="day.value" v-for="(day, key) in days" :key="key">{{ day.name }}</option>
+                                </select>
+                            </div>
                             <button type="submit" name="button" class="action_btn alternate margin">Search</button>
                         </form>
                     </div>
@@ -83,7 +106,7 @@
                         </tbody>
                         <tbody class="no_results" v-else>
                             <tr>
-                                <td colspan="6">No Result(s) Found.</td>
+                                <td colspan="7">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -109,7 +132,10 @@
             const values = []
             return {
                 form: {
-                    cut_off_date: this.$moment().format('YYYY-MM-DD')
+                    cut_off_date: this.$moment().format('YYYY-MM-DD'),
+                    class_package_id: '',
+                    class_package_status: '',
+                    days: ''
                 },
                 name: 'Remaining Class Package Value',
                 access: true,
@@ -117,7 +143,45 @@
                 loaded: false,
                 res: [],
                 tab: 'studio',
-                values: []
+                values: [],
+                days: [
+                    {
+                        name: '7 days',
+                        value: 7
+                    },
+                    {
+                        name: '14 days',
+                        value: 14
+                    },
+                    {
+                        name: '21 days',
+                        value: 21
+                    },
+                    {
+                        name: '30 days',
+                        value: 30
+                    },
+                    {
+                        name: '60 days',
+                        value: 60
+                    },
+                    {
+                        name: '90 days',
+                        value: 90
+                    },
+                    {
+                        name: '120 days',
+                        value: 120
+                    },
+                    {
+                        name: '180 days',
+                        value: 180
+                    },
+                    {
+                        name: '360 days',
+                        value: 360
+                    }
+                ]
             }
         },
         computed: {
@@ -153,7 +217,15 @@
         methods: {
             openWindowInside (data) {
                 const me = this
-                window.open(`${me.$route.path}/${data.slug}?id=${data.id}&type=${me.tab}&cut_off_date=${me.form.cut_off_date}`, '_blank')
+                let query_params = new URLSearchParams()
+                query_params.append('id', data.id)
+                query_params.append('type', me.tab)
+                query_params.append('cut_off_date', me.form.cut_off_date)
+                query_params.append('status', me.form.class_package_status)
+                query_params.append('days', me.form.days)
+
+                query_params = query_params.toString()
+                window.open(`${me.$route.path}/${data.slug}?${query_params}`, '_blank')
             },
             getPackageStatus (value) {
                 let result = ''
@@ -263,6 +335,9 @@
 
                 let formData = new FormData()
                 formData.append('cut_off_date', me.form.cut_off_date)
+                formData.append('class_package_id', me.form.class_package_id)
+                formData.append('class_package_status', me.form.class_package_status)
+                formData.append('days', me.form.days)
                 formData.append('type', me.tab)
 
                 me.loader(true)
@@ -316,6 +391,9 @@
                 }
 
                 formData.append('cut_off_date', me.form.cut_off_date)
+                formData.append('class_package_id', me.form.class_package_id)
+                formData.append('class_package_status', me.form.class_package_status)
+                formData.append('days', me.form.days)
                 formData.append('type', me.tab)
                 me.$axios.post('api/reporting/packages/remaining-class-package-value', formData).then(res => {
                     if (res.data) {
