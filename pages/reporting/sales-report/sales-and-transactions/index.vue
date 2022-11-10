@@ -37,12 +37,12 @@
                                     <option value="os">Website/Online Sales</option>
                                 </select>
                             </div>
-                            <div class="form_group margin" v-if="user.staff_details.role_id == 1">
+                            <div class="form_group margin" v-if="checkUserRole()">
                                 <label for="start_date">Start Date <span>*</span></label>
                                 <v-ctk v-model="form.start_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'start_date'" :name="'start_date'" :label="'Select start date'" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('start_date')">{{ properFormat(errors.first('start_date')) }}</span></transition>
                             </div>
-                            <div class="form_group margin" v-if="user.staff_details.role_id == 1">
+                            <div class="form_group margin" v-if="checkUserRole()">
                                 <label for="end_date">End Date <span>*</span></label>
                                 <v-ctk v-model="form.end_date" :only-date="true" :format="'YYYY-MM-DD'" :no-button="true" :formatted="'YYYY-MM-DD'" :no-label="true" :color="'#33b09d'" :id="'end_date'" :name="'end_date'" :label="'Select end date'" :min-date="$moment(form.start_date).format('YYYY-MM-DD')" v-validate="'required'"></v-ctk>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('end_date')">{{ properFormat(errors.first('end_date')) }}</span></transition>
@@ -308,6 +308,16 @@
             }
         },
         methods: {
+            checkUserRole () {
+                let result = false,
+                    ids = [1, 14]
+                    
+                if (ids.includes(this.user.staff_details.role_id)) {
+                    result = true
+                }
+
+                return result
+            },
             openWindow (slug) {
                 const me = this
                 window.open(`${window.location.origin}${slug}`, '_blank', `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${document.documentElement.clientWidth / 2},top=${document.documentElement.clientHeight / 2}`)
