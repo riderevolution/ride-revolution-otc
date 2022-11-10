@@ -184,6 +184,7 @@ Vue.mixin({
         },
         replacer (data) {
             if (data) {
+                data = data.replace(/\_/g, ' ')
                 return data.replace(/\-/g, ' ')
             }
         },
