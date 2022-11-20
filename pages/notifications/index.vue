@@ -16,7 +16,7 @@
                                 <div class="notification_desc">
                                     <div class="notification_title">{{ data.body }}</div>
                                     <div class="notification_time"><b>{{ data.ip_address }}</b> ({{ getFromNow(data.created_at) }})</div>
-                                    <div class="notification_time"><b>{{ $moment(data.created_at).format('MMM DD, YYYY hh:mm A') }})</div>
+                                    <!-- <div class="notification_time"><b>{{ $moment(data.created_at).format('MMM DD, YYYY hh:mm A') }})</div> -->
                                 </div>
                             </div>
                         </div>
