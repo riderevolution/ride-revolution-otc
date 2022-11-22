@@ -175,6 +175,7 @@
                     <div :class="`status ${(classesHistoryStatus == 'guest') ? 'active' : ''}`" @click="toggleClassesHistory('guest')">Guest</div>
                     <div :class="`status ${(classesHistoryStatus == 'no-show') ? 'active' : ''}`" @click="toggleClassesHistory('no-show')">No Show</div>
                     <div :class="`status ${(classesHistoryStatus == 'cancelled') ? 'active' : ''}`" @click="toggleClassesHistory('cancelled')">Cancelled</div>
+                    <div :class="`status ${(classesHistoryStatus == 'late-cancelled') ? 'active' : ''}`" @click="toggleClassesHistory('late-cancelled')">Late Cancelled</div>
                 </div>
             </div>
             <table class="cms_table">
