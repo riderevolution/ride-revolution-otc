@@ -1298,9 +1298,6 @@
             checkStatus (data) {
                 const me = this
                 let result = ''
-                if (data.deleted_at != null) {
-                    result = 'Cancelled'
-                }
                 switch (data.status) {
                     case 'signed-in':
                         result = 'Completed'
@@ -1310,6 +1307,12 @@
                         break
                     case 'reserved':
                         result = 'Reserved'
+                        break
+                    case 'cancelled':
+                        result = 'Cancelled'
+                        break
+                    case 'late-cancelled':
+                        result = 'Late Cancelled'
                         break
                 }
                 return result
