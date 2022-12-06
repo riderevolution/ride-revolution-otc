@@ -8,7 +8,15 @@
                 <div class="modal_main_group scrollable">
                     <div class="form_flex_radio alternate margin new">
                         <div :id="`pckg_${data.id}`" :class="`form_radio ${checkPackage(data, type)}`" v-for="(data, key) in res" :key="key">
-                            <input type="radio" :id="`package_${key}`" :checked="(notExistingPackage) ? data.primary : user_package_count_id == data.id" :value="data.id" name="packages" class="action_radio" @change="selectPackage(data, key)">
+                            <input
+                                type="radio"
+                                :id="`package_${key}`"
+                                :checked="(type == 'create-waitlist') ? data.id == customer.waitlist.user_package_count_id : (notExistingPackage) ? data.primary : user_package_count_id == data.id"
+                                :value="data.id"
+                                name="packages"
+                                class="action_radio"
+                                @change="selectPackage(data, key)"
+                            >
                             <label :for="`package_${key}`">
                                 <p>{{ data.class_package.name }} <br> <span class="id">Remaining Credits: {{ (data.class_package.class_count_unlimited == 1) ? 'Unlimited' : data.count }}</span></p>
                                 <p class="id">Package ID: {{ data.class_package.sku_id }}</p>
@@ -55,6 +63,7 @@
                 loaded: false,
                 switchPackage: false,
                 notExistingPackage: false,
+                customer: null,
                 res: [],
                 user_package_count_id: [],
                 old_package_count_id: null,
@@ -70,6 +79,15 @@
                     case 'create':
                     case 'create-guest':
                         if (data.primary) {
+                            result = 'toggled'
+                        } else {
+                            if (data.disabled) {
+                                result = 'disabled'
+                            }
+                        }
+                        break
+                    case 'create-waitlist':
+                        if (data.id == me.customer.waitlist.user_package_count_id) {
                             result = 'toggled'
                         } else {
                             if (data.disabled) {
@@ -287,6 +305,7 @@
                 me.loader(true)
                 me.$axios.get(`api/customers/${me.$store.state.customerID}/packages?forOTCBooking=1&forWebBooking=1&scheduled_date_id=${me.$parent.schedule.id}`).then(res => {
                     if (res.data) {
+                        me.customer = res.data.customer
                         setTimeout( () => {
                             let ctr = 0
                             if (res.data.customer.user_package_counts.length > 0) {
