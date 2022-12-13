@@ -1027,12 +1027,17 @@ table
 							bottom: calc(0% + 40px)
 					&.layout_2
 						&.bottom
-							bottom: calc(0% + 130px)
+							bottom: calc(0% + 220px)
 						&.bottom_alt
-							bottom: calc(0% + 40px)
+							bottom: calc(0% + 130px)
 							left: calc(0% - 50px)
 						&.bottom_alt_2
-							bottom: calc(0% - 130px)
+							bottom: calc(0% + 40px)
+						// &.bottom
+						// 	bottom: calc(0% + 130px)
+						// &.bottom_alt
+						// 	bottom: calc(0% + 40px)
+						// 	left: calc(0% - 50px)
 					&.layout_3
 						&.bottom
 							bottom: calc(0% + 220px)
@@ -6824,16 +6829,28 @@ input::placeholder
 								left: 50%
 								transform: translateX(-50%)
 						&.layout_2
-							&.left,
-							&.right
-								top: calc(0% - 100px)
+							// &.left,
+							// &.right
+							// 	top: calc(0% - 100px)
+							// &.bottom
+							// 	bottom: calc(0% + 80px)
+							// 	left: 50%
+							// 	transform: translateX(-50%)
+							// &.bottom_alt
+							// 	bottom: calc(0% - 80px)
+							// 	left: calc(50% - 65px)
+							// 	transform: translateX(-50%)
 							&.bottom
-								bottom: calc(0% + 80px)
+								bottom: calc(0% + 150px)
 								left: 50%
 								transform: translateX(-50%)
 							&.bottom_alt
-								bottom: calc(0% - 80px)
+								bottom: calc(0% - 10px)
 								left: calc(50% - 65px)
+								transform: translateX(-50%)
+							&.bottom_alt_2
+								bottom: calc(0% - 160px)
+								left: 50%
 								transform: translateX(-50%)
 						&.layout_3
 							&.bottom
