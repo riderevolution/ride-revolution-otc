@@ -144,7 +144,7 @@
                         'Original Count': value.original_package_count,
                         'Used Count': value.original_package_count - value.count,
                         'Remaining Credits': value.count,
-                        'Remaining Peso Value': value.value,
+                        'Remaining Peso Value': value.revenue,
                         'Activation Date': (value.class_package.activation_date != 'NA') ? (value.class_package.activation_date != null ? me.$moment(value.class_package.activation_date).format('MMM DD, YYYY hh:mm A') : 'N/A') : 'N/A',
                         'Expiration Date': (value.computed_expiration_date) ? me.$moment(value.computed_expiration_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
                         'Expiration If Not Activated': (value.class_package.expiry_date_if_not_activated) ? me.$moment(value.class_package.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
@@ -319,6 +319,7 @@
                 me.$axios.post('api/reporting/packages/class-package-expiration', formData).then(res => {
                     if (res.data) {
                         me.values = res.data.values
+                        console.log(res.data.values);
                     }
                 }).catch((err) => {
 
