@@ -206,6 +206,7 @@
                         'Expiration If Not Activated': (value.class_package.expiry_date_if_not_activated) ? me.$moment(value.class_package.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
                         'Customer': value.user.fullname,
                         'Email': value.user.email,
+                        'Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : (value.user.customer_details.ec_contact_number) ? value.user.customer_details.ec_contact_number : 'N/A',
                         'Comp Reason': (value.payment.payment_method) ? value.payment.payment_method.comp_reason : 'N/A',
                         'Note': (value.payment.payment_method) ? value.payment.payment_method.note : 'N/A',
                         'Remarks': (value.payment.payment_method) ? value.payment.payment_method.remarks : 'N/A',

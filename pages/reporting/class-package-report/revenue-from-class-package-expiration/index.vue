@@ -132,6 +132,7 @@
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
+                        'Group': value.group,
                         'Studio': me.getPaymentStudio(value.payment),
                         'Transaction Date': me.$moment(value.payment.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Reference Number': me.getPaymentCode(value),
@@ -143,12 +144,13 @@
                         'Original Count': value.original_package_count,
                         'Used Count': value.original_package_count - value.count,
                         'Remaining Credits': value.count,
-                        'Remaining Peso Value': value.remaining_value,
+                        'Remaining Peso Value': value.value,
                         'Activation Date': (value.class_package.activation_date != 'NA') ? (value.class_package.activation_date != null ? me.$moment(value.class_package.activation_date).format('MMM DD, YYYY hh:mm A') : 'N/A') : 'N/A',
                         'Expiration Date': (value.computed_expiration_date) ? me.$moment(value.computed_expiration_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
                         'Expiration If Not Activated': (value.class_package.expiry_date_if_not_activated) ? me.$moment(value.class_package.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
                         'Customer': value.user.fullname,
                         'Email': value.user.email,
+                        'Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : (value.user.customer_details.ec_contact_number) ? value.user.customer_details.ec_contact_number : 'N/A',
                         'Comp Reason': (value.payment.payment_method) ? value.payment.payment_method.comp_reason : 'N/A',
                         'Note': (value.payment.payment_method) ? value.payment.payment_method.note : 'N/A',
                         'Remarks': (value.payment.payment_method) ? value.payment.payment_method.remarks : 'N/A',
