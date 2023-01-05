@@ -165,7 +165,7 @@
         methods: {
             openWindowInside (data) {
                 const me = this
-                window.open(`${me.$route.path}/${data.slug}?slug=class-package&id=${data.id}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
+                window.open(`${me.$route.path}/${data.slug}?slug=class-package&id=${data.id}&type=${me.tab}&start_date=${me.form.start_date}&end_date=${me.form.end_date}`, '_blank')
             },
             getSales () {
                 const me = this
