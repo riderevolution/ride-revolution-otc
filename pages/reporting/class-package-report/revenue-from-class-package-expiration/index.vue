@@ -12,7 +12,7 @@
                             <h2 class="header_subtitle">Expiration details of each class package</h2>
                         </div>
                         <div class="actions">
-                            <!-- <a :href="`/print/reporting/class-package/remaining-package-value?start_date=${form.start_date}`" target="_blank" class="action_btn alternate">Print</a>
+                            <!-- <a :href="`/print/reporting/class-package/remaining-package-value?start_date=${form.start_date}`" target="_blank" class="action_btn alternate">Print</a> -->
 
                             <div class="action_btn alternate" @click="getPackages()" v-if="res.groups.length > 0">
                                 Export
@@ -20,10 +20,10 @@
                             <download-csv
                                 v-if="res.groups.length > 0"
                                 class="hidden me"
-                                :data="remainingPackageValueAttributes"
-                                :name="`remaining-package-value-${$moment(form.start_date).format('MM-DD-YY-hh-mm')}.csv`">
+                                :data="classPackageExpirationAttributes"
+                                :name="`class-package-expiration-${$moment(form.start_date).format('MM-DD-YY-hh-mm')}-${$moment(form.end_date).format('MM-DD-YY-hh-mm')}.csv`">
                                 Export
-                            </download-csv> -->
+                            </download-csv>
                         </div>
                     </div>
                     <div class="filter_wrapper">
@@ -128,16 +128,33 @@
             }
         },
         computed: {
-            remainingPackageValueAttributes () {
+            classPackageExpirationAttributes () {
                 const me = this
                 return [
                     ...me.values.map((value, key) => ({
-                        'Package Type': value.package_type.name,
-                        'Class Package': value.name,
-                        'Starting Class Count': (value.starting_class_count == 'Unlimited') ? value.starting_class_count : me.totalItems(value.starting_class_count),
-                        'Starting Value': `Php ${me.totalCount(value.starting_value)}`,
-                        'Remaining Class Count': (value.remaining_class_count == 'Unlimited') ? value.remaining_class_count : me.totalItems(value.remaining_class_count),
-                        'Remaining Value': `Php ${me.totalCount(value.remaining_value)}`
+                        'Group': value.group,
+                        'Studio': me.getPaymentStudio(value.payment),
+                        'Transaction Date': me.$moment(value.payment.created_at).format('MMM DD, YYYY hh:mm A'),
+                        'Reference Number': me.getPaymentCode(value),
+                        'Payment Method': (value.payment.payment_method) ? value.payment.payment_method.method : 'N/A',
+                        'Class Package': value.class_package.name,
+                        'Class Package Price': (value.payment.promo_code_used != null) ? value.payment_item.total : value.payment_item.price_per_item,
+                        'Class Package Status': me.getPackageStatus(value),
+                        'Estimated Price Per Class': value.estimated_price_per_class,
+                        'Original Count': value.original_package_count,
+                        'Used Count': value.original_package_count - value.count,
+                        'Remaining Credits': value.count,
+                        'Remaining Peso Value': value.revenue,
+                        'Activation Date': (value.class_package.activation_date != 'NA') ? (value.class_package.activation_date != null ? me.$moment(value.class_package.activation_date).format('MMM DD, YYYY hh:mm A') : 'N/A') : 'N/A',
+                        'Expiration Date': (value.computed_expiration_date) ? me.$moment(value.computed_expiration_date).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                        'Expiration If Not Activated': (value.class_package.expiry_date_if_not_activated) ? me.$moment(value.class_package.expiry_date_if_not_activated).format('MMM DD, YYYY hh:mm A') : 'N/A',
+                        'Customer': value.user.fullname,
+                        'Email': value.user.email,
+                        'Contact Number': (value.user.customer_details.co_contact_number != null) ? value.user.customer_details.co_contact_number : (value.user.customer_details.ec_contact_number) ? value.user.customer_details.ec_contact_number : 'N/A',
+                        'Comp Reason': (value.payment.payment_method) ? value.payment.payment_method.comp_reason : 'N/A',
+                        'Note': (value.payment.payment_method) ? value.payment.payment_method.note : 'N/A',
+                        'Remarks': (value.payment.payment_method) ? value.payment.payment_method.remarks : 'N/A',
+                        'Last Action Taken By': me.getPaymentDetails(value.payment, 'employee')
                     }))
                 ]
             }
@@ -156,6 +173,108 @@
                         target.parentNode.parentNode.querySelector('.accordion_table').style.height = 0
                     }
                 }
+            },
+            getPackageStatus (value) {
+                let result = ''
+
+                if (value.frozen) {
+                    result = 'Frozen'
+                    if (value.activation_date == 'N/A' || !value.activation_date) {
+                        result += ' & Not Activated'
+                    }
+                } else {
+                    if (value.activation_date == 'N/A' || !value.activation_date) {
+                        result = 'Not Activated'
+                    } else {
+                        result = 'Active'
+                    }
+                }
+
+                return result
+            },
+            getPaymentItem (payment_item, type) {
+                const me = this
+                let result = ''
+
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                    }
+                }
+
+                return result
+            },
+            getPaymentDetails (payment, type) {
+                const me = this
+                let result = 0
+
+                switch (type) {
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = 'Customer'
+                        }
+                        break
+                }
+
+                return result
+            },
+            getPaymentStudio (payment) {
+                const me = this
+                let result = ''
+
+                if (payment.studio != null) {
+                    result = payment.studio.name
+                } else {
+                    result = 'Old Package/Online Sale'
+                }
+
+                return result
+            },
+            getPaymentCode (data) {
+                const me = this
+                let result = ''
+
+                if (data.payment.payment_method) {
+                    switch (data.payment.payment_method.method) {
+                        case 'paypal':
+                            if (data.payment.payment_method.paypal_transaction_id) {
+                                result = data.payment.payment_method.paypal_transaction_id
+                            } else {
+                                result = data.payment.payment_code
+                            }
+                            break
+                        case 'paymaya':
+                            result = data.payment.payment_method.paymaya_transaction_id
+                            break
+                        case 'paymongo':
+                            result = data.payment.payment_method.paymongo_source_id
+                            break
+                        case 'gcash':
+                            result = data.payment.payment_method.gcash_reference_number
+                            break
+                        case 'gc_code':
+                            result = `${data.payment.payment_code} - ${data.payment.payment_method.gc_code}`
+                            break
+                        default:
+                            result = data.payment.payment_code
+                            break
+                    }
+                } else {
+                    result = data.payment.payment_code
+                }
+
+                return result
             },
             toggleStatus (value) {
                 const me = this
@@ -190,16 +309,17 @@
             },
             getPackages () {
                 const me = this
-                let formData = new FormData(document.getElementById('filter'))
+                let formData = new FormData()
+                formData.append('start_date', me.form.start_date)
+                formData.append('end_date', me.form.end_date)
+                formData.append('type', me.tab)
                 formData.append('all', 1)
                 me.values = []
                 me.loader(true)
                 me.$axios.post('api/reporting/packages/class-package-expiration', formData).then(res => {
                     if (res.data) {
-
-                        res.data.classPackages.forEach((item, index) => {
-                            me.values.push(item)
-                        })
+                        me.values = res.data.values
+                        console.log(res.data.values);
                     }
                 }).catch((err) => {
 

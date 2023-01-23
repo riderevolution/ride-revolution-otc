@@ -33,6 +33,7 @@
                         <form class="filter_flex" id="filter">
                             <input type="hidden" name="slug" :value="form.slug">
                             <input type="hidden" name="id" :value="form.id">
+                            <input type="hidden" name="type" :value="form.type">
                             <input type="hidden" name="start_date" :value="form.start_date">
                             <input type="hidden" name="end_date" :value="form.end_date">
                         </form>
@@ -125,6 +126,7 @@
                     start_date: this.$moment().format('YYYY-MM-DD'),
                     end_date: this.$moment().format('YYYY-MM-DD'),
                     slug: '',
+                    type: '',
                     id: 0
                 }
             }
@@ -329,9 +331,13 @@
                 if (me.$route.query.id) {
                     me.form.id = me.$route.query.id
                 }
+                if (me.$route.query.type) {
+                    me.form.type = me.$route.query.type
+                }
 
                 formData.append('slug', me.form.slug)
                 formData.append('id', me.form.id)
+                formData.append('type', me.form.type)
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
 
