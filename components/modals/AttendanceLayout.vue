@@ -11,7 +11,8 @@
                         <div :class="`status ${(classesHistoryStatus == 'all') ? 'active' : ''}`" @click="initial('all')">All</div>
                         <div :class="`status ${(classesHistoryStatus == 'completed') ? 'active' : ''}`" @click="initial('completed')">Completed</div>
                         <div :class="`status ${(classesHistoryStatus == 'no-show') ? 'active' : ''}`" @click="initial('no-show')">No Show</div>
-                        <div :class="`status ${(classesHistoryStatus == 'cancelled') ? 'active' : ''}`" @click="initial('cancelled')">Cancelled</div>
+                        <div :class="`status ${(classesHistoryStatus == 'cancelled') ? 'active' : ''}`" @click="toggleClassesHistory('cancelled')">Cancelled</div>
+                        <div :class="`status ${(classesHistoryStatus == 'late-cancelled') ? 'active' : ''}`" @click="toggleClassesHistory('late-cancelled')">Late Cancelled</div>
                     </div>
                 </div>
                 <div class="cms_table_scroll">
@@ -143,8 +144,14 @@
                     case 'reserved':
                         result = 'Reserved'
                         break
+                    case 'cancelled':
+                        result = 'Cancelled'
+                        break
+                    case 'late-cancelled':
+                        result = 'Late Cancelled'
+                        break
                 }
-                 return result
+                return result
             },
             initial (status) {
                 const me = this

@@ -229,7 +229,9 @@
                             <p class="id">{{ data.class_package.sku_id }}</p>
                         </td>
                         <td>{{ (data.employee) ? data.employee.fullname : 'Customer' }}</td>
-                        <td>{{$moment(data.updated_at).format('MMM DD, YYYY hh:mm:ss A') }}</td>
+                        <td>
+                            {{ (data.status == 'cancelled' || data.status == 'late-cancelled') ? $moment(data.deleted_at).format('MMM DD, YYYY hh:mm:ss A') : $moment(data.updated_at).format('MMM DD, YYYY hh:mm:ss A') }}
+                        </td>
                     </tr>
                 </tbody>
                 <tbody class="no_results" v-else>
