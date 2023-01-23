@@ -261,9 +261,12 @@
                 formData.append('enabled', me.status)
                 switch (packageStatus) {
                     case 1:
+                    case 2:
+                    case 3:
+                    case 5:
                         apiRoute = 'api/packages/class-packages/search'
                         break
-                    case 3:
+                    case 4:
                         apiRoute = 'api/packages/store-credits/search'
                         break
                 }
