@@ -9,8 +9,10 @@
                     <div class="total">Total: {{ packageCount }}</div>
                     <div class="cms_table_toggler">
                         <div :class="`status ${(packageStatus == 'all') ? 'active' : ''}`" @click="initial('all')">Owned</div>
+                        <!-- <div :class="`status ${(packageStatus == 'subscribe') ? 'active' : ''}`" @click="initial('subscribe')">Subscribe</div> -->
                         <div :class="`status ${(packageStatus == 'shared') ? 'active' : ''}`" @click="initial('shared')">Shared</div>
                         <div :class="`status ${(packageStatus == 'frozen') ? 'active' : ''}`" @click="initial('frozen')">Frozen</div>
+                        <div :class="`status ${(packageStatus == 'expired') ? 'active' : ''}`" @click="initial('expired')">Expired</div>
                     </div>
                 </div>
                 <table class="cms_table">
@@ -35,7 +37,7 @@
                             <td>{{ (data.computed_expiration_date) ? formatDate(data.computed_expiration_date, false) : formatDate(data.expiry_date_if_not_activated, false) }}</td>
                             <td class="violator">
                                 <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0">{{ checkViolator(data, 'warning') }}</span>
-                                <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
+                                <span class="shared" v-if="data.shares_count > 0">{{ checkViolator(data, 'shared') }}</span>
                                 <span class="frozen" v-if="data.frozen">Frozen</span>
                             </td>
                         </tr>
@@ -103,9 +105,21 @@
                         break
                     case 'shared':
                         if (me.customer.id == data.user_id) {
-                            result = `Shared with ${data.sharedto_user.first_name} ${data.sharedto_user.last_name}`
+                            result = 'Shared with '
+                            data.shares.forEach((share, key) => {
+                                if (key != 0) {
+                                    if (key + 1 == data.shares.length) {
+                                        result += ' & '
+                                    } else {
+                                        result += ', '
+                                    }
+                                }
+                                result += `${share.user.fullname}`
+                            })
                         } else {
-                            result = `Shared by ${data.sharedby_user.first_name} ${data.sharedby_user.last_name}`
+                            if (data.sharedby_user) {
+                                result = `Shared by ${data.sharedby_user.first_name} ${data.sharedby_user.last_name}`
+                            }
                         }
                         break;
                 }

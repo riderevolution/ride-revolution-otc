@@ -3,7 +3,7 @@
         <div v-if="type == 'packages' && loaded">
             <div class="cms_table_toggler">
                 <div :class="`status ${(packageStatus == 'all') ? 'active' : ''}`" @click="togglePackages('all')">Owned</div>
-                <div :class="`status ${(packageStatus == 'subscribe') ? 'active' : ''}`" @click="togglePackages('subscribe')">Subscribe</div>
+                <!-- <div :class="`status ${(packageStatus == 'subscribe') ? 'active' : ''}`" @click="togglePackages('subscribe')">Subscribe</div> -->
                 <div :class="`status ${(packageStatus == 'shared') ? 'active' : ''}`" @click="togglePackages('shared')">Shared</div>
                 <div :class="`status ${(packageStatus == 'frozen') ? 'active' : ''}`" @click="togglePackages('frozen')">Frozen</div>
                 <div :class="`status ${(packageStatus == 'expired') ? 'active' : ''}`" @click="togglePackages('expired')">Expired</div>
@@ -17,7 +17,7 @@
                             <template v-if="packageStatus != 'frozen'">
                                 <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
                             </template>
-                            <span class="shared" v-if="data.sharedto_user_id != null">{{ checkViolator(data, 'shared') }}</span>
+                            <span class="shared" v-if="data.shares_count > 0">{{ checkViolator(data, 'shared') }}</span>
                             <span class="frozen" v-if="data.frozen">Frozen</span>
                         </div>
                         <div class="p_label">
@@ -62,23 +62,26 @@
                                 </div>
                             </template>
                             <div v-if="!data.frozen" class="action_success_btn" @click="getCurrentCustomer()">Book a Class</div>
-                            <div class="package_options" :class="{ no_margin: data.frozen }" v-if="(data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package || data.subscription_status)">
-                                <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
-                                <div class="option_selector">
-                                    <div v-if="!data.class_package.recurring && !data.class_package.class_count_unlimited" class="option_link" @click="togglePackageAction(data, 'edit')">Edit Package Credit</div>
-                                    
-                                    <div v-if="data.class_package.por_allow_transferring_of_package && !data.frozen && data.sharedto_user_id == null" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+                            <template v-if="data.user_id == $route.params.param">
+                                <div class="package_options" :class="{ no_margin: data.frozen }" v-if="(data.class_package.por_allow_transferring_of_package || data.class_package.por_allow_sharing_of_package || data.class_package.por_allow_freezing_of_package || data.subscription_status)">
+                                    <div class="option_btn" :id="`option_${key}`" @click.self="toggledOption($event)">Options</div>
+                                    <div class="option_selector">
+                                        <div v-if="!data.class_package.recurring && !data.class_package.class_count_unlimited" class="option_link" @click="togglePackageAction(data, 'edit')">Edit Package Credit</div>
+                                        
+                                        <div v-if="data.class_package.por_allow_transferring_of_package && !data.frozen && !data.shares_count" class="option_link" @click="togglePackageAction(data, 'transfer')">Transfer Package</div>
+    
+                                        <div v-if="data.class_package.por_allow_sharing_of_package && !data.class_package.recurring && (data.shares_count != data.class_package.max_package_sharing)" class="option_link" @click="togglePackageAction(data, 'share')">Share Package</div>
 
-                                    <div v-if="data.class_package.por_allow_sharing_of_package && !data.class_package.recurring" class="option_link" @click="togglePackageAction(data, 'share')">{{ (data.sharedto_user_id != null) ? 'Unshare' : 'Share' }} Package</div>
-
-                                    <div v-if="data.class_package.por_allow_freezing_of_package && !data.class_package.recurring" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
-
-                                    <div v-if="data.class_package.recurring" class="option_link red" @click="togglePackageAction(data, 'recurring')">Cancel Package</div>
-
-                                    <div v-if="data.class_package.recurring == 0 && data.class_package.refundable == 1 && (data.payment_item != null && data.payment_item.refunded == 0) && (data.count == data.original_package_count)" class="option_link red" @click="togglePackageAction(data, 'refund')">Refund Package</div>
-
+                                        <div v-if="data.class_package.por_allow_sharing_of_package && !data.class_package.recurring && (data.shares_count > 0)" class="option_link" @click="togglePackageAction(data, 'unshare')">Unshare Package</div>
+    
+                                        <div v-if="data.class_package.por_allow_freezing_of_package && !data.class_package.recurring" class="option_link" @click="togglePackageAction(data, 'freeze')">{{ (data.frozen) ? 'Unfreeze' : 'Freeze' }} Package</div>
+    
+                                        <div v-if="data.class_package.recurring" class="option_link red" @click="togglePackageAction(data, 'recurring')">Cancel Package</div>
+    
+                                        <div v-if="data.class_package.recurring == 0 && data.class_package.refundable == 1 && (data.payment_item != null && data.payment_item.refunded == 0) && (data.count == data.original_package_count)" class="option_link red" @click="togglePackageAction(data, 'refund')">Refund Package</div>
+                                    </div>
                                 </div>
-                            </div>
+                            </template>
                         </div>
                         <div class="package_action" v-else>
                             <div class="action_cancel_btn none" v-if="data.no_count">Consumed</div>
@@ -603,6 +606,9 @@
             <package-edit-expiry-prompt :data="expiryData" v-if="$store.state.editPackageExpiryStatus" />
         </transition>
         <transition name="fade">
+            <package-share-confirmation :data="shareData" v-if="$store.state.packageShareConfirmationStatus" />
+        </transition>
+        <transition name="fade">
             <refund :payment="payment" :paymentItemId="paymentItemId" v-if="$store.state.refundStatus" />
         </transition>
         <transition name="fade">
@@ -621,6 +627,7 @@
     import PackageActionPrompt from '../components/modals/PackageActionPrompt'
     import PackageActionValidate from '../components/modals/PackageActionValidate'
     import PackageEditExpiryPrompt from '../components/modals/PackageEditExpiryPrompt'
+    import PackageShareConfirmation from '../components/modals/PackageShareConfirmation'
     import Refund from '../components/modals/Refund'
     import RecurringRefund from '../components/modals/RecurringRefund'
     import RecurringCancelSuccess from '../components/modals/RecurringCancelSuccess'
@@ -634,6 +641,7 @@
             PackageActionPrompt,
             PackageActionValidate,
             PackageEditExpiryPrompt,
+            PackageShareConfirmation,
             Refund,
             RecurringRefund,
             RecurringCancelSuccess,
@@ -653,6 +661,7 @@
                 payment: [],
                 paymentItemId: 0,
                 expiryData: [],
+                shareData: [],
                 packageCount: 0,
                 tempData: null,
                 methodType: '',
@@ -1254,14 +1263,15 @@
                         document.body.classList.add('no_scroll')
                         break
                     case 'share':
-                        if (data.sharedto_user_id != null) {
-                            me.methodType = 'unshare'
-                            me.tempData = data
-                            me.$store.state.packageActionValidateStatus = true
-                        } else {
-                            me.methodType = 'share'
-                            me.$store.state.packageActionStatus = true
-                        }
+                        me.methodType = 'share'
+                        me.$store.state.packageActionStatus = true
+                        document.body.classList.add('no_scroll')
+                        me.packageActionType = 'Share'
+                        break
+                    case 'unshare':
+                        me.methodType = 'unshare'
+                        me.tempData = data
+                        me.$store.state.packageActionValidateStatus = true
                         document.body.classList.add('no_scroll')
                         me.packageActionType = 'Share'
                         break
@@ -1544,9 +1554,21 @@
                         break
                     case 'shared':
                         if (me.$route.params.param == data.user_id) {
-                            result = `Shared with ${data.sharedto_user.first_name} ${data.sharedto_user.last_name}`
+                            result = 'Shared with '
+                            data.shares.forEach((share, key) => {
+                                if (key != 0) {
+                                    if (key + 1 == data.shares.length) {
+                                        result += ' & '
+                                    } else {
+                                        result += ', '
+                                    }
+                                }
+                                result += `${share.user.fullname}`
+                            })
                         } else {
-                            result = `Shared by ${data.sharedby_user.first_name} ${data.sharedby_user.last_name}`
+                            if (data.sharedby_user) {
+                                result = `Shared by ${data.sharedby_user.first_name} ${data.sharedby_user.last_name}`
+                            }
                         }
                         break;
                 }

@@ -30,6 +30,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form_group">
+                            <label for="remarks">Notes/Remarks</label>
+                            <textarea name="remarks" rows="8" id="remarks" class="default_text" v-model="form.remarks" placeholder="Enter remarks"></textarea>
+                        </div>
                     </div>
                     <div class="customer_picked" v-if="customer != ''">
                         <div class="customer_header">
@@ -82,6 +86,7 @@
                 findCustomer: false,
                 form: {
                     comp: '',
+                    remarks: '',
                     assign: 'member'
                 },
                 toggleCustomers: false,
@@ -120,6 +125,7 @@
                                 formData.append('receiver_id', me.customer.id)
                                 formData.append('user_package_count_id', me.userPackageCountId)
                                 formData.append('sender_id', me.$parent.res.id)
+                                formData.append('remarks', me.form.remarks)
                                 me.$axios.post('api/packages/class-packages/transfer', formData, {
                                     headers: {
                                         Authorization: `Bearer ${token}`
@@ -150,6 +156,7 @@
                                 formData.append('receiver_id', me.customer.id)
                                 formData.append('user_package_count_id', me.userPackageCountId)
                                 formData.append('sender_id', me.$parent.res.id)
+                                formData.append('remarks', me.form.remarks)
                                 me.$axios.post(`api/packages/class-packages/${me.$parent.methodType}`, formData, {
                                     headers: {
                                         Authorization: `Bearer ${token}`

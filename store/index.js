@@ -14,6 +14,7 @@ const createStore = () => {
             onlineAttendancePrompt: false,
             onlineAttendanceLayoutStatus: false,
             editPackageExpiryStatus: false,
+            packageShareConfirmationStatus: false,
             redeemGiftCardSuccessStatus: false,
             redeemGiftCardStatus: false,
             packageLayoutStatus: false,

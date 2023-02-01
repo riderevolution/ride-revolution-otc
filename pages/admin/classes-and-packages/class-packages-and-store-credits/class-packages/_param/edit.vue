@@ -166,7 +166,7 @@
                                         <template v-if="form.allowSharing === 'Yes'">
                                             <div class="form_flex_input">
                                                 <label for="max_package_sharing">Max Number of Package Sharing <span>*</span></label>
-                                                <input type="text" name="max_package_sharing" placeholder="Enter max number of package sharing" class="default_text number" value="1" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'" v-model="res.max_sharing_package">
+                                                <input type="text" name="max_package_sharing" placeholder="Enter max number of package sharing" class="default_text number" value="1" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'" v-model="res.max_package_sharing">
                                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('max_package_sharing')">{{ properFormat(errors.first('max_package_sharing')) }}</span></transition>
                                             </div>
                                         </template>
@@ -642,6 +642,7 @@
                         $('#gift_card_description').summernote('code', me.res.gift_card_description)
                     }, 100)
                     me.res = res.data.classPackage
+                    me.res.max_package_sharing = (me.res.max_package_sharing) ? me.res.max_package_sharing : 1
                     me.form.allowSharing = (me.res.por_allow_sharing_of_package) ? 'Yes' : 'No'
                     me.form.purchaseLimit = me.res.por_purchase_limit
                     me.form.classCount = me.res.class_count
