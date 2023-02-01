@@ -145,17 +145,31 @@
                             </div>
                             <div class="form_main_group">
                                 <div class="form_flex">
-                                    <div class="form_flex_radio">
-                                        <label class="radio_label">Allow sharing of package? <span>*</span></label>
-                                        <div class="form_radio">
-                                            <input type="radio" id="por_allow_sharing_yes" value="Yes" :checked="res.por_allow_sharing_of_package == 1" v-validate="'required'" name="por_allow_sharing_of_package" class="action_radio">
-                                            <label for="por_allow_sharing_yes">Yes</label>
+                                    <div class="form_group flex">
+                                        <div
+                                            :class="[
+                                                'form_flex_radio no_margin',
+                                                form.allowSharing === 'No' && 'full'
+                                            ]"
+                                        >
+                                            <label class="radio_label">Allow sharing of package? <span>*</span></label>
+                                            <div class="form_radio">
+                                                <input type="radio" id="por_allow_sharing_yes" value="Yes" :checked="res.por_allow_sharing_of_package == 1" v-validate="'required'" name="por_allow_sharing_of_package" class="action_radio" v-model="form.allowSharing">
+                                                <label for="por_allow_sharing_yes">Yes</label>
+                                            </div>
+                                            <div class="form_radio">
+                                                <input type="radio" id="por_allow_sharing_no" value="No" :checked="res.por_allow_sharing_of_package == 0" v-validate="'required'" name="por_allow_sharing_of_package" class="action_radio" v-model="form.allowSharing">
+                                                <label for="por_allow_sharing_no">No</label>
+                                            </div>
+                                            <transition name="slide"><span class="validation_errors" v-if="errors.has('por_allow_sharing_of_package')">{{ properFormat(errors.first('por_allow_sharing_of_package')) }}</span></transition>
                                         </div>
-                                        <div class="form_radio">
-                                            <input type="radio" id="por_allow_sharing_no" value="No" :checked="res.por_allow_sharing_of_package == 0" v-validate="'required'" name="por_allow_sharing_of_package" class="action_radio">
-                                            <label for="por_allow_sharing_no">No</label>
-                                        </div>
-                                        <transition name="slide"><span class="validation_errors" v-if="errors.has('por_allow_sharing_of_package')">{{ properFormat(errors.first('por_allow_sharing_of_package')) }}</span></transition>
+                                        <template v-if="form.allowSharing === 'Yes'">
+                                            <div class="form_flex_input">
+                                                <label for="max_package_sharing">Max Number of Package Sharing <span>*</span></label>
+                                                <input type="text" name="max_package_sharing" placeholder="Enter max number of package sharing" class="default_text number" value="1" autocomplete="off" v-validate="'required|numeric|min_value:1|max_value:5'" v-model="res.max_sharing_package">
+                                                <transition name="slide"><span class="validation_errors" v-if="errors.has('max_package_sharing')">{{ properFormat(errors.first('max_package_sharing')) }}</span></transition>
+                                            </div>
+                                        </template>
                                     </div>
                                     <div class="form_flex_radio">
                                         <label class="radio_label">Allow transfer of package? <span>*</span></label>
@@ -400,6 +414,7 @@
                 res: [],
                 form: {
                     start_date: this.$moment().format('YYYY-MM-DD'),
+                    allowSharing: 'No',
                     end_date: '',
                     classCount: 1,
                     expiryIn: 0,
@@ -627,6 +642,7 @@
                         $('#gift_card_description').summernote('code', me.res.gift_card_description)
                     }, 100)
                     me.res = res.data.classPackage
+                    me.form.allowSharing = (me.res.por_allow_sharing_of_package) ? 'Yes' : 'No'
                     me.form.purchaseLimit = me.res.por_purchase_limit
                     me.form.classCount = me.res.class_count
                     me.form.notActivated = me.res.ao_expiry_if_not_activated
