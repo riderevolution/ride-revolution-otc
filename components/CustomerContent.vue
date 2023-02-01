@@ -916,57 +916,65 @@
                 } else {
                     switch (type) {
                         case 'reference_number':
-                            switch (data.payment_method.method) {
-                                case 'paypal':
-                                    if (data.payment_method.paypal_transaction_id) {
-                                        result = data.payment_method.paypal_transaction_id
-                                    } else {
+                            if (data.payment_method) {
+                                switch (data.payment_method.method) {
+                                    case 'paypal':
+                                        if (data.payment_method.paypal_transaction_id) {
+                                            result = data.payment_method.paypal_transaction_id
+                                        } else {
+                                            result = data.payment_code
+                                        }
+                                        break
+                                    case 'paymaya':
+                                        result = data.payment_method.paymaya_transaction_id
+                                        break
+                                    case 'paymongo':
+                                        result = data.payment_method.paymongo_source_id
+                                        break
+                                    case 'gcash':
+                                        result = data.payment_method.gcash_reference_number
+                                        break
+                                    case 'gc_code':
+                                        result = `${data.payment_code} - ${data.payment_method.gc_code}`
+                                        break
+                                    default:
                                         result = data.payment_code
-                                    }
-                                    break
-                                case 'paymaya':
-                                    result = data.payment_method.paymaya_transaction_id
-                                    break
-                                case 'paymongo':
-                                    result = data.payment_method.paymongo_source_id
-                                    break
-                                case 'gcash':
-                                    result = data.payment_method.gcash_reference_number
-                                    break
-                                case 'gc_code':
-                                    result = `${data.payment_code} - ${data.payment_method.gc_code}`
-                                    break
-                                default:
-                                    result = data.payment_code
-                                    break
+                                        break
+                                }
+                            } else {
+                                result = 'N/A'
                             }
                             break
                         case 'method':
-                            switch (data.payment_method.method) {
-                                case 'gc_code':
-                                    result = 'Gift Card'
-                                    break
-                                case 'debit-card':
-                                    result = 'Debit Card'
-                                    break
-                                case 'credit-card':
-                                    result = 'Credit Card'
-                                    break
-                                case 'store-credits':
-                                    result = 'Store Credits'
-                                    break
-                                case 'gcash':
-                                    result = 'GCash'
-                                    break
-                                case 'class_pass':
-                                    result = 'ClassPass'
-                                    break
-                                case 'third_party_platform':
-                                    result = 'Third Party Platform'
-                                    break
-                                default:
-                                    result = data.payment_method.method
-                                    break
+                            if (data.payment_method) {
+                                switch (data.payment_method.method) {
+                                    case 'gc_code':
+                                        result = 'Gift Card'
+                                        break
+                                    case 'debit-card':
+                                        result = 'Debit Card'
+                                        break
+                                    case 'credit-card':
+                                        result = 'Credit Card'
+                                        break
+                                    case 'store-credits':
+                                        result = 'Store Credits'
+                                        break
+                                    case 'gcash':
+                                        result = 'GCash'
+                                        break
+                                    case 'class_pass':
+                                        result = 'ClassPass'
+                                        break
+                                    case 'third_party_platform':
+                                        result = 'Third Party Platform'
+                                        break
+                                    default:
+                                        result = data.payment_method.method
+                                        break
+                                }
+                            } else {
+                                result = 'N/A'
                             }
                             break
                         case 'transaction_date':
@@ -1026,21 +1034,21 @@
                             }
                             break
                         case 'comp_reason':
-                            if (data.payment_method.comp_reason) {
+                            if (data.payment_method && data.payment_method.comp_reason) {
                                 result = data.payment_method.comp_reason
                             } else {
                                 result = 'N/A'
                             }
                             break
                         case 'note':
-                            if (data.payment_method.note) {
+                            if (data.payment_method && data.payment_method.note) {
                                 result = data.payment_method.note
                             } else {
                                 result = 'N/A'
                             }
                             break
                         case 'remarks':
-                            if (data.payment_method.remarks) {
+                            if (data.payment_method && data.payment_method.remarks) {
                                 if (data.studio == null && data.payment_method.method == 'cash') {
                                     if (data.payment_method.remarks != null) {
                                         result = data.payment_method.remarks
