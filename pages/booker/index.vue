@@ -1271,6 +1271,7 @@
             },
             getSeats () {
                 const me = this
+                me.fetchWaitlist(me.$store.state.scheduleID)
                 me.$refs.plan.fetchSeats(me.$store.state.scheduleID, me.studioID)
                 document.querySelector('.plan_wrapper').style.transform = `matrix(0.4, 0, 0, 0.4, ${me.customWidth}, ${me.customHeight})`
             },
