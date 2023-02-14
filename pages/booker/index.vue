@@ -477,7 +477,8 @@
                 form: {
                     search: ''
                 },
-                typing_timeout: ''
+                typing_timeout: '',
+                waitlist_interval: null
             }
         },
         computed: {
@@ -1153,6 +1154,10 @@
                     me.$store.state.errorStatus = true
                 }).then(() => {
                     me.waitlistCount = ctr
+                    clearInterval(me.waitlist_interval)
+                    me.waitlist_interval = setInterval(() => {
+                        me.fetchWaitlist(me.$store.state.scheduleID)
+                    }, 10000)
                 })
             },
             toggleOverlays (e) {
