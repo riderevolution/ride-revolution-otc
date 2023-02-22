@@ -55,7 +55,20 @@
                                     </div>
                                 </td>
                                 <td>{{ data.user.email }}</td>
-                                <td>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</td>
+                                <td>
+                                    <p>{{ (data.user_package_count) ? data.user_package_count.class_package.name : 'N/A' }}</p>
+                                    <template v-if="data.user_package_count">
+                                        <p
+                                            :class="[
+                                                'table_violator',
+                                                data.shared ? 'pink' : 'blue'
+                                            ]"
+                                        >
+                                            {{ data.shared ? 'Shared By' : 'Owned By' }}:
+                                            {{ data.user_package_count.user.fullname }}
+                                        </p>
+                                    </template>
+                                </td>
                                 <td width="15%">
                                     <div class="form_group no_margin">
                                         <select class="default_select alternate" :name="`status[${key}]`" v-model="data.status">
@@ -126,6 +139,7 @@
                         'Payment Method': (value.user_package_count.has_payment_item) ? value.user_package_count.payment_item.payment_method.method : 'N/A',
                         'Studio': me.studio.name,
                         'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Package Shared By': (value.shared) ? value.user_package_count.user.fullname : 'N/A',
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
@@ -164,10 +178,14 @@
                 const me = this
                 let result = ''
 
-                if (data.has_payment_item == true || data.has_payment_item == 'true') {
+                if (data.payment_item.payment_method) {
                     switch (data.payment_item.payment_method.method) {
                         case 'paypal':
-                            result = data.payment_item.payment_method.paypal_transaction_id
+                            if (data.payment_item.payment_method.paypal_transaction_id) {
+                                result = data.payment_item.payment_method.paypal_transaction_id
+                            } else {
+                                result = data.payment.payment_code
+                            }
                             break
                         case 'paymaya':
                             result = data.payment_item.payment_method.paymaya_transaction_id
@@ -175,11 +193,18 @@
                         case 'paymongo':
                             result = data.payment_item.payment_method.paymongo_source_id
                             break
+                        case 'gcash':
+                            result = data.payment_item.payment_method.gcash_reference_number
+                            break
+                        case 'gc_code':
+                            result = `${data.payment.payment_code} - ${data.payment_item.payment_method.gc_code}`
+                            break
                         default:
                             result = data.payment.payment_code
+                            break
                     }
                 } else {
-                    result = ''
+                    result = data.payment.payment_code
                 }
 
                 return result
