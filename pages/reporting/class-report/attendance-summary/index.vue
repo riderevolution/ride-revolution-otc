@@ -228,6 +228,7 @@
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
                         'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Package Shared By': (value.shared) ? value.user_package_count.user.fullname : 'N/A',
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),

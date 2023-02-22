@@ -93,7 +93,7 @@
                         </tbody>
                         <tbody class="no_results" v-else>
                             <tr>
-                                <td colspan="8">No Result(s) Found.</td>
+                                <td colspan="11">No Result(s) Found.</td>
                             </tr>
                         </tbody>
                     </table>

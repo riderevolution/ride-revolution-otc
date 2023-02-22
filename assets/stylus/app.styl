@@ -21,6 +21,8 @@ $border = #DEDEDE
 $border_alt = #EDEEF0
 $border_alt2 = #9C9EAA
 $violet = #7E79FF
+$pink = #B176A9
+$pink_alt = #FAE2F7
 
 image_default =
   height: auto
@@ -4239,6 +4241,19 @@ input::placeholder
             &.warning
               color: $white
               background-color: $red
+        .table_violator
+          display: inline-block
+          margin-top: 5px
+          sf_pro_medium(12px)
+          border-radius: 5px
+          padding: 5px
+          text-transform: uppercase
+          &.blue
+            color: $blue
+            background-color: $light_blue
+          &.pink
+            color: $pink
+            background-color: $pink_alt
         &.alt
           text-transform: uppercase
         &.alt_2
@@ -5111,6 +5126,8 @@ input::placeholder
                     align-items: center
                     span
                       margin-left: 5px
+                &.not-bookable
+                  background-color: $red
                 &.draft
                   background-color: $black
                 &.completed
@@ -8215,6 +8232,9 @@ input::placeholder
                 &.warning
                   color: $white
                   background-color: $red
+                &.pink
+                  color: $pink
+                  background-color: $pink_alt
             .p_label
               margin-top: 5px
               sf_pro_regular(14px)

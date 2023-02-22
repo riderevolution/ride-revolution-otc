@@ -164,8 +164,8 @@
 </template>
 
 <script>
-    import Foot from '../../../../components/Foot'
-    import Pagination from '../../../../components/Pagination'
+    import Foot from '~/components/Foot'
+    import Pagination from '~/components/Pagination'
     export default {
         components: {
             Foot,
@@ -206,6 +206,7 @@
                         'Payment Method': value.user_package_count.payment_item.payment_method.method,
                         'Studio': me.studio.name,
                         'Package Used': (value.user_package_count) ? value.user_package_count.class_package.name : 'N/A',
+                        'Package Shared By': (value.user_package_count) ? value.user_package_count.user.fullname : 'N/A',
                         'Booking Status': value.status,
                         'Reservation Timestamp': me.$moment(value.created_at).format('MMM DD, YYYY hh:mm A'),
                         'Status Timestamp': me.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A'),
@@ -485,11 +486,10 @@
                 me.loader(true)
 
                 let formData = new FormData()
-                let studio_id = me.$cookies.get('CSID')
 
                 formData.append('start_date', me.form.start_date)
                 formData.append('end_date', me.form.end_date)
-                formData.append('studio_id', studio_id)
+                formData.append('studio_id', me.form.studio_id)
 
                 me.$axios.post(`api/reporting/classes/instructor-attendance-summary`, formData).then(res => {
                     setTimeout( () => {
@@ -513,7 +513,6 @@
             fetchExtraAPI () {
                 const me = this
                 let token = me.$cookies.get('70hokcotc3hhhn5')
-                let studio_id = me.$cookies.get('CSID')
                 me.$axios.get('api/studios', {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -521,8 +520,7 @@
                 }).then(res => {
                     if (res.data) {
                         me.studios = res.data.studios
-                        me.form.studio_id = studio_id
-                        me.$axios.get(`api/studios/${studio_id}`).then(res => {
+                        me.$axios.get(`api/studios/${me.form.studio_id}`).then(res => {
                             me.studio = res.data.studio
                         })
                     }
@@ -542,6 +540,9 @@
             const me = this
             await me.checkPagePermission(me)
             if (me.access) {
+                if (me.$cookies.get('CSID')) {
+                  me.form.studio_id = me.$cookies.get('CSID')
+                }
                 me.fetchData()
                 me.fetchExtraAPI()
             } else {

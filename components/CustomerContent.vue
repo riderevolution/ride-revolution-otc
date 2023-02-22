@@ -17,7 +17,7 @@
                             <template v-if="packageStatus != 'frozen'">
                                 <span class="warning" v-if="parseInt($moment((data.computed_expiration_date != null) ? data.computed_expiration_date : data.expiry_date_if_not_activated).diff($moment())) < 0 && packageStatus != 'expired'">{{ checkViolator(data, 'warning') }}</span>
                             </template>
-                            <span class="shared" v-if="data.shares_count > 0">{{ checkViolator(data, 'shared') }}</span>
+                            <span :class="[($route.params.param == data.user_id) ? 'shared' : 'pink']" v-if="data.shares_count > 0">{{ checkViolator(data, 'shared') }}</span>
                             <span class="frozen" v-if="data.frozen">Frozen</span>
                         </div>
                         <div class="p_label">
@@ -153,6 +153,14 @@
                         <td>
                             <p>{{ data.class_package.name }}</p>
                             <p class="id">{{ data.class_package.sku_id }}</p>
+                            <p
+                                :class="[
+                                    'table_violator',
+                                    (data.shared) ? 'pink' : 'blue'
+                                ]"
+                            >
+                                {{ (data.shared) ? 'Share By' : 'Owned By' }}: {{ data.user_package_count.user.fullname }}
+                            </p>
                         </td>
                         <td>
                             <div class="full table_actions" v-if="data.status == 'reserved'">
@@ -230,6 +238,14 @@
                         <td>
                             <p>{{ data.class_package.name }}</p>
                             <p class="id">{{ data.class_package.sku_id }}</p>
+                            <p
+                                :class="[
+                                    'table_violator',
+                                    (data.shared) ? 'pink' : 'blue'
+                                ]"
+                            >
+                                {{ (data.shared) ? 'Shared By' : 'Owned By' }}: {{ data.user_package_count.user.fullname }}
+                            </p>
                         </td>
                         <td>{{ (data.employee) ? data.employee.fullname : 'Customer' }}</td>
                         <td>
