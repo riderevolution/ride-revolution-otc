@@ -56,6 +56,14 @@
                                 <td>
                                     <p>{{ data.class_package.name }}</p>
                                     <p class="id">{{ data.class_package.sku_id }}</p>
+                                    <p
+                                        :class="[
+                                            'table_violator',
+                                            (data.shared) ? 'pink' : 'blue'
+                                        ]"
+                                    >
+                                        {{ (data.shared) ? 'Shared By' : 'Owned By' }}: {{ data.user_package_count.user.fullname }}
+                                    </p>
                                 </td>
                             </tr>
                         </tbody>
