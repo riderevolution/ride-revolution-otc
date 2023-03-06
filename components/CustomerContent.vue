@@ -561,6 +561,9 @@
         </div>
         <div v-if="type == 'health-waiver' && loaded">
             <div id="default_form">
+                <div class="cta">
+                    <a :href="value.health_waiver_link" class="action_btn alternate" target="_blank">View Health Waiver Form</a>
+                </div>
                 <div class="form_wrapper">
                     <div class="form_header_wrapper">
                         <h2 class="form_title">Emergency Information</h2>
