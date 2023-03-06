@@ -478,9 +478,9 @@
                               <div class="type_title">Pending Payment</div>
                             </div>
                             <!-- <div class="type">
-                                                            <img src="/icons/broken-bike-icon.svg" />
-                                                            <div class="type_title">Broken Bike</div>
-                                                        </div> -->
+                                <img src="/icons/broken-bike-icon.svg" />
+                                <div class="type_title">Broken Bike</div>
+                            </div> -->
                           </div>
                         </div>
                       </div>

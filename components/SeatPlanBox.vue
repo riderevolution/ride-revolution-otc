@@ -14,14 +14,22 @@
                 <div class="seat_name">{{ seat.number }} - {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.first_name : seat.bookings[0].guest_first_name }} {{ (seat.bookings.length > 0 && seat.bookings[0].user != null) ? seat.bookings[0].user.last_name : seat.bookings[0].guest_last_name }}</div>
                 <div class="seat_violator">{{ seat.status.charAt(0).toUpperCase() }}{{ seat.status.slice(1) }}</div>
                 <template v-if="seat.bookings.length > 0 && seat.bookings[0].is_guest">
-                  <div class="seat_name alt margin">Booked By - <b>{{ seat.bookings[0].original_booker.fullname }}</b></div>
+                    <div class="seat_name alt margin">Booked By - <b>{{ seat.bookings[0].original_booker.fullname }}</b></div>
                 </template>
 
                 <div :class="['flex alt', (seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.has_first_timer || seat.bookings[0].is_guest == 1) ? 'margin' : '']" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
-                    <div class="info_image">
-                        <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
-                    </div>
-                    <span>{{ seat.bookings[0].user.customer_details.customer_type.name }}</span>
+                    <template v-if="seat.bookings.length == 1">
+                        <div class="info_image">
+                            <img src="/icons/first-timer-icon.png" />
+                        </div>
+                        <span>First Timer</span>
+                    </template>
+                    <template v-else>
+                        <div class="info_image">
+                            <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
+                        </div>
+                        <span>{{ seat.bookings[0].user.customer_details.customer_type.name }}</span>
+                    </template>
                 </div>
                 <div class="flex alt margin" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null && seat.bookings[0].user.has_first_timer">
                     <div class="info_image">
@@ -50,15 +58,20 @@
             <div class="seat_overlay" @click="toggleMenu(seat, seat.status)">
                 <div class="seat_number">{{ seat.number }}</div>
                 <div class="seat_info" v-if="seat.comp.length > 0 || seat.bookings.length > 0">
-                    <div class="info_image" v-if="seat.comp.length > 0 && seat.comp[0].user_id != null">
-                        <img :src="seat.comp[0].user.customer_details.customer_type.image.path" />
-                    </div>
-                    <div class="info_image" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
-                        <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
-                    </div>
-                    <div class="info_image" v-if="seat.bookings.length > 0 && seat.bookings[0].is_guest == 1">
-                        <img src="/icons/guest-icon.svg" />
-                    </div>
+                    <template v-if="seat.comp.length == 1 || seat.bookings.length == 1">
+                        <img src="/icons/first-timer-icon.png" />
+                    </template>
+                    <template v-else>
+                        <div class="info_image" v-if="seat.comp.length > 0 && seat.comp[0].user_id != null">
+                            <img :src="seat.comp[0].user.customer_details.customer_type.image.path" />
+                        </div>
+                        <div class="info_image" v-if="seat.bookings.length > 0 && seat.bookings[0].user != null">
+                            <img :src="seat.bookings[0].user.customer_details.customer_type.image.path" />
+                        </div>
+                        <div class="info_image" v-if="seat.bookings.length > 0 && seat.bookings[0].is_guest == 1">
+                            <img src="/icons/guest-icon.svg" />
+                        </div>
+                    </template>
                 </div>
             </div>
 
