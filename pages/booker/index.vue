@@ -967,7 +967,10 @@
             ),
             'Customer ID': value.user.id,
             'Full Name': `${value.user.first_name} ${value.user.last_name}`,
-            'Customer Type': value.customer_type,
+            'Customer Type':
+              value.user.bookings_count == 1
+                ? 'First Timer'
+                : value.customer_type,
             'Email Address': value.user.email,
             'Gross Revenue': me.computeRevenue(value, 'gross'),
             Discount: me.computeRevenue(value, 'discount'),
