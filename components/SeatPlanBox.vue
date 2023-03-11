@@ -149,8 +149,11 @@
         >
           <template
             v-if="
-              (seat.comp.length && seat.comp[0].user.bookings_count == 1) ||
+              (seat.comp.length &&
+                seat.comp[0].user &&
+                seat.comp[0].user.bookings_count == 1) ||
               (seat.bookings.length &&
+                seat.bookings[0].user &&
                 seat.bookings[0].user.bookings_count == 1)
             "
           >
