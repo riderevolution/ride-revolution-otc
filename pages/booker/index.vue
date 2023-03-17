@@ -968,7 +968,7 @@
             'Customer ID': value.user.id,
             'Full Name': `${value.user.first_name} ${value.user.last_name}`,
             'Customer Type':
-              value.user.bookings_count == 1
+              value.user.bookings_count == 1 && value.user_package_count && value.user_package_count.class_package.por_restrict_to_new_customers == 1
                 ? 'First Timer'
                 : value.customer_type,
             'Email Address': value.user.email,
