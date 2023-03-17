@@ -59,7 +59,13 @@
           ]"
           v-if="seat.bookings.length > 0 && seat.bookings[0].user != null"
         >
-          <template v-if="seat.bookings[0].user.bookings_count == 1">
+          <template
+            v-if="
+              seat.bookings[0].user.bookings_count == 1 ||
+              seat.bookings[0].user_package_count.class_package
+                .por_restrict_to_new_customers == 1
+            "
+          >
             <div class="info_image">
               <img src="/icons/first-timer-icon.png" />
             </div>
@@ -82,9 +88,11 @@
         <div
           class="flex alt margin"
           v-if="
-            seat.bookings.length > 0 &&
-            seat.bookings[0].user != null &&
-            seat.bookings[0].user.has_first_timer
+            (seat.bookings.length > 0 &&
+              seat.bookings[0].user != null &&
+              seat.bookings[0].user.bookings_count == 1) ||
+            seat.bookings[0].user_package_count.class_package
+              .por_restrict_to_new_customers == 1
           "
         >
           <div class="info_image">
@@ -151,10 +159,16 @@
             v-if="
               (seat.comp.length &&
                 seat.comp[0].user &&
-                seat.comp[0].user.bookings_count == 1) ||
+                seat.comp[0].user_package_count &&
+                (seat.comp[0].user.bookings_count == 1 ||
+                  seat.comp[0].user_package_count.class_package
+                    .por_restrict_to_new_customers == 1)) ||
               (seat.bookings.length &&
                 seat.bookings[0].user &&
-                seat.bookings[0].user.bookings_count == 1)
+                seat.bookings[0].user_package_count &&
+                (seat.bookings[0].user.bookings_count == 1 ||
+                  seat.bookings[0].user_package_count.class_package
+                    .por_restrict_to_new_customers == 1))
             "
           >
             <img src="/icons/first-timer-icon.png" />
