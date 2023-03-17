@@ -88,9 +88,8 @@
         <div
           class="flex alt margin"
           v-if="
-            (seat.bookings.length > 0 &&
-              seat.bookings[0].user != null &&
-              seat.bookings[0].user.bookings_count == 1) ||
+            seat.bookings.length > 0 &&
+            seat.bookings[0].user != null &&
             seat.bookings[0].user_package_count.class_package
               .por_restrict_to_new_customers == 1
           "
