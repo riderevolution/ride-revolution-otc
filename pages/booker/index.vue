@@ -135,20 +135,32 @@
                             >
                               {{ customer.first_name }} {{ customer.last_name }}
                             </nuxt-link>
-                            <div
-                              class="types"
+                            <template
                               v-if="
-                                customer.customer_details.customer_type.images
-                                  .length > 0
+                                customer.bookings_count == 1 ||
+                                customer.has_first_timer
                               "
                             >
-                              <img
-                                :src="
-                                  customer.customer_details.customer_type
-                                    .images[0].path_resized
+                              <div class="types">
+                                <img src="/icons/first-timer-icon.png" />
+                              </div>
+                            </template>
+                            <template v-else>
+                              <div
+                                class="types"
+                                v-if="
+                                  customer.customer_details.customer_type.images
+                                    .length > 0
                                 "
-                              />
-                            </div>
+                              >
+                                <img
+                                  :src="
+                                    customer.customer_details.customer_type
+                                      .images[0].path_resized
+                                  "
+                                />
+                              </div>
+                            </template>
                             <div class="types" v-if="customer.has_first_timer">
                               <img src="/icons/first-timer-package-icon.png" />
                             </div>
@@ -968,7 +980,10 @@
             'Customer ID': value.user.id,
             'Full Name': `${value.user.first_name} ${value.user.last_name}`,
             'Customer Type':
-              value.user.bookings_count == 1 && value.user_package_count && value.user_package_count.class_package.por_restrict_to_new_customers == 1
+              value.user.bookings_count == 1 &&
+              value.user_package_count &&
+              value.user_package_count.class_package
+                .por_restrict_to_new_customers == 1
                 ? 'First Timer'
                 : value.customer_type,
             'Email Address': value.user.email,
