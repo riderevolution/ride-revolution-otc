@@ -108,7 +108,14 @@
                   </div>
                 </td>
                 <td width="15%">
-                  <template v-if="data.user.bookings_count == 1">
+                  <template
+                    v-if="
+                      data.user.bookings_count == 1 &&
+                      data.user_package_count &&
+                      data.user_package_count.class_package
+                        .por_restrict_to_new_customers == 1
+                    "
+                  >
                     <div class="thumb alt">
                       <img src="/icons/first-timer-icon.png" />
                       <div class="table_data_link">First Timer</div>
