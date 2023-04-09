@@ -1993,6 +1993,7 @@
             result = 'No Show'
             break
           case 'reserved':
+          case 'reserved-guest':
             result = 'Reserved'
             break
           case 'cancelled':
