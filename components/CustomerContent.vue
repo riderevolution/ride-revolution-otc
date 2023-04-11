@@ -1,2460 +1,2908 @@
 <template>
-  <div class="customer_tab_content">
-    <div v-if="type == 'packages' && loaded">
-      <div class="cms_table_toggler">
-        <div
-          :class="`status ${packageStatus == 'all' ? 'active' : ''}`"
-          @click="togglePackages('all')"
-        >
-          Owned
-        </div>
-        <!-- <div :class="`status ${(packageStatus == 'subscribe') ? 'active' : ''}`" @click="togglePackages('subscribe')">Subscribe</div> -->
-        <div
-          :class="`status ${packageStatus == 'shared' ? 'active' : ''}`"
-          @click="togglePackages('shared')"
-        >
-          Shared
-        </div>
-        <div
-          :class="`status ${packageStatus == 'frozen' ? 'active' : ''}`"
-          @click="togglePackages('frozen')"
-        >
-          Frozen
-        </div>
-        <div
-          :class="`status ${packageStatus == 'expired' ? 'active' : ''}`"
-          @click="togglePackages('expired')"
-        >
-          Expired
-        </div>
-      </div>
-      <button
-        type="button"
-        class="hidden"
-        id="packages"
-        @click="togglePackages(packageStatus)"
-      ></button>
-      <div class="cms_table_package">
-        <div
-          class="table_package"
-          v-for="(data, key) in populatePackages"
-          :key="key"
-          v-if="packageCount > 0 && !data.expired"
-        >
-          <div class="package_title">
-            <div class="p_inline">
-              {{ data.class_package.name }}
-              <template v-if="packageStatus != 'frozen'">
-                <span
-                  class="warning"
-                  v-if="
-                    parseInt(
-                      $moment(
-                        data.computed_expiration_date != null
-                          ? data.computed_expiration_date
-                          : data.expiry_date_if_not_activated
-                      ).diff($moment())
-                    ) < 0 && packageStatus != 'expired'
-                  "
-                >
-                  {{ checkViolator(data, 'warning') }}
-                </span>
-              </template>
-              <span
-                :class="[
-                  $route.params.param == data.user_id ? 'shared' : 'pink'
-                ]"
-                v-if="data.shares_count > 0"
-              >
-                {{ checkViolator(data, 'shared') }}
-              </span>
-              <span class="frozen" v-if="data.frozen">Frozen</span>
-            </div>
-            <div class="p_label">
-              Reference Number:
-              <b>{{ getPaymentCode(data.payment) }}</b>
-            </div>
-          </div>
-          <div class="package_details">
-            <div class="package_status">
-              <div class="box">
-                <div class="overlay">
-                  <p>
-                    {{
-                      parseInt(data.original_package_count) -
-                      parseInt(data.count)
-                    }}
-                  </p>
-                  <label>Used</label>
-                </div>
-              </div>
-              <div class="box margin">
-                <div class="overlay">
-                  <p>
-                    {{
-                      data.class_package.class_count_unlimited == 1
-                        ? 'Unlimited'
-                        : parseInt(data.count) == data.original_package_count
-                        ? parseInt(data.original_package_count)
-                        : parseInt(data.count)
-                    }}
-                  </p>
-                  <label>Available</label>
-                </div>
-              </div>
-            </div>
-            <div class="package_date">
-              <div class="date">
-                <p>
-                  {{ formatDate(data.created_at, false) }} /
-                  {{
-                    data.activation_date != 'NA'
-                      ? formatDate(data.activation_date, false)
-                      : 'N/A'
-                  }}
-                </p>
-                <label>Purchase Date / Activation Date</label>
-              </div>
-              <template v-if="data.cancelled_subscription_at">
-                <div class="date margin">
-                  <p>{{ formatDate(data.cancelled_subscription_at, false) }}</p>
-                  <label>Cancellation Date</label>
-                </div>
-              </template>
-              <div class="date margin">
-                <p>
-                  {{
-                    data.computed_expiration_date
-                      ? formatDate(data.computed_expiration_date, false)
-                      : formatDate(data.expiry_date_if_not_activated, false)
-                  }}
-                </p>
-                <label>
-                  Termination/Expiry date
-                  <a
-                    href="javascript:void(0)"
-                    class="expiry_btn"
-                    @click="togglePackageAction(data, 'expiry')"
-                    v-if="!data.class_package.recurring"
-                  >
-                    Edit
-                  </a>
-                </label>
-              </div>
-            </div>
-            <div class="package_action" v-if="packageStatus != 'expired'">
-              <template v-if="$store.state.user.staff_details.role_id == 1">
-                <div>
-                  <a
-                    :href="`/customers/${$route.params.param}/packages/${data.id}/logs`"
-                    target="_blank"
-                    class="action_btn"
-                  >
-                    Package Logs
-                  </a>
-                </div>
-              </template>
-              <div
-                v-if="!data.frozen"
-                class="action_success_btn"
-                @click="getCurrentCustomer()"
-              >
-                Book a Class
-              </div>
-              <template v-if="data.user_id == $route.params.param">
+    <div class="customer_tab_content">
+        <div v-if="type == 'packages' && loaded">
+            <div class="cms_table_toggler">
                 <div
-                  class="package_options"
-                  :class="{ no_margin: data.frozen }"
-                  v-if="
-                    data.class_package.por_allow_transferring_of_package ||
-                    data.class_package.por_allow_sharing_of_package ||
-                    data.class_package.por_allow_freezing_of_package ||
-                    data.subscription_status
-                  "
+                    :class="`status ${packageStatus == 'all' ? 'active' : ''}`"
+                    @click="togglePackages('all')"
                 >
-                  <div
-                    class="option_btn"
-                    :id="`option_${key}`"
-                    @click.self="toggledOption($event)"
-                  >
-                    Options
-                  </div>
-                  <div class="option_selector">
-                    <div
-                      v-if="
-                        !data.class_package.recurring &&
-                        !data.class_package.class_count_unlimited
-                      "
-                      class="option_link"
-                      @click="togglePackageAction(data, 'edit')"
-                    >
-                      Edit Package Credit
-                    </div>
-
-                    <div
-                      v-if="
-                        data.class_package.por_allow_transferring_of_package &&
-                        !data.frozen &&
-                        !data.shares_count
-                      "
-                      class="option_link"
-                      @click="togglePackageAction(data, 'transfer')"
-                    >
-                      Transfer Package
-                    </div>
-
-                    <div
-                      v-if="
-                        data.class_package.por_allow_sharing_of_package &&
-                        !data.class_package.recurring &&
-                        data.shares_count !=
-                          data.class_package.max_package_sharing
-                      "
-                      class="option_link"
-                      @click="togglePackageAction(data, 'share')"
-                    >
-                      Share Package
-                    </div>
-
-                    <div
-                      v-if="
-                        data.class_package.por_allow_sharing_of_package &&
-                        !data.class_package.recurring &&
-                        data.shares_count > 0
-                      "
-                      class="option_link"
-                      @click="togglePackageAction(data, 'unshare')"
-                    >
-                      Unshare Package
-                    </div>
-
-                    <div
-                      v-if="
-                        data.class_package.por_allow_freezing_of_package &&
-                        !data.class_package.recurring
-                      "
-                      class="option_link"
-                      @click="togglePackageAction(data, 'freeze')"
-                    >
-                      {{ data.frozen ? 'Unfreeze' : 'Freeze' }} Package
-                    </div>
-
-                    <div
-                      v-if="data.class_package.recurring"
-                      class="option_link red"
-                      @click="togglePackageAction(data, 'recurring')"
-                    >
-                      Cancel Package
-                    </div>
-
-                    <div
-                      v-if="
-                        data.class_package.recurring == 0 &&
-                        data.class_package.refundable == 1 &&
-                        data.payment_item != null &&
-                        data.payment_item.refunded == 0 &&
-                        data.count == data.original_package_count
-                      "
-                      class="option_link red"
-                      @click="togglePackageAction(data, 'refund')"
-                    >
-                      Refund Package
-                    </div>
-                  </div>
+                    Owned
                 </div>
-              </template>
-            </div>
-            <div class="package_action" v-else>
-              <div class="action_cancel_btn none" v-if="data.no_count">
-                Consumed
-              </div>
-              <div
-                class="action_cancel_btn none"
-                v-else-if="!data.no_count && !data.expired"
-              >
-                Expired
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="no_results" v-if="packageCount == 0">
-          No Package(s) Found.
-        </div>
-      </div>
-    </div>
-    <div v-if="type == 'badges' && loaded">
-      <div class="cms_col_five">
-        <div
-          :class="`cms_col ${badge.earned_on != null ? '' : 'not'}`"
-          v-for="(badge, key) in value.badges"
-          :key="key"
-        >
-          <div class="badge"><img :src="badge.badge_image" /></div>
-          <div class="info">
-            <h2>{{ badge.description }}</h2>
-            <p v-if="badge.earned_on != null">
-              Earned on: {{ formatClassDate(badge.earned_on, false) }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div v-if="type == 'upcoming-classes' && loaded">
-      <button
-        type="button"
-        class="hidden"
-        id="upcoming_classes"
-        @click="populateUpcomingClasses()"
-      ></button>
-      <table class="cms_table">
-        <thead>
-          <tr>
-            <th>Date &amp; Time</th>
-            <th>Bike No.</th>
-            <th>Class</th>
-            <th>Studio</th>
-            <th>Instructor</th>
-            <th>Guests</th>
-            <th>Status</th>
-            <th>Series ID</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody v-if="value.upcomingClasses.length > 0">
-          <tr v-for="(data, key) in value.upcomingClasses" :key="key">
-            <td>
-              <div
-                class="table_data_link link"
-                @click="
-                  toggleLayout(
-                    data.scheduled_date.schedule.studio.id,
-                    data.scheduled_date_id
-                  )
-                "
-                v-if="!data.scheduled_date.schedule.studio.online_class"
-              >
-                {{
-                  formatClassDate(
-                    `${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`,
-                    true
-                  )
-                }}
-              </div>
-              <div v-else>
-                {{
-                  formatClassDate(
-                    `${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`,
-                    true
-                  )
-                }}
-              </div>
-            </td>
-            <td>
-              {{
-                data.scheduled_date.schedule.studio.online_class
-                  ? '-'
-                  : data.seat.number
-              }}
-            </td>
-            <td>
-              {{
-                data.scheduled_date.schedule.custom_name != null
-                  ? data.scheduled_date.schedule.custom_name
-                  : data.scheduled_date.schedule.class_type.name
-              }}
-            </td>
-            <td>{{ data.scheduled_date.schedule.studio.name }}</td>
-            <td>
-              <div class="thumb">
-                <img
-                  :src="getInstructorsImageInSchedule(data.scheduled_date)"
-                />
+                <!-- <div :class="`status ${(packageStatus == 'subscribe') ? 'active' : ''}`" @click="togglePackages('subscribe')">Subscribe</div> -->
                 <div
-                  class="table_data_link"
-                  @click="
-                    openWindow(
-                      `/instructors/${getInstructorsInSchedule(
-                        data.scheduled_date,
-                        'id'
-                      )}/class-schedules`
-                    )
-                  "
+                    :class="`status ${
+                        packageStatus == 'shared' ? 'active' : ''
+                    }`"
+                    @click="togglePackages('shared')"
                 >
-                  {{ getInstructorsInSchedule(data.scheduled_date, 'name') }}
-                </div>
-              </div>
-            </td>
-            <td>
-              <div
-                class="table_select"
-                v-if="data.guestBookings && data.guestBookings.length > 0"
-              >
-                <div
-                  :id="`table_select_${key}`"
-                  class="table_select_label"
-                  @click="toggleGuest($event)"
-                >
-                  {{ data.guestBookings.length }} Guests
-                </div>
-                <div class="overlay">
-                  <ul>
-                    <li
-                      v-for="(subData, key) in data.guestBookings"
-                      :key="key"
-                      v-line-clamp="1"
-                    >
-                      {{ subData.seat.number }} -
-                      {{ subData.guest_first_name }}
-                      {{ subData.guest_last_name }}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <p v-else>N/A</p>
-            </td>
-            <td class="alt">{{ data.status }}</td>
-            <td>
-              <p>{{ data.class_package.name }}</p>
-              <p class="id">{{ data.class_package.sku_id }}</p>
-              <p :class="['table_violator', data.shared ? 'pink' : 'blue']">
-                {{ data.shared ? 'Share By' : 'Owned By' }}:
-                {{ data.user_package_count.user.fullname }}
-              </p>
-            </td>
-            <td>
-              <div class="full table_actions" v-if="data.status == 'reserved'">
-                <div
-                  class="table_action_success link"
-                  @click="updateCustomerClass(data, data.id)"
-                >
-                  Sign In
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-        <tbody class="no_results" v-else>
-          <tr>
-            <td :colspan="rowCount">No Result(s) Found.</td>
-          </tr>
-        </tbody>
-      </table>
-      <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
-    </div>
-    <div v-if="type == 'class-history' && loaded">
-      <div class="actions">
-        <div class="total">Total: {{ res.classHistory.total }}</div>
-        <div class="cms_table_toggler">
-          <div
-            :class="`status ${classesHistoryStatus == 'all' ? 'active' : ''}`"
-            @click="toggleClassesHistory('all')"
-          >
-            All
-          </div>
-          <div
-            :class="`status ${
-              classesHistoryStatus == 'completed' ? 'active' : ''
-            }`"
-            @click="toggleClassesHistory('completed')"
-          >
-            Completed
-          </div>
-          <div
-            :class="`status ${classesHistoryStatus == 'guest' ? 'active' : ''}`"
-            @click="toggleClassesHistory('guest')"
-          >
-            Guest
-          </div>
-          <div
-            :class="`status ${
-              classesHistoryStatus == 'no-show' ? 'active' : ''
-            }`"
-            @click="toggleClassesHistory('no-show')"
-          >
-            No Show
-          </div>
-          <div
-            :class="`status ${
-              classesHistoryStatus == 'cancelled' ? 'active' : ''
-            }`"
-            @click="toggleClassesHistory('cancelled')"
-          >
-            Cancelled
-          </div>
-          <div
-            :class="`status ${
-              classesHistoryStatus == 'late-cancelled' ? 'active' : ''
-            }`"
-            @click="toggleClassesHistory('late-cancelled')"
-          >
-            Late Cancelled
-          </div>
-        </div>
-      </div>
-      <table class="cms_table">
-        <thead>
-          <tr>
-            <th>Date &amp; Time</th>
-            <th>Bike No.</th>
-            <th>Class</th>
-            <th>Studio</th>
-            <th>Instructor</th>
-            <th>Guests</th>
-            <th>Status</th>
-            <th>Reference Number</th>
-            <th>Series ID</th>
-            <th>Last Action Taken By</th>
-            <th>Timestamp</th>
-          </tr>
-        </thead>
-        <tbody v-if="value.classHistory.data.length > 0">
-          <tr v-for="(data, key) in res.classHistory.data" :key="key">
-            <td>
-              {{
-                formatClassDate(
-                  `${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`,
-                  true
-                )
-              }}
-            </td>
-            <td>
-              {{
-                data.scheduled_date.schedule.studio.online_class
-                  ? '-'
-                  : data.seat.number
-              }}
-            </td>
-            <td>{{ data.scheduled_date.schedule.class_type.name }}</td>
-            <td>{{ data.scheduled_date.schedule.studio.name }}</td>
-            <td>
-              <div class="thumb">
-                <img
-                  :src="getInstructorsImageInSchedule(data.scheduled_date)"
-                />
-                <div
-                  class="table_data_link"
-                  @click="
-                    openWindow(
-                      `/instructors/${getInstructorsInSchedule(
-                        data.scheduled_date,
-                        'id'
-                      )}/class-schedules`
-                    )
-                  "
-                >
-                  {{ getInstructorsInSchedule(data.scheduled_date, 'name') }}
-                </div>
-              </div>
-            </td>
-            <td>
-              <div
-                class="table_select"
-                v-if="data.guestBookings && data.guestBookings.length > 0"
-              >
-                <div
-                  :id="`table_select_${key}`"
-                  class="table_select_label"
-                  @click="toggleGuest($event)"
-                >
-                  {{ data.guestBookings.length }} Guests
-                </div>
-                <div class="overlay">
-                  <ul>
-                    <li
-                      v-for="(subData, key) in data.guestBookings"
-                      :key="key"
-                      v-line-clamp="1"
-                    >
-                      {{ subData.seat.number }} -
-                      {{ subData.guest_first_name }}
-                      {{ subData.guest_last_name }}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <p v-else>N/A</p>
-            </td>
-            <td class="alt">
-              <div class="table_actions">
-                <span>{{ checkStatus(data) }}</span>
-                <div class="action_status ml green" v-if="data.is_guest">
-                  GUEST
-                </div>
-              </div>
-            </td>
-            <td>{{ getPaymentCode(data.user_package_count.payment) }}</td>
-            <td>
-              <p>{{ data.class_package.name }}</p>
-              <p class="id">{{ data.class_package.sku_id }}</p>
-              <p :class="['table_violator', data.shared ? 'pink' : 'blue']">
-                {{ data.shared ? 'Shared By' : 'Owned By' }}:
-                {{ data.user_package_count.user.fullname }}
-              </p>
-            </td>
-            <td>{{ data.employee ? data.employee.fullname : 'Customer' }}</td>
-            <td>
-              {{
-                data.status == 'cancelled' || data.status == 'late-cancelled'
-                  ? $moment(data.deleted_at).format('MMM DD, YYYY hh:mm:ss A')
-                  : $moment(data.updated_at).format('MMM DD, YYYY hh:mm:ss A')
-              }}
-            </td>
-          </tr>
-        </tbody>
-        <tbody class="no_results" v-else>
-          <tr>
-            <td :colspan="rowCount">No Result(s) Found.</td>
-          </tr>
-        </tbody>
-      </table>
-      <pagination
-        :apiRoute="`${res.classHistory.path}?classHistoryStatus=${classesHistoryStatus}&paginate=1`"
-        :current="res.classHistory.current_page"
-        :last="res.classHistory.last_page"
-      />
-    </div>
-    <div v-if="type == 'transactions' && loaded">
-      <table class="cms_table_accordion">
-        <thead>
-          <tr>
-            <th>Transaction Date</th>
-            <th>Studio</th>
-            <th>Total Qty.</th>
-            <th>Payment Method</th>
-            <th>Total Price</th>
-            <th>Transaction By</th>
-            <th>Status</th>
-            <th>Comp Reason</th>
-            <th>Note</th>
-            <th>Remarks</th>
-          </tr>
-        </thead>
-        <tbody
-          :class="`tbp ${data.open ? 'toggled' : ''} ${
-            getTransactionType(data, 'status') == 'paid' ? 'alt' : ''
-          }`"
-          v-for="(data, key) in res.data"
-          v-if="res.data.length > 0"
-        >
-          <tr class="parent alt">
-            <td class="toggler" @click.self="toggleAccordion($event, key)">
-              {{ getTransactionType(data, 'transaction_date') }}
-            </td>
-            <td>{{ getTransactionType(data, 'studio') }}</td>
-            <td>{{ getTransactionType(data, 'quantity') }}</td>
-            <td class="capitalize">{{ getTransactionType(data, 'method') }}</td>
-            <td
-              :class="`${
-                getTransactionType(data, 'status') == 'pending' ? 'red' : ''
-              }`"
-            >
-              Php {{ getTransactionType(data, 'price') }}
-            </td>
-            <td>{{ getTransactionType(data, 'employee') }}</td>
-            <td>
-              <div class="table_actions">
-                <div
-                  :class="`action_status ${
-                    getTransactionType(data, 'status') == 'paid'
-                      ? 'green'
-                      : 'red'
-                  }`"
-                >
-                  {{
-                    getTransactionType(data, 'status') == 'paid'
-                      ? 'Paid'
-                      : 'Pending'
-                  }}
+                    Shared
                 </div>
                 <div
-                  class="action_status ml gray"
-                  v-if="getTransactionType(data, 'refund') != 'none'"
+                    :class="`status ${
+                        packageStatus == 'frozen' ? 'active' : ''
+                    }`"
+                    @click="togglePackages('frozen')"
                 >
-                  {{
-                    getTransactionType(data, 'refund') == 'fully-refunded'
-                      ? 'Fully Refunded'
-                      : 'Partially Refunded'
-                  }}
+                    Frozen
                 </div>
                 <div
-                  class="table_action_edit link"
-                  @click="toggleForm(data.id)"
-                  v-if="getTransactionType(data, 'status') == 'pending'"
+                    :class="`status ${
+                        packageStatus == 'expired' ? 'active' : ''
+                    }`"
+                    @click="togglePackages('expired')"
                 >
-                  Pay Now
+                    Expired
                 </div>
-              </div>
-            </td>
-            <td>{{ getTransactionType(data, 'comp_reason') }}</td>
-            <td>{{ getTransactionType(data, 'note') }}</td>
-            <td>{{ getTransactionType(data, 'remarks') }}</td>
-          </tr>
-          <tr v-if="!data.is_recurrence">
-            <td class="pads" :colspan="rowCount">
-              <div class="accordion_table">
-                <table class="cms_table">
-                  <thead>
-                    <tr>
-                      <th>Reference Number</th>
-                      <th>Item</th>
-                      <th>Category</th>
-                      <th>Qty</th>
-                      <th>Price</th>
-                      <th>Refund Type</th>
-                      <th>Refunder</th>
-                      <th>Remarks</th>
-                      <th v-if="data.status == 'paid'">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody v-if="data.payment_items.length > 0">
-                    <tr v-for="(item, key) in data.payment_items" :key="key">
-                      <td>{{ getPaymentCode(data) }}</td>
-                      <td>{{ getPaymentItem(item, 'name') }}</td>
-                      <td>
-                        {{
-                          item.product_variant
-                            ? item.product_variant.product.category.name
-                            : 'N/A'
-                        }}
-                      </td>
-                      <td>{{ item.quantity }}</td>
-                      <td class="price">
-                        <p
-                          :class="`${
-                            item.applied_promo == 1 ? 'prev_price' : ''
-                          }`"
-                          v-if="item.applied_promo == 1"
-                        >
-                          PHP
-                          {{ totalCount(item.price_per_item * item.quantity) }}
-                        </p>
-                        <p>
-                          PHP
-                          {{
-                            totalCount(
-                              item.applied_promo == 1
-                                ? item.discounted_price
-                                : item.price_per_item * item.quantity
-                            )
-                          }}
-                        </p>
-                      </td>
-                      <td class="alt_2">
-                        {{
-                          item.refund_type ? replacer(item.refund_type) : 'N/A'
-                        }}
-                      </td>
-                      <td>
-                        {{ item.refunder ? item.refunder.fullname : 'N/A' }}
-                      </td>
-                      <td>
-                        {{ item.refund_remarks ? item.refund_remarks : 'N/A' }}
-                      </td>
-                      <td v-if="data.status == 'paid'">
-                        <div
-                          class="table_actions"
-                          v-if="item.type != 'store-credit'"
-                        >
-                          <div
-                            class="table_action_cancel link"
-                            @click="toggleRefund(data, item)"
-                            v-if="checkRefund(data, item) != 'expired'"
-                          >
-                            Refund
-                          </div>
-                          <div
-                            class="table_action_cancel disabled link"
-                            v-else-if="checkRefund(data, item) == 'refundable'"
-                          >
-                            {{
-                              data.payment_method.method != 'comp'
-                                ? 'Refunded'
-                                : 'Non-refundable'
-                            }}
-                          </div>
-                          <div class="" v-else>N/A</div>
-                        </div>
-                        <div class="table_actions" v-else>
-                          <div class="table_action_cancel disabled link">
-                            Non-refundable
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody class="no_results" v-else>
-                    <tr>
-                      <td :colspan="rowCount">No Result(s) Found.</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </td>
-          </tr>
-          <tr v-else>
-            <td class="pads" :colspan="rowCount">
-              <div class="accordion_table">
-                <table class="cms_table">
-                  <thead>
-                    <tr>
-                      <th>Reference Number</th>
-                      <th>Item</th>
-                      <th>Qty</th>
-                      <th>Price</th>
-                      <th>Refund Type</th>
-                      <th>Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        {{ getTransactionType(data, 'reference_number') }}
-                      </td>
-                      <td>{{ getTransactionType(data, 'products') }}</td>
-                      <td>{{ getTransactionType(data, 'quantity') }}</td>
-                      <td class="price">
-                        <template v-if="data.duplicated">
-                          <p>
-                            PHP
-                            {{
-                              totalCount(
-                                data.payment_item.price_per_item *
-                                  data.payment_item.quantity
-                              )
-                            }}
-                          </p>
-                        </template>
-                        <template v-else>
-                          <p
-                            :class="`${
-                              data.payment_item.payment.promo_code_used !== null
-                                ? 'prev_price'
-                                : ''
-                            }`"
-                            v-if="
-                              data.payment_item.payment.promo_code_used !== null
-                            "
-                          >
-                            PHP
-                            {{
-                              totalCount(
-                                data.payment_item.price_per_item *
-                                  data.payment_item.quantity
-                              )
-                            }}
-                          </p>
-                          <p>
-                            PHP
-                            {{
-                              totalCount(
-                                data.payment_item.payment.promo_code_used !=
-                                  null
-                                  ? data.payment_item.total
-                                  : parseFloat(
-                                      data.payment_item.price_per_item
-                                    ) * data.payment_item.quantity
-                              )
-                            }}
-                          </p>
-                        </template>
-                      </td>
-                      <td class="alt_2">
-                        {{
-                          data.payment_item.refund_type
-                            ? replacer(data.payment_item.refund_type)
-                            : 'N/A'
-                        }}
-                      </td>
-                      <td>
-                        {{
-                          data.payment_item.refund_remarks
-                            ? data.payment_item.refund_remarks
-                            : 'N/A'
-                        }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-        <tbody class="no_results" v-if="res.data.length == 0">
-          <tr>
-            <td :colspan="rowCount">No Result(s) Found.</td>
-          </tr>
-        </tbody>
-      </table>
-      <pagination
-        :apiRoute="`api/customers/${$route.params.param}/${$route.params.slug}`"
-        :current="res.current_page"
-        :last="res.last_page"
-        :total="res.total"
-      />
-      <button
-        type="button"
-        class="hidden"
-        id="transactions"
-        @click="populateTransactions()"
-      ></button>
-    </div>
-    <div v-if="type == 'details' && loaded">
-      <div id="default_form">
-        <div class="cta" v-if="user.staff_details.role_id == 1">
-          <nuxt-link
-            :to="`/customers/${value.id}/update`"
-            class="action_btn alternate"
-          >
-            Edit Details
-          </nuxt-link>
-        </div>
-        <div class="form_wrapper">
-          <div class="form_header_wrapper">
-            <h2 class="form_title">Customer Overview</h2>
-            <div class="form_check toggler">
-              <input
-                type="hidden"
-                id="enabled"
-                name="enabled"
-                class="action_check"
-                :value="value.enabled ? 1 : 0"
-              />
-              <div
-                :class="`toggle alt ${value.enabled ? 'active' : ''}`"
-                @click="toggledPrompt(value)"
-              ></div>
-              <label for="enabled">
-                {{ value.enabled ? 'Activated' : 'Deactivated' }}
-              </label>
             </div>
-          </div>
-          <div class="form_overview">
-            <div class="wrapper">
-              <label>Username/Member ID</label>
-              <p>{{ value.member_id }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Name</label>
-              <p>{{ value.first_name }} {{ value.last_name }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Email</label>
-              <p>{{ value.email }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Phone Number</label>
-              <p>{{ value.customer_details.co_contact_number }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Birthdate</label>
-              <p>
-                {{
-                  formatClassDate(value.customer_details.co_birthdate, false)
-                }}
-              </p>
-            </div>
-            <div class="wrapper">
-              <label>Gender</label>
-              <p class="alt">
-                {{ value.customer_details.co_sex == 'M' ? 'Male' : 'Female' }}
-              </p>
-            </div>
-            <div class="wrapper">
-              <label>Occupation</label>
-              <p>{{ value.customer_details.profession }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Shoe Size</label>
-              <p>
-                <b>US</b>
-                - {{ value.customer_details.co_shoe_size }}
-              </p>
-            </div>
-            <div class="wrapper">
-              <label>Dumbbell</label>
-              <p>{{ value.customer_details.dumbbells }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Customer Type</label>
-              <p>{{ value.customer_details.customer_type.name }}</p>
-            </div>
-            <!-- <div class="wrapper">
-          <label>Rewards Membership</label>
-          <p>Black</p>
-        </div> -->
-          </div>
-        </div>
-        <div class="form_wrapper">
-          <div class="form_header_wrapper">
-            <h2 class="form_title">Personal Address</h2>
-          </div>
-          <div class="form_overview">
-            <div class="wrapper">
-              <label>Address Line 1</label>
-              <p>{{ value.customer_details.pa_address }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Address Line 2</label>
-              <p>{{ value.customer_details.pa_address_2 }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Country</label>
-              <p>{{ value.customer_details.personal_country }}</p>
-            </div>
-            <div class="wrapper">
-              <label>State</label>
-              <p>{{ value.customer_details.personal_state }}</p>
-            </div>
-            <div class="wrapper">
-              <label>City</label>
-              <p>{{ value.customer_details.pa_city }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Zip Code</label>
-              <p>{{ value.customer_details.pa_zip_code }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="form_wrapper">
-          <div class="form_header_wrapper">
-            <h2 class="form_title">Billing Address</h2>
-          </div>
-          <div class="form_overview">
-            <div class="wrapper">
-              <label>Address Line 1</label>
-              <p>{{ value.customer_details.ba_address }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Address Line 2</label>
-              <p>{{ value.customer_details.ba_address_2 }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Country</label>
-              <p>{{ value.customer_details.billing_country }}</p>
-            </div>
-            <div class="wrapper">
-              <label>State</label>
-              <p>{{ value.customer_details.billing_state }}</p>
-            </div>
-            <div class="wrapper">
-              <label>City</label>
-              <p>{{ value.customer_details.ba_city }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Zip Code</label>
-              <p>{{ value.customer_details.ba_zip_code }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="form_wrapper">
-          <div class="form_header_wrapper">
-            <h2 class="form_title">Notes/Alerts</h2>
             <button
-              type="button"
-              class="action_btn alternate"
-              @click="saveNotes(value)"
-            >
-              Update
-            </button>
-          </div>
-          <div class="form_main_group">
-            <div class="form_group no_margin">
-              <textarea
-                name="notes"
-                rows="8"
-                id="notes"
-                class="default_text area"
-                placeholder="Enter notes/alerts"
-                v-model="value.customer_details.notes"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-        <div class="form_wrapper" v-if="value.top5Instructors.length > 0">
-          <div class="form_header_wrapper">
-            <h2 class="form_title">Top 5 Instructors</h2>
-          </div>
-          <div class="form_overview_instructor">
-            <div class="left">
-              <div class="image">
-                <img
-                  class="instructor_image"
-                  :src="
-                    value.top5Instructors[0].instructor_details.images[0].path
-                  "
-                />
-                <div class="sequence"><span>1</span></div>
-              </div>
-              <h2>
-                {{ value.top5Instructors[0].first_name }}
-                {{ value.top5Instructors[0].last_name }}
-              </h2>
-              <p>Total Rides: {{ value.top5Instructors[0].bookCount }}</p>
-            </div>
-            <div class="right">
-              <div
-                class="wrapper"
-                v-for="(data, key) in topInstructors"
-                :key="key"
-              >
-                <div class="image">
-                  <img
-                    class="instructor_image"
-                    :src="data.instructor_details.images[0].path"
-                    v-if="data.instructor_details.images[0].path != null"
-                  />
-                  <div class="instructor_image" v-else></div>
-                  <div class="sequence">
-                    <span>{{ key + 2 }}</span>
-                  </div>
+                type="button"
+                class="hidden"
+                id="packages"
+                @click="togglePackages(packageStatus)"
+            ></button>
+            <div class="cms_table_package">
+                <div
+                    class="table_package"
+                    v-for="(data, key) in populatePackages"
+                    :key="key"
+                    v-if="packageCount > 0 && !data.expired"
+                >
+                    <div class="package_title">
+                        <div class="p_inline">
+                            {{ data.class_package.name }}
+                            <template v-if="packageStatus != 'frozen'">
+                                <span
+                                    class="warning"
+                                    v-if="
+                                        parseInt(
+                                            $moment(
+                                                data.computed_expiration_date !=
+                                                    null
+                                                    ? data.computed_expiration_date
+                                                    : data.expiry_date_if_not_activated
+                                            ).diff($moment())
+                                        ) < 0 && packageStatus != 'expired'
+                                    "
+                                >
+                                    {{ checkViolator(data, 'warning') }}
+                                </span>
+                            </template>
+                            <span
+                                :class="[
+                                    $route.params.param == data.user_id
+                                        ? 'shared'
+                                        : 'pink'
+                                ]"
+                                v-if="data.shares_count > 0"
+                            >
+                                {{ checkViolator(data, 'shared') }}
+                            </span>
+                            <span class="frozen" v-if="data.frozen">
+                                Frozen
+                            </span>
+                        </div>
+                        <div class="p_label">
+                            Reference Number:
+                            <b>{{ getPaymentCode(data.payment) }}</b>
+                        </div>
+                    </div>
+                    <div class="package_details">
+                        <div class="package_status">
+                            <div class="box">
+                                <div class="overlay">
+                                    <p>
+                                        {{
+                                            parseInt(
+                                                data.original_package_count
+                                            ) - parseInt(data.count)
+                                        }}
+                                    </p>
+                                    <label>Used</label>
+                                </div>
+                            </div>
+                            <div class="box margin">
+                                <div class="overlay">
+                                    <p>
+                                        {{
+                                            data.class_package
+                                                .class_count_unlimited == 1
+                                                ? 'Unlimited'
+                                                : parseInt(data.count) ==
+                                                    data.original_package_count
+                                                ? parseInt(
+                                                    data.original_package_count
+                                                )
+                                                : parseInt(data.count)
+                                        }}
+                                    </p>
+                                    <label>Available</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="package_date">
+                            <div class="date">
+                                <p>
+                                    {{ formatDate(data.created_at, false) }} /
+                                    {{
+                                        data.activation_date != 'NA'
+                                            ? formatDate(
+                                                data.activation_date,
+                                                false
+                                            )
+                                            : 'N/A'
+                                    }}
+                                </p>
+                                <label>Purchase Date / Activation Date</label>
+                            </div>
+                            <template v-if="data.cancelled_subscription_at">
+                                <div class="date margin">
+                                    <p>
+                                        {{
+                                            formatDate(
+                                                data.cancelled_subscription_at,
+                                                false
+                                            )
+                                        }}
+                                    </p>
+                                    <label>Cancellation Date</label>
+                                </div>
+                            </template>
+                            <div class="date margin">
+                                <p>
+                                    {{
+                                        data.computed_expiration_date
+                                            ? formatDate(
+                                                data.computed_expiration_date,
+                                                false
+                                            )
+                                        : formatDate(
+                                                data.expiry_date_if_not_activated,
+                                                false
+                                            )
+                                    }}
+                                </p>
+                                <label>
+                                    Termination/Expiry date
+                                    <a
+                                        href="javascript:void(0)"
+                                        class="expiry_btn"
+                                        @click="
+                                            togglePackageAction(data, 'expiry')
+                                        "
+                                        v-if="!data.class_package.recurring"
+                                    >
+                                        Edit
+                                    </a>
+                                </label>
+                            </div>
+                        </div>
+                        <div
+                            class="package_action"
+                            v-if="packageStatus != 'expired'"
+                        >
+                            <template
+                                v-if="
+                                    $store.state.user.staff_details.role_id == 1
+                                "
+                            >
+                                <div>
+                                    <a
+                                        :href="`/customers/${$route.params.param}/packages/${data.id}/logs`"
+                                        target="_blank"
+                                        class="action_btn"
+                                    >
+                                        Package Logs
+                                    </a>
+                                </div>
+                            </template>
+                            <div
+                                v-if="!data.frozen"
+                                class="action_success_btn"
+                                @click="getCurrentCustomer()"
+                            >
+                                Book a Class
+                            </div>
+                            <template
+                                v-if="data.user_id == $route.params.param"
+                            >
+                                <div
+                                    class="package_options"
+                                    :class="{ no_margin: data.frozen }"
+                                    v-if="
+                                        data.class_package
+                                            .por_allow_transferring_of_package ||
+                                        data.class_package
+                                            .por_allow_sharing_of_package ||
+                                        data.class_package
+                                            .por_allow_freezing_of_package ||
+                                        data.subscription_status
+                                    "
+                                >
+                                    <div
+                                        class="option_btn"
+                                        :id="`option_${key}`"
+                                        @click.self="toggledOption($event)"
+                                    >
+                                        Options
+                                    </div>
+                                    <div class="option_selector">
+                                        <div
+                                            v-if="
+                                                !data.class_package.recurring &&
+                                                !data.class_package
+                                                    .class_count_unlimited
+                                            "
+                                            class="option_link"
+                                            @click="
+                                                togglePackageAction(
+                                                    data,
+                                                    'edit'
+                                                )
+                                            "
+                                        >
+                                            Edit Package Credit
+                                        </div>
+
+                                        <div
+                                            v-if="
+                                                data.class_package
+                                                    .por_allow_transferring_of_package &&
+                                                !data.frozen &&
+                                                !data.shares_count
+                                            "
+                                            class="option_link"
+                                            @click="
+                                                togglePackageAction(
+                                                    data,
+                                                    'transfer'
+                                                )
+                                            "
+                                        >
+                                            Transfer Package
+                                        </div>
+
+                                        <div
+                                            v-if="
+                                                data.class_package
+                                                    .por_allow_sharing_of_package &&
+                                                !data.class_package.recurring &&
+                                                data.shares_count !=
+                                                    data.class_package
+                                                        .max_package_sharing
+                                            "
+                                            class="option_link"
+                                            @click="
+                                                togglePackageAction(
+                                                    data,
+                                                    'share'
+                                                )
+                                            "
+                                        >
+                                            Share Package
+                                        </div>
+
+                                        <div
+                                            v-if="
+                                                data.class_package
+                                                    .por_allow_sharing_of_package &&
+                                                !data.class_package.recurring &&
+                                                data.shares_count > 0
+                                            "
+                                            class="option_link"
+                                            @click="
+                                                togglePackageAction(
+                                                    data,
+                                                    'unshare'
+                                                )
+                                            "
+                                        >
+                                            Unshare Package
+                                        </div>
+
+                                        <div
+                                            v-if="
+                                                data.class_package
+                                                    .por_allow_freezing_of_package &&
+                                                !data.class_package.recurring
+                                            "
+                                            class="option_link"
+                                            @click="
+                                                togglePackageAction(
+                                                    data,
+                                                    'freeze'
+                                                )
+                                            "
+                                        >
+                                            {{
+                                                data.frozen
+                                                    ? 'Unfreeze'
+                                                    : 'Freeze'
+                                            }}
+                                            Package
+                                        </div>
+
+                                        <div
+                                            v-if="data.class_package.recurring"
+                                            class="option_link red"
+                                            @click="
+                                                togglePackageAction(
+                                                    data,
+                                                    'recurring'
+                                                )
+                                            "
+                                        >
+                                            Cancel Package
+                                        </div>
+
+                                        <div
+                                            v-if="
+                                                data.class_package.recurring ==
+                                                    0 &&
+                                                data.class_package.refundable ==
+                                                    1 &&
+                                                data.payment_item != null &&
+                                                data.payment_item.refunded ==
+                                                    0 &&
+                                                data.count ==
+                                                    data.original_package_count
+                                            "
+                                            class="option_link red"
+                                            @click="
+                                                togglePackageAction(
+                                                    data,
+                                                    'refund'
+                                                )
+                                            "
+                                        >
+                                            Refund Package
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="package_action" v-else>
+                            <div
+                                class="action_cancel_btn none"
+                                v-if="data.no_count"
+                            >
+                                Consumed
+                            </div>
+                            <div
+                                class="action_cancel_btn none"
+                                v-else-if="!data.no_count && !data.expired"
+                            >
+                                Expired
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="info">
-                  <h2>{{ data.first_name }} {{ data.last_name }}</h2>
-                  <p>Total Rides: {{ data.bookCount }}</p>
+                <div class="no_results" v-if="packageCount == 0">
+                    No Package(s) Found.
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
+        <div v-if="type == 'badges' && loaded">
+            <div class="cms_col_five">
+                <div
+                    :class="`cms_col ${badge.earned_on != null ? '' : 'not'}`"
+                    v-for="(badge, key) in value.badges"
+                    :key="key"
+                >
+                    <div class="badge"><img :src="badge.badge_image" /></div>
+                    <div class="info">
+                        <h2>{{ badge.description }}</h2>
+                        <p v-if="badge.earned_on != null">
+                            Earned on:
+                            {{ formatClassDate(badge.earned_on, false) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="type == 'upcoming-classes' && loaded">
+            <button
+                type="button"
+                class="hidden"
+                id="upcoming_classes"
+                @click="populateUpcomingClasses()"
+            ></button>
+            <table class="cms_table">
+                <thead>
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Bike No.</th>
+                        <th>Class</th>
+                        <th>Studio</th>
+                        <th>Instructor</th>
+                        <th>Guests</th>
+                        <th>Status</th>
+                        <th>Series ID</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody v-if="value.upcomingClasses.length > 0">
+                    <tr v-for="(data, key) in value.upcomingClasses" :key="key">
+                        <td>
+                            <div
+                                class="table_data_link link"
+                                @click="
+                                    toggleLayout(
+                                        data.scheduled_date.schedule.studio.id,
+                                        data.scheduled_date_id
+                                    )
+                                "
+                                v-if="
+                                    !data.scheduled_date.schedule.studio
+                                        .online_class
+                                "
+                            >
+                                {{
+                                    formatClassDate(
+                                        `${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`,
+                                        true
+                                    )
+                                }}
+                            </div>
+                            <div v-else>
+                                {{
+                                    formatClassDate(
+                                        `${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`,
+                                        true
+                                    )
+                                }}
+                            </div>
+                        </td>
+                        <td>
+                            {{
+                                data.scheduled_date.schedule.studio.online_class
+                                    ? '-'
+                                    : data.seat.number
+                            }}
+                        </td>
+                        <td>
+                            {{
+                                data.scheduled_date.schedule.custom_name != null
+                                    ? data.scheduled_date.schedule.custom_name
+                                    : data.scheduled_date.schedule.class_type
+                                          .name
+                            }}
+                        </td>
+                        <td>{{ data.scheduled_date.schedule.studio.name }}</td>
+                        <td>
+                            <div class="thumb">
+                                <img
+                                    :src="
+                                        getInstructorsImageInSchedule(
+                                            data.scheduled_date
+                                        )
+                                    "
+                                />
+                                <div
+                                    class="table_data_link"
+                                    @click="
+                                        openWindow(
+                                            `/instructors/${getInstructorsInSchedule(
+                                                data.scheduled_date,
+                                                'id'
+                                            )}/class-schedules`
+                                        )
+                                    "
+                                >
+                                    {{
+                                        getInstructorsInSchedule(
+                                            data.scheduled_date,
+                                            'name'
+                                        )
+                                    }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div
+                                class="table_select"
+                                v-if="
+                                    data.guestBookings &&
+                                    data.guestBookings.length > 0
+                                "
+                            >
+                                <div
+                                    :id="`table_select_${key}`"
+                                    class="table_select_label"
+                                    @click="toggleGuest($event)"
+                                >
+                                    {{ data.guestBookings.length }} Guests
+                                </div>
+                                <div class="overlay">
+                                    <ul>
+                                        <li
+                                            v-for="(
+                                                subData, key
+                                            ) in data.guestBookings"
+                                            :key="key"
+                                            v-line-clamp="1"
+                                        >
+                                            {{ subData.seat.number }} -
+                                            {{ subData.guest_first_name }}
+                                            {{ subData.guest_last_name }}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p v-else>N/A</p>
+                        </td>
+                        <td class="alt">{{ data.status }}</td>
+                        <td>
+                            <p>{{ data.class_package.name }}</p>
+                            <p class="id">{{ data.class_package.sku_id }}</p>
+                            <p
+                                :class="[
+                                    'table_violator',
+                                    data.shared ? 'pink' : 'blue'
+                                ]"
+                            >
+                                {{ data.shared ? 'Share By' : 'Owned By' }}:
+                                {{ data.user_package_count.user.fullname }}
+                            </p>
+                        </td>
+                        <td>
+                            <div
+                                class="full table_actions"
+                                v-if="data.status == 'reserved'"
+                            >
+                                <div
+                                    class="table_action_success link"
+                                    @click="updateCustomerClass(data, data.id)"
+                                >
+                                    Sign In
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody class="no_results" v-else>
+                    <tr>
+                        <td :colspan="rowCount">No Result(s) Found.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- <pagination :apiRoute="res.customers.path" :current="res.customers.current_page" :last="res.customers.last_page" /> -->
+        </div>
+        <div v-if="type == 'class-history' && loaded">
+            <div class="actions">
+                <div class="total">Total: {{ res.classHistory.total }}</div>
+                <div class="cms_table_toggler">
+                    <div
+                        :class="`status ${
+                            classesHistoryStatus == 'all' ? 'active' : ''
+                        }`"
+                        @click="toggleClassesHistory('all')"
+                    >
+                        All
+                    </div>
+                    <div
+                        :class="`status ${
+                            classesHistoryStatus == 'completed' ? 'active' : ''
+                        }`"
+                        @click="toggleClassesHistory('completed')"
+                    >
+                        Completed
+                    </div>
+                    <div
+                        :class="`status ${
+                            classesHistoryStatus == 'guest' ? 'active' : ''
+                        }`"
+                        @click="toggleClassesHistory('guest')"
+                    >
+                        Guest
+                    </div>
+                    <div
+                        :class="`status ${
+                            classesHistoryStatus == 'no-show' ? 'active' : ''
+                        }`"
+                        @click="toggleClassesHistory('no-show')"
+                    >
+                        No Show
+                    </div>
+                    <div
+                        :class="`status ${
+                            classesHistoryStatus == 'cancelled' ? 'active' : ''
+                        }`"
+                        @click="toggleClassesHistory('cancelled')"
+                    >
+                        Cancelled
+                    </div>
+                    <div
+                        :class="`status ${
+                            classesHistoryStatus == 'late-cancelled'
+                                ? 'active'
+                                : ''
+                        }`"
+                        @click="toggleClassesHistory('late-cancelled')"
+                    >
+                        Late Cancelled
+                    </div>
+                </div>
+            </div>
+            <table class="cms_table">
+                <thead>
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Bike No.</th>
+                        <th>Class</th>
+                        <th>Studio</th>
+                        <th>Instructor</th>
+                        <th>Guests</th>
+                        <th>Status</th>
+                        <th>Reference Number</th>
+                        <th>Series ID</th>
+                        <th>Last Action Taken By</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody v-if="value.classHistory.data.length > 0">
+                    <tr v-for="(data, key) in res.classHistory.data" :key="key">
+                        <td>
+                            {{
+                                formatClassDate(
+                                    `${data.scheduled_date.date} ${data.scheduled_date.schedule.start_time}`,
+                                    true
+                                )
+                            }}
+                        </td>
+                        <td>
+                            {{
+                                data.scheduled_date.schedule.studio.online_class
+                                    ? '-'
+                                    : data.seat.number
+                            }}
+                        </td>
+                        <td>
+                            {{ data.scheduled_date.schedule.class_type.name }}
+                        </td>
+                        <td>{{ data.scheduled_date.schedule.studio.name }}</td>
+                        <td>
+                            <div class="thumb">
+                                <img
+                                    :src="
+                                        getInstructorsImageInSchedule(
+                                            data.scheduled_date
+                                        )
+                                    "
+                                />
+                                <div
+                                    class="table_data_link"
+                                    @click="
+                                        openWindow(
+                                            `/instructors/${getInstructorsInSchedule(
+                                                data.scheduled_date,
+                                                'id'
+                                            )}/class-schedules`
+                                        )
+                                    "
+                                >
+                                    {{
+                                        getInstructorsInSchedule(
+                                            data.scheduled_date,
+                                            'name'
+                                        )
+                                    }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div
+                                class="table_select"
+                                v-if="
+                                    data.guestBookings &&
+                                    data.guestBookings.length > 0
+                                "
+                            >
+                                <div
+                                    :id="`table_select_${key}`"
+                                    class="table_select_label"
+                                    @click="toggleGuest($event)"
+                                >
+                                    {{ data.guestBookings.length }} Guests
+                                </div>
+                                <div class="overlay">
+                                    <ul>
+                                        <li
+                                            v-for="(
+                                                subData, key
+                                            ) in data.guestBookings"
+                                            :key="key"
+                                            v-line-clamp="1"
+                                        >
+                                            {{ subData.seat.number }} -
+                                            {{ subData.guest_first_name }}
+                                            {{ subData.guest_last_name }}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p v-else>N/A</p>
+                        </td>
+                        <td class="alt">
+                            <div class="table_actions">
+                                <span>{{ checkStatus(data) }}</span>
+                                <div
+                                    class="action_status ml green"
+                                    v-if="data.is_guest"
+                                >
+                                    GUEST
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {{
+                                getPaymentCode(data.user_package_count.payment)
+                            }}
+                        </td>
+                        <td>
+                            <p>{{ data.class_package.name }}</p>
+                            <p class="id">{{ data.class_package.sku_id }}</p>
+                            <p
+                                :class="[
+                                    'table_violator',
+                                    data.shared ? 'pink' : 'blue'
+                                ]"
+                            >
+                                {{ data.shared ? 'Shared By' : 'Owned By' }}:
+                                {{ data.user_package_count.user.fullname }}
+                            </p>
+                        </td>
+                        <td>
+                            {{
+                                data.employee
+                                    ? data.employee.fullname
+                                    : 'Customer'
+                            }}
+                        </td>
+                        <td>
+                            {{
+                                data.status == 'cancelled' ||
+                                data.status == 'late-cancelled'
+                                    ? $moment(data.deleted_at).format(
+                                          'MMM DD, YYYY hh:mm:ss A'
+                                      )
+                                    : $moment(data.updated_at).format(
+                                          'MMM DD, YYYY hh:mm:ss A'
+                                      )
+                            }}
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody class="no_results" v-else>
+                    <tr>
+                        <td :colspan="rowCount">No Result(s) Found.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <pagination
+                :apiRoute="`${res.classHistory.path}?classHistoryStatus=${classesHistoryStatus}&paginate=1`"
+                :current="res.classHistory.current_page"
+                :last="res.classHistory.last_page"
+            />
+        </div>
+        <div v-if="type == 'transactions' && loaded">
+            <table class="cms_table_accordion">
+                <thead>
+                    <tr>
+                        <th>Transaction Date</th>
+                        <th>Studio</th>
+                        <th>Total Qty.</th>
+                        <th>Payment Method</th>
+                        <th>Total Price</th>
+                        <th>Transaction By</th>
+                        <th>Status</th>
+                        <th>Comp Reason</th>
+                        <th>Note</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody
+                    :class="`tbp ${data.open ? 'toggled' : ''} ${
+                        getTransactionType(data, 'status') == 'paid'
+                            ? 'alt'
+                            : ''
+                    }`"
+                    v-for="(data, key) in res.data"
+                    v-if="res.data.length > 0"
+                >
+                    <tr class="parent alt">
+                        <td
+                            class="toggler"
+                            @click.self="toggleAccordion($event, key)"
+                        >
+                            {{ getTransactionType(data, 'transaction_date') }}
+                        </td>
+                        <td>{{ getTransactionType(data, 'studio') }}</td>
+                        <td>{{ getTransactionType(data, 'quantity') }}</td>
+                        <td class="capitalize">
+                            {{ getTransactionType(data, 'method') }}
+                        </td>
+                        <td
+                            :class="`price ${
+                                getTransactionType(data, 'status') == 'pending'
+                                    ? 'red'
+                                    : ''
+                            }`"
+                        >
+                            <p
+                                class="prev_price"
+                                v-if="
+                                    totalCount(data.total) !=
+                                    totalCount(data.originalTotal)
+                                "
+                            >
+                                PHP {{ totalCount(data.total) }}
+                            </p>
+                            <p>Php {{ getTransactionType(data, 'price') }}</p>
+                        </td>
+                        <td>{{ getTransactionType(data, 'employee') }}</td>
+                        <td>
+                            <div class="table_actions">
+                                <div
+                                    :class="`action_status ${
+                                        getTransactionType(data, 'status') ==
+                                        'paid'
+                                            ? 'green'
+                                            : 'red'
+                                    }`"
+                                >
+                                    {{
+                                        getTransactionType(data, 'status') ==
+                                        'paid'
+                                            ? 'Paid'
+                                            : 'Pending'
+                                    }}
+                                </div>
+                                <div
+                                    class="action_status ml gray"
+                                    v-if="
+                                        getTransactionType(data, 'refund') !=
+                                        'none'
+                                    "
+                                >
+                                    {{
+                                        getTransactionType(data, 'refund') ==
+                                        'fully-refunded'
+                                            ? 'Fully Refunded'
+                                            : 'Partially Refunded'
+                                    }}
+                                </div>
+                                <div
+                                    class="table_action_edit link"
+                                    @click="toggleForm(data.id)"
+                                    v-if="
+                                        getTransactionType(data, 'status') ==
+                                        'pending'
+                                    "
+                                >
+                                    Pay Now
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ getTransactionType(data, 'comp_reason') }}</td>
+                        <td>{{ getTransactionType(data, 'note') }}</td>
+                        <td>{{ getTransactionType(data, 'remarks') }}</td>
+                    </tr>
+                    <tr v-if="!data.is_recurrence">
+                        <td class="pads" :colspan="rowCount">
+                            <div class="accordion_table">
+                                <table class="cms_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Reference Number</th>
+                                            <th>Item</th>
+                                            <th>Category</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th>Refund Type</th>
+                                            <th>Refunder</th>
+                                            <th>Remarks</th>
+                                            <th v-if="data.status == 'paid'">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody v-if="data.payment_items.length > 0">
+                                        <tr
+                                            v-for="(
+                                                item, key
+                                            ) in data.payment_items"
+                                            :key="key"
+                                        >
+                                            <td>{{ getPaymentCode(data) }}</td>
+                                            <td>
+                                                {{
+                                                    getPaymentItem(item, 'name')
+                                                }}
+                                            </td>
+                                            <td>
+                                                {{
+                                                    item.product_variant
+                                                        ? item.product_variant
+                                                              .product.category
+                                                              .name
+                                                        : 'N/A'
+                                                }}
+                                            </td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td class="price">
+                                                <p
+                                                    :class="`${
+                                                        item.applied_promo == 1
+                                                            ? 'prev_price'
+                                                            : ''
+                                                    }`"
+                                                    v-if="
+                                                        item.applied_promo == 1
+                                                    "
+                                                >
+                                                    PHP
+                                                    {{
+                                                        totalCount(
+                                                            item.price_per_item *
+                                                                item.quantity
+                                                        )
+                                                    }}
+                                                </p>
+                                                <p>
+                                                    PHP
+                                                    {{
+                                                        totalCount(
+                                                            item.applied_promo ==
+                                                                1
+                                                                ? item.discounted_price
+                                                                : item.price_per_item *
+                                                                      item.quantity
+                                                        )
+                                                    }}
+                                                </p>
+                                            </td>
+                                            <td class="alt_2">
+                                                {{
+                                                    item.refund_type
+                                                        ? replacer(
+                                                              item.refund_type
+                                                          )
+                                                        : 'N/A'
+                                                }}
+                                            </td>
+                                            <td>
+                                                {{
+                                                    item.refunder
+                                                        ? item.refunder.fullname
+                                                        : 'N/A'
+                                                }}
+                                            </td>
+                                            <td>
+                                                {{
+                                                    item.refund_remarks
+                                                        ? item.refund_remarks
+                                                        : 'N/A'
+                                                }}
+                                            </td>
+                                            <td v-if="data.status == 'paid'">
+                                                <div
+                                                    class="table_actions"
+                                                    v-if="
+                                                        item.type !=
+                                                        'store-credit'
+                                                    "
+                                                >
+                                                    <div
+                                                        class="table_action_cancel link"
+                                                        @click="
+                                                            toggleRefund(
+                                                                data,
+                                                                item
+                                                            )
+                                                        "
+                                                        v-if="
+                                                            checkRefund(
+                                                                data,
+                                                                item
+                                                            ) != 'expired'
+                                                        "
+                                                    >
+                                                        Refund
+                                                    </div>
+                                                    <div
+                                                        class="table_action_cancel disabled link"
+                                                        v-else-if="
+                                                            checkRefund(
+                                                                data,
+                                                                item
+                                                            ) == 'refundable'
+                                                        "
+                                                    >
+                                                        {{
+                                                            data.payment_method
+                                                                .method !=
+                                                            'comp'
+                                                                ? 'Refunded'
+                                                                : 'Non-refundable'
+                                                        }}
+                                                    </div>
+                                                    <div class="" v-else>
+                                                        N/A
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="table_actions"
+                                                    v-else
+                                                >
+                                                    <div
+                                                        class="table_action_cancel disabled link"
+                                                    >
+                                                        Non-refundable
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody class="no_results" v-else>
+                                        <tr>
+                                            <td :colspan="rowCount">
+                                                No Result(s) Found.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-else>
+                        <td class="pads" :colspan="rowCount">
+                            <div class="accordion_table">
+                                <table class="cms_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Reference Number</th>
+                                            <th>Item</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th>Refund Type</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                {{
+                                                    getTransactionType(
+                                                        data,
+                                                        'reference_number'
+                                                    )
+                                                }}
+                                            </td>
+                                            <td>
+                                                {{
+                                                    getTransactionType(
+                                                        data,
+                                                        'products'
+                                                    )
+                                                }}
+                                            </td>
+                                            <td>
+                                                {{
+                                                    getTransactionType(
+                                                        data,
+                                                        'quantity'
+                                                    )
+                                                }}
+                                            </td>
+                                            <td class="price">
+                                                <template
+                                                    v-if="data.duplicated"
+                                                >
+                                                    <p>
+                                                        PHP
+                                                        {{
+                                                            totalCount(
+                                                                data
+                                                                    .payment_item
+                                                                    .price_per_item *
+                                                                    data
+                                                                        .payment_item
+                                                                        .quantity
+                                                            )
+                                                        }}
+                                                    </p>
+                                                </template>
+                                                <template v-else>
+                                                    <p
+                                                        :class="`${
+                                                            data.payment_item
+                                                                .payment
+                                                                .promo_code_used !==
+                                                            null
+                                                                ? 'prev_price'
+                                                                : ''
+                                                        }`"
+                                                        v-if="
+                                                            data.payment_item
+                                                                .payment
+                                                                .promo_code_used !==
+                                                            null
+                                                        "
+                                                    >
+                                                        PHP
+                                                        {{
+                                                            totalCount(
+                                                                data
+                                                                    .payment_item
+                                                                    .price_per_item *
+                                                                    data
+                                                                        .payment_item
+                                                                        .quantity
+                                                            )
+                                                        }}
+                                                    </p>
+                                                    <p>
+                                                        PHP
+                                                        {{
+                                                            totalCount(
+                                                                data
+                                                                    .payment_item
+                                                                    .payment
+                                                                    .promo_code_used !=
+                                                                    null
+                                                                    ? data
+                                                                          .payment_item
+                                                                          .total
+                                                                    : parseFloat(
+                                                                          data
+                                                                              .payment_item
+                                                                              .price_per_item
+                                                                      ) *
+                                                                          data
+                                                                              .payment_item
+                                                                              .quantity
+                                                            )
+                                                        }}
+                                                    </p>
+                                                </template>
+                                            </td>
+                                            <td class="alt_2">
+                                                {{
+                                                    data.payment_item
+                                                        .refund_type
+                                                        ? replacer(
+                                                              data.payment_item
+                                                                  .refund_type
+                                                          )
+                                                        : 'N/A'
+                                                }}
+                                            </td>
+                                            <td>
+                                                {{
+                                                    data.payment_item
+                                                        .refund_remarks
+                                                        ? data.payment_item
+                                                              .refund_remarks
+                                                        : 'N/A'
+                                                }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody class="no_results" v-if="res.data.length == 0">
+                    <tr>
+                        <td :colspan="rowCount">No Result(s) Found.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <pagination
+                :apiRoute="`api/customers/${$route.params.param}/${$route.params.slug}`"
+                :current="res.current_page"
+                :last="res.last_page"
+                :total="res.total"
+            />
+            <button
+                type="button"
+                class="hidden"
+                id="transactions"
+                @click="populateTransactions()"
+            ></button>
+        </div>
+        <div v-if="type == 'details' && loaded">
+            <div id="default_form">
+                <div class="cta" v-if="user.staff_details.role_id == 1">
+                    <nuxt-link
+                        :to="`/customers/${value.id}/update`"
+                        class="action_btn alternate"
+                    >
+                        Edit Details
+                    </nuxt-link>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Customer Overview</h2>
+                        <div class="form_check toggler">
+                            <input
+                                type="hidden"
+                                id="enabled"
+                                name="enabled"
+                                class="action_check"
+                                :value="value.enabled ? 1 : 0"
+                            />
+                            <div
+                                :class="`toggle alt ${
+                                    value.enabled ? 'active' : ''
+                                }`"
+                                @click="toggledPrompt(value)"
+                            ></div>
+                            <label for="enabled">
+                                {{
+                                    value.enabled ? 'Activated' : 'Deactivated'
+                                }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>Username/Member ID</label>
+                            <p>{{ value.member_id }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Name</label>
+                            <p>{{ value.first_name }} {{ value.last_name }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Email</label>
+                            <p>{{ value.email }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Phone Number</label>
+                            <p>
+                                {{ value.customer_details.co_contact_number }}
+                            </p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Birthdate</label>
+                            <p>
+                                {{
+                                    formatClassDate(
+                                        value.customer_details.co_birthdate,
+                                        false
+                                    )
+                                }}
+                            </p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Gender</label>
+                            <p class="alt">
+                                {{
+                                    value.customer_details.co_sex == 'M'
+                                        ? 'Male'
+                                        : 'Female'
+                                }}
+                            </p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Occupation</label>
+                            <p>{{ value.customer_details.profession }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Shoe Size</label>
+                            <p>
+                                <b>US</b>
+                                - {{ value.customer_details.co_shoe_size }}
+                            </p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Dumbbell</label>
+                            <p>{{ value.customer_details.dumbbells }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Customer Type</label>
+                            <p>
+                                {{ value.customer_details.customer_type.name }}
+                            </p>
+                        </div>
+                        <!-- <div class="wrapper">
+                            <label>Rewards Membership</label>
+                            <p>Black</p>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Personal Address</h2>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>Address Line 1</label>
+                            <p>{{ value.customer_details.pa_address }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Address Line 2</label>
+                            <p>{{ value.customer_details.pa_address_2 }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Country</label>
+                            <p>{{ value.customer_details.personal_country }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>State</label>
+                            <p>{{ value.customer_details.personal_state }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>City</label>
+                            <p>{{ value.customer_details.pa_city }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Zip Code</label>
+                            <p>{{ value.customer_details.pa_zip_code }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Billing Address</h2>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>Address Line 1</label>
+                            <p>{{ value.customer_details.ba_address }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Address Line 2</label>
+                            <p>{{ value.customer_details.ba_address_2 }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Country</label>
+                            <p>{{ value.customer_details.billing_country }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>State</label>
+                            <p>{{ value.customer_details.billing_state }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>City</label>
+                            <p>{{ value.customer_details.ba_city }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Zip Code</label>
+                            <p>{{ value.customer_details.ba_zip_code }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Notes/Alerts</h2>
+                        <button
+                            type="button"
+                            class="action_btn alternate"
+                            @click="saveNotes(value)"
+                        >
+                            Update
+                        </button>
+                    </div>
+                    <div class="form_main_group">
+                        <div class="form_group no_margin">
+                            <textarea
+                                name="notes"
+                                rows="8"
+                                id="notes"
+                                class="default_text area"
+                                placeholder="Enter notes/alerts"
+                                v-model="value.customer_details.notes"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="form_wrapper"
+                    v-if="value.top5Instructors.length > 0"
+                >
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Top 5 Instructors</h2>
+                    </div>
+                    <div class="form_overview_instructor">
+                        <div class="left">
+                            <div class="image">
+                                <img
+                                    class="instructor_image"
+                                    :src="
+                                        value.top5Instructors[0]
+                                            .instructor_details.images[0].path
+                                    "
+                                />
+                                <div class="sequence"><span>1</span></div>
+                            </div>
+                            <h2>
+                                {{ value.top5Instructors[0].first_name }}
+                                {{ value.top5Instructors[0].last_name }}
+                            </h2>
+                            <p>
+                                Total Rides:
+                                {{ value.top5Instructors[0].bookCount }}
+                            </p>
+                        </div>
+                        <div class="right">
+                            <div
+                                class="wrapper"
+                                v-for="(data, key) in topInstructors"
+                                :key="key"
+                            >
+                                <div class="image">
+                                    <img
+                                        class="instructor_image"
+                                        :src="
+                                            data.instructor_details.images[0]
+                                                .path
+                                        "
+                                        v-if="
+                                            data.instructor_details.images[0]
+                                                .path != null
+                                        "
+                                    />
+                                    <div class="instructor_image" v-else></div>
+                                    <div class="sequence">
+                                        <span>{{ key + 2 }}</span>
+                                    </div>
+                                </div>
+                                <div class="info">
+                                    <h2>
+                                        {{ data.first_name }}
+                                        {{ data.last_name }}
+                                    </h2>
+                                    <p>Total Rides: {{ data.bookCount }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="type == 'health-waiver' && loaded">
+            <div id="default_form">
+                <div class="cta">
+                    <a
+                        :href="value.health_waiver_link"
+                        class="action_btn alternate"
+                        target="_blank"
+                    >
+                        View Health Waiver Form
+                    </a>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Emergency Information</h2>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>Full Name</label>
+                            <p>{{ value.customer_details.ec_full_name }}</p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Contact Number</label>
+                            <p>
+                                {{ value.customer_details.ec_contact_number }}
+                            </p>
+                        </div>
+                        <div class="wrapper">
+                            <label>Relationship</label>
+                            <p>{{ value.customer_details.ec_relationship }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">Medical History</h2>
+                    </div>
+                    <div class="form_overview">
+                        <div
+                            class="wrapper"
+                            v-for="(data, key) in value.medical_history"
+                            :key="key"
+                        >
+                            <label>{{ data.question }}</label>
+                            <p
+                                :class="`highlight ${
+                                    data.answer == 'Yes' ? 'r' : 'g'
+                                }`"
+                            >
+                                {{ data.answer }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form_wrapper">
+                    <div class="form_header_wrapper">
+                        <h2 class="form_title">
+                            If you have marked YES to any of the above, please
+                            elaborate
+                        </h2>
+                    </div>
+                    <div class="form_overview">
+                        <div class="wrapper">
+                            <label>
+                                {{
+                                    value.health_waiver_text_answer
+                                        ? value.health_waiver_text_answer.body
+                                        : 'N/A'
+                                }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <transition name="fade">
+            <customer-pending-quick-sale
+                :value="transaction"
+                v-if="$store.state.customerPendingQuickSaleStatus"
+            />
+        </transition>
+        <transition name="fade">
+            <customer-prompt
+                :status="promptMessage"
+                ref="enabled"
+                v-if="$store.state.customerPromptStatus"
+            />
+        </transition>
+        <transition name="fade">
+            <package-action-prompt
+                :message="packagePromptMessage"
+                :type="packagePromptType"
+                v-if="$store.state.packageActionPromptStatus"
+            />
+        </transition>
+        <transition name="fade">
+            <package-action
+                :userPackageCountId="userPackageCountId"
+                :type="packageActionType"
+                v-if="$store.state.packageActionStatus"
+            />
+        </transition>
+        <transition name="fade">
+            <package-action-validate
+                :userPackageCountId="userPackageCountId"
+                v-if="$store.state.packageActionValidateStatus"
+            />
+        </transition>
+        <transition name="fade">
+            <package-edit-expiry-prompt
+                :data="expiryData"
+                v-if="$store.state.editPackageExpiryStatus"
+            />
+        </transition>
+        <transition name="fade">
+            <package-share-confirmation
+                :data="shareData"
+                v-if="$store.state.packageShareConfirmationStatus"
+            />
+        </transition>
+        <transition name="fade">
+            <refund
+                :payment="payment"
+                :paymentItemId="paymentItemId"
+                v-if="$store.state.refundStatus"
+            />
+        </transition>
+        <transition name="fade">
+            <recurring-refund
+                v-if="recurring"
+                :user_package_count="recur.user_package_count"
+            />
+        </transition>
+        <transition name="fade">
+            <recurring-cancel-success v-if="recurring_cancel" />
+        </transition>
     </div>
-    <div v-if="type == 'health-waiver' && loaded">
-      <div id="default_form">
-        <div class="cta">
-          <a
-            :href="value.health_waiver_link"
-            class="action_btn alternate"
-            target="_blank"
-          >
-            View Health Waiver Form
-          </a>
-        </div>
-        <div class="form_wrapper">
-          <div class="form_header_wrapper">
-            <h2 class="form_title">Emergency Information</h2>
-          </div>
-          <div class="form_overview">
-            <div class="wrapper">
-              <label>Full Name</label>
-              <p>{{ value.customer_details.ec_full_name }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Contact Number</label>
-              <p>{{ value.customer_details.ec_contact_number }}</p>
-            </div>
-            <div class="wrapper">
-              <label>Relationship</label>
-              <p>{{ value.customer_details.ec_relationship }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="form_wrapper">
-          <div class="form_header_wrapper">
-            <h2 class="form_title">Medical History</h2>
-          </div>
-          <div class="form_overview">
-            <div
-              class="wrapper"
-              v-for="(data, key) in value.medical_history"
-              :key="key"
-            >
-              <label>{{ data.question }}</label>
-              <p :class="`highlight ${data.answer == 'Yes' ? 'r' : 'g'}`">
-                {{ data.answer }}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="form_wrapper">
-          <div class="form_header_wrapper">
-            <h2 class="form_title">
-              If you have marked YES to any of the above, please elaborate
-            </h2>
-          </div>
-          <div class="form_overview">
-            <div class="wrapper">
-              <label>
-                {{
-                  value.health_waiver_text_answer
-                    ? value.health_waiver_text_answer.body
-                    : 'N/A'
-                }}
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <transition name="fade">
-      <customer-pending-quick-sale
-        :value="transaction"
-        v-if="$store.state.customerPendingQuickSaleStatus"
-      />
-    </transition>
-    <transition name="fade">
-      <customer-prompt
-        :status="promptMessage"
-        ref="enabled"
-        v-if="$store.state.customerPromptStatus"
-      />
-    </transition>
-    <transition name="fade">
-      <package-action-prompt
-        :message="packagePromptMessage"
-        :type="packagePromptType"
-        v-if="$store.state.packageActionPromptStatus"
-      />
-    </transition>
-    <transition name="fade">
-      <package-action
-        :userPackageCountId="userPackageCountId"
-        :type="packageActionType"
-        v-if="$store.state.packageActionStatus"
-      />
-    </transition>
-    <transition name="fade">
-      <package-action-validate
-        :userPackageCountId="userPackageCountId"
-        v-if="$store.state.packageActionValidateStatus"
-      />
-    </transition>
-    <transition name="fade">
-      <package-edit-expiry-prompt
-        :data="expiryData"
-        v-if="$store.state.editPackageExpiryStatus"
-      />
-    </transition>
-    <transition name="fade">
-      <package-share-confirmation
-        :data="shareData"
-        v-if="$store.state.packageShareConfirmationStatus"
-      />
-    </transition>
-    <transition name="fade">
-      <refund
-        :payment="payment"
-        :paymentItemId="paymentItemId"
-        v-if="$store.state.refundStatus"
-      />
-    </transition>
-    <transition name="fade">
-      <recurring-refund
-        v-if="recurring"
-        :user_package_count="recur.user_package_count"
-      />
-    </transition>
-    <transition name="fade">
-      <recurring-cancel-success v-if="recurring_cancel" />
-    </transition>
-  </div>
 </template>
 
 <script>
-  import CustomerPrompt from '../components/modals/CustomerPrompt'
-  import CustomerPendingQuickSale from '../components/modals/CustomerPendingQuickSale'
-  import PackageAction from '../components/modals/PackageAction'
-  import PackageActionPrompt from '../components/modals/PackageActionPrompt'
-  import PackageActionValidate from '../components/modals/PackageActionValidate'
-  import PackageEditExpiryPrompt from '../components/modals/PackageEditExpiryPrompt'
-  import PackageShareConfirmation from '../components/modals/PackageShareConfirmation'
-  import Refund from '../components/modals/Refund'
-  import RecurringRefund from '../components/modals/RecurringRefund'
-  import RecurringCancelSuccess from '../components/modals/RecurringCancelSuccess'
-  import Pagination from '../components/Pagination'
+    import CustomerPrompt from '../components/modals/CustomerPrompt'
+    import CustomerPendingQuickSale from '../components/modals/CustomerPendingQuickSale'
+    import PackageAction from '../components/modals/PackageAction'
+    import PackageActionPrompt from '../components/modals/PackageActionPrompt'
+    import PackageActionValidate from '../components/modals/PackageActionValidate'
+    import PackageEditExpiryPrompt from '../components/modals/PackageEditExpiryPrompt'
+    import PackageShareConfirmation from '../components/modals/PackageShareConfirmation'
+    import Refund from '../components/modals/Refund'
+    import RecurringRefund from '../components/modals/RecurringRefund'
+    import RecurringCancelSuccess from '../components/modals/RecurringCancelSuccess'
+    import Pagination from '../components/Pagination'
 
-  export default {
-    components: {
-      CustomerPrompt,
-      CustomerPendingQuickSale,
-      PackageAction,
-      PackageActionPrompt,
-      PackageActionValidate,
-      PackageEditExpiryPrompt,
-      PackageShareConfirmation,
-      Refund,
-      RecurringRefund,
-      RecurringCancelSuccess,
-      Pagination
-    },
-    props: {
-      type: {
-        type: String,
-        default: 'packages'
-      },
-      value: {
-        default: null
-      }
-    },
-    data() {
-      return {
-        payment: [],
-        paymentItemId: 0,
-        expiryData: [],
-        shareData: [],
-        packageCount: 0,
-        tempData: null,
-        methodType: '',
-        packageActionType: '',
-        packagePromptType: '',
-        packagePromptMessage: '',
-        userPackageCountId: 0,
-        rowCount: 0,
-        promptMessage: '',
-        isActivated: true,
-        recurring: false,
-        recurring_cancel: false,
-        recur: {
-          user_package_count: null,
-          type: 1
+    export default {
+        components: {
+            CustomerPrompt,
+            CustomerPendingQuickSale,
+            PackageAction,
+            PackageActionPrompt,
+            PackageActionValidate,
+            PackageEditExpiryPrompt,
+            PackageShareConfirmation,
+            Refund,
+            RecurringRefund,
+            RecurringCancelSuccess,
+            Pagination
         },
-        loaded: false,
-        violatorClass: '',
-        violator: {
-          warning: 0,
-          shared: 0,
-          transferred: 0,
-          freeze: 0
-        },
-        packageStatus: 'all',
-        classesHistoryStatus: 'all',
-        user: {
-          staff_details: {
-            role_id: 0
-          }
-        },
-        form: {
-          notes: ''
-        },
-        res: [],
-        transaction: []
-      }
-    },
-    computed: {
-      topInstructors() {
-        const me = this
-        let results = []
-        let ctr = 0
-        me.value.top5Instructors.forEach((data, index) => {
-          if (index != 0) {
-            if (ctr < 4) {
-              results.push(data)
-              ctr++
+        props: {
+            type: {
+                type: String,
+                default: 'packages'
+            },
+            value: {
+                default: null
             }
-          }
-        })
-        if (ctr <= 4) {
-          for (let i = 0; i < 4 - ctr; i++) {
-            results.push({
-              bookCount: 0,
-              first_name: '-',
-              last_name: '-',
-              instructor_details: {
-                images: [
-                  {
-                    path: null
-                  }
-                ]
-              }
-            })
-          }
-        }
-        return results
-      },
-      populatePackages() {
-        const me = this
-        let result = []
-        me.packageCount = 0
-        if (me.$route.params.slug == 'packages') {
-          let current = me.$moment()
-          if (me.packageStatus != 'expired') {
-            if (me.packageStatus == 'subscribe') {
-              me.res.user_package_counts.forEach((element, index) => {
-                let expiry = me.$moment(
-                  element.computed_expiration_date != null
-                    ? element.computed_expiration_date
-                    : element.expiry_date_if_not_activated
-                )
-                if (element.paypal_subscription_id) {
-                  if (parseInt(expiry.diff(current)) > 0 && element.count > 0) {
-                    element.expired = false
-                    if (element.count > 0) {
-                      me.packageCount++
+        },
+        data() {
+            return {
+                payment: [],
+                paymentItemId: 0,
+                expiryData: [],
+                shareData: [],
+                packageCount: 0,
+                tempData: null,
+                methodType: '',
+                packageActionType: '',
+                packagePromptType: '',
+                packagePromptMessage: '',
+                userPackageCountId: 0,
+                rowCount: 0,
+                promptMessage: '',
+                isActivated: true,
+                recurring: false,
+                recurring_cancel: false,
+                recur: {
+                    user_package_count: null,
+                    type: 1
+                },
+                loaded: false,
+                violatorClass: '',
+                violator: {
+                    warning: 0,
+                    shared: 0,
+                    transferred: 0,
+                    freeze: 0
+                },
+                packageStatus: 'all',
+                classesHistoryStatus: 'all',
+                user: {
+                    staff_details: {
+                        role_id: 0
                     }
-                  } else {
-                    element.expired = true
-                  }
-                } else {
-                  element.expired = true
-                }
-                result.push(element)
-              })
-            } else {
-              me.res.user_package_counts.forEach((element, index) => {
-                let expiry = me.$moment(
-                  element.computed_expiration_date != null
-                    ? element.computed_expiration_date
-                    : element.expiry_date_if_not_activated
-                )
-                if (me.packageStatus == 'frozen') {
-                  element.expired = false
-                  me.packageCount++
-                  result.push(element)
-                } else {
-                  if (!element.frozen) {
-                    if (!element.paypal_subscription_id) {
-                      if (
-                        parseInt(expiry.diff(current)) > 0 &&
-                        element.count > 0
-                      ) {
-                        element.expired = false
-                        if (element.count > 0) {
-                          me.packageCount++
+                },
+                form: {
+                    notes: ''
+                },
+                res: [],
+                transaction: []
+            }
+        },
+        computed: {
+            topInstructors() {
+                const me = this
+                let results = []
+                let ctr = 0
+                me.value.top5Instructors.forEach((data, index) => {
+                    if (index != 0) {
+                        if (ctr < 4) {
+                            results.push(data)
+                            ctr++
                         }
-                      } else {
-                        element.expired = true
-                      }
-                    } else {
-                      element.expired = true
                     }
-                    result.push(element)
-                  }
-                }
-              })
-            }
-          } else {
-            me.res.user_package_counts.forEach((element, index) => {
-              let expiry = me.$moment(
-                element.computed_expiration_date != null
-                  ? element.computed_expiration_date
-                  : element.expiry_date_if_not_activated
-              )
-              if (!element.paypal_subscription_id) {
-                if (parseInt(expiry.diff(current)) <= 0) {
-                  element.expired = false
-                  me.packageCount++
-                } else {
-                  if (element.count <= 0) {
-                    me.packageCount++
-                    element.expired = false
-                    element.no_count = true
-                  } else {
-                    element.expired = true
-                  }
-                }
-              } else {
-                element.expired = true
-              }
-              result.push(element)
-            })
-          }
-        }
-        return result
-      }
-    },
-    methods: {
-      getTransactionType(data, type) {
-        const me = this
-        let result = ''
-
-        if (data.is_recurrence) {
-          switch (type) {
-            case 'reference_number':
-              result = data.transaction_id
-              break
-            case 'method':
-              switch (data.payment_item.payment_method.method) {
-                case 'gc_code':
-                  result = 'Gift Card'
-                  break
-                case 'debit-card':
-                  result = 'Debit Card'
-                  break
-                case 'credit-card':
-                  result = 'Credit Card'
-                  break
-                case 'store-credits':
-                  result = 'Store Credits'
-                  break
-                case 'gcash':
-                  result = 'GCash'
-                  break
-                case 'class_pass':
-                  result = 'ClassPass'
-                  break
-                case 'third_party_platform':
-                  result = 'Third Party Platform'
-                  break
-                default:
-                  result = data.payment_item.payment_method.method
-                  break
-              }
-              break
-            case 'transaction_date':
-              result = me
-                .$moment(data.updated_at)
-                .format('MMMM DD, YYYY hh:mm A')
-              break
-            case 'products':
-              result = data.user_package_count.class_package.name
-              break
-            case 'quantity':
-              result = data.payment_item.quantity
-              break
-            case 'price':
-              if (data.duplicated) {
-                result = me.totalCount(
-                  data.payment_item.price_per_item * data.payment_item.quantity
-                )
-              } else {
-                result = me.totalCount(data.payment_item.payment.total)
-              }
-              break
-            case 'status':
-              result = data.payment_item.payment.status
-              break
-            case 'studio':
-              if (data.payment_item.payment.studio) {
-                result = data.payment_item.payment.studio.name
-              } else {
-                result = 'Website/App'
-              }
-              break
-            case 'refund':
-              result = data.payment_item.payment.refund_status
-              break
-            case 'employee':
-              if (data.payment_item.payment.employee) {
-                result = data.payment_item.payment.employee.fullname
-              } else {
-                result = 'Customer'
-              }
-              break
-            case 'comp_reason':
-              if (data.payment_item.payment_method.comp_reason) {
-                result = data.payment_item.payment_method.comp_reason
-              } else {
-                result = 'N/A'
-              }
-              break
-            case 'note':
-              if (data.payment_item.payment_method.note) {
-                result = data.payment_item.payment_method.note
-              } else {
-                result = 'N/A'
-              }
-              break
-            case 'remarks':
-              if (data.payment_item.payment_method.remarks) {
-                if (
-                  data.payment_item.payment.studio == null &&
-                  data.payment_item.payment_method.method == 'cash'
-                ) {
-                  if (data.payment_item.payment_method.remarks != null) {
-                    result = data.payment_item.payment_method.remarks
-                  } else {
-                    result = 'From Import'
-                  }
-                } else {
-                  result = data.payment_item.payment_method.remarks
-                }
-              } else {
-                result = 'N/A'
-              }
-              break
-          }
-        } else {
-          switch (type) {
-            case 'reference_number':
-              if (data.payment_method) {
-                switch (data.payment_method.method) {
-                  case 'paypal':
-                    if (data.payment_method.paypal_transaction_id) {
-                      result = data.payment_method.paypal_transaction_id
-                    } else {
-                      result = data.payment_code
-                    }
-                    break
-                  case 'paymaya':
-                    result = data.payment_method.paymaya_transaction_id
-                    break
-                  case 'paymongo':
-                    result = data.payment_method.paymongo_source_id
-                    break
-                  case 'gcash':
-                    result = data.payment_method.gcash_reference_number
-                    break
-                  case 'gc_code':
-                    result = `${data.payment_code} - ${data.payment_method.gc_code}`
-                    break
-                  default:
-                    result = data.payment_code
-                    break
-                }
-              } else {
-                result = 'N/A'
-              }
-              break
-            case 'method':
-              if (data.payment_method) {
-                switch (data.payment_method.method) {
-                  case 'gc_code':
-                    result = 'Gift Card'
-                    break
-                  case 'debit-card':
-                    result = 'Debit Card'
-                    break
-                  case 'credit-card':
-                    result = 'Credit Card'
-                    break
-                  case 'store-credits':
-                    result = 'Store Credits'
-                    break
-                  case 'gcash':
-                    result = 'GCash'
-                    break
-                  case 'class_pass':
-                    result = 'ClassPass'
-                    break
-                  case 'third_party_platform':
-                    result = 'Third Party Platform'
-                    break
-                  default:
-                    result = data.payment_method.method
-                    break
-                }
-              } else {
-                result = 'N/A'
-              }
-              break
-            case 'transaction_date':
-              result = me
-                .$moment(data.updated_at)
-                .format('MMMM DD, YYYY hh:mm A')
-              break
-            case 'products':
-              switch (data.type) {
-                case 'custom-gift-card':
-                  result = `Digital Gift Card - ${data.gift_card.card_code}`
-                  break
-                case 'physical-gift-card':
-                  result = `Physical Gift Card - ${data.gift_card.card_code}`
-                  break
-                case 'product-variant':
-                  result = `${data.product_variant.product.name} ${data.product_variant.variant}`
-                  break
-                case 'class-package':
-                case 'promo-package':
-                  result = data.class_package.name
-                  break
-                case 'store-credit':
-                  result = data.store_credit.name
-                  break
-              }
-              break
-            case 'quantity':
-              result = 0
-              data.payment_items.forEach((item, key) => {
-                result += item.quantity
-              })
-              break
-            case 'price':
-              if (data.discountedTotal != 0) {
-                result = me.totalCount(data.discountedTotal)
-              } else {
-                result = me.totalCount(data.total)
-              }
-              break
-            case 'status':
-              result = data.status
-              break
-            case 'studio':
-              if (data.studio) {
-                result = data.studio.name
-              } else {
-                result = 'Website/App'
-              }
-              break
-            case 'refund':
-              result = data.refund_status
-              break
-            case 'employee':
-              if (data.employee) {
-                result = data.employee.fullname
-              } else {
-                result = 'Customer'
-              }
-              break
-            case 'comp_reason':
-              if (data.payment_method && data.payment_method.comp_reason) {
-                result = data.payment_method.comp_reason
-              } else {
-                result = 'N/A'
-              }
-              break
-            case 'note':
-              if (data.payment_method && data.payment_method.note) {
-                result = data.payment_method.note
-              } else {
-                result = 'N/A'
-              }
-              break
-            case 'remarks':
-              if (data.payment_method && data.payment_method.remarks) {
-                if (
-                  data.studio == null &&
-                  data.payment_method.method == 'cash'
-                ) {
-                  if (data.payment_method.remarks != null) {
-                    result = data.payment_method.remarks
-                  } else {
-                    result = 'From Import'
-                  }
-                } else {
-                  result = data.payment_method.remarks
-                }
-              } else {
-                result = 'N/A'
-              }
-              break
-          }
-        }
-        return result
-      },
-      getPaymentItem(payment_item, type) {
-        const me = this
-        let result = ''
-
-        if (type == 'sku') {
-          switch (payment_item.type) {
-            case 'class-package':
-            case 'promo-package':
-              result = payment_item.class_package.sku_id
-              break
-            case 'product-variant':
-              result = payment_item.product_variant.sku_id
-              break
-            case 'custom-gift-card':
-              result = payment_item.gift_card.sku_id
-              break
-            case 'physical-gift-card':
-              result = payment_item.gift_card.sku_id
-              break
-            case 'store-credit':
-              result = payment_item.store_credit.sku_id
-              break
-          }
-        } else {
-          switch (payment_item.type) {
-            case 'class-package':
-            case 'promo-package':
-              result = payment_item.class_package.name
-              break
-            case 'product-variant':
-              result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
-              break
-            case 'custom-gift-card':
-              result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
-              break
-            case 'physical-gift-card':
-              result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
-              break
-            case 'store-credit':
-              result = payment_item.store_credit.name
-              break
-          }
-        }
-
-        return result
-      },
-      getPaymentCode(payment) {
-        const me = this
-        let result = ''
-
-        if (payment != null) {
-          switch (payment.payment_method.method) {
-            case 'paypal':
-              if (payment.payment_method.paypal_transaction_id) {
-                result = payment.payment_method.paypal_transaction_id
-              } else {
-                result = payment.payment_code
-              }
-              break
-            case 'paymaya':
-              result = payment.payment_method.paymaya_transaction_id
-              break
-            case 'paymongo':
-              result = payment.payment_method.paymongo_source_id
-              break
-            case 'gcash':
-              result = payment.payment_method.gcash_reference_number
-              break
-            case 'gc_code':
-              result = `${payment.payment_code} - ${payment.payment_method.gc_code}`
-              break
-            default:
-              result = payment.payment_code
-              break
-          }
-        } else {
-          result = 'N/A'
-        }
-
-        return result
-      },
-      openWindow(slug) {
-        const me = this
-        window.open(
-          `${window.location.origin}${slug}`,
-          '_blank',
-          `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${
-            document.documentElement.clientWidth / 2
-          },top=${document.documentElement.clientHeight / 2}`
-        )
-      },
-      getInstructorsImageInSchedule(data) {
-        const me = this
-        let result = ''
-        if (data != '') {
-          let instructor = []
-          data.schedule.instructor_schedules.forEach((ins, index) => {
-            if (ins.primary == 1) {
-              instructor = ins
-            }
-          })
-          if (instructor) {
-            if (instructor.user) {
-              result = instructor.user.instructor_details.images[0].path
-            }
-          }
-        }
-
-        return result
-      },
-      getInstructorsInSchedule(data, type) {
-        const me = this
-        let result = ''
-        if (type == 'name') {
-          if (data != '') {
-            let instructor = []
-            data.schedule.instructor_schedules.forEach((ins, index) => {
-              if (ins.primary == 1) {
-                instructor = ins
-              }
-            })
-            if (instructor && instructor.user) {
-              result = `${instructor.user.fullname}`
-            }
-          }
-        } else {
-          if (data != '') {
-            let instructor = []
-            data.schedule.instructor_schedules.forEach((ins, index) => {
-              if (ins.primary == 1) {
-                instructor = ins
-              }
-            })
-            if (instructor) {
-              result = `${instructor.user.id}`
-            }
-          }
-        }
-        return result
-      },
-      saveNotes(data) {
-        const me = this
-        let token = me.$cookies.get('70hokcotc3hhhn5')
-        let formData = new FormData()
-        formData.append('notes', data.customer_details.notes)
-        formData.append('customer_id', data.id)
-        me.$axios
-          .post('api/extras/update-customer-notes', formData, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          })
-          .then(res => {
-            me.loader(true)
-          })
-          .catch(err => {
-            me.$store.state.errorList = err.response.data.errors
-            me.$store.state.errorStatus = true
-          })
-          .then(() => {
-            setTimeout(() => {
-              me.loader(false)
-            }, 500)
-          })
-      },
-      checkRefund(data, item) {
-        const me = this
-        if (data.payment_method.method != 'comp') {
-          switch (item.type) {
-            case 'class-package':
-              if (item.refunded == 0) {
-                if (item.user_package_count) {
-                  if (item.class_package.recurring) {
-                    return 'expired'
-                  } else {
-                    if (
-                      item.user_package_count.count ==
-                      item.user_package_count.original_package_count
-                    ) {
-                      return 'refundable'
-                    } else {
-                      return 'expired'
-                    }
-                  }
-                } else {
-                  return 'expired'
-                }
-              } else {
-                return 'expired'
-              }
-              break
-            default:
-              if (item.refunded == 0) {
-                return 'refundable'
-              } else {
-                return 'expired'
-              }
-          }
-        } else {
-          return 'expired'
-        }
-      },
-      toggleRefund(data, item) {
-        const me = this
-        me.payment = data
-        me.paymentItemId = item.id
-        me.$store.state.refundStatus = true
-        document.body.classList.add('no_scroll')
-      },
-      togglePackageAction(data, type) {
-        const me = this
-        switch (type) {
-          case 'transfer':
-            me.packageActionType = 'Transfer'
-            me.$store.state.packageActionStatus = true
-            document.body.classList.add('no_scroll')
-            break
-          case 'share':
-            me.methodType = 'share'
-            me.$store.state.packageActionStatus = true
-            document.body.classList.add('no_scroll')
-            me.packageActionType = 'Share'
-            break
-          case 'unshare':
-            me.methodType = 'unshare'
-            me.tempData = data
-            me.$store.state.packageActionValidateStatus = true
-            document.body.classList.add('no_scroll')
-            me.packageActionType = 'Share'
-            break
-          case 'edit':
-            me.methodType = 'edit'
-            me.$store.state.packageActionValidateStatus = true
-            document.body.classList.add('no_scroll')
-            break
-          case 'freeze':
-            if (data.frozen) {
-              me.methodType = 'unfreeze'
-            } else {
-              me.methodType = 'freeze'
-            }
-            me.$store.state.packageActionValidateStatus = true
-            document.body.classList.add('no_scroll')
-            break
-          case 'expiry':
-            me.expiryData = data
-            me.$store.state.editPackageExpiryStatus = true
-            document.body.classList.add('no_scroll')
-            break
-          case 'refund':
-            me.payment = data.payment_item.payment
-            me.paymentItemId = data.payment_item.id
-            me.$store.state.refundStatus = true
-            document.body.classList.add('no_scroll')
-            break
-          case 'recurring':
-            me.recur.user_package_count = data
-            me.recurring = true
-            break
-        }
-        me.userPackageCountId = data.id
-      },
-      checkStatus(data) {
-        const me = this
-        let result = ''
-        switch (data.status) {
-          case 'signed-in':
-            result = 'Completed'
-            break
-          case 'no-show':
-            result = 'No Show'
-            break
-          case 'reserved':
-          case 'reserved-guest':
-            result = 'Reserved'
-            break
-          case 'cancelled':
-            result = 'Cancelled'
-            break
-          case 'late-cancelled':
-            result = 'Late Cancelled'
-            break
-        }
-        return result
-      },
-      toggleLayout(studioId, scheduledDateID) {
-        const me = this
-        me.loader(true)
-        me.$parent.layout.studio = studioId
-        me.$parent.layout.schedule = scheduledDateID
-        me.$store.state.upcomingClassesLayoutStatus = true
-      },
-      toggledPrompt(data) {
-        const me = this
-        if (data.enabled) {
-          me.promptMessage = 'Deactivate'
-        } else {
-          me.promptMessage = 'Activate'
-        }
-        data.enabled ^= 1
-        me.$store.state.customerPromptStatus = true
-        setTimeout(() => {
-          me.$refs.enabled.confirm.table_name = 'users'
-          me.$refs.enabled.confirm.id = data.id
-          me.$refs.enabled.confirm.enabled = data.enabled
-          me.$refs.enabled.confirm.status = data.enabled
-            ? 'activated'
-            : 'deactivated'
-          me.$refs.enabled.confirm.type = 'user'
-        }, 100)
-        document.body.classList.add('no_scroll')
-      },
-      toggleGuest(event) {
-        const me = this
-        let element = event.target
-        if (element.nextElementSibling.classList.contains('active')) {
-          element.nextElementSibling.classList.remove('active')
-        } else {
-          element.nextElementSibling.classList.add('active')
-        }
-      },
-      populateTransactions() {
-        const me = this
-        me.loader(true)
-        me.$axios
-          .get(
-            `api/customers/${me.$route.params.param}/${me.$route.params.slug}`
-          )
-          .then(res => {
-            if (res.data) {
-              me.$parent.customer = res.data.customer
-              me.res = res.data.customer.payments
-              if (me.res) {
-                me.$parent.pendingPayment = 0
-                me.res.data.forEach((payment, index) => {
-                  if (payment.status == 'pending') {
-                    me.$parent.pendingPayment += parseFloat(payment.total)
-                  }
                 })
-              }
-            }
-          })
-          .catch(err => {
-            me.$store.state.errorList = err.response.data.errors
-            me.$store.state.errorStatus = true
-          })
-          .then(() => {
-            const elements = document.querySelectorAll(
-              '.cms_table_accordion .tbp'
-            )
-            elements.forEach((element, index) => {
-              element.querySelector('.accordion_table').style.height = 0
-            })
-            setTimeout(() => {
-              me.loader(false)
-            }, 500)
-          })
-      },
-      populateUpcomingClasses() {
-        const me = this
-        me.loader(true)
-        me.$axios
-          .get(
-            `api/customers/${me.$route.params.param}/${me.$route.params.slug}`
-          )
-          .then(res => {
-            if (res.data) {
-              me.$parent.customer = res.data.customer
-              me.res = res.data.customer
-            }
-          })
-          .catch(err => {
-            me.$store.state.errorList = err.response.data.errors
-            me.$store.state.errorStatus = true
-          })
-          .then(() => {
-            setTimeout(() => {
-              me.loader(false)
-            }, 500)
-          })
-      },
-      toggleForm(id) {
-        const me = this
-        me.$axios.get(`api/show-payment/${id}`).then(res => {
-          if (res.data) {
-            me.transaction = res.data.payment
-            me.$store.state.customerID = me.$route.params.param
-            me.$store.state.customerPendingQuickSaleStatus = true
-            document.body.classList.add('no_scroll')
-          }
-        })
-      },
-      getPaymentDetails(payment, type) {
-        const me = this
-        let result = 0
-
-        payment.payment_items.forEach((payment_item, key) => {
-          switch (type) {
-            case 'qty':
-              result += payment_item.quantity
-              break
-          }
-        })
-
-        switch (type) {
-          case 'qty':
-            result = me.totalItems(result)
-            break
-          case 'price':
-            let temp_price = 0
-            payment.payment_items.forEach((payment_item, key) => {
-              if (payment.promo_code_used !== null) {
-                temp_price += parseInt(payment_item.total)
-              } else {
-                temp_price += parseInt(payment_item.total)
-              }
-            })
-            result = `Php ${me.totalCount(temp_price)}`
-            break
-          case 'employee':
-            if (payment.employee != null) {
-              result = `${payment.employee.first_name} ${payment.employee.last_name}`
-            } else {
-              result = '-'
-            }
-            break
-        }
-
-        return result
-      },
-      toggleAccordion(event, key) {
-        const me = this
-        const target = event.target
-        me.res.data[key].open ^= true
-        if (me.res.data[key].open) {
-          target.parentNode.parentNode.querySelector(
-            '.accordion_table'
-          ).style.height = `${
-            target.parentNode.parentNode.querySelector('.accordion_table')
-              .scrollHeight
-          }px`
-        } else {
-          target.parentNode.parentNode.querySelector(
-            '.accordion_table'
-          ).style.height = 0
-        }
-      },
-      updateCustomerClass(data, id) {
-        const me = this
-        let formData = new FormData()
-        if (
-          (data.status == 'reserved-guest' || data.status == 'reserved') &&
-          id != null
-        ) {
-          me.$axios.post(`api/bookings/sign-in/${id}`, formData).then(res => {
-            if (res.data) {
-              setTimeout(() => {
-                document.getElementById('upcoming_classes').click()
-              }, 500)
-            }
-          })
-        } else if (data.status == 'signed-in' && id != null) {
-          me.$store.state.bookingID = id
-          me.$store.state.promptSignOutStatus = true
-          document.body.classList.add('no_scroll')
-        }
-      },
-      getCurrentCustomer() {
-        const me = this
-        me.$axios
-          .get(`api/customers/${me.$route.params.param}`)
-          .then(res => {
-            if (res.data) {
-              me.$store.state.customer = res.data.user
-              me.$store.state.customerID = res.data.user.id
-            }
-          })
-          .catch(err => {
-            me.$store.state.errorList = err.response.data.errors
-            me.$store.state.errorStatus = true
-          })
-        me.$router.push('/booker')
-      },
-      formatTransactionDate(value, withTime) {
-        if (value.payment_items[0].user_package_count) {
-          if (value.payment_items[0].user_package_count.from_old == 1) {
-            if (withTime) {
-              return this.$moment(value.created_at).format(
-                'MMM DD, YYYY hh:mm A'
-              )
-            } else {
-              return this.$moment(value.created_at).format('MMM DD, YYYY')
-            }
-          } else {
-            if (withTime) {
-              return this.$moment(value.updated_at).format(
-                'MMM DD, YYYY hh:mm A'
-              )
-            } else {
-              return this.$moment(value.updated_at).format('MMM DD, YYYY')
-            }
-          }
-        } else {
-          if (withTime) {
-            return this.$moment(value.updated_at).format('MMM DD, YYYY hh:mm A')
-          } else {
-            return this.$moment(value.updated_at).format('MMM DD, YYYY')
-          }
-        }
-      },
-      formatDate(value, withTime) {
-        if (value) {
-          if (withTime) {
-            return this.$moment(value).format('MMM DD, YYYY hh:mm A')
-          } else {
-            return this.$moment(value).format('MMM DD, YYYY')
-          }
-        }
-      },
-      formatClassDate(value, withTime) {
-        if (value) {
-          if (withTime) {
-            return this.$moment(value).format('M/D/YY (ddd) h:mm A')
-          } else {
-            return this.$moment(value).format('MMMM DD, YYYY')
-          }
-        }
-      },
-      checkViolator(data, type) {
-        const me = this
-        let result = ''
-        let expiry = me.$moment(
-          data.computed_expiration_date != null
-            ? data.computed_expiration_date
-            : data.expiry_date_if_not_activated
-        )
-        let current = me.$moment()
-        switch (type) {
-          case 'warning':
-            if (expiry.diff(current, 'days') == 0) {
-              result = expiry.diff(current, 'hours') + ' Hours Left'
-            } else {
-              result = expiry.diff(current, 'days') + ' Days Left'
-            }
-            break
-          case 'shared':
-            if (me.$route.params.param == data.user_id) {
-              result = 'Shared with '
-              data.shares.forEach((share, key) => {
-                if (key != 0) {
-                  if (key + 1 == data.shares.length) {
-                    result += ' & '
-                  } else {
-                    result += ', '
-                  }
+                if (ctr <= 4) {
+                    for (let i = 0; i < 4 - ctr; i++) {
+                        results.push({
+                            bookCount: 0,
+                            first_name: '-',
+                            last_name: '-',
+                            instructor_details: {
+                                images: [
+                                    {
+                                        path: null
+                                    }
+                                ]
+                            }
+                        })
+                    }
                 }
-                result += `${share.user.fullname}`
-              })
-            } else {
-              if (data.sharedby_user) {
-                result = `Shared by ${data.sharedby_user.first_name} ${data.sharedby_user.last_name}`
-              }
-            }
-            break
-        }
-        return result
-      },
-      toggledOption(event) {
-        const me = this
-        let element = event.target
-        if (element.parentNode.classList.contains('toggled')) {
-          element.parentNode.classList.remove('toggled')
-        } else {
-          element.parentNode.classList.add('toggled')
-        }
-      },
-      toggleOverlays(e) {
-        const me = this
-        let target = e.target
-        if (me.value.user_package_counts) {
-          me.value.user_package_counts.forEach((result, index) => {
-            let option = document.getElementById(`option_${index}`)
-            if (option != null) {
-              if (
-                option !== target &&
-                option !== target.parentNode.previousElementSibling
-              ) {
-                if (option.parentNode.classList.contains('toggled')) {
-                  option.parentNode.classList.remove('toggled')
+                return results
+            },
+            populatePackages() {
+                const me = this
+                let result = []
+                me.packageCount = 0
+                if (me.$route.params.slug == 'packages') {
+                    let current = me.$moment()
+                    if (me.packageStatus != 'expired') {
+                        if (me.packageStatus == 'subscribe') {
+                            me.res.user_package_counts.forEach(
+                                (element, index) => {
+                                    let expiry = me.$moment(
+                                        element.computed_expiration_date != null
+                                            ? element.computed_expiration_date
+                                            : element.expiry_date_if_not_activated
+                                    )
+                                    if (element.paypal_subscription_id) {
+                                        if (
+                                            parseInt(expiry.diff(current)) >
+                                                0 &&
+                                            element.count > 0
+                                        ) {
+                                            element.expired = false
+                                            if (element.count > 0) {
+                                                me.packageCount++
+                                            }
+                                        } else {
+                                            element.expired = true
+                                        }
+                                    } else {
+                                        element.expired = true
+                                    }
+                                    result.push(element)
+                                }
+                            )
+                        } else {
+                            me.res.user_package_counts.forEach(
+                                (element, index) => {
+                                    let expiry = me.$moment(
+                                        element.computed_expiration_date != null
+                                            ? element.computed_expiration_date
+                                            : element.expiry_date_if_not_activated
+                                    )
+                                    if (me.packageStatus == 'frozen') {
+                                        element.expired = false
+                                        me.packageCount++
+                                        result.push(element)
+                                    } else {
+                                        if (!element.frozen) {
+                                            if (
+                                                !element.paypal_subscription_id
+                                            ) {
+                                                if (
+                                                    parseInt(
+                                                        expiry.diff(current)
+                                                    ) > 0 &&
+                                                    element.count > 0
+                                                ) {
+                                                    element.expired = false
+                                                    if (element.count > 0) {
+                                                        me.packageCount++
+                                                    }
+                                                } else {
+                                                    element.expired = true
+                                                }
+                                            } else {
+                                                element.expired = true
+                                            }
+                                            result.push(element)
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    } else {
+                        me.res.user_package_counts.forEach((element, index) => {
+                            let expiry = me.$moment(
+                                element.computed_expiration_date != null
+                                    ? element.computed_expiration_date
+                                    : element.expiry_date_if_not_activated
+                            )
+                            if (!element.paypal_subscription_id) {
+                                if (parseInt(expiry.diff(current)) <= 0) {
+                                    element.expired = false
+                                    me.packageCount++
+                                } else {
+                                    if (element.count <= 0) {
+                                        me.packageCount++
+                                        element.expired = false
+                                        element.no_count = true
+                                    } else {
+                                        element.expired = true
+                                    }
+                                }
+                            } else {
+                                element.expired = true
+                            }
+                            result.push(element)
+                        })
+                    }
                 }
-              }
+                return result
             }
-          })
-        }
-        if (me.$route.params.slug == 'class-history') {
-          for (let i = 0; i <= me.res.classHistory.length; i++) {
-            let element = document.getElementById(`table_select_${i}`)
-            if (element !== target) {
-              if (element) {
-                if (element.nextElementSibling) {
-                  if (element.nextElementSibling.classList.contains('active')) {
-                    element.nextElementSibling.classList.remove('active')
-                  }
+        },
+        methods: {
+            getTransactionType(data, type) {
+                const me = this
+                let result = ''
+
+                if (data.is_recurrence) {
+                    switch (type) {
+                        case 'reference_number':
+                            result = data.transaction_id
+                            break
+                        case 'method':
+                            switch (data.payment_item.payment_method.method) {
+                                case 'gc_code':
+                                    result = 'Gift Card'
+                                    break
+                                case 'debit-card':
+                                    result = 'Debit Card'
+                                    break
+                                case 'credit-card':
+                                    result = 'Credit Card'
+                                    break
+                                case 'store-credits':
+                                    result = 'Store Credits'
+                                    break
+                                case 'gcash':
+                                    result = 'GCash'
+                                    break
+                                case 'class_pass':
+                                    result = 'ClassPass'
+                                    break
+                                case 'third_party_platform':
+                                    result = 'Third Party Platform'
+                                    break
+                                default:
+                                    result =
+                                        data.payment_item.payment_method.method
+                                    break
+                            }
+                            break
+                        case 'transaction_date':
+                            result = me
+                                .$moment(data.updated_at)
+                                .format('MMMM DD, YYYY hh:mm A')
+                            break
+                        case 'products':
+                            result = data.user_package_count.class_package.name
+                            break
+                        case 'quantity':
+                            result = data.payment_item.quantity
+                            break
+                        case 'price':
+                            if (data.duplicated) {
+                                result = me.totalCount(
+                                    data.payment_item.price_per_item *
+                                        data.payment_item.quantity
+                                )
+                            } else {
+                                result = me.totalCount(
+                                    data.payment_item.payment.total
+                                )
+                            }
+                            break
+                        case 'status':
+                            result = data.payment_item.payment.status
+                            break
+                        case 'studio':
+                            if (data.payment_item.payment.studio) {
+                                result = data.payment_item.payment.studio.name
+                            } else {
+                                result = 'Website/App'
+                            }
+                            break
+                        case 'refund':
+                            result = data.payment_item.payment.refund_status
+                            break
+                        case 'employee':
+                            if (data.payment_item.payment.employee) {
+                                result =
+                                    data.payment_item.payment.employee.fullname
+                            } else {
+                                result = 'Customer'
+                            }
+                            break
+                        case 'comp_reason':
+                            if (data.payment_item.payment_method.comp_reason) {
+                                result =
+                                    data.payment_item.payment_method.comp_reason
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'note':
+                            if (data.payment_item.payment_method.note) {
+                                result = data.payment_item.payment_method.note
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'remarks':
+                            if (data.payment_item.payment_method.remarks) {
+                                if (
+                                    data.payment_item.payment.studio == null &&
+                                    data.payment_item.payment_method.method ==
+                                        'cash'
+                                ) {
+                                    if (
+                                        data.payment_item.payment_method
+                                            .remarks != null
+                                    ) {
+                                        result =
+                                            data.payment_item.payment_method
+                                                .remarks
+                                    } else {
+                                        result = 'From Import'
+                                    }
+                                } else {
+                                    result =
+                                        data.payment_item.payment_method.remarks
+                                }
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                    }
+                } else {
+                    switch (type) {
+                        case 'reference_number':
+                            if (data.payment_method) {
+                                switch (data.payment_method.method) {
+                                    case 'paypal':
+                                        if (
+                                            data.payment_method
+                                                .paypal_transaction_id
+                                        ) {
+                                            result =
+                                                data.payment_method
+                                                    .paypal_transaction_id
+                                        } else {
+                                            result = data.payment_code
+                                        }
+                                        break
+                                    case 'paymaya':
+                                        result =
+                                            data.payment_method
+                                                .paymaya_transaction_id
+                                        break
+                                    case 'paymongo':
+                                        result =
+                                            data.payment_method
+                                                .paymongo_source_id
+                                        break
+                                    case 'gcash':
+                                        result =
+                                            data.payment_method
+                                                .gcash_reference_number
+                                        break
+                                    case 'gc_code':
+                                        result = `${data.payment_code} - ${data.payment_method.gc_code}`
+                                        break
+                                    default:
+                                        result = data.payment_code
+                                        break
+                                }
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'method':
+                            if (data.payment_method) {
+                                switch (data.payment_method.method) {
+                                    case 'gc_code':
+                                        result = 'Gift Card'
+                                        break
+                                    case 'debit-card':
+                                        result = 'Debit Card'
+                                        break
+                                    case 'credit-card':
+                                        result = 'Credit Card'
+                                        break
+                                    case 'store-credits':
+                                        result = 'Store Credits'
+                                        break
+                                    case 'gcash':
+                                        result = 'GCash'
+                                        break
+                                    case 'class_pass':
+                                        result = 'ClassPass'
+                                        break
+                                    case 'third_party_platform':
+                                        result = 'Third Party Platform'
+                                        break
+                                    default:
+                                        result = data.payment_method.method
+                                        break
+                                }
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'transaction_date':
+                            result = me
+                                .$moment(data.updated_at)
+                                .format('MMMM DD, YYYY hh:mm A')
+                            break
+                        case 'products':
+                            switch (data.type) {
+                                case 'custom-gift-card':
+                                    result = `Digital Gift Card - ${data.gift_card.card_code}`
+                                    break
+                                case 'physical-gift-card':
+                                    result = `Physical Gift Card - ${data.gift_card.card_code}`
+                                    break
+                                case 'product-variant':
+                                    result = `${data.product_variant.product.name} ${data.product_variant.variant}`
+                                    break
+                                case 'class-package':
+                                case 'promo-package':
+                                    result = data.class_package.name
+                                    break
+                                case 'store-credit':
+                                    result = data.store_credit.name
+                                    break
+                            }
+                            break
+                        case 'quantity':
+                            result = 0
+                            data.payment_items.forEach((item, key) => {
+                                result += item.quantity
+                            })
+                            break
+                        case 'price':
+                            if (data.discountedTotal != 0) {
+                                result = me.totalCount(data.discountedTotal)
+                            } else {
+                                if (me.totalCount(data.total) != me.totalCount(data.originalTotal)) {
+                                    result = me.totalCount(data.originalTotal)
+                                } else {
+                                    result = me.totalCount(data.total)
+                                }
+                            }
+                            break
+                        case 'status':
+                            result = data.status
+                            break
+                        case 'studio':
+                            if (data.studio) {
+                                result = data.studio.name
+                            } else {
+                                result = 'Website/App'
+                            }
+                            break
+                        case 'refund':
+                            result = data.refund_status
+                            break
+                        case 'employee':
+                            if (data.employee) {
+                                result = data.employee.fullname
+                            } else {
+                                result = 'Customer'
+                            }
+                            break
+                        case 'comp_reason':
+                            if (
+                                data.payment_method &&
+                                data.payment_method.comp_reason
+                            ) {
+                                result = data.payment_method.comp_reason
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'note':
+                            if (
+                                data.payment_method &&
+                                data.payment_method.note
+                            ) {
+                                result = data.payment_method.note
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                        case 'remarks':
+                            if (
+                                data.payment_method &&
+                                data.payment_method.remarks
+                            ) {
+                                if (
+                                    data.studio == null &&
+                                    data.payment_method.method == 'cash'
+                                ) {
+                                    if (data.payment_method.remarks != null) {
+                                        result = data.payment_method.remarks
+                                    } else {
+                                        result = 'From Import'
+                                    }
+                                } else {
+                                    result = data.payment_method.remarks
+                                }
+                            } else {
+                                result = 'N/A'
+                            }
+                            break
+                    }
                 }
-              }
-            }
-          }
-        }
-      },
-      togglePackages(status) {
-        const me = this
-        me.loader(true)
+                return result
+            },
+            getPaymentItem(payment_item, type) {
+                const me = this
+                let result = ''
 
-        let url = ''
+                if (type == 'sku') {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.sku_id
+                            break
+                        case 'product-variant':
+                            result = payment_item.product_variant.sku_id
+                            break
+                        case 'custom-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'physical-gift-card':
+                            result = payment_item.gift_card.sku_id
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.sku_id
+                            break
+                    }
+                } else {
+                    switch (payment_item.type) {
+                        case 'class-package':
+                        case 'promo-package':
+                            result = payment_item.class_package.name
+                            break
+                        case 'product-variant':
+                            result = `${payment_item.product_variant.product.name} ${payment_item.product_variant.variant}`
+                            break
+                        case 'custom-gift-card':
+                            result = `Digital Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'physical-gift-card':
+                            result = `Physical Gift Card - ${payment_item.gift_card.card_code}`
+                            break
+                        case 'store-credit':
+                            result = payment_item.store_credit.name
+                            break
+                    }
+                }
 
-        if (status == 'subscribe') {
-          url = `api/customers/${me.$route.params.param}/${me.$route.params.slug}?subscription=1`
-        } else {
-          url = `api/customers/${me.$route.params.param}/${
-            me.$route.params.slug
-          }?packageStatus=${status != 'expired' ? status : 'all'}`
-        }
+                return result
+            },
+            getPaymentCode(payment) {
+                const me = this
+                let result = ''
 
-        me.$axios
-          .get(url)
-          .then(res => {
-            if (res.data) {
-              me.packageCount = 0
-              me.$parent.customer = res.data.customer
-              me.res = res.data.customer
-            }
-          })
-          .catch(err => {
-            me.$store.state.errorList = err.response.data.errors
-            me.$store.state.errorStatus = true
-          })
-          .then(() => {
-            me.rowCount = document.getElementsByTagName('th').length
-            setTimeout(() => {
-              me.packageStatus = status
-              me.loader(false)
-            }, 500)
-          })
-      },
-      getHistoryFromPaginate(data) {
-        const me = this
-        data.classHistory.data.sort(function (a, b) {
-          return (
-            new Date(
-              `${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`
-            ) -
-            new Date(
-              `${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`
-            )
-          )
-        })
-        me.res = data
-      },
-      toggleClassesHistory(status) {
-        const me = this
-        me.loader(true)
-        me.$axios
-          .get(
-            `api/customers/${me.$route.params.param}/${me.$route.params.slug}?classHistoryStatus=${status}&paginate=1`
-          )
-          .then(res => {
-            if (res.data) {
-              me.res = res.data.customer
-              me.res.classHistory.data.sort(function (a, b) {
-                return (
-                  new Date(
-                    `${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`
-                  ) -
-                  new Date(
-                    `${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`
-                  )
+                if (payment != null) {
+                    switch (payment.payment_method.method) {
+                        case 'paypal':
+                            if (payment.payment_method.paypal_transaction_id) {
+                                result =
+                                    payment.payment_method.paypal_transaction_id
+                            } else {
+                                result = payment.payment_code
+                            }
+                            break
+                        case 'paymaya':
+                            result =
+                                payment.payment_method.paymaya_transaction_id
+                            break
+                        case 'paymongo':
+                            result = payment.payment_method.paymongo_source_id
+                            break
+                        case 'gcash':
+                            result =
+                                payment.payment_method.gcash_reference_number
+                            break
+                        case 'gc_code':
+                            result = `${payment.payment_code} - ${payment.payment_method.gc_code}`
+                            break
+                        default:
+                            result = payment.payment_code
+                            break
+                    }
+                } else {
+                    result = 'N/A'
+                }
+
+                return result
+            },
+            openWindow(slug) {
+                const me = this
+                window.open(
+                    `${window.location.origin}${slug}`,
+                    '_blank',
+                    `location=yes,height=768,width=1280,scrollbars=yes,status=yes,left=${
+                        document.documentElement.clientWidth / 2
+                    },top=${document.documentElement.clientHeight / 2}`
                 )
-              })
+            },
+            getInstructorsImageInSchedule(data) {
+                const me = this
+                let result = ''
+                if (data != '') {
+                    let instructor = []
+                    data.schedule.instructor_schedules.forEach((ins, index) => {
+                        if (ins.primary == 1) {
+                            instructor = ins
+                        }
+                    })
+                    if (instructor) {
+                        if (instructor.user) {
+                            result =
+                                instructor.user.instructor_details.images[0]
+                                    .path
+                        }
+                    }
+                }
+
+                return result
+            },
+            getInstructorsInSchedule(data, type) {
+                const me = this
+                let result = ''
+                if (type == 'name') {
+                    if (data != '') {
+                        let instructor = []
+                        data.schedule.instructor_schedules.forEach(
+                            (ins, index) => {
+                                if (ins.primary == 1) {
+                                    instructor = ins
+                                }
+                            }
+                        )
+                        if (instructor) {
+                            result = `${instructor.user.fullname}`
+                        }
+                    }
+                } else {
+                    if (data != '') {
+                        let instructor = []
+                        data.schedule.instructor_schedules.forEach(
+                            (ins, index) => {
+                                if (ins.primary == 1) {
+                                    instructor = ins
+                                }
+                            }
+                        )
+                        if (instructor) {
+                            result = `${instructor.user.id}`
+                        }
+                    }
+                }
+                return result
+            },
+            saveNotes(data) {
+                const me = this
+                let token = me.$cookies.get('70hokcotc3hhhn5')
+                let formData = new FormData()
+                formData.append('notes', data.customer_details.notes)
+                formData.append('customer_id', data.id)
+                me.$axios
+                    .post('api/extras/update-customer-notes', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    })
+                    .then(res => {
+                        me.loader(true)
+                    })
+                    .catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    })
+                    .then(() => {
+                        setTimeout(() => {
+                            me.loader(false)
+                        }, 500)
+                    })
+            },
+            checkRefund(data, item) {
+                const me = this
+                if (data.payment_method.method != 'comp') {
+                    switch (item.type) {
+                        case 'class-package':
+                            if (item.refunded == 0) {
+                                if (item.user_package_count) {
+                                    if (item.class_package.recurring) {
+                                        return 'expired'
+                                    } else {
+                                        if (
+                                            item.user_package_count.count ==
+                                            item.user_package_count
+                                                .original_package_count
+                                        ) {
+                                            return 'refundable'
+                                        } else {
+                                            return 'expired'
+                                        }
+                                    }
+                                } else {
+                                    return 'expired'
+                                }
+                            } else {
+                                return 'expired'
+                            }
+                            break
+                        default:
+                            if (item.refunded == 0) {
+                                return 'refundable'
+                            } else {
+                                return 'expired'
+                            }
+                    }
+                } else {
+                    return 'expired'
+                }
+            },
+            toggleRefund(data, item) {
+                const me = this
+                me.payment = data
+                me.paymentItemId = item.id
+                me.$store.state.refundStatus = true
+                document.body.classList.add('no_scroll')
+            },
+            togglePackageAction(data, type) {
+                const me = this
+                switch (type) {
+                    case 'transfer':
+                        me.packageActionType = 'Transfer'
+                        me.$store.state.packageActionStatus = true
+                        document.body.classList.add('no_scroll')
+                        break
+                    case 'share':
+                        me.methodType = 'share'
+                        me.$store.state.packageActionStatus = true
+                        document.body.classList.add('no_scroll')
+                        me.packageActionType = 'Share'
+                        break
+                    case 'unshare':
+                        me.methodType = 'unshare'
+                        me.tempData = data
+                        me.$store.state.packageActionValidateStatus = true
+                        document.body.classList.add('no_scroll')
+                        me.packageActionType = 'Share'
+                        break
+                    case 'edit':
+                        me.methodType = 'edit'
+                        me.$store.state.packageActionValidateStatus = true
+                        document.body.classList.add('no_scroll')
+                        break
+                    case 'freeze':
+                        if (data.frozen) {
+                            me.methodType = 'unfreeze'
+                        } else {
+                            me.methodType = 'freeze'
+                        }
+                        me.$store.state.packageActionValidateStatus = true
+                        document.body.classList.add('no_scroll')
+                        break
+                    case 'expiry':
+                        me.expiryData = data
+                        me.$store.state.editPackageExpiryStatus = true
+                        document.body.classList.add('no_scroll')
+                        break
+                    case 'refund':
+                        me.payment = data.payment_item.payment
+                        me.paymentItemId = data.payment_item.id
+                        me.$store.state.refundStatus = true
+                        document.body.classList.add('no_scroll')
+                        break
+                    case 'recurring':
+                        me.recur.user_package_count = data
+                        me.recurring = true
+                        break
+                }
+                me.userPackageCountId = data.id
+            },
+            checkStatus(data) {
+                const me = this
+                let result = ''
+                switch (data.status) {
+                    case 'signed-in':
+                        result = 'Completed'
+                        break
+                    case 'no-show':
+                        result = 'No Show'
+                        break
+                    case 'reserved':
+                        result = 'Reserved'
+                        break
+                    case 'cancelled':
+                        result = 'Cancelled'
+                        break
+                    case 'late-cancelled':
+                        result = 'Late Cancelled'
+                        break
+                }
+                return result
+            },
+            toggleLayout(studioId, scheduledDateID) {
+                const me = this
+                me.loader(true)
+                me.$parent.layout.studio = studioId
+                me.$parent.layout.schedule = scheduledDateID
+                me.$store.state.upcomingClassesLayoutStatus = true
+            },
+            toggledPrompt(data) {
+                const me = this
+                if (data.enabled) {
+                    me.promptMessage = 'Deactivate'
+                } else {
+                    me.promptMessage = 'Activate'
+                }
+                data.enabled ^= 1
+                me.$store.state.customerPromptStatus = true
+                setTimeout(() => {
+                    me.$refs.enabled.confirm.table_name = 'users'
+                    me.$refs.enabled.confirm.id = data.id
+                    me.$refs.enabled.confirm.enabled = data.enabled
+                    me.$refs.enabled.confirm.status = data.enabled
+                        ? 'activated'
+                        : 'deactivated'
+                    me.$refs.enabled.confirm.type = 'user'
+                }, 100)
+                document.body.classList.add('no_scroll')
+            },
+            toggleGuest(event) {
+                const me = this
+                let element = event.target
+                if (element.nextElementSibling.classList.contains('active')) {
+                    element.nextElementSibling.classList.remove('active')
+                } else {
+                    element.nextElementSibling.classList.add('active')
+                }
+            },
+            populateTransactions() {
+                const me = this
+                me.loader(true)
+                me.$axios
+                    .get(
+                        `api/customers/${me.$route.params.param}/${me.$route.params.slug}`
+                    )
+                    .then(res => {
+                        if (res.data) {
+                            me.$parent.customer = res.data.customer
+                            me.res = res.data.customer.payments
+                            if (me.res) {
+                                me.$parent.pendingPayment = 0
+                                me.res.data.forEach((payment, index) => {
+                                    if (payment.status == 'pending') {
+                                        me.$parent.pendingPayment += parseFloat(
+                                            payment.total
+                                        )
+                                    }
+                                })
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    })
+                    .then(() => {
+                        const elements = document.querySelectorAll(
+                            '.cms_table_accordion .tbp'
+                        )
+                        elements.forEach((element, index) => {
+                            element.querySelector(
+                                '.accordion_table'
+                            ).style.height = 0
+                        })
+                        setTimeout(() => {
+                            me.loader(false)
+                        }, 500)
+                    })
+            },
+            populateUpcomingClasses() {
+                const me = this
+                me.loader(true)
+                me.$axios
+                    .get(
+                        `api/customers/${me.$route.params.param}/${me.$route.params.slug}`
+                    )
+                    .then(res => {
+                        if (res.data) {
+                            me.$parent.customer = res.data.customer
+                            me.res = res.data.customer
+                        }
+                    })
+                    .catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    })
+                    .then(() => {
+                        setTimeout(() => {
+                            me.loader(false)
+                        }, 500)
+                    })
+            },
+            toggleForm(id) {
+                const me = this
+                me.$axios.get(`api/show-payment/${id}`).then(res => {
+                    if (res.data) {
+                        me.transaction = res.data.payment
+                        me.$store.state.customerID = me.$route.params.param
+                        me.$store.state.customerPendingQuickSaleStatus = true
+                        document.body.classList.add('no_scroll')
+                    }
+                })
+            },
+            getPaymentDetails(payment, type) {
+                const me = this
+                let result = 0
+
+                payment.payment_items.forEach((payment_item, key) => {
+                    switch (type) {
+                        case 'qty':
+                            result += payment_item.quantity
+                            break
+                    }
+                })
+
+                switch (type) {
+                    case 'qty':
+                        result = me.totalItems(result)
+                        break
+                    case 'price':
+                        let temp_price = 0
+                        payment.payment_items.forEach((payment_item, key) => {
+                            if (payment.promo_code_used !== null) {
+                                temp_price += parseInt(payment_item.total)
+                            } else {
+                                temp_price += parseInt(payment_item.total)
+                            }
+                        })
+                        result = `Php ${me.totalCount(temp_price)}`
+                        break
+                    case 'employee':
+                        if (payment.employee != null) {
+                            result = `${payment.employee.first_name} ${payment.employee.last_name}`
+                        } else {
+                            result = '-'
+                        }
+                        break
+                }
+
+                return result
+            },
+            toggleAccordion(event, key) {
+                const me = this
+                const target = event.target
+                me.res.data[key].open ^= true
+                if (me.res.data[key].open) {
+                    target.parentNode.parentNode.querySelector(
+                        '.accordion_table'
+                    ).style.height = `${
+                        target.parentNode.parentNode.querySelector(
+                            '.accordion_table'
+                        ).scrollHeight
+                    }px`
+                } else {
+                    target.parentNode.parentNode.querySelector(
+                        '.accordion_table'
+                    ).style.height = 0
+                }
+            },
+            updateCustomerClass(data, id) {
+                const me = this
+                let formData = new FormData()
+                if (
+                    (data.status == 'reserved-guest' ||
+                        data.status == 'reserved') &&
+                    id != null
+                ) {
+                    me.$axios
+                        .post(`api/bookings/sign-in/${id}`, formData)
+                        .then(res => {
+                            if (res.data) {
+                                setTimeout(() => {
+                                    document
+                                        .getElementById('upcoming_classes')
+                                        .click()
+                                }, 500)
+                            }
+                        })
+                } else if (data.status == 'signed-in' && id != null) {
+                    me.$store.state.bookingID = id
+                    me.$store.state.promptSignOutStatus = true
+                    document.body.classList.add('no_scroll')
+                }
+            },
+            getCurrentCustomer() {
+                const me = this
+                me.$axios
+                    .get(`api/customers/${me.$route.params.param}`)
+                    .then(res => {
+                        if (res.data) {
+                            me.$store.state.customer = res.data.user
+                            me.$store.state.customerID = res.data.user.id
+                        }
+                    })
+                    .catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    })
+                me.$router.push('/booker')
+            },
+            formatTransactionDate(value, withTime) {
+                if (value.payment_items[0].user_package_count) {
+                    if (
+                        value.payment_items[0].user_package_count.from_old == 1
+                    ) {
+                        if (withTime) {
+                            return this.$moment(value.created_at).format(
+                                'MMM DD, YYYY hh:mm A'
+                            )
+                        } else {
+                            return this.$moment(value.created_at).format(
+                                'MMM DD, YYYY'
+                            )
+                        }
+                    } else {
+                        if (withTime) {
+                            return this.$moment(value.updated_at).format(
+                                'MMM DD, YYYY hh:mm A'
+                            )
+                        } else {
+                            return this.$moment(value.updated_at).format(
+                                'MMM DD, YYYY'
+                            )
+                        }
+                    }
+                } else {
+                    if (withTime) {
+                        return this.$moment(value.updated_at).format(
+                            'MMM DD, YYYY hh:mm A'
+                        )
+                    } else {
+                        return this.$moment(value.updated_at).format(
+                            'MMM DD, YYYY'
+                        )
+                    }
+                }
+            },
+            formatDate(value, withTime) {
+                if (value) {
+                    if (withTime) {
+                        return this.$moment(value).format(
+                            'MMM DD, YYYY hh:mm A'
+                        )
+                    } else {
+                        return this.$moment(value).format('MMM DD, YYYY')
+                    }
+                }
+            },
+            formatClassDate(value, withTime) {
+                if (value) {
+                    if (withTime) {
+                        return this.$moment(value).format('M/D/YY (ddd) h:mm A')
+                    } else {
+                        return this.$moment(value).format('MMMM DD, YYYY')
+                    }
+                }
+            },
+            checkViolator(data, type) {
+                const me = this
+                let result = ''
+                let expiry = me.$moment(
+                    data.computed_expiration_date != null
+                        ? data.computed_expiration_date
+                        : data.expiry_date_if_not_activated
+                )
+                let current = me.$moment()
+                switch (type) {
+                    case 'warning':
+                        if (expiry.diff(current, 'days') == 0) {
+                            result =
+                                expiry.diff(current, 'hours') + ' Hours Left'
+                        } else {
+                            result = expiry.diff(current, 'days') + ' Days Left'
+                        }
+                        break
+                    case 'shared':
+                        if (me.$route.params.param == data.user_id) {
+                            result = 'Shared with '
+                            data.shares.forEach((share, key) => {
+                                if (key != 0) {
+                                    if (key + 1 == data.shares.length) {
+                                        result += ' & '
+                                    } else {
+                                        result += ', '
+                                    }
+                                }
+                                result += `${share.user.fullname}`
+                            })
+                        } else {
+                            if (data.sharedby_user) {
+                                result = `Shared by ${data.sharedby_user.first_name} ${data.sharedby_user.last_name}`
+                            }
+                        }
+                        break
+                }
+                return result
+            },
+            toggledOption(event) {
+                const me = this
+                let element = event.target
+                if (element.parentNode.classList.contains('toggled')) {
+                    element.parentNode.classList.remove('toggled')
+                } else {
+                    element.parentNode.classList.add('toggled')
+                }
+            },
+            toggleOverlays(e) {
+                const me = this
+                let target = e.target
+                if (me.value.user_package_counts) {
+                    me.value.user_package_counts.forEach((result, index) => {
+                        let option = document.getElementById(`option_${index}`)
+                        if (option != null) {
+                            if (
+                                option !== target &&
+                                option !==
+                                    target.parentNode.previousElementSibling
+                            ) {
+                                if (
+                                    option.parentNode.classList.contains(
+                                        'toggled'
+                                    )
+                                ) {
+                                    option.parentNode.classList.remove(
+                                        'toggled'
+                                    )
+                                }
+                            }
+                        }
+                    })
+                }
+                if (me.$route.params.slug == 'class-history') {
+                    for (let i = 0; i <= me.res.classHistory.length; i++) {
+                        let element = document.getElementById(
+                            `table_select_${i}`
+                        )
+                        if (element !== target) {
+                            if (element) {
+                                if (element.nextElementSibling) {
+                                    if (
+                                        element.nextElementSibling.classList.contains(
+                                            'active'
+                                        )
+                                    ) {
+                                        element.nextElementSibling.classList.remove(
+                                            'active'
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            togglePackages(status) {
+                const me = this
+                me.loader(true)
+
+                let url = ''
+
+                if (status == 'subscribe') {
+                    url = `api/customers/${me.$route.params.param}/${me.$route.params.slug}?subscription=1`
+                } else {
+                    url = `api/customers/${me.$route.params.param}/${
+                        me.$route.params.slug
+                    }?packageStatus=${status != 'expired' ? status : 'all'}`
+                }
+
+                me.$axios
+                    .get(url)
+                    .then(res => {
+                        if (res.data) {
+                            me.packageCount = 0
+                            me.$parent.customer = res.data.customer
+                            me.res = res.data.customer
+                        }
+                    })
+                    .catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    })
+                    .then(() => {
+                        me.rowCount = document.getElementsByTagName('th').length
+                        setTimeout(() => {
+                            me.packageStatus = status
+                            me.loader(false)
+                        }, 500)
+                    })
+            },
+            getHistoryFromPaginate(data) {
+                const me = this
+                data.classHistory.data.sort(function (a, b) {
+                    return (
+                        new Date(
+                            `${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`
+                        ) -
+                        new Date(
+                            `${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`
+                        )
+                    )
+                })
+                me.res = data
+            },
+            toggleClassesHistory(status) {
+                const me = this
+                me.loader(true)
+                me.$axios
+                    .get(
+                        `api/customers/${me.$route.params.param}/${me.$route.params.slug}?classHistoryStatus=${status}&paginate=1`
+                    )
+                    .then(res => {
+                        if (res.data) {
+                            me.res = res.data.customer
+                            me.res.classHistory.data.sort(function (a, b) {
+                                return (
+                                    new Date(
+                                        `${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`
+                                    ) -
+                                    new Date(
+                                        `${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`
+                                    )
+                                )
+                            })
+                        }
+                    })
+                    .catch(err => {
+                        me.$store.state.errorList = err.response.data.errors
+                        me.$store.state.errorStatus = true
+                    })
+                    .then(() => {
+                        me.rowCount = document.getElementsByTagName('th').length
+                        setTimeout(() => {
+                            me.classesHistoryStatus = status
+                            me.loader(false)
+                        }, 500)
+                    })
             }
-          })
-          .catch(err => {
-            me.$store.state.errorList = err.response.data.errors
-            me.$store.state.errorStatus = true
-          })
-          .then(() => {
-            me.rowCount = document.getElementsByTagName('th').length
+        },
+        mounted() {
+            const me = this
+            me.res = []
+            let token = me.$cookies.get('70hokcotc3hhhn5')
+            me.$axios
+                .get('api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                .then(res => {
+                    if (res.data != 0) {
+                        me.user = res.data.user
+                    }
+                })
+            if (me.$route.params.slug == 'transactions') {
+                me.res = me.value.payments
+            } else {
+                me.res = me.value
+                if (me.res.classHistory && me.res.classHistory.data) {
+                    me.res.classHistory.data.sort(function (a, b) {
+                        return (
+                            new Date(
+                                `${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`
+                            ) -
+                            new Date(
+                                `${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`
+                            )
+                        )
+                    })
+                }
+            }
+            me.loaded = true
             setTimeout(() => {
-              me.classesHistoryStatus = status
-              me.loader(false)
-            }, 500)
-          })
-      }
-    },
-    mounted() {
-      const me = this
-      me.res = []
-      let token = me.$cookies.get('70hokcotc3hhhn5')
-      me.$axios
-        .get('api/user', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        .then(res => {
-          if (res.data != 0) {
-            me.user = res.data.user
-          }
-        })
-      if (me.$route.params.slug == 'transactions') {
-        me.res = me.value.payments
-      } else {
-        me.res = me.value
-        if (me.res.classHistory && me.res.classHistory.data) {
-          me.res.classHistory.data.sort(function (a, b) {
-            return (
-              new Date(
-                `${b.scheduled_date.date} ${b.scheduled_date.schedule.start_time}`
-              ) -
-              new Date(
-                `${a.scheduled_date.date} ${a.scheduled_date.schedule.start_time}`
-              )
-            )
-          })
+                me.rowCount = document.getElementsByTagName('th').length
+            }, 250)
+        },
+        beforeMount() {
+            document.addEventListener('click', this.toggleOverlays)
+        },
+        beforeDestroy() {
+            document.removeEventListener('click', this.toggleOverlays)
         }
-      }
-      me.loaded = true
-      setTimeout(() => {
-        me.rowCount = document.getElementsByTagName('th').length
-      }, 250)
-    },
-    beforeMount() {
-      document.addEventListener('click', this.toggleOverlays)
-    },
-    beforeDestroy() {
-      document.removeEventListener('click', this.toggleOverlays)
     }
-  }
 </script>
