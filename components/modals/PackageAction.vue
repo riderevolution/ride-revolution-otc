@@ -138,7 +138,7 @@
                                         }
                                         setTimeout( () => {
                                             me.$store.state.packageActionPromptStatus = true
-                                            me.$parent.packagePromptType = 'Transfer'
+                                            me.$parent.packagePromptType = 'Transferred'
                                             me.$parent.packagePromptMessage = 'You have successfully transfered your package.'
                                         }, 500)
                                     }
@@ -169,7 +169,7 @@
                                         }
                                         setTimeout( () => {
                                             me.$store.state.packageActionPromptStatus = true
-                                            me.$parent.packagePromptType = 'Share'
+                                            me.$parent.packagePromptType = 'Shared'
                                             me.$parent.packagePromptMessage = 'You have successfully shared your package.'
                                         }, 500)
                                     }
