@@ -117,7 +117,7 @@
                                 </select>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ properFormat(errors.first('checkout_form.bank')) }}</span></transition>
                             </div>
-                            <div class="form_group">
+                            <div class="form_group" v-if="bank != 'Other'">
                                 <label for="terminal">Terminal <span>*</span></label>
                                 <select class="default_select alternate" name="terminal" key="terminal" v-validate="'required'" v-model="cardType">
                                     <option value="" selected disabled>Select Terminal</option>
