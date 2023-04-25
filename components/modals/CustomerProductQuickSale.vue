@@ -145,6 +145,10 @@
                                 <label for="gcash">GCash</label>
                             </div>
                             <div class="form_radio">
+                                <input type="radio" id="paymaya" value="paymaya" name="payment_method" class="action_radio" @change="checkPayment('paymaya')">
+                                <label for="paymaya">Paymaya</label>
+                            </div>
+                            <div class="form_radio">
                                 <input type="radio" id="cash" value="cash" name="payment_method" class="action_radio" @change="checkPayment('cash')">
                                 <label for="cash">Cash</label>
                             </div>
@@ -167,13 +171,17 @@
                         </div>
                         <div class="form_main_group" v-if="form.paymentType == 0 || form.paymentType == 2">
                             <div class="form_group">
-                                <label for="bank">Bank<span>*</span></label>
-                                <select class="default_select alternate" name="bank" key="bank" v-validate="'required'">
+                                <label for="bank">Bank <span>*</span></label>
+                                <select class="default_select alternate" name="bank" key="bank" v-validate="'required'" v-model="bank">
                                     <option value="" selected disabled>Select a Bank</option>
-                                    <option value="bpi">Bank of the Philippines Islands</option>
-                                    <option value="bdo">Banco de Oro</option>
-                                    <option value="psbank">PSBank</option>
-                                    <option value="metrobank">MetroBank</option>
+                                    <option value="BDO">Banco de Oro</option>
+                                    <option value="BPI">Bank of the Philippines Islands</option>
+                                    <option value="Citibank">Citibank</option>
+                                    <option value="Landbank">Landbank</option>
+                                    <option value="Metrobank">MetroBank</option>
+                                    <option value="PSbank">PSBank</option>
+                                    <option value="Unionbank">Unionbank</option>
+                                    <option value="Other">Other</option>
                                 </select>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.bank')">{{ properFormat(errors.first('checkout_form.bank')) }}</span></transition>
                             </div>
@@ -181,15 +189,22 @@
                                 <label for="terminal">Terminal <span>*</span></label>
                                 <select class="default_select alternate" name="terminal" key="terminal" v-validate="'required'" v-model="cardType">
                                     <option value="" selected disabled>Select Terminal</option>
-                                    <option value="paymaya">Paymaya</option>
-                                    <option value="bdo">BDO</option>
+                                    <option value="BDO">BDO</option>
+                                    <option value="BPI">BPI</option>
+                                    <option value="Citibank">Citibank</option>
+                                    <option value="GCash">GCash</option>
+                                    <option value="Landbank">Landbank</option>
+                                    <option value="Metrobank">Metrobank</option>
+                                    <option value="Paymaya">Paymaya</option>
+                                    <option value="PSBank">PSBank</option>
+                                    <option value="UnionBank">UnionBank</option>
                                 </select>
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.terminal')">{{ properFormat(errors.first('checkout_form.terminal')) }}</span></transition>
                             </div>
-                            <div class="form_group" v-if="cardType == 'others'">
-                                <label for="others">Others <span>*</span></label>
-                                <input type="text" name="others" class="default_text" key="others" v-validate="'required'">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.others')">{{ properFormat(errors.first('checkout_form.others')) }}</span></transition>
+                            <div class="form_group" v-if="bank == 'Other'">
+                                <label for="indicate_reason">Others <span>*</span></label>
+                                <input type="text" name="indicate_reason" class="default_text" key="indicate_reason" v-validate="'required'">
+                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.indicate_reason')">{{ properFormat(errors.first('checkout_form.indicate_reason')) }}</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 1">
@@ -247,7 +262,7 @@
                                 <input type="text" name="change" class="default_text disabled" v-model="computeChange" v-validate="'required'">
                             </div>
                         </div>
-                        <div class="form_main_group" v-else-if="form.paymentType == 5">
+                        <div class="form_main_group" v-else-if="form.paymentType == 5 || form.paymentType == 10">
                             <div class="form_group">
                                 <label for="reference_number">Reference Number <span>*</span></label>
                                 <input type="text" name="reference_number" class="default_text" v-validate="'required'" key="reference_number">
@@ -415,6 +430,7 @@
                 totalPrice: [],
                 toCheckout: [],
                 cardType: '',
+                bank: '',
                 promoApplied: false
             }
         },
@@ -836,12 +852,17 @@
                     case 'class_pass':
                         me.form.paymentType = 8
                         break
+                    case 'paymaya':
+                        me.form.paymentType = 10
+                        break
                     case 'store-credits':
                         me.form.paymentType = 9999
                         break
                 }
                 me.cardType = ''
+                me.bank = ''
                 me.form.change = 0
+                me.form.comp = ''
             },
             submitFilter () {
                 const me = this
