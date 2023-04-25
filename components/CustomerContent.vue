@@ -108,10 +108,10 @@
                                                 .class_count_unlimited == 1
                                                 ? 'Unlimited'
                                                 : parseInt(data.count) ==
-                                                    data.original_package_count
+                                                  data.original_package_count
                                                 ? parseInt(
-                                                    data.original_package_count
-                                                )
+                                                      data.original_package_count
+                                                  )
                                                 : parseInt(data.count)
                                         }}
                                     </p>
@@ -126,9 +126,9 @@
                                     {{
                                         data.activation_date != 'NA'
                                             ? formatDate(
-                                                data.activation_date,
-                                                false
-                                            )
+                                                  data.activation_date,
+                                                  false
+                                              )
                                             : 'N/A'
                                     }}
                                 </p>
@@ -152,13 +152,13 @@
                                     {{
                                         data.computed_expiration_date
                                             ? formatDate(
-                                                data.computed_expiration_date,
-                                                false
-                                            )
-                                        : formatDate(
-                                                data.expiry_date_if_not_activated,
-                                                false
-                                            )
+                                                  data.computed_expiration_date,
+                                                  false
+                                              )
+                                            : formatDate(
+                                                  data.expiry_date_if_not_activated,
+                                                  false
+                                              )
                                     }}
                                 </p>
                                 <label>
@@ -530,14 +530,26 @@
                             </div>
                             <p v-else>N/A</p>
                         </td>
-                        <td class="alt">{{ data.status }}</td>
+                        <td class="alt">
+                            <div class="table_actions">
+                                <span>{{ checkStatus(data) }}</span>
+                                <div
+                                    class="action_status ml green"
+                                    v-if="data.is_guest"
+                                >
+                                    GUEST
+                                </div>
+                            </div>
+                        </td>
                         <td>
                             <p>{{ data.class_package.name }}</p>
                             <p class="id">{{ data.class_package.sku_id }}</p>
                             <p
                                 :class="[
                                     'table_violator',
-                                    data.shared ? 'pink' : 'blue'
+                                    data.shared || data.is_guest
+                                        ? 'pink'
+                                        : 'blue'
                                 ]"
                             >
                                 {{ data.shared ? 'Share By' : 'Owned By' }}:
@@ -744,7 +756,9 @@
                             <p
                                 :class="[
                                     'table_violator',
-                                    data.shared ? 'pink' : 'blue'
+                                    data.shared || data.is_guest
+                                        ? 'pink'
+                                        : 'blue'
                                 ]"
                             >
                                 {{ data.shared ? 'Shared By' : 'Owned By' }}:
@@ -2049,7 +2063,10 @@
                             if (data.discountedTotal != 0) {
                                 result = me.totalCount(data.discountedTotal)
                             } else {
-                                if (me.totalCount(data.total) != me.totalCount(data.originalTotal)) {
+                                if (
+                                    me.totalCount(data.total) !=
+                                    me.totalCount(data.originalTotal)
+                                ) {
                                     result = me.totalCount(data.originalTotal)
                                 } else {
                                     result = me.totalCount(data.total)
@@ -2404,6 +2421,7 @@
                         result = 'No Show'
                         break
                     case 'reserved':
+                    case 'reserved-guest':
                         result = 'Reserved'
                         break
                     case 'cancelled':

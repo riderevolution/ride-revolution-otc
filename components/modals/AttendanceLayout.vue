@@ -134,9 +134,7 @@
                                             class="table_select_label"
                                             @click="toggleGuest($event)"
                                         >
-                                            {{
-                                                data.guestBookings.length
-                                            }}
+                                            {{ data.guestBookings.length }}
                                             Guests
                                         </div>
                                         <div class="overlay">
@@ -161,7 +159,17 @@
                                     </div>
                                     <p v-else>N/A</p>
                                 </td>
-                                <td class="alt">{{ checkStatus(data) }}</td>
+                                <td class="alt">
+                                    <div class="table_actions">
+                                        <span>{{ checkStatus(data) }}</span>
+                                        <div
+                                            class="action_status ml green"
+                                            v-if="data.is_guest"
+                                        >
+                                            GUEST
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>
                                     <p>{{ data.class_package.name }}</p>
                                     <p class="id">
@@ -170,7 +178,9 @@
                                     <p
                                         :class="[
                                             'table_violator',
-                                            data.shared ? 'pink' : 'blue'
+                                            data.shared || data.is_guest
+                                                ? 'pink'
+                                                : 'blue'
                                         ]"
                                     >
                                         {{
