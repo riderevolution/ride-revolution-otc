@@ -533,9 +533,6 @@
                     case 'class_pass':
                         me.form.paymentType = 8
                         break
-                    case 'gc_code':
-                        me.form.paymentType = 9
-                        break
                     case 'paymaya':
                         me.form.paymentType = 10
                         break

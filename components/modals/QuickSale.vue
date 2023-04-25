@@ -160,10 +160,6 @@
                                 <label for="third_party_platform">Third Party Platform</label>
                             </div>
                             <div class="form_radio">
-                                <input type="radio" id="gc_code " value="gc_code" name="payment_method" class="action_radio" @change="checkPayment('gc_code')">
-                                <label for="gc_code ">Gift Card</label>
-                            </div>
-                            <div class="form_radio">
                                 <input type="radio" id="class_pass" value="class_pass" name="payment_method" class="action_radio" @change="checkPayment('class_pass')">
                                 <label for="class_pass">ClassPass</label>
                             </div>
@@ -266,14 +262,6 @@
                                 <label for="reference_number">Reference Number <span>*</span></label>
                                 <input type="text" name="reference_number" class="default_text" v-validate="'required'" key="reference_number">
                                 <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.reference_number')">{{ properFormat(errors.first('checkout_form.reference_number')) }}</span></transition>
-                            </div>
-                        </div>
-                        <div class="form_main_group" v-else-if="form.paymentType == 9">
-                            <div class="form_group">
-                                <label for="card_code">Card Code <span>*</span></label>
-                                <input type="text" name="card_code" class="default_text" v-validate="'required'" key="card_code" @input="validateInput($event, 'gc_code')">
-                                <transition name="slide"><span class="validation_errors" v-if="errors.has('checkout_form.card_code') && !validate.gc_code">{{ properFormat(errors.first('checkout_form.card_code')) }}</span></transition>
-                                <transition name="slide"><span class="validation_errors" v-if="validate.gc_code">The card code already used.</span></transition>
                             </div>
                         </div>
                         <div class="form_main_group" v-else-if="form.paymentType == 6 || form.paymentType == 7 || form.paymentType == 8">
@@ -747,9 +735,6 @@
                         break
                     case 'class_pass':
                         me.form.paymentType = 8
-                        break
-                    case 'gc_code':
-                        me.form.paymentType = 9
                         break
                     case 'paymaya':
                         me.form.paymentType = 10
