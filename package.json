@@ -1,6 +1,6 @@
 {
-  "name": "portal(dev)_ride_revolution",
-  "version": "3.0.0",
+  "name": "portal(production)_ride_revolution",
+  "version": "5.0.0",
   "description": "Portal - Ride Revolution",
   "author": "Designblue Manila Inc.",
   "private": true,
