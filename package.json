@@ -1,8 +1,8 @@
 {
-  "name": "cms",
-  "version": "4.0.1",
-  "description": "Ride Revolution",
-  "author": "Designblue",
+  "name": "portal(dev)_ride_revolution",
+  "version": "3.0.0",
+  "description": "Portal - Ride Revolution",
+  "author": "Designblue Manila Inc.",
   "private": true,
   "scripts": {
     "dev": "nuxt",
